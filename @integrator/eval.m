@@ -8,7 +8,7 @@ for k=1:K
   x(k)=integrator_eval_individual(F,v(:,k));
 end
 % HACK: insert ground truth trajectory
-x=[trajectory('tposquat',[0,1.5;0,0;0,1.5;0,0;1,1;0,0;0,0;0,0;0,0]),x];
+x(1)=trajectory('tposquat',[0,1.5;0,0;0,1.5;0,0;1,1;0,0;0,0;0,0;0,0]);
 
 return;
 
