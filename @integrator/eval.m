@@ -39,10 +39,8 @@ return;
 
 
 function z=integrator_eval_bitmap(bits)
-
 B=numel(bits);
 bits=reshape(bits,[1,B]);
 dec=bin2dec(num2str(bits));
 z=2*dec/(2^B-1)-1;
-
 return;
