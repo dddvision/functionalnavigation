@@ -1,3 +1,4 @@
+% Omar: test commit 7/14/2009;
 close all;
 clear classes;
 drawnow;
