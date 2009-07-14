@@ -64,7 +64,21 @@ Rb=Quat2Matrix(qb);
 ia=getdata(g,ka);
 ib=getdata(g,kb);
 
+% get focal parameter scale
+rho=getfocal(g,w);
+
 %%% INSERT OPTICAL FLOW ALGORITHM HERE %%%
-% NOTE: disregard w and focal length for now
+% replace the following lines with useful code
+fprintf('\n');
+fprintf('\n### Running @sensor/eval ###');
+fprintf('\n');
+fprintf('\nfocal: %0.4f',rho);
+fprintf('\ntranslation: <%0.4f,%0.4f,%0.4f>',pb(1)-pa(1),pb(2)-pb(2),pb(3)-pa(3));
+fprintf('\nrotation: ');
+disp(Ra'*Rb);
+%figure;
+%imshow(ia);
+%figure;
+%imshow(ib);
 
 return;
