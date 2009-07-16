@@ -15,5 +15,9 @@ x=eval(F,v);
 g=sensor;
 s=eval(g,x,w);
 
-%figure;
-%display(x);
+figure;
+display(x);
+axis('on');
+xlabel('North');
+ylabel('East');
+zlabel('Down');
