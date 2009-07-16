@@ -15,7 +15,9 @@ function h=display(x,varargin)
 
 hfigure=gcf;
 set(hfigure,'color',[1,1,1]);
-haxes=axes('parent',hfigure);
+haxes=gca;
+set(haxes,'Units','normalized');
+set(haxes,'Position',[0,0,1,1]);
 set(haxes,'DataAspectRatio',[1,1,1]);
 axis(haxes,'off');
 
@@ -36,7 +38,7 @@ return;
 function h=trajectory_display_individual(x,alpha,scale,color)
 h=[];
 
-bigsteps=5;
+bigsteps=10;
 substeps=10;
 
 [a,b]=domain(x);
@@ -76,7 +78,7 @@ return;
 
 
 function scale=trajectory_display_getscale(K,varargin)
-scale=repmat(0.001,[K,1]);
+scale=repmat(0.002,[K,1]);
 N=numel(varargin);
 for n=1:N
   if( strcmp(varargin{n},'scale') )
@@ -115,22 +117,39 @@ end
 return;
 
 
+% Plot a red triangle indicating the forward and up directions
 function h=trajectory_display_plotframe(p,q,alpha,scale,color)
 h=[];
 M=scale*Quat2Matrix(q);
-xp=p(1)+[0;10*M(1,1);5*M(1,3)];
-yp=p(2)+[0;10*M(2,1);5*M(2,3)];
-zp=p(3)+[0;10*M(3,1);5*M(3,3)];
-h=[h,patch(xp,yp,zp,[1-color(1),color(2:3)],'FaceAlpha',alpha,'LineStyle','none')];
+
+% xp=p(1)+[0;5*M(1,2)];
+% yp=p(2)+[0;5*M(2,2)];
+% zp=p(3)+[0;5*M(3,2)];
+% rc=[1-color(1),color(2),color(3)];
+% h=[h,trajectory_display_plotline(xp,yp,zp,alpha,scale,rc)];
+% 
+% xp=p(1)+[0;5*M(1,3)];
+% yp=p(2)+[0;5*M(2,3)];
+% zp=p(3)+[0;5*M(3,3)];
+% gc=[color(1),1-color(2),color(3)];
+% h=[h,trajectory_display_plotline(xp,yp,zp,alpha,scale,gc)];
+
+xp=p(1)+[10*M(1,1);0;-5*M(1,3)];
+yp=p(2)+[10*M(2,1);0;-5*M(2,3)];
+zp=p(3)+[10*M(3,1);0;-5*M(3,3)];
+h=[h,patch(xp,yp,zp,[1-color(1),color(2:3)],'FaceAlpha',alpha,'LineStyle','none','Clipping','off')];
 return;
 
 
 function h=trajectory_display_plotline(x,y,z,alpha,scale,color)
 persistent xo yo zo
 if(isempty(xo))
-  xo=[0,0;1,1;1,1;0,0];
-  yo=[ 1,-1; 1,-1;-1, 1;-1, 1]/sqrt(2);
-  zo=[ 1, 1; 1, 1;-1,-1;-1,-1]/sqrt(2);
+%   xo=[0,0,0;1,1,1;1,1,1;0,0,0];
+%   yo=[-1, 1, 0;-1, 1, 0; 1, 0,-1; 1, 0,-1]*sqrt(3)/2;
+%   zo=[-1,-1, 2;-1,-1, 2;-1, 2,-1;-1, 2,-1]/2;
+  xo=[0,0,0,0;1,1,1,1;1,1,1,1;0,0,0,0];
+  yo=[-1, 1, 1,-1;-1, 1, 1,-1; 1, 1,-1,-1; 1, 1,-1,-1]/sqrt(2);
+  zo=[-1,-1, 1, 1;-1,-1, 1, 1;-1, 1, 1,-1;-1, 1, 1,-1]/sqrt(2);
 end
 ys=scale*yo;
 zs=scale*zo;
@@ -158,7 +177,7 @@ if( N>1 )
       xp=a(1)+M(1,1)*xs+M(1,2)*ys+M(1,3)*zs;
       yp=a(2)+M(2,1)*xs+M(2,2)*ys+M(2,3)*zs;
       zp=a(3)+M(3,1)*xs+M(3,3)*zs;
-      h=[h,patch(xp,yp,zp,color,'FaceAlpha',alpha,'LineStyle','none')];
+      h=[h,patch(xp,yp,zp,color,'FaceAlpha',alpha/2,'LineStyle','none','Clipping','off')];
     end
     a=b;
   end

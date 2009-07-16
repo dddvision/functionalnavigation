@@ -1,5 +1,5 @@
-% Evaluates the optimizer object and creates an initial guess if no costs
-% are provided
+% Evaluates the optimizer object
+% Creates an initial guess if cost object is not provided
 %
 % INPUT
 % m = optimizer object
