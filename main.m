@@ -1,4 +1,5 @@
 % Omar: test commit 7/14/2009;
+% Hey Prince, what's up?
 
 close all;
 clear classes;
@@ -8,16 +9,7 @@ intwarning('off');
 rand('seed',0);
 randn('seed',0);
 
+H=objective;
+[v,w]=init(H);
 m=optimizer;
-[v,w]=evaluate(m);
-F=integrator;
-x=evaluate(F,v);
-g=sensor;
-s=eval(g,x,w);
-
-figure;
-display(x);
-axis('on');
-xlabel('North');
-ylabel('East');
-zlabel('Down');
+[m,H,v,w]=step(m,H,v,w);
