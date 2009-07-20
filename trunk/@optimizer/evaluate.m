@@ -10,7 +10,7 @@
 % w = array of static noise bit vectors, wbits-by-popsize
 
 
-function [v,w]=eval(m,s)
+function [v,w]=evaluate(m,s)
 if( nargin>1 )
   v=[];
   w=[];

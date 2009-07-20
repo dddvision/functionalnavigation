@@ -9,9 +9,9 @@ rand('seed',0);
 randn('seed',0);
 
 m=optimizer;
-[v,w]=eval(m);
+[v,w]=evaluate(m);
 F=integrator;
-x=eval(F,v);
+x=evaluate(F,v);
 g=sensor;
 s=eval(g,x,w);
 
