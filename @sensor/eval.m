@@ -7,6 +7,11 @@
 %
 % OUTPUT
 % s = cost, 1-by-K
+%
+% NOTE
+% The input trajectory objects represent the motion of the body frame
+% relative to a world frame.  If the sensor frame is not coincident with
+% the body frame, then transformations may be necessary.
 
 
 function s=eval(g,x,w)
