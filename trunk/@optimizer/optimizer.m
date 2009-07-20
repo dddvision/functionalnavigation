@@ -1,12 +1,9 @@
 % Constructs an optimizer object
 
 
-function m=optimizer()
+function this=optimizer
 
-m.popsize=10;
-m.vbits=24;
-m.wbits=8;
-
-m=class(m,'optimizer');
+this.empty=[];
+this=class(this,'optimizer');
 
 return;

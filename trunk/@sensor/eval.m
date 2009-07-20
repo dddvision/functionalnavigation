@@ -6,7 +6,7 @@
 % w = sensor noise objects, 1-by-K
 %
 % OUTPUT
-% s = cost, 1-by-K
+% c = cost, 1-by-K
 %
 % NOTE
 % The input trajectory objects represent the motion of the body frame
@@ -14,22 +14,22 @@
 % the body frame, then transformations may be necessary.
 
 
-function s=eval(g,x,w)
+function c=eval(g,x,w)
 
 % process each trajectory independently
 K=numel(x);
-s=zeros(1,K);
+c=zeros(1,K);
 for k=1:K
-  s(k)=sensor_evaluate_individual(g,x(k),w(:,k));
+  c(k)=sensor_evaluate_individual(g,x(k),w(:,k));
 end
 
 return;
 
 
-function s=sensor_evaluate_individual(g,x,w)
+function c=sensor_evaluate_individual(g,x,w)
 
 % default cost
-s=0;
+c=0.5;
 
 % get sensor event indices
 [ka,kb]=domain(g);
