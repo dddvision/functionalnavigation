@@ -1,7 +1,7 @@
 % Evaluate a trajectory at multiple instants
 
 
-function xt=eval(this,t)
+function xt=evaluate(this,t)
 
 switch( this.type )
   case 'tposquat'

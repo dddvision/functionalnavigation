@@ -1,11 +1,11 @@
 % Transforms integrator noise into a 6-DOF trajectory respecting body dynamics
 
 
-function x=eval(F,v)
+function x=evaluate(F,v)
 
 K=size(v,2);
 for k=1:K
-  x(k)=integrator_eval_individual(F,v(:,k));
+  x(k)=integrator_evaluate_individual(F,v(:,k));
 end
 % HACK: should not have knowledge of ground truth trajectory
 x(1)=trajectory('tposquat',[1,1.5;0,0;0,1.5;0,0;1,1;0,0;0,0;0,0;0,0]);
@@ -13,7 +13,7 @@ x(1)=trajectory('tposquat',[1,1.5;0,0;0,1.5;0,0;1,1;0,0;0,0;0,0;0,0]);
 return;
 
 
-function x=integrator_eval_individual(F,v)
+function x=integrator_evaluate_individual(F,v)
 
 dim=6;
 t=0:0.01:1.5;
@@ -25,7 +25,7 @@ v=v(1:(end-mod(numel(v),dim)));
 bpa=numel(v)/dim;
 rate_bias=zeros(dim,1);
 for d=1:dim
-  rate_bias(d)=integrator_eval_bitmap(v((d-1)*bpa+(1:bpa)));
+  rate_bias(d)=integrator_evaluate_bitmap(v((d-1)*bpa+(1:bpa)));
 end
 
 % HACK: should not call rand, only doing it now to create interesting visualization
@@ -46,7 +46,7 @@ x=trajectory(type,data);
 return;
 
 
-function z=integrator_eval_bitmap(bits)
+function z=integrator_evaluate_bitmap(bits)
 B=numel(bits);
 bits=reshape(bits,[1,B]);
 dec=bin2dec(num2str(bits));

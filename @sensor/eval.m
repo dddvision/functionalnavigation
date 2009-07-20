@@ -20,13 +20,13 @@ function s=eval(g,x,w)
 K=numel(x);
 s=zeros(1,K);
 for k=1:K
-  s(k)=sensor_eval_individual(g,x(k),w(:,k));
+  s(k)=sensor_evaluate_individual(g,x(k),w(:,k));
 end
 
 return;
 
 
-function s=sensor_eval_individual(g,x,w)
+function s=sensor_evaluate_individual(g,x,w)
 
 % default cost
 s=0;
@@ -54,12 +54,12 @@ ta=t(1);
 tb=t(end);
 
 % evaluate position of sensor (forward-right-down relative to camera's initial frame)
-pa=evalPosition(x,ta); 
-pb=evalPosition(x,tb);
+pa=evaluatePosition(x,ta); 
+pb=evaluatePosition(x,tb);
 
 % evaluate orientation of sensor
-qa=evalQuaternion(x,ta);
-qb=evalQuaternion(x,tb);
+qa=evaluateQuaternion(x,ta);
+qb=evaluateQuaternion(x,tb);
   
 % convert quaternions to rotation matrices
 Ra=Quat2Matrix(qa);
