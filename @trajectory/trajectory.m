@@ -14,15 +14,19 @@ end
 
 switch( type )
   case 'trajectory'
-    this=data;
+    this=class(data,'trajectory');
   case {'analytic','tposquat'}
-    this=struct('type',type,'data',data);
+    this=class(struct('type',type,'data',data),'trajectory');
+  case 'wobble_1.5'
+    K=size(data,2);
+    for k=1:K
+      datak=data(:,k);
+      this(k)=class(struct('type',type,'data',datak),'trajectory');
+    end
   case 'empty'
-    this=struct('type',type,'data',[]);
+    this=class(struct('type',type,'data',[]),'trajectory');
   otherwise
     error('unhandled exception');
 end
-
-this=class(this,'trajectory');
 
 return;

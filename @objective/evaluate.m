@@ -18,9 +18,18 @@
 
 function [H,c] = evaluate(H,v,w)
 
-x=evaluate(H.F,v);
+% create trajectory objects from dynamic seeds
+x=trajectory(H.F,v);
+
+% HACK: replace first trajectory with ground truth for testing
+x(1)=trajectory('tposquat',[1,1.5;0,0;0,1.5;0,0;1,1;0,0;0,0;0,0;0,0]);
+
+% evaluate trajectories with sensors
 c=evaluate(H.g,x,w);
 
+% TODO: combine results from multiple sensors
+
+% display trajectories with variable transparency
 figure;
 display(x,'alpha',1-c);
 axis('on');

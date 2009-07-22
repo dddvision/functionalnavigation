@@ -79,7 +79,7 @@ fprintf('\n### Running @sensor/eval ###');
 fprintf('\n');
 fprintf('\nfocal: %0.4f',rho);
 fprintf('\ntranslation: <%0.4f,%0.4f,%0.4f>',pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3));
-fprintf('\nrotation: ');
+fprintf('\nrotation:\n');
 disp(Ra'*Rb);
 %figure;
 %imshow(ia);
