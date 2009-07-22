@@ -1,10 +1,10 @@
 function this=objective
 
 this.popsize=10;
-this.vbits=24;
+this.vbits=30;
 this.wbits=8;
 
-this.F=integrator;
+this.F='wobble_1.5';
 this.g=sensor;
 
 this=class(this,'objective');
