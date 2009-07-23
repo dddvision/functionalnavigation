@@ -9,7 +9,7 @@ intwarning('off');
 rand('seed',0);
 randn('seed',0);
 
-m=optimizer;
+M=optimizer;
 H=objective;
 [v,w]=init(H);
-[m,H,v,w]=step(m,H,v,w);
+[M,H,v,w]=step(M,H,v,w);

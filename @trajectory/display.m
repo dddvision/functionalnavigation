@@ -6,6 +6,8 @@
 %   alpha = transparency per trajectory, scalar, 1-by-N, or N-by-1
 %   scale = scale of lines to draw, scalar, 1-by-N, or N-by-1
 %   color = color of lines to draw, 1-by-3 or N-by-3
+%   tmin = time domain lower bound, scalar, 1-by-N, or N-by-1
+%   tmax = time domain lower bound, scalar, 1-by-N, or N-by-1
 %
 % OUTPUTS
 % h = handles to trajectory plot elements
@@ -23,26 +25,30 @@ axis(haxes,'off');
 
 K=numel(x);
 
-alpha=trajectory_display_getalpha(K,varargin{:});
-scale=trajectory_display_getscale(K,varargin{:});
-color=trajectory_display_getcolor(K,varargin{:});
+alpha=trajectory_display_getparam('alpha',1/K,K,varargin{:});
+scale=trajectory_display_getparam('scale',0.002,K,varargin{:});
+color=trajectory_display_getparam('color',[0,0,0],K,varargin{:});
+tmin=trajectory_display_getparam('tmin',-inf,K,varargin{:});
+tmax=trajectory_display_getparam('tmax',inf,K,varargin{:});
 
 h=[];
 for k=1:K
-  h=[h,trajectory_display_individual(x(k),alpha(k),scale(k),color(k,:))];
+  [a,b]=domain(x(k));
+  tmink=max(tmin(k),a);
+  tmaxk=min(tmax(k),b);
+  h=[h,trajectory_display_individual(x(k),alpha(k),scale(k),color(k,:),tmink,tmaxk)];
 end
 
 return;
 
 
-function h=trajectory_display_individual(x,alpha,scale,color)
+function h=trajectory_display_individual(x,alpha,scale,color,tmin,tmax)
 h=[];
 
 bigsteps=10;
 substeps=10;
 
-[a,b]=domain(x);
-t=a:((b-a)/bigsteps/substeps):b;
+t=tmin:((tmax-tmin)/bigsteps/substeps):tmax;
 
 p=evaluatePosition(x,t);
 q=evaluateQuaternion(x,t);
@@ -57,62 +63,22 @@ end
 return;
 
 
-function alpha=trajectory_display_getalpha(K,varargin)
-alpha=repmat(1/K,[K,1]);
+function param=trajectory_display_getparam(str,default,K,varargin)
+param=repmat(default,[K,1]);
 N=numel(varargin);
 for n=1:N
-  if( strcmp(varargin{n},'alpha') )
+  if( strcmp(varargin{n},str) )
     if( n==N )
       error('optional inputs must be property/value pairs');
     end
-    alpha=varargin{n+1};
-    if( ~isa(alpha,'double') )
-      error('values for alpha must be doubles');
+    param=varargin{n+1};
+    if( ~isa(param,'double') )
+      error('values optional inputs be doubles, 1-by-2 or N-by-2');
     end
-    if( numel(alpha)~=K )
-      alpha=repmat(alpha(1),[K,1]);
+    if( size(param,1)~=K )
+      param=repmat(param(1,:),[K,1]);
     end
-  end    
-end
-return;
-
-
-function scale=trajectory_display_getscale(K,varargin)
-scale=repmat(0.002,[K,1]);
-N=numel(varargin);
-for n=1:N
-  if( strcmp(varargin{n},'scale') )
-    if( n==N )
-      error('optional inputs must be property/value pairs');
-    end
-    scale=varargin{n+1};
-    if( ~isa(scale,'double') )
-      error('values for scale must be doubles');
-    end
-    if( numel(scale)~=K )
-      scale=repmat(scale(1),[K,1]);
-    end
-  end    
-end
-return;
-
-
-function color=trajectory_display_getcolor(K,varargin)
-color=zeros(K,3);
-N=numel(varargin);
-for n=1:N
-  if( strcmp(varargin{n},'color') )
-    if( n==N )
-      error('optional inputs must be property/value pairs');
-    end
-    color=varargin{n+1};
-    if( ~isa(color,'double') )
-      error('values for color must be doubles, 1-by-3 or N-by-3');
-    end
-    if( size(scale,1)~=K )
-      color=repmat(color(1,:),[K,1]);
-    end
-  end    
+  end
 end
 return;
 

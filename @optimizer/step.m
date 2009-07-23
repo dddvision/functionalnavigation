@@ -1,7 +1,7 @@
 % Execute one step of the optimizer
 %
 % INPUT/OUTPUT
-% m = optimizer object
+% M = optimizer object
 % H = objective object
 % v = dynamic seed, M-by-popsize
 % w = static seed, N-by-popsize
@@ -16,7 +16,7 @@
 % This function may modify the state of its first arg.
 
 
-function [m,H,v,w]=step(m,H,v,w)
+function [M,H,v,w]=step(M,H,v,w)
 [H,c]=evaluate(H,v,w);
 fprintf('\ncost:\n');
 disp(c');

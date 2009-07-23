@@ -16,7 +16,7 @@ function this=trajectory_convert_individual(this,newtype)
   switch( type )
     case 'analytic'
       newtype = type;  
-    case 'wobble_1.5'
+    case {'wobble_1.5','pendulum_1.5'}
       switch( newtype )
         case 'tposquat'
           [a,b]=domain(this);
