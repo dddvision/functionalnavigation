@@ -1,9 +1,10 @@
 % Constructs an optimizer object
 
 
-function this=optimizer
+% TODO: enable swappable optimization methods
+function M=optimizer
 
-this.empty=[];
-this=class(this,'optimizer');
+M.empty=[];
+M=class(M,'optimizer');
 
 return;

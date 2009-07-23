@@ -6,6 +6,9 @@
 %
 % OUTPUT
 % pt = position at the given time instant 
+%
+% NOTES
+% Axis order is forward-right-down relative to the base reference frame
 
 
 function pt=evaluatePosition(x,t)

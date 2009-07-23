@@ -17,7 +17,7 @@ switch( type )
     this=class(data,'trajectory');
   case {'analytic','tposquat'}
     this=class(struct('type',type,'data',data),'trajectory');
-  case 'wobble_1.5'
+  case {'wobble_1.5','pendulum_1.5'}
     K=size(data,2);
     for k=1:K
       datak=data(:,k);

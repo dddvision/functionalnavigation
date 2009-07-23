@@ -41,4 +41,4 @@ else
   E(3,:)=atan((2*(q23+q14))./(q11+q22-q33-q44));
 end
 
-return
+return;
