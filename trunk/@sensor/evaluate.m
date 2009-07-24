@@ -70,14 +70,27 @@ Rb=Quat2Matrix(qb);
 Ea=Quat2Euler(qa);
 Eb=Quat2Euler(qb);
 
+% get focal parameter scale
+rho=getfocal(g,w);
+
 % get data from sensor
 ia=getdata(g,ka);
 ib=getdata(g,kb);
 
-% get focal parameter scale
-rho=getfocal(g,w);
+% computing optical flow for two frames
+o = opticalflow(ia, ib); 
+[Vx_OF, Vy_OF] = computeOF(o);
 
-%%% INSERT OPTICAL FLOW ALGORITHM HERE %%%
+
+Trajectories = [];
+Trajectories(1).Translation = [pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3)];
+Trajectories(1).Rotation = [Eb(1)-Ea(1), Eb(2)-Ea(2), Eb(3)-Ea(3)];
+Trajectories(1).f = rho;
+
+cost = computecost(Vx_OF,Vy_OF,Trajectories);
+c = cost(1);
+
+
 % replace the following lines with useful code
 fprintf('\n');
 fprintf('\n### Running @sensor/eval ###');
