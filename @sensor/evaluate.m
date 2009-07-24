@@ -18,20 +18,8 @@
 
 function c=evaluate(g,x,w,tmin,tmax)
 
-% process each trajectory independently
-K=numel(x);
-c=zeros(1,K);
-for k=1:K
-  c(k)=sensor_evaluate_individual(g,x(k),w(:,k),tmin,tmax);
-end
-
-return;
-
-
-function c=sensor_evaluate_individual(g,x,w,tmin,tmax)
-
-% default cost
-c=0.5;
+fprintf('\n');
+fprintf('\n### Running @sensor/eval ###');
 
 % get sensor event indices
 [ka,kb]=domain(g);
@@ -54,6 +42,34 @@ kb=k(end);
 ta=t(1);
 tb=t(end);
 
+% get data from sensor
+ia=getdata(g,ka);
+ib=getdata(g,kb);
+
+%figure;
+%imshow(ia);
+%figure;
+%imshow(ib);
+
+% computing optical flow for two frames
+o = opticalflow(ia, ib); 
+[Vx_OF, Vy_OF] = computeOF(o);
+
+% process each trajectory independently
+K=numel(x);
+c=zeros(1,K);
+for k=1:K
+  c(k)=sensor_evaluate_individual(g,x(k),w(:,k),Vx_OF,Vy_OF,ta,tb);
+end
+
+return;
+
+
+function c=sensor_evaluate_individual(g,x,w,Vx_OF,Vy_OF,ta,tb)
+
+% default cost
+c=0.5;
+
 % evaluate orientation of sensor
 qa=evaluateQuaternion(x,ta);
 qb=evaluateQuaternion(x,tb);
@@ -73,14 +89,12 @@ Eb=Quat2Euler(qb);
 % get focal parameter scale
 rho=getfocal(g,w);
 
-% get data from sensor
-ia=getdata(g,ka);
-ib=getdata(g,kb);
-
-% computing optical flow for two frames
-o = opticalflow(ia, ib); 
-[Vx_OF, Vy_OF] = computeOF(o);
-
+fprintf('\n');
+fprintf('\nfocal: %0.4f',rho);
+fprintf('\ntranslation: <%0.4f,%0.4f,%0.4f>',pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3));
+fprintf('\nrotation:\n');
+disp(Ra'*Rb);
+fprintf('\nEuler Angles: <%0.4f,%0.4f,%0.4f>\n',Eb(1)-Ea(1), Eb(2)-Ea(2), Eb(3)-Ea(3));
 
 Trajectories = [];
 Trajectories(1).Translation = [pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3)];
@@ -89,20 +103,5 @@ Trajectories(1).f = rho;
 
 cost = computecost(Vx_OF,Vy_OF,Trajectories);
 c = cost(1);
-
-
-% replace the following lines with useful code
-fprintf('\n');
-fprintf('\n### Running @sensor/eval ###');
-fprintf('\n');
-fprintf('\nfocal: %0.4f',rho);
-fprintf('\ntranslation: <%0.4f,%0.4f,%0.4f>',pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3));
-fprintf('\nrotation:\n');
-disp(Ra'*Rb);
-fprintf('\nEuler Angles: <%0.4f,%0.4f,%0.4f>\n',Eb(1)-Ea(1), Eb(2)-Ea(2), Eb(3)-Ea(3));
-%figure;
-%imshow(ia);
-%figure;
-%imshow(ib);
 
 return;
