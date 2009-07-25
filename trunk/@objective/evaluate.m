@@ -36,9 +36,19 @@ c=evaluate(H.g,x,w,H.tmin,H.tmax);
 
 % TODO: combine results from multiple sensors
 
+% display all trajectories evenly
+figure(4);
+display(x,'tmin',H.tmin,'tmax',H.tmax);
+axis('on');
+xlabel('North');
+ylabel('East');
+zlabel('Down');
+
 % display trajectories with variable transparency
-figure;
-display(x,'alpha',1-c,'tmin',H.tmin,'tmax',H.tmax);
+figure(5);
+px=exp(-9*c.*c);
+px=px/norm(px);
+display(x,'alpha',px','tmin',H.tmin,'tmax',H.tmax);
 axis('on');
 xlabel('North');
 ylabel('East');

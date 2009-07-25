@@ -46,13 +46,14 @@ tb=t(end);
 ia=getdata(g,ka);
 ib=getdata(g,kb);
 
-%figure;
-%imshow(ia);
-%figure;
-%imshow(ib);
+figure(1);
+imshow(ia);
+figure(2);
+imshow(ib);
+drawnow;
 
 % computing optical flow for two frames
-o = opticalflow(ia, ib); 
+o = opticalflow(ia,ib); 
 [Vx_OF, Vy_OF] = computeOF(o);
 
 % process each trajectory independently

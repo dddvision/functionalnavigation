@@ -43,7 +43,7 @@ function [Vx,Vy] = computeOF(o);
 % Please email me if you find bugs, or have suggestions or questions!
 % Licensed under the Lesser GPL [see external/lgpl.txt]
 
-%% Prepare images
+% Prepare images
 I1 = o.img1; 
 I2 = o.img2;	
 
@@ -53,12 +53,12 @@ I1 = imresize(I1,SIZE);
 %I2 = rgb2gray(I2);
 I2 = imresize(I2,SIZE);
 
-%% Set paramters
+% Set paramters
 winN = [];
 winSig = 18;
 sigma = 1;
 thr = 3e-6;
-show = 1;
+show = 3;
 SAMPLE_SIZE = 5;
 SCALE = 2;
 SHAPE = 'same';

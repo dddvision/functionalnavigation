@@ -13,6 +13,7 @@
 % h = handles to trajectory plot elements
 
 
+% TODO: make sure inputs can be either row or column vectors
 function h=display(x,varargin)
 
 hfigure=gcf;
