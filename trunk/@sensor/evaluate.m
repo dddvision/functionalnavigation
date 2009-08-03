@@ -49,7 +49,7 @@ ib=getdata(g,kb);
 figure(1);
 imshow(ia);
 figure(2);
-imshow(ib);
+imshow(cat(3,ia,repmat(0.5,size(ia)),ib));
 drawnow;
 
 % computing optical flow for two frames
