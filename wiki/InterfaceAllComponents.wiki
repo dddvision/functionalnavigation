@@ -1,0 +1,10 @@
+#summary Interface Control Document (ICD) for all framework components.
+
+== Specification for all components ==
+
+A component must:
+  * (add items here)
+
+A component should:
+  * Be self-contained, not linked to external libraries
+  * (add items here)
