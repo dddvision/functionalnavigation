@@ -21,5 +21,5 @@ A component should:
 == Interface Control Documents (ICDs) for Individual Components ==
 
   * [InterfaceDynamicModels Interface for Dynamic Models]
-  * [InterfaceSensors Interface for Sensors]
+  * [InterfaceSensorModels Interface for Sensor Models]
   * [InterfaceOptimizationMethods Interface for Optimization Methods]
