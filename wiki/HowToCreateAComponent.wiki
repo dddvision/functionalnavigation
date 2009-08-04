@@ -5,6 +5,8 @@
 
 Our primary purpose is to create a testbed or framework for functional navigation.  Do you want to know how to create a component that will seamlessly integrate with this framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
 
+Contributors, please take a look at these [http://www.datatool.com/downloads/matlab_style_guidelines.pdf coding guidelines].
+
 == Interface Control Documents ==
   * [InterfaceAllComponents Interface for All Components]
   * [InterfaceSensors Interface for Sensors]
