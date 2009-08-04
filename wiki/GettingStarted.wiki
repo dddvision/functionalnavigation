@@ -1,8 +1,6 @@
 #summary Read this first!
-#labels Featured
+#labels Featured,Phase-Deploy
 
 = Introduction =
 
 To get started, download the source code and run the matlab script main.m.  The vision subsystem is currently implemented in @sensor/eval.m.
-
--David
