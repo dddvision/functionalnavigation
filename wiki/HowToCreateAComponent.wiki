@@ -3,7 +3,7 @@
 
 == Introduction ==
 
-Our primary purpose is to create a testbed or framework for functional navigation.  Do you want to know how to create a component that will seamlessly integrate with this framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list Downloads download components] created by others.
+Our primary purpose is to create a testbed or framework for functional navigation.  Do you want to know how to create a component that will seamlessly integrate with this framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
 
 == Interface Control Documents ==
   * [InterfaceAllComponents Interface for All Components]
