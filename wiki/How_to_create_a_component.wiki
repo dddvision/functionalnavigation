@@ -1,0 +1,12 @@
+#summary This document explains how to create several types of framework components or plug-ins.
+
+= General Concepts =
+
+Our primary purpose is to create a testbed or framework for functional navigation.  Do you want to know how to create a component that will seamlessly integrate with this framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [Download Components] created by others.
+
+= Interface Control Documents =
+
+[Interface for All Components]
+[Interface for Sensors]
+[Interface for Dynamic Models]
+[Interface for Optimization Methods]
