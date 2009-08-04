@@ -1,4 +1,5 @@
-#summary Getting Started
+#summary Read this first!
+#labels Featured
 
 = Introduction =
 
