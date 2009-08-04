@@ -1,0 +1,2 @@
+#summary Interface Control Document (ICD) for Sensor Components
+#labels Phase-Implementation
