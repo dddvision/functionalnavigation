@@ -18,6 +18,11 @@ A component should:
   * Be self-contained, not linked to external libraries
   * (add items here)
 
+Information on how to wrap code written in different languages:
+  * [http://docs.python.org/extending/extending.html How to call C++ from Python]
+  * [http://docs.python.org/extending/embedding.html How to call Python from C++]
+  * [http://www.mathworks.com/support/tech-notes/1600/1605.html How to call C++ from Matlab]
+
 == Interface Control Documents (ICDs) for Individual Components ==
 
   * [InterfaceDynamicModels Interface for Dynamic Models]
