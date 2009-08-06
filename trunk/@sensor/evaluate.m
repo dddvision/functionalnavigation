@@ -53,8 +53,7 @@ imshow(cat(3,ia,repmat(0.5,size(ia)),ib));
 drawnow;
 
 % computing optical flow for two frames
-o = opticalflow(ia,ib); 
-[Vx_OF, Vy_OF] = computeOF(o);
+[Vx_OF, Vy_OF] = computeOF(ia,ib);
 
 % process each trajectory independently
 K=numel(x);
