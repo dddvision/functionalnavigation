@@ -51,8 +51,9 @@ substeps=10;
 
 t=tmin:((tmax-tmin)/bigsteps/substeps):tmax;
 
-p=evaluatePosition(x,t);
-q=evaluateQuaternion(x,t);
+pq=evaluate(x,t);
+p=pq(1:3,:);
+q=pq(4:7,:);
 
 h=[h,trajectory_display_plotframe(p(:,1),q(:,1),alpha,scale,color)]; % plot first frame
 for bs=1:bigsteps

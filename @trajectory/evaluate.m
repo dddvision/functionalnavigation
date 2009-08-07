@@ -2,7 +2,10 @@
 %
 % INPUT
 % x = single trajectory object
-% t = time in seconds
+% t = time in seconds, 1-by-N
+%
+% OUTPUT
+% posquat = position and quaternion, 7-by-N
 %
 % NOTE
 % Axis order is forward-right-down relative to the base reference frame

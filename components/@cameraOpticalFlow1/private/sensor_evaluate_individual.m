@@ -3,13 +3,13 @@ function c=sensor_evaluate_individual(g,x,w,Vx_OF,Vy_OF,ta,tb)
 % default cost
 c=0.5;
 
-% evaluate orientation of sensor
-qa=evaluateQuaternion(x,ta);
-qb=evaluateQuaternion(x,tb);
-
-% evaluate position of sensor
-pa=evaluatePosition(x,ta); 
-pb=evaluatePosition(x,tb);
+% evaluate sensor position and orientation
+pqa=evaluate(x,ta);
+pqb=evaluate(x,tb);
+pa=pqa(1:3,:);
+qa=pqa(4:7,:);
+pb=pqb(1:3,:);
+qb=pqb(4:7,:);
  
 % convert quaternions to rotation matrices
 Ra=Quat2Matrix(qa);
