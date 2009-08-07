@@ -29,4 +29,4 @@ switch( type )
     error('unhandled exception');
 end
 
-return;
+end

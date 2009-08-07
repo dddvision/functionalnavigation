@@ -37,7 +37,7 @@ switch( x.type )
     error('unhandled exception');
 end
 
-return;
+end
 
 
 function posquat=trajectory_evaluate_pendulum(v,t)
@@ -51,7 +51,7 @@ theta=thetao*exp(-b*t).*cos(w*t);
 N=numel(t);
 posquat=[zeros(1,N);-0.1*sin(theta);0.1*cos(theta);cos(theta/2);sin(theta/2);zeros(2,N)];
 
-return;
+end
 
 
 % HACK: should use a meaningful dynamic model of a real system
@@ -83,7 +83,7 @@ qnoise=scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
 posquat=[[0*t;t;0.*t]+pnoise;
          AxisAngle2Quat(qnoise)];
 
-return;
+end
 
 
 % INPUT
@@ -103,6 +103,6 @@ for n=1:N
   end
   dz=dz/2;
 end
-return;
+end
 
     

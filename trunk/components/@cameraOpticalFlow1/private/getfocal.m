@@ -11,4 +11,4 @@ dec=bin2dec(num2str(w));
 z=2*dec/(2^B-1)-1;
 
 rho=g.focal*(1+scalemax*z);
-return;
+end

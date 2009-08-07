@@ -62,7 +62,7 @@ for k=1:K
   c(k)=sensor_evaluate_individual(g,x(k),w(:,k),Vx_OF,Vy_OF,ta,tb);
 end
 
-return;
+end
 
 
 function c=sensor_evaluate_individual(g,x,w,Vx_OF,Vy_OF,ta,tb)
@@ -104,4 +104,4 @@ Trajectories(1).f = rho;
 cost = computecost(Vx_OF,Vy_OF,Trajectories);
 c = cost(1);
 
-return;
+end

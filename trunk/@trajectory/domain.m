@@ -25,4 +25,4 @@ switch( this.type )
     error('unhandled exception');
 end
 
-return;
+end

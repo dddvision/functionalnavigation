@@ -2,10 +2,10 @@
 
 
 function this=convert(this,newtype)
-for k=1:numel(this)
-  this=trajectory_convert_individual(this(k),newtype);
+  for k=1:numel(this)
+    this=trajectory_convert_individual(this(k),newtype);
+  end
 end
-return;
 
 
 function this=trajectory_convert_individual(this,newtype)
@@ -34,4 +34,4 @@ function this=trajectory_convert_individual(this,newtype)
   this(k).type=newtype;
   this(k).data=data;
 
-return;
+end

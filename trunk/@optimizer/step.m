@@ -30,4 +30,4 @@ end
 fprintf('\ncost:\n');
 disp(c');
 
-return;
+end

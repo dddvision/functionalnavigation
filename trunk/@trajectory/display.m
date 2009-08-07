@@ -40,7 +40,7 @@ for k=1:K
   h=[h,trajectory_display_individual(x(k),alpha(k),scale(k),color(k,:),tmink,tmaxk)];
 end
 
-return;
+end
 
 
 function h=trajectory_display_individual(x,alpha,scale,color,tmin,tmax)
@@ -61,7 +61,7 @@ for bs=1:bigsteps
   h=[h,trajectory_display_plotframe(p(:,ksub(end)),q(:,ksub(end)),alpha,scale,color)]; % plot terminating frame
 end
 
-return;
+end
 
 
 function param=trajectory_display_getparam(str,default,K,varargin)
@@ -81,7 +81,7 @@ for n=1:N
     end
   end
 end
-return;
+end
 
 
 % Plot a red triangle indicating the forward and up directions
@@ -105,7 +105,7 @@ xp=p(1)+[10*M(1,1);0;-5*M(1,3)];
 yp=p(2)+[10*M(2,1);0;-5*M(2,3)];
 zp=p(3)+[10*M(3,1);0;-5*M(3,3)];
 h=[h,patch(xp,yp,zp,[1-color(1),color(2:3)],'FaceAlpha',alpha,'LineStyle','none','Clipping','off')];
-return;
+end
 
 
 function h=trajectory_display_plotline(x,y,z,alpha,scale,color)
@@ -149,4 +149,4 @@ if( N>1 )
     a=b;
   end
 end
-return;
+end

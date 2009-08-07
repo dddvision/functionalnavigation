@@ -35,4 +35,4 @@ else
   varargout{1}=1-c;
 end
 
-return;
+end
