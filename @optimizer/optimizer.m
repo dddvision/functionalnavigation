@@ -24,4 +24,4 @@ end
 
 M=class(M,'optimizer');
 
-return;
+end

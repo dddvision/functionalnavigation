@@ -10,8 +10,8 @@ H.wbits=8;
 H.tmin=0;
 H.tmax=1.5;
 H.F='wobble_1.5'; %'pendulum_1.5'
-H.g=sensor;
+H.g=cameraOpticalFlow1;
 
 H=class(H,'objective');
 
-return;
+end

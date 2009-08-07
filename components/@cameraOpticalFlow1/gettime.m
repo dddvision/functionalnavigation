@@ -3,4 +3,4 @@
 
 function time=gettime(g,k)
 time=g.time(find(g.index==k));
-return;
+end

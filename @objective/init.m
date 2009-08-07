@@ -11,4 +11,4 @@
 function [v,w]=init(H)
 v=logical(rand(H.vbits,H.popsize)>=0.5);
 w=logical(rand(H.wbits,H.popsize)>=0.5);
-return;
+end

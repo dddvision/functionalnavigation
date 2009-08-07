@@ -14,4 +14,4 @@
 function pt=evaluatePosition(x,t)
 pqt=evaluate(x,t);
 pt=pqt(1:3,:);
-return;
+end
