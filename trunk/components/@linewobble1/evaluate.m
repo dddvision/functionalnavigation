@@ -1,65 +1,11 @@
-% Evaluate a single trajectory at multiple time instants
-%
-% INPUT
-% x = single trajectory object
-% t = time in seconds, 1-by-N
-%
-% OUTPUT
-% posquat = position and quaternion, 7-by-N
-%
-% NOTE
-% Axis order is forward-right-down relative to the base reference frame
-
-
-% TODO: evaluation outside of time domain should return undefined or NaN
-function posquat=evaluate(x,t)
-
-switch( x.type )
-  case 'tposquat'
-    [a,b]=domain(x);
-    t(t<a)=a;
-    t(t>b)=b;
-    pt=interp1(x.data(1,:),x.data(2:4,:)',t,'linear')';
-    qt=interp1(x.data(1,:),x.data(5:8,:)',t,'nearest')';
-    posquat=[pt;qt];
-  case 'wobble_1.5'
-    [a,b]=domain(x);
-    t(t<a)=a;
-    t(t>b)=b;
-    posquat=trajectory_evaluate_wobble(x.data,t);
-  case 'pendulum_1.5'
-    [a,b]=domain(x);
-    t(t<a)=a;
-    t(t>b)=b;
-    posquat=trajectory_evaluate_pendulum(x.data,t);
-  case 'analytic'
-    posquat=eval(x.data.eval);
-  case 'empty'
-    posquat=[];
-  otherwise
-    error('unhandled exception');
-end
-
-end
-
-
-function posquat=trajectory_evaluate_pendulum(v,t)
-
-thetao=pi/2+0.1*bitsplit(v');
-b=0.1;
-w=2;
-
-theta=thetao*exp(-b*t).*cos(w*t);
-
-N=numel(t);
-posquat=[zeros(1,N);-0.1*sin(theta);0.1*cos(theta);cos(theta/2);sin(theta/2);zeros(2,N)];
-
-end
-
-
 % HACK: should use a meaningful dynamic model of a real system
 % HACK: the number of bits in v should be negotiated externally
-function posquat=trajectory_evaluate_wobble(v,t)
+function posquat=evaluate(x,t)
+
+v=x.data;
+[a,b]=domain(x);
+
+t(t<a|t>b)=NaN;
 
 dim=6;
 scalep=0.02;

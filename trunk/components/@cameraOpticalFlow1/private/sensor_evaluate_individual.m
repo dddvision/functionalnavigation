@@ -22,12 +22,9 @@ Eb=Quat2Euler(qb);
 % get focal parameter scale
 rho=getfocal(g,w);
 
-fprintf('\n');
 fprintf('\nfocal: %0.4f',rho);
 fprintf('\ntranslation: <%0.4f,%0.4f,%0.4f>',pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3));
-fprintf('\nrotation:\n');
-disp(Ra'*Rb);
-fprintf('\nEuler Angles: <%0.4f,%0.4f,%0.4f>\n',Eb(1)-Ea(1), Eb(2)-Ea(2), Eb(3)-Ea(3));
+fprintf('\nrotation angles: <%0.4f,%0.4f,%0.4f>',Eb(1)-Ea(1), Eb(2)-Ea(2), Eb(3)-Ea(3));
 
 Trajectories = [];
 Trajectories(1).Translation = [pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3)];
