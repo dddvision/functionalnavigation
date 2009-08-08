@@ -1,25 +1,4 @@
-% Evaluate cost associated with trajectory and sensor noise sets
-%
-% INPUTS
-% g = sensor data object
-% x = trajectory objects, 1-by-K
-% w = sensor noise objects, 1-by-K
-% tmin = time domain lower bound
-% tmax = time domain upper bound
-%
-% OUTPUT
-% c = cost, 1-by-K
-%
-% NOTE
-% The input trajectory objects represent the motion of the body frame
-% relative to a world frame.  If the sensor frame is not coincident with
-% the body frame, then transformations may be necessary.
-
-
 function c=evaluate(g,x,w,tmin,tmax)
-
-fprintf('\n');
-fprintf('\n### Running @sensor/eval ###');
 
 % get sensor event indices
 [ka,kb]=domain(g);
