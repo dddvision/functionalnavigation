@@ -1,44 +1,43 @@
 % Calculates costs given seeds
 %
 % INPUT
-% H = objective object
-% v = vectors of bit strings, N-by-popsize
-% w = vectors of bit strings, M-by-popsize
-% tmin = time domain lower bound
-% tmax = time domain upper bound
+% v = vectors of bit strings, vbits-by-popsize
+% w = vectors of bit strings, wbits-by-popsize
 %
 % OUTPUT
-% H = essentially unmodified objective object
 % c = costs in the range [0,1], 1-by-popsize
 %
 % NOTES
 % The objective object is returned in case it caches intermediate
 % variables. Recycling the object through this function should not change
-% the results, although it should execute more quickly on subsequent
-% calls.
+% the results, although it should execute more quickly on subsequent calls.
 
 
-function [H,c] = evaluate(H,v,w)
-
-% create trajectory objects from dynamic seeds
-x=trajectory(H.F,v);
-
-% HACK: replace first trajectory with ground truth for testing
-switch(H.F)
-  case 'wobble_1.5'
-    x(1)=trajectory('tposquat',[1,1.5;0,0;0,1.5;0,0;1,1;0,0;0,0;0,0;0,0]);
-  otherwise
-    % do nothing
+function [this,c]=evaluate(this,v,w)
+    
+%  zero or more trajectory objects from dynamic seeds
+for k=1:size(v,2)
+  F(k)=feval(this.Fclass,v(:,k));
 end
-  
+% % HACK: replace first trajectory with ground truth for testing
+% switch(this.F)
+%   case 'wobble_1.5'
+%     x(1)=trajectory([1,1.5;0,0;0,1.5;0,0;1,1;0,0;0,0;0,0;0,0]);
+%   otherwise
+%     % do nothing
+% end
+
+% create zero or more sensor objects
+g=feval(this.gclass);
+
 % evaluate trajectories with sensors
-c=evaluate(H.g,x,w,H.tmin,H.tmax);
+c=evaluate(g,F,w,this.tmin,this.tmax);
 
 % TODO: combine results from multiple sensors
 
 % display all trajectories evenly
 figure(4);
-display(x,'tmin',H.tmin,'tmax',H.tmax);
+display(F,'tmin',this.tmin,'tmax',this.tmax);
 axis('on');
 xlabel('North');
 ylabel('East');
@@ -46,12 +45,13 @@ zlabel('Down');
 
 % display trajectories with variable transparency
 figure(5);
-px=exp(-9*c.*c);
-px=px/norm(px);
-display(x,'alpha',px','tmin',H.tmin,'tmax',H.tmax);
+pF=exp(-9*c.*c);
+pF=pF/norm(pF);
+display(F,'alpha',pF','tmin',this.tmin,'tmax',this.tmax);
 axis('on');
 xlabel('North');
 ylabel('East');
 zlabel('Down');
 
 end
+    

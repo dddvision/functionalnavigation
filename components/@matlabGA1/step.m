@@ -27,7 +27,7 @@ switch( M.optimizer )
     [H,c]=evaluate(H,v,w);
 end
     
-fprintf('\ncost:\n');
+fprintf('\n\ncost summary:\n');
 disp(c');
 
 end

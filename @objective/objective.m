@@ -1,17 +1,24 @@
-% Constructs an object that defines the problem or objective
-
-
-% TODO: enable a vector of swappable sensors
-function H=objective
-
-H.popsize=10;
-H.vbits=30;
-H.wbits=8;
-H.tmin=0;
-H.tmax=1.5;
-H.F='wobble_1.5'; %'pendulum_1.5'
-H.g=cameraOpticalFlow1;
-
-H=class(H,'objective');
-
+classdef objective
+  properties
+    popsize
+    vbits
+    wbits
+    tmin
+    tmax
+    Fclass
+    gclass
+  end
+  methods
+    function this=objective(config)
+      this.popsize=10;
+      this.vbits=30;
+      this.wbits=8;
+      this.tmin=0;
+      this.tmax=1.5;
+      this.Fclass=config.trajectory;
+      this.gclass=config.sensor;
+    end
+  end
 end
+
+
