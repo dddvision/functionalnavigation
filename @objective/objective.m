@@ -5,7 +5,7 @@ classdef objective
     wbits
     tmin
     tmax
-    Fclass
+    xclass
     gclass
   end
   methods
@@ -15,7 +15,7 @@ classdef objective
       this.wbits=8;
       this.tmin=0;
       this.tmax=1.5;
-      this.Fclass=config.trajectory;
+      this.xclass=config.trajectory;
       this.gclass=config.sensor;
     end
   end

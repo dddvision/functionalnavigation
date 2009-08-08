@@ -1,9 +1,14 @@
 classdef sensor
-  methods (Abstract)
+  properties
+  end  
+  methods (Access=protected)
+    function this=sensor
+    end
+  end
+  methods (Access=public,Abstract=true)
     % Evaluate cost associated with trajectory and sensor noise sets
     %
     % INPUTS
-    % this = sensor object
     % x = trajectory objects, 1-by-K
     % w = sensor noise objects, 1-by-K
     % tmin = time domain lower bound

@@ -17,7 +17,7 @@ function [this,c]=evaluate(this,v,w)
     
 %  zero or more trajectory objects from dynamic seeds
 for k=1:size(v,2)
-  F(k)=feval(this.Fclass,v(:,k));
+  F(k)=feval(this.xclass,v(:,k));
 end
 % % HACK: replace first trajectory with ground truth for testing
 % switch(this.F)
