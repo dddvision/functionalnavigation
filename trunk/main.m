@@ -8,8 +8,13 @@ rand('seed',0);
 randn('seed',0);
 
 config=frameworkconfig;
-addpath(config.componentspath);
-fprintf('\npath added: %s',config.componentspath);
+
+addpath(config.trajectoryComponentPath);
+fprintf('\npath added: %s',config.trajectoryComponentPath);
+addpath(config.sensorComponentPath);
+fprintf('\npath added: %s',config.sensorComponentPath);
+addpath(config.optimizerComponentPath);
+fprintf('\npath added: %s',config.optimizerComponentPath);
 
 H=objective(config);
 M=feval(config.optimizer);
