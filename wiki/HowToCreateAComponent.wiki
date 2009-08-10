@@ -15,7 +15,11 @@ A component must:
   * (add items here)
 
 A component should:
-  * Be self-contained, not linked to external libraries
+  * Be self-contained
+  * (add items here)
+
+A component should not:
+  * Link to obscure external libraries
   * (add items here)
 
 Information on how to wrap code written in different languages:
