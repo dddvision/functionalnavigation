@@ -1,6 +1,6 @@
 function config=frameworkconfig
 
-% TODO: support multiple sensors
+% TODO: support configuration of multiple sensors
 mainpath=fileparts(which('main'));
 config.componentspath=fullfile(mainpath,'components');
 config.trajectory='trajectorystub'; % try 'linewobble1','pendulum1'

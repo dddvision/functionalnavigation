@@ -1,17 +1,15 @@
 % HACK: should use a meaningful dynamic model of a real system
 % HACK: the number of bits in v should be negotiated externally
-function posquat=evaluate(x,t)
+function posquat=evaluate(this,t)
 
-v=x.data;
-[a,b]=domain(x);
+v=this.data;
+[a,b]=domain(this);
 
 t(t<a|t>b)=NaN;
 
 thetao=pi/2+0.1*bitsplit(v');
-b=0.1;
-w=2;
 
-theta=thetao*exp(-b*t).*cos(w*t);
+theta=thetao*exp(-this.damp*t).*cos(this.omega*t);
 
 N=numel(t);
 posquat=[zeros(1,N);-0.1*sin(theta);0.1*cos(theta);cos(theta/2);sin(theta/2);zeros(2,N)];
