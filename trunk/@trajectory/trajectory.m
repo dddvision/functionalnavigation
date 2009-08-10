@@ -25,5 +25,17 @@ classdef trajectory
     % NOTE
     % Axis order is forward-right-down relative to the base reference frame
     posquat=evaluate(this,t);
+    
+    % Evaluate time derivative of a single trajectory at multiple time instants
+    %
+    % INPUT
+    % t = time in seconds, 1-by-N
+    %
+    % OUTPUT
+    % posquatdot = position and quaternion derivative at each time, 7-by-N
+    %
+    % NOTE
+    % Axis order is forward-right-down relative to the base reference frame
+    posquatdot=derivative(this,t);
   end
 end
