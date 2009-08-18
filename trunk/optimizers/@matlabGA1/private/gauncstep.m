@@ -11,15 +11,15 @@
 function [v,w]=gauncstep(this,v,w,c)
 
 vsize=size(v,1);
-popsize=size(v,2);
 vw=double([v',w']);
 c=c';
+
+[popsize,nvars]=size(vw);
 
 options=this.defaultOptions;
 options.PopulationSize=popsize;
 options.EliteCount=max(1,popsize/20);
 
-nvars = size(vw,2);
 nullstate=struct('FunEval',0);
 nullobjective=@(x) zeros(size(x,1),1);
 [unused,vw]=feval(this.stepGAhandle,c,vw,options,nullstate,nvars,nullobjective);
