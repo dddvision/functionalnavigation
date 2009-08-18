@@ -1,7 +1,7 @@
 function c=evaluate(this,x,w,tmin,tmax)
 
 fprintf('\n');
-fprintf('\n### sensorstub evaluate ###');
+fprintf('\n### %s evaluate ###',class(this));
 
 K=numel(x);
 fprintf('\nnumber of trajectories = %d',K);

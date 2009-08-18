@@ -8,6 +8,6 @@ config.optimizerComponentPath=fullfile(mainpath,'optimizers');
 config.trajectory='trajectorystub'; % try 'linewobble1','pendulum1'
 config.sensor='sensorstub'; % try 'cameraOpticalFlow1'
 config.optimizer='optimizerstub'; % try 'matlabGA1'
-config.iterations=1;
+config.iterations=3;
 
 end
