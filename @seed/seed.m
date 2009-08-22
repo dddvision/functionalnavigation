@@ -4,23 +4,23 @@ classdef seed
     end
   end
   methods (Abstract=true,Access=public)
-    
-    % Set the static seed of the derived class
-    %
-    % INPUT
-    % newStaticSeed = bitset of static parameters
-    %
-    % NOTE
-    % This operation may drastically change the derived class
-    this=setStaticSeed(this,newStaticSeed);
-    
-    % Get the static seed of the derived class
+
+    % Extract static parameters from the derived class
     %
     % OUTPUT
     % staticSeed = bitset of static parameters
     staticSeed=getStaticSeed(this);
     
-    % Get a portion of the dynamic seed of the derived class
+    % Replace static parameters held by the derived class
+    %
+    % INPUT
+    % newStaticSeed = bitset of static parameters
+    %
+    % NOTE
+    % This operation will change the derived class behaviour
+    this=setStaticSeed(this,newStaticSeed);
+    
+    % Extract a contiguous subset of dynamic parameters from the derived class
     %
     % INPUT
     % tmin = time lower bound
@@ -30,7 +30,7 @@ classdef seed
     % subSeed = bitset segment of dynamic parameters
     subSeed=getDynamicSubSeed(this,tmin,tmax);
 
-    % Set a portion of the dynamic seed of the derived class
+    % Replace a contiguous subset of dynamic parameters held by the derived class
     % 
     % INPUT
     % newSubSeed = bitset segment of dynamic parameters to splice in
@@ -38,7 +38,7 @@ classdef seed
     % tmax = time upper bound
     % 
     % NOTE
-    % This operation may drastically change the derived class
+    % This operation will change the derived class behaviour
     this=setDynamicSubSeed(this,newSubSeed,tmin,tmax);
 
   end

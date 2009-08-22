@@ -18,11 +18,12 @@ classdef framework
         
         this.M=feval(config.optimizer);
         this.x=feval(config.trajectory);
-        for k=2:config.popsize
-          this.x(k)=feval(config.trajectory);
-        end
         this.g{1}=feval(config.sensor);
-        % TODO: add other sensors
+        for k=2:config.popsize
+          this.x(k,1)=feval(config.trajectory);
+          this.g{1}(k,1)=feval(config.sensor);
+          % TODO: add other sensors
+        end
       end
     end
     
@@ -42,9 +43,9 @@ classdef framework
       
       wStatic=[];
       wDynamic=[];
-      for k=1:numel(this.g)
-        wStatic=[wStatic;getStaticSeed(this.g{k})];
-        wDynamic=[wDynamic;getDynamicSubSeed(this.g{k},tmin,tmax)];
+      for k=1:numel(this.g{1})
+        wStatic=[wStatic;getStaticSeed(this.g{1}(k))];
+        wDynamic=[wDynamic;getDynamicSubSeed(this.g{1}(k),tmin,tmax)];
       end
       
       % TODO: combine costs from multiple sensors
@@ -62,9 +63,9 @@ classdef framework
         this.x(k)=setDynamicSubSeed(this.x(k),v(k,(vSplit+1):end),tmin,tmax);
       end
       
-      for k=1:numel(this.g)
-        this.g{k}=setStaticSeed(this.g{k},w(k,1:wSplit));
-        this.g{k}=setDynamicSubSeed(this.g{k},w(k,(wSplit+1):end),tmin,tmax);
+      for k=1:numel(this.g{1})
+        this.g{1}(k)=setStaticSeed(this.g{1}(k),w(k,1:wSplit));
+        this.g{1}(k)=setDynamicSubSeed(this.g{1}(k),w(k,(wSplit+1):end),tmin,tmax);
       end
       
     end

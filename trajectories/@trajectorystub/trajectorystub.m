@@ -37,6 +37,14 @@ classdef trajectorystub < trajectory
     end
    
     function posquat=evaluate(this,t)
+      fprintf('\n');
+      fprintf('\n### trajectorystub evaluate ###');
+      
+      fprintf('\nintrinsicStatic = ');
+      fprintf('%d',this.intrinsicStatic);
+      fprintf('\nintrinsicDynamic = ');
+      fprintf('%d',this.intrinsicDynamic);
+      
       N=numel(t);
       posquat=repmat(this.pose,[1,N]);
       posquat(2,:)=t;
