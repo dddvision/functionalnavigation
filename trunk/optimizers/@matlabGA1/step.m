@@ -11,9 +11,8 @@
 
 function [this,v,w]=step(this,v,w,c)
 
-vsize=size(v,1);
-vw=double([v',w']); % TODO: check whether conversion to double is necessary
-c=c';
+vsize=size(v,2);
+vw=double([v,w]); % TODO: check whether conversion to double is necessary
 
 [popsize,nvars]=size(vw);
 
@@ -25,7 +24,7 @@ nullstate=struct('FunEval',0);
 nullobjective=@(x) zeros(size(x,1),1);
 [unused,vw]=feval(this.stepGAhandle,c,vw,options,nullstate,nvars,nullobjective);
 
-v=vw(:,1:vsize)';
-w=vw(:,(vsize+1):end)';
+v=vw(:,1:vsize);
+w=vw(:,(vsize+1):end);
 
 end

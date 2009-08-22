@@ -4,15 +4,16 @@ classdef sensor < seed
     end
   end
   methods (Access=public,Abstract=true)
-    % Evaluate cost associated with trajectory and sensor noise sets
+    % Evaluate cost associated with sets of sensor and trajectory objects
     %
     % INPUTS
-    % x = trajectory objects, 1-by-K cell array
+    % this = sensor objects, K-by-1
+    % x = trajectory objects, K-by-1
     % tmin = time domain lower bound
     % tmax = time domain upper bound
     %
     % OUTPUT
-    % c = cost, 1-by-K
+    % c = cost, K-by-1
     %
     % NOTE
     % The input trajectory objects represent the motion of the body frame

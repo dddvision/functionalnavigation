@@ -4,6 +4,7 @@ classdef trajectory < seed
     end
   end
   methods (Abstract=true,Access=public)
+    
     % Return the endpoints of the closed time domain of a trajectory
     %
     % OUTPUT
@@ -34,9 +35,11 @@ classdef trajectory < seed
     % NOTE
     % Axis order is forward-right-down relative to the base reference frame
     posquatdot=derivative(this,t);
+    
   end
   
   methods (Abstract=false,Access=public)
+    
     % Visualize a set of trajectories with optional transparency
     %
     % INPUTS
@@ -54,31 +57,29 @@ classdef trajectory < seed
     % NOTE
     % TODO: make sure inputs can be either row or column vectors
     function h=display(this,varargin)
+      hfigure=gcf;
+      set(hfigure,'color',[1,1,1]);
+      haxes=gca;
+      set(haxes,'Units','normalized');
+      set(haxes,'Position',[0,0,1,1]);
+      set(haxes,'DataAspectRatio',[1,1,1]);
+      axis(haxes,'off');
 
-    hfigure=gcf;
-    set(hfigure,'color',[1,1,1]);
-    haxes=gca;
-    set(haxes,'Units','normalized');
-    set(haxes,'Position',[0,0,1,1]);
-    set(haxes,'DataAspectRatio',[1,1,1]);
-    axis(haxes,'off');
+      K=numel(this);
 
-    K=numel(this);
+      alpha=trajectory_display_getparam('alpha',1/K,K,varargin{:});
+      scale=trajectory_display_getparam('scale',0.002,K,varargin{:});
+      color=trajectory_display_getparam('color',[0,0,0],K,varargin{:});
+      tmin=trajectory_display_getparam('tmin',-inf,K,varargin{:});
+      tmax=trajectory_display_getparam('tmax',inf,K,varargin{:});
 
-    alpha=trajectory_display_getparam('alpha',1/K,K,varargin{:});
-    scale=trajectory_display_getparam('scale',0.002,K,varargin{:});
-    color=trajectory_display_getparam('color',[0,0,0],K,varargin{:});
-    tmin=trajectory_display_getparam('tmin',-inf,K,varargin{:});
-    tmax=trajectory_display_getparam('tmax',inf,K,varargin{:});
-
-    h=[];
-    for k=1:K
-      [a,b]=domain(this(k));
-      tmink=max(tmin(k),a);
-      tmaxk=min(tmax(k),b);
-      h=[h,trajectory_display_individual(this(k),alpha(k),scale(k),color(k,:),tmink,tmaxk)];
-    end
-
+      h=[];
+      for k=1:K
+        [a,b]=domain(this(k));
+        tmink=max(tmin(k),a);
+        tmaxk=min(tmax(k),b);
+        h=[h,trajectory_display_individual(this(k),alpha(k),scale(k),color(k,:),tmink,tmaxk)];
+      end
     end
     
   end

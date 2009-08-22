@@ -31,21 +31,23 @@ classdef sensorstub < sensor
       fprintf('\n');
       fprintf('\n### sensorstub evaluate ###');
       
-      fprintf('\nintrinsicStatic = ');
-      fprintf('%d',this.intrinsicStatic);
-      fprintf('\nintrinsicDynamic = ');
-      fprintf('%d',this.intrinsicDynamic);
-      
-      K=numel(x);
-      fprintf('\nnumber of trajectories = %d',K);
+      K=numel(this);
+      if( K~=numel(x) )
+        error('trajectory/sensor arguments must come in pairs');
+      end
+      fprintf('\nnumber of trajectory/sensor pairs = %d',K);
       
       fprintf('\ntime domain lower bound = %f',tmin);
       fprintf('\ntime domain upper bound = %f',tmax);
 
-      c=zeros(1,K);
+      c=zeros(K,1);
       for k=1:K
         fprintf('\n');
-        fprintf('\nprocessing trajectory %d',k);
+        fprintf('\nprocessing trajectory/sensor %d',k);
+        fprintf('\nintrinsicStatic = ');
+        fprintf('%d',this(k).intrinsicStatic);
+        fprintf('\nintrinsicDynamic = ');
+        fprintf('%d',this(k).intrinsicDynamic);
         c(k)=0.5;
         fprintf('\ncost = %f',c(k));
       end
