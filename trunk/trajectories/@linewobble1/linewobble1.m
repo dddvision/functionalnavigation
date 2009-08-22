@@ -3,6 +3,7 @@ classdef linewobble1 < trajectory
     a
     b
     data
+    vbits
   end
   methods
     function this=linewobble1(v)
@@ -11,6 +12,7 @@ classdef linewobble1 < trajectory
         this.a=0;
         this.b=60;
         this.data=v;
+        this.vbits=30;
       end
     end
   end

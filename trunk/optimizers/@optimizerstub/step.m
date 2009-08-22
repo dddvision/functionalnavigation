@@ -1,7 +1,3 @@
-function [this,H,v,w]=step(this,H,v,w)
-[H,c]=evaluate(H,v,w);
-fprintf('\n');
-fprintf('\ncost summary:');
-fprintf('\n%f',c);
-fprintf('\n');
+function [this,v,w]=step(this,v,w,c)
+  % TODO: keep the best and randomize the rest  
 end

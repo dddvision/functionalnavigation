@@ -6,22 +6,12 @@ classdef optimizer
     end
   end
   methods (Access=public,Abstract=true)
-    % Provides initial condition of optimizer input/output
-    %
-    % INPUT
-    % H = objective object
-    %
-    % OUTPUT
-    % v = dynamic seed, M-by-popsize
-    % w = static seed, N-by-popsize
-    [this,v,w]=init(this,H);
-
     % Execute one step of the optimizer
     %
     % INPUT/OUTPUT
-    % H = objective object
-    % v = dynamic seed, M-by-popsize
-    % w = static seed, N-by-popsize
+    % v = trajectory seed, M-by-popsize
+    % w = sensor seed, N-by-popsize
+    % c = cost, 1-by-popsize
     %
     % NOTES
     % The primary purpose of this function is to evolve better seeds {v,w}
@@ -31,6 +21,6 @@ classdef optimizer
     % unmodified by step().
     %
     % This function can modify the object state.
-    [this,H,v,w]=step(this,H,v,w);
+    [this,v,w]=step(this,v,w,c);
   end
 end
