@@ -5,6 +5,7 @@ classdef pendulum1 < trajectory
     damp
     omega
     data
+    vbits
   end
   methods
     function this=pendulum1(v)
@@ -15,6 +16,7 @@ classdef pendulum1 < trajectory
         this.damp=0.1;
         this.omega=2;
         this.data=v;
+        this.vbits=30;
       end
     end
   end

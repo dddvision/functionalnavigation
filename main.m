@@ -1,4 +1,3 @@
-fprintf('\n### framework initialization ###');
 close all;
 clear classes;
 drawnow;
@@ -8,17 +7,21 @@ rand('seed',0);
 randn('seed',0);
 
 config=frameworkconfig;
-
-addpath(config.trajectoryComponentPath);
-fprintf('\npath added: %s',config.trajectoryComponentPath);
-addpath(config.sensorComponentPath);
-fprintf('\npath added: %s',config.sensorComponentPath);
-addpath(config.optimizerComponentPath);
-fprintf('\npath added: %s',config.optimizerComponentPath);
-
-H=objective(config);
-M=feval(config.optimizer);
-[M,v,w]=init(M,H);
-for n=1:config.iterations
-  [M,H,v,w]=step(M,H,v,w);
+H=framework(config);
+while(true)
+  [H,x,c]=step(H);
+  
+  fprintf('\n');
+  fprintf('\ncost summary:');
+  fprintf('\n%f',c);
+  fprintf('\n');
+  
+%   figure;
+%   px=exp(-9*c.*c);
+%   px=px/norm(px);
+%   display(x,'alpha',px','tmin',tmin,'tmax',tmax);
+%   axis('on');
+%   xlabel('North');
+%   ylabel('East');
+%   zlabel('Down');
 end

@@ -50,7 +50,7 @@ for k=1:K
   fprintf('\nprocessing trajectory %d',k);
   fprintf('\nstatic seed = ');
   fprintf('%d',w(:,k));
-  c(k)=sensor_evaluate_individual(this,x(k),w(:,k),Vx_OF,Vy_OF,ta,tb);
+  c(k)=sensor_evaluate_individual(this,x{k},w(:,k),Vx_OF,Vy_OF,ta,tb);
   fprintf('\ncost = %f',c(k));
 end
 

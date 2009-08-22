@@ -1,6 +1,4 @@
-classdef sensor
-  properties
-  end  
+classdef sensor < seed
   methods (Access=protected)
     function this=sensor
     end
@@ -9,8 +7,7 @@ classdef sensor
     % Evaluate cost associated with trajectory and sensor noise sets
     %
     % INPUTS
-    % x = trajectory objects, 1-by-K
-    % w = sensor noise objects, 1-by-K
+    % x = trajectory objects, 1-by-K cell array
     % tmin = time domain lower bound
     % tmax = time domain upper bound
     %
@@ -21,6 +18,6 @@ classdef sensor
     % The input trajectory objects represent the motion of the body frame
     % relative to a world frame.  If the sensor frame is not coincident with
     % the body frame, then transformations may be necessary.
-    c=evaluate(this,x,w,tmin,tmax);
+    c=evaluate(this,x,tmin,tmax);
   end
 end
