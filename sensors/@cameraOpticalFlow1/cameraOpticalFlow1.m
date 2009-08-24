@@ -1,6 +1,6 @@
 classdef cameraOpticalFlow1 < sensor
   properties (GetAccess=private,SetAccess=private)
-    intrinsicStatic
+    focalPerturbation
     gray
     index
     time
@@ -14,22 +14,22 @@ classdef cameraOpticalFlow1 < sensor
       this.index=[3,4,5];
       this.time=[1.2,1.4,1.6];
       this.focal=100;  % TODO: derive focal length from sensor data
-      this.intrinsicStatic=logical(rand(1,8)>=0.5);
+      this.focalPerturbation=logical(rand(1,8)>=0.5);
     end
     
-    function this=setStaticSeed(this,newStaticSeed)
-      this.intrinsicStatic=newStaticSeed;
+    function this=staticSet(this,bits)
+      this.focalPerturbation=bits;
     end
  
-    function staticSeed=getStaticSeed(this)
-      staticSeed=this.intrinsicStatic;
+    function bits=staticGet(this)
+      bits=this.focalPerturbation;
     end
     
-    function subSeed=getDynamicSubSeed(this,tmin,tmax)
-      subSeed=zeros(1,0);
+    function bits=dynamicGet(this,tmin,tmax)
+      bits=zeros(1,0);
     end
 
-    function this=setDynamicSubSeed(this,newSubSeed,tmin,tmax)
+    function this=dynamicSet(this,bits,tmin,tmax)
       % do nothing
     end
         

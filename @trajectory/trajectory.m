@@ -22,6 +22,7 @@ classdef trajectory < seed
     %
     % NOTE
     % Axis order is forward-right-down relative to the base reference frame
+    % Each time outside of the trajectory domain returns 7-by-1 NaN
     posquat=evaluate(this,t);
     
     % Evaluate time derivative of a single trajectory at multiple time instants
@@ -34,6 +35,7 @@ classdef trajectory < seed
     %
     % NOTE
     % Axis order is forward-right-down relative to the base reference frame
+    % Each time outside of the trajectory domain returns 7-by-1 NaN
     posquatdot=derivative(this,t);
     
   end

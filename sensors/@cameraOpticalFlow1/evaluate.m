@@ -49,7 +49,7 @@ for k=1:K
   fprintf('\n');
   fprintf('\nprocessing trajectory %d',k);
   fprintf('\nstatic seed = ');
-  fprintf('%d',w(:,k));
+  fprintf('%d',this.intrinsicStatic(k,:));
   c(k)=sensor_evaluate_individual(this,x{k},this.intrinsicStatic(k,:),Vx_OF,Vy_OF,ta,tb);
   fprintf('\ncost = %f',c(k));
 end

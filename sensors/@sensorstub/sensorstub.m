@@ -11,22 +11,26 @@ classdef sensorstub < sensor
       this.intrinsicDynamic=logical(rand(1,30)>=0.5);
     end
     
-    function this=setStaticSeed(this,newStaticSeed)
+    function this=staticSet(this,newStaticSeed)
       this.intrinsicStatic=newStaticSeed;
     end
  
-    function staticSeed=getStaticSeed(this)
+    function staticSeed=staticGet(this)
       staticSeed=this.intrinsicStatic;
     end
     
-    function subSeed=getDynamicSubSeed(this,tmin,tmax)
+    function subSeed=dynamicGet(this,tmin,tmax)
       subSeed=this.intrinsicDynamic;
     end
 
-    function this=setDynamicSubSeed(this,newSubSeed,tmin,tmax)
+    function this=dynamicSet(this,newSubSeed,tmin,tmax)
       this.intrinsicDynamic=newSubSeed;
     end
       
+    function cost=priorCost(this,staticBits,dynamicBits,tmin,tmax)
+      cost=0;
+    end
+    
     function c=evaluate(this,x,tmin,tmax)
       fprintf('\n');
       fprintf('\n### sensorstub evaluate ###');
