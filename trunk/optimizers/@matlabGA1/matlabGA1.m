@@ -37,9 +37,10 @@ classdef matlabGA1
       this.defaultOptions.Vectorized = 'on';
       this.defaultOptions.LinearConstr.type = 'unconstrained';
       
+      % workaround to access stepGA from the gads toolbox
       pathtemp=pwd;
-      pathga=fileparts(which('ga'));
-      cd(fullfile(pathga,'private'));
+      toolboxpath=fileparts(which('ga'));
+      cd(fullfile(toolboxpath,'private'));
       this.stepGAhandle=@stepGA;
       cd(pathtemp);
     end

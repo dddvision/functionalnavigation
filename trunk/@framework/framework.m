@@ -5,6 +5,7 @@ classdef framework
     g
   end
   methods
+    
     function this=framework(config)
       fprintf('\n### framework constructor ###');
       
@@ -22,18 +23,20 @@ classdef framework
         for k=2:config.popsize
           this.x(k,1)=feval(config.trajectory);
           this.g{1}(k,1)=feval(config.sensor);
-          % TODO: add other sensors
         end
-      end
+        % TODO: enable multiple sensors
+       end
     end
     
-    function [this,xout,c]=step(this)
+    function [this,x,c]=step(this)
+      
+      % computation time to devote
+      cpuDelta=10.0;
+      
+      % time domain to optimize over
       tmin=1.0;
       tmax=1.5;
-      
-      xout=this.x;
-      c=evaluate(this.g{1},this.x,tmin,tmax);
-           
+
       vStatic=[];
       vDynamic=[];
       for k=1:numel(this.x)
@@ -48,26 +51,37 @@ classdef framework
         wDynamic=[wDynamic;getDynamicSubSeed(this.g{1}(k),tmin,tmax)];
       end
       
-      % TODO: combine costs from multiple sensors
+      vStaticIndex = 1:size(vStatic,2);
+      wStaticIndex = vStaticIndex(end) + (1:size(wStatic,2));
+      vDynamicIndex = wStaticIndex(end) + (1:size(vDynamic,2));
+      wDynamicIndex = vDynamicIndex(end) + (1:size(wDynamic,2));
       
-      vSplit=size(vStatic,2);
-      wSplit=size(wStatic,2);
-      
-      v=[vStatic,vDynamic];
-      w=[wStatic,wDynamic];
-            
-      [this.M,v,w]=step(this.M,v,w,c);
+      vw=[vStatic,wStatic,vDynamic,wDynamic];
 
-      for k=1:numel(this.x)
-        this.x(k)=setStaticSeed(this.x(k),v(k,1:vSplit));
-        this.x(k)=setDynamicSubSeed(this.x(k),v(k,(vSplit+1):end),tmin,tmax);
+      % start the timer and optimize until time runs out
+      cpuStart=tic;
+      while(true)
+        cpuStep=tic;
+        [this.M,vw,c]=step(this.M,@nestedObjective,vw);
+        if((toc(cpuStart)+toc(cpuStep))>cpuDelta)
+          break;
+        end
       end
-      
-      for k=1:numel(this.g{1})
-        this.g{1}(k)=setStaticSeed(this.g{1}(k),w(k,1:wSplit));
-        this.g{1}(k)=setDynamicSubSeed(this.g{1}(k),w(k,(wSplit+1):end),tmin,tmax);
+      x=this.x;
+        
+      function cost=nestedObjective(bits)
+        for kk=1:numel(this.x)
+          this.x(kk)=setStaticSeed(this.x(kk),bits(kk,vStaticIndex));
+          this.x(kk)=setDynamicSubSeed(this.x(kk),bits(kk,vDynamicIndex),tmin,tmax);
+        end
+        for kk=1:numel(this.g{1})
+          this.g{1}(kk)=setStaticSeed(this.g{1}(kk),bits(kk,wStaticIndex));
+          this.g{1}(kk)=setDynamicSubSeed(this.g{1}(kk),bits(kk,wDynamicIndex),tmin,tmax);
+        end
+        cost=evaluate(this.g{1},this.x,tmin,tmax);
+        % TODO: enable multiple sensors
       end
-      
     end
+    
   end
 end
