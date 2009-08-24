@@ -4,6 +4,7 @@ classdef sensor < seed
     end
   end
   methods (Access=public,Abstract=true)
+    
     % Evaluate cost associated with sets of sensor and trajectory objects
     %
     % INPUTS
@@ -20,5 +21,6 @@ classdef sensor < seed
     % relative to a world frame.  If the sensor frame is not coincident with
     % the body frame, then transformations may be necessary.
     c=evaluate(this,x,tmin,tmax);
+    
   end
 end

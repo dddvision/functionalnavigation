@@ -7,8 +7,8 @@ classdef sensorstub < sensor
     function this=sensorstub
       fprintf('\n');
       fprintf('\n### sensorstub constructor ###');
-      this.intrinsicStatic=logical(rand(1,8)>0.5);
-      this.intrinsicDynamic=logical(rand(1,30)>0.5);
+      this.intrinsicStatic=logical(rand(1,8)>=0.5);
+      this.intrinsicDynamic=logical(rand(1,30)>=0.5);
     end
     
     function this=setStaticSeed(this,newStaticSeed)
