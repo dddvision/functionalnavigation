@@ -40,15 +40,15 @@ classdef framework
       vStatic=[];
       vDynamic=[];
       for k=1:numel(this.x)
-        vStatic=[vStatic;getStaticSeed(this.x(k))];
-        vDynamic=[vDynamic;getDynamicSubSeed(this.x(k),tmin,tmax)];
+        vStatic=[vStatic;staticGet(this.x(k))];
+        vDynamic=[vDynamic;dynamicGet(this.x(k),tmin,tmax)];
       end
       
       wStatic=[];
       wDynamic=[];
       for k=1:numel(this.g{1})
-        wStatic=[wStatic;getStaticSeed(this.g{1}(k))];
-        wDynamic=[wDynamic;getDynamicSubSeed(this.g{1}(k),tmin,tmax)];
+        wStatic=[wStatic;staticGet(this.g{1}(k))];
+        wDynamic=[wDynamic;dynamicGet(this.g{1}(k),tmin,tmax)];
       end
       
       vStaticIndex = 1:size(vStatic,2);
@@ -70,13 +70,11 @@ classdef framework
       x=this.x;
         
       function cost=nestedObjective(bits)
-        for kk=1:numel(this.x)
-          this.x(kk)=setStaticSeed(this.x(kk),bits(kk,vStaticIndex));
-          this.x(kk)=setDynamicSubSeed(this.x(kk),bits(kk,vDynamicIndex),tmin,tmax);
-        end
-        for kk=1:numel(this.g{1})
-          this.g{1}(kk)=setStaticSeed(this.g{1}(kk),bits(kk,wStaticIndex));
-          this.g{1}(kk)=setDynamicSubSeed(this.g{1}(kk),bits(kk,wDynamicIndex),tmin,tmax);
+        for kk=1:size(bits,1)
+          this.x(kk)=staticSet(this.x(kk),bits(kk,vStaticIndex));
+          this.x(kk)=dynamicSet(this.x(kk),bits(kk,vDynamicIndex),tmin,tmax);
+          this.g{1}(kk)=staticSet(this.g{1}(kk),bits(kk,wStaticIndex));
+          this.g{1}(kk)=dynamicSet(this.g{1}(kk),bits(kk,wDynamicIndex),tmin,tmax);
         end
         cost=evaluate(this.g{1},this.x,tmin,tmax);
         % TODO: enable multiple sensors
