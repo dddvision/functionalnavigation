@@ -12,7 +12,7 @@ classdef seed
     %
     % OUTPUT
     % bits = bitset segment of dynamic parameters
-    bits=dynamicGet(this,tmin);
+    bits=getBits(this,tmin);
 
     % Replace a tail segment of dynamic parameters held by the derived class
     % 
@@ -22,7 +22,7 @@ classdef seed
     % 
     % NOTE
     % This operation will change the derived class behaviour
-    this=dynamicPut(this,bits,tmin);
+    this=putBits(this,bits,tmin);
 
     % Calculate the prior cost of a set of parameters
     %

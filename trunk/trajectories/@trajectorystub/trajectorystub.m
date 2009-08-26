@@ -13,13 +13,13 @@ classdef trajectorystub < trajectory
       this.dynamicParameters=logical(rand(1,30)>0.5);
     end
 
-    function bits=dynamicGet(this,tmin)
+    function bits=getBits(this,tmin)
       bits=this.dynamicParameters;
     end
 
-    function this=dynamicPut(this,bits,tmin)
+    function this=putBits(this,bits,tmin)
       fprintf('\n');
-      fprintf('\n%s::dynamicPut',class(this));
+      fprintf('\n%s::putBits',class(this));
       fprintf('\ntmin = %f',tmin);
       fprintf('\nbits = ');
       fprintf('%d',bits);

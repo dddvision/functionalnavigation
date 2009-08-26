@@ -15,13 +15,13 @@ classdef cameraOpticalFlow1 < sensor
       this.focalPerturbation=logical(rand(1,8)>=0.5);
     end
     
-    function bits=dynamicGet(this,tmin)
+    function bits=getBits(this,tmin)
       bits=this.focalPerturbation;
     end
     
-    function this=dynamicPut(this,bits,tmin)
+    function this=putBits(this,bits,tmin)
       fprintf('\n');
-      fprintf('\ncameraOpticalFlow1::dynamicPut');
+      fprintf('\ncameraOpticalFlow1::putBits');
       fprintf('\nbits = ');
       fprintf('%d',bits);
       this.focalPerturbation=bits;
