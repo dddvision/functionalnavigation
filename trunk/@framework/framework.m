@@ -60,34 +60,23 @@ classdef framework
 end
 
 function [bits,meta]=getParameters(this)
-  vStatic=[];
   vDynamic=[];
-  wStatic=[];
   wDynamic=[];
   for k=1:numel(this.x)
-    vStatic=[vStatic;staticGet(this.x(k))];
     vDynamic=[vDynamic;dynamicGet(this.x(k),this.tmin)];
-    wStatic=[wStatic;staticGet(this.g{1}(k))];
     wDynamic=[wDynamic;dynamicGet(this.g{1}(k),this.tmin)];
   end
 
   % indexing must deal with empty vectors
-  meta.vStaticIndex = 1:size(vStatic,2);
-  base = numel(meta.vStaticIndex);
-  meta.wStaticIndex = base + (1:size(wStatic,2));
-  base = base + numel(meta.wStaticIndex);
-  meta.vDynamicIndex = base + (1:size(vDynamic,2));
-  base = base + numel(meta.vDynamicIndex);
-  meta.wDynamicIndex = base + (1:size(wDynamic,2));
+  meta.vDynamicIndex = 1:size(vDynamic,2);
+  meta.wDynamicIndex = numel(meta.vDynamicIndex) + (1:size(wDynamic,2));
 
-  bits=[vStatic,wStatic,vDynamic,wDynamic];
+  bits=[vDynamic,wDynamic];
 end
 
 function this=putParameters(this,parameters,meta)
   for k=1:this.popsize
-    this.x(k)=staticPut(this.x(k),parameters(k,meta.vStaticIndex));
     this.x(k)=dynamicPut(this.x(k),parameters(k,meta.vDynamicIndex),this.tmin);
-    this.g{1}(k)=staticPut(this.g{1}(k),parameters(k,meta.wStaticIndex));
     this.g{1}(k)=dynamicPut(this.g{1}(k),parameters(k,meta.wDynamicIndex),this.tmin);
   end
 end
