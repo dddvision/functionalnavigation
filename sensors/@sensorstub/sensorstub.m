@@ -9,13 +9,13 @@ classdef sensorstub < sensor
       this.intrinsicStochastic=logical(rand(1,30)>=0.5);
     end
  
-    function bits=dynamicGet(this,tmin)
+    function bits=getBits(this,tmin)
       bits=this.intrinsicStochastic;
     end
     
-    function this=dynamicPut(this,bits,tmin)
+    function this=putBits(this,bits,tmin)
       fprintf('\n');
-      fprintf('\n%s::dynamicPut',class(this));
+      fprintf('\n%s::putBits',class(this));
       fprintf('\ntmin = %f',tmin);
       fprintf('\nbits = ');
       fprintf('%d',bits);
@@ -30,13 +30,12 @@ classdef sensorstub < sensor
       fprintf('\n');
       fprintf('\n%s::evaluate',class(this));
       
+      [tZero,tmax]=domain(x);
       pqa=evaluate(x,tmin);
       fprintf('\nx(%f) = < ',tmin);
       fprintf('%f ',pqa);
       fprintf('>');
-      
-      [tZero,tmax]=domain(x);
-      
+   
       pqb=evaluate(x,tmax);      
       fprintf('\nx(%f) = < ',tmax);
       fprintf('%f ',pqb);

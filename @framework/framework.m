@@ -63,8 +63,8 @@ function [bits,meta]=getParameters(this)
   vDynamic=[];
   wDynamic=[];
   for k=1:numel(this.x)
-    vDynamic=[vDynamic;dynamicGet(this.x(k),this.tmin)];
-    wDynamic=[wDynamic;dynamicGet(this.g{1}(k),this.tmin)];
+    vDynamic=[vDynamic;getBits(this.x(k),this.tmin)];
+    wDynamic=[wDynamic;getBits(this.g{1}(k),this.tmin)];
   end
 
   % indexing must deal with empty vectors
@@ -76,8 +76,8 @@ end
 
 function this=putParameters(this,parameters,meta)
   for k=1:this.popsize
-    this.x(k)=dynamicPut(this.x(k),parameters(k,meta.vDynamicIndex),this.tmin);
-    this.g{1}(k)=dynamicPut(this.g{1}(k),parameters(k,meta.wDynamicIndex),this.tmin);
+    this.x(k)=putBits(this.x(k),parameters(k,meta.vDynamicIndex),this.tmin);
+    this.g{1}(k)=putBits(this.g{1}(k),parameters(k,meta.wDynamicIndex),this.tmin);
   end
 end
 
