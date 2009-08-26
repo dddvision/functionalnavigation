@@ -1,9 +1,9 @@
 classdef cameraOpticalFlow1 < sensor
   properties (GetAccess=private,SetAccess=private)
-    focalPerturbation
     index
     time
     focal
+    focalPerturbation
   end
     methods
     function this=cameraOpticalFlow1
@@ -15,28 +15,20 @@ classdef cameraOpticalFlow1 < sensor
       this.focalPerturbation=logical(rand(1,8)>=0.5);
     end
     
-    function this=staticPut(this,bits)
+    function bits=dynamicGet(this,tmin)
+      bits=this.focalPerturbation;
+    end
+    
+    function this=dynamicPut(this,bits,tmin)
       fprintf('\n');
-      fprintf('\ncameraOpticalFlow1::staticPut');
+      fprintf('\ncameraOpticalFlow1::dynamicPut');
       fprintf('\nbits = ');
       fprintf('%d',bits);
       this.focalPerturbation=bits;
     end
- 
-    function bits=staticGet(this)
-      bits=this.focalPerturbation;
-    end
     
-    function bits=dynamicGet(this,tmin)
-      bits=zeros(1,0);
-    end
-    
-    function cost=priorCost(this,staticBits,dynamicBits,tmin)
-      cost=0;
-    end
-
-    function this=dynamicPut(this,bits,tmin)
-      % do nothing
+    function cost=priorCost(this,bits,tmin)
+      cost=zeros(size(bits,1),1);
     end
         
   end

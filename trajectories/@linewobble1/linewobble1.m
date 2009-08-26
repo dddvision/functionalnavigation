@@ -13,14 +13,6 @@ classdef linewobble1 < trajectory
       this.data=logical(rand(1,30)>0.5);
     end
 
-    function bits=staticGet(this)
-      bits=zeros(1,0);
-    end
-    
-    function this=staticPut(this,bits)
-       % do nothing
-    end
- 
     function bits=dynamicGet(this,tmin)
       bits=this.data;
     end
@@ -34,8 +26,8 @@ classdef linewobble1 < trajectory
       this.data=bits;
     end
     
-    function cost=priorCost(this,staticBits,dynamicBits,tmin)
-      cost=0;
+    function cost=priorCost(this,bits,tmin)
+      cost=zeros(size(bits,1),1);
     end
     
     function [a,b]=domain(this)

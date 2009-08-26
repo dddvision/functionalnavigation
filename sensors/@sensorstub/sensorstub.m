@@ -1,38 +1,29 @@
 classdef sensorstub < sensor
   properties (GetAccess=private,SetAccess=private)
-    intrinsicStatic
-    intrinsicDynamic
+    intrinsicStochastic
   end  
   methods
     function this=sensorstub
       fprintf('\n');
       fprintf('\nsensorstub::sensorstub');
-      this.intrinsicStatic=logical(rand(1,8)>=0.5);
-      this.intrinsicDynamic=logical(rand(1,30)>=0.5);
-    end
- 
-    function bits=staticGet(this)
-      bits=this.intrinsicStatic;
-    end
-    
-    function this=staticPut(this,bits)
-      fprintf('\n');
-      fprintf('\n%s::staticPut',class(this));
-      fprintf('\nbits = ');
-      fprintf('%d',bits);
-      this.intrinsicStatic=bits;
+      this.intrinsicStochastic=logical(rand(1,30)>=0.5);
     end
  
     function bits=dynamicGet(this,tmin)
-      bits=this.intrinsicDynamic;
+      bits=this.intrinsicStochastic;
     end
-
+    
     function this=dynamicPut(this,bits,tmin)
-      this.intrinsicDynamic=bits;
+      fprintf('\n');
+      fprintf('\n%s::dynamicPut',class(this));
+      fprintf('\ntmin = %f',tmin);
+      fprintf('\nbits = ');
+      fprintf('%d',bits);
+      this.intrinsicStochastic=bits;
     end
-      
-    function cost=priorCost(this,staticBits,dynamicBits,tmin)
-      cost=0;
+ 
+    function cost=priorCost(this,bits,tmin)
+      cost=zeros(size(bits,1),1);
     end
     
     function c=evaluate(this,x,tmin)
@@ -51,7 +42,7 @@ classdef sensorstub < sensor
       fprintf('%f ',pqb);
       fprintf('>');
       
-      c=0.5;
+      c=rand;
       fprintf('\ncost = %f',c);
     end
     
