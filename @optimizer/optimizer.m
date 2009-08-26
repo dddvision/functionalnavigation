@@ -4,12 +4,18 @@ classdef optimizer
     end
   end
   methods (Access=public,Abstract=true)
+
+    % Define a minimization problem
+    %
+    % INPUT
+    % objectiveFunction = vectorized objective function handle
+    % initialParameters = initial parameters in the domain of the objective, popsize-by-nvars
+    this=defineProblem(this,objectiveFunction,initialParameters);
     
     % Execute one step of the optimizer to evolve seeds toward lower cost
     %
-    % INPUT/OUTPUT
-    % fun = vectorized objective function handle
-    % bits = bitstrings in the domain of the objective, popsize-by-nvars
+    % OUTPUT
+    % parameters = parameters in the domain of the objective, popsize-by-nvars
     % cost = cost associated with output bits, popsize-by-1
     %
     % NOTES
@@ -18,7 +24,7 @@ classdef optimizer
     % Do not use persistent variables.
     % This function may evaluate the objective multiple times, though a
     % single evaluation per step is preferred.
-    [this,bits,cost]=step(this,fun,bits);
+    [this,parameters,cost]=step(this);
     
   end
 end

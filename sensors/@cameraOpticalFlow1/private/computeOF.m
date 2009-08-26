@@ -140,4 +140,5 @@ I2 = I2((PAD_SIZE+1:end-PAD_SIZE),(PAD_SIZE+1:end-PAD_SIZE));
 if( show )
     figure(show); clf; im(I1(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end),[],0);
     hold('on'); quiver( Vx(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end), Vy(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end), SCALE,'-b'); hold('off');
+    drawnow;
 end

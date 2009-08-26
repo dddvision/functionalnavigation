@@ -19,7 +19,7 @@ while(true)
 %   figure;
 %   px=exp(-9*c.*c);
 %   px=px/norm(px);
-%   display(x,'alpha',px','tmin',tmin,'tmax',tmax);
+%   display(x,'alpha',px');
 %   axis('on');
 %   xlabel('North');
 %   ylabel('East');

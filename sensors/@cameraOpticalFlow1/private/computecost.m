@@ -1,12 +1,12 @@
 function cost = computecost(Vx_OF,Vy_OF,Trajectories)
-%% Omar Oreifej - 7/23/2009
-%% Calculate Error for candidate trajectories
+% Omar Oreifej - 7/23/2009
+% Calculate Error for candidate trajectories
 
 FIELD_X = 200;
 FIELD_Y = 200;
 MaxError = (FIELD_X.*FIELD_Y.*2);
 
-%% Test every candidate trajectory
+% Test every candidate trajectory
 for index=1:size(Trajectories,2)
     Traj = Trajectories(index);
     
@@ -32,7 +32,7 @@ for index=1:size(Trajectories,2)
         end;
     end;
 
-    %% Generate potential translation direction field
+    % Generate potential translation direction field
     T = Trajectories(index).Translation;
     T = [T(2) T(1) T(3)];
     R = [0 0 0];
@@ -79,4 +79,4 @@ for index=1:size(Trajectories,2)
     ErrorY = (Vy_OFTD - Vyt);
     ErrorMag = (ErrorX.^2 + ErrorY.^2).^.5;
     cost(index) = sum(sum(ErrorMag))./MaxError;
-end;
+end
