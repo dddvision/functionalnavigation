@@ -6,55 +6,53 @@ classdef sensorstub < sensor
   methods
     function this=sensorstub
       fprintf('\n');
-      fprintf('\n### sensorstub constructor ###');
+      fprintf('\nsensorstub::sensorstub');
       this.intrinsicStatic=logical(rand(1,8)>=0.5);
       this.intrinsicDynamic=logical(rand(1,30)>=0.5);
     end
+ 
+    function bits=staticGet(this)
+      bits=this.intrinsicStatic;
+    end
     
-    function this=staticSet(this,newStaticSeed)
-      this.intrinsicStatic=newStaticSeed;
+    function this=staticPut(this,bits)
+      fprintf('\n');
+      fprintf('\n%s::staticPut',class(this));
+      fprintf('\nbits = ');
+      fprintf('%d',bits);
+      this.intrinsicStatic=bits;
     end
  
-    function staticSeed=staticGet(this)
-      staticSeed=this.intrinsicStatic;
-    end
-    
-    function subSeed=dynamicGet(this,tmin,tmax)
-      subSeed=this.intrinsicDynamic;
+    function bits=dynamicGet(this,tmin)
+      bits=this.intrinsicDynamic;
     end
 
-    function this=dynamicSet(this,newSubSeed,tmin,tmax)
-      this.intrinsicDynamic=newSubSeed;
+    function this=dynamicPut(this,bits,tmin)
+      this.intrinsicDynamic=bits;
     end
       
-    function cost=priorCost(this,staticBits,dynamicBits,tmin,tmax)
+    function cost=priorCost(this,staticBits,dynamicBits,tmin)
       cost=0;
     end
     
-    function c=evaluate(this,x,tmin,tmax)
+    function c=evaluate(this,x,tmin)
       fprintf('\n');
-      fprintf('\n### sensorstub evaluate ###');
+      fprintf('\n%s::evaluate',class(this));
       
-      K=numel(this);
-      if( K~=numel(x) )
-        error('trajectory/sensor arguments must come in pairs');
-      end
-      fprintf('\nnumber of trajectory/sensor pairs = %d',K);
+      pqa=evaluate(x,tmin);
+      fprintf('\nx(%f) = < ',tmin);
+      fprintf('%f ',pqa);
+      fprintf('>');
       
-      fprintf('\ntime domain lower bound = %f',tmin);
-      fprintf('\ntime domain upper bound = %f',tmax);
-
-      c=zeros(K,1);
-      for k=1:K
-        fprintf('\n');
-        fprintf('\nprocessing trajectory/sensor %d',k);
-        fprintf('\nintrinsicStatic = ');
-        fprintf('%d',this(k).intrinsicStatic);
-        fprintf('\nintrinsicDynamic = ');
-        fprintf('%d',this(k).intrinsicDynamic);
-        c(k)=0.5;
-        fprintf('\ncost = %f',c(k));
-      end
+      [tZero,tmax]=domain(x);
+      
+      pqb=evaluate(x,tmax);      
+      fprintf('\nx(%f) = < ',tmax);
+      fprintf('%f ',pqb);
+      fprintf('>');
+      
+      c=0.5;
+      fprintf('\ncost = %f',c);
     end
     
   end

@@ -1,14 +1,28 @@
 classdef optimizerstub < optimizer
   properties
-    cache=[];
+    objective
+    parameters
+    cost
   end
   methods
     function this=optimizerstub
       fprintf('\n');
-      fprintf('\n### optimizerstub constructor ###');
+      fprintf('\noptimizerstub::optimizerstub');
     end
-    function this=updatecache(this,data)
-      this.cache=data;
+    
+    function [this,initialCost]=defineProblem(this,objectiveFunction,initialParameters)
+      initialCost=feval(objectiveFunction,initialParameters);
+      this.objective=objectiveFunction;
+      this.parameters=initialParameters;
+      this.cost=initialCost;
     end
+    
+    function [this,parameters,cost]=step(this)
+      this.cost=feval(this.objective,this.parameters);
+      parameters=this.parameters;
+      cost=this.cost;
+      % TODO: keep the best and randomize the rest
+    end
+    
   end
 end

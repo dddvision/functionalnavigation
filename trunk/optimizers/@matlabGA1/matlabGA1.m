@@ -1,5 +1,8 @@
 classdef matlabGA1
   properties
+    objective
+    parameters
+    cost
     defaultOptions;
     stepGAhandle;
   end
