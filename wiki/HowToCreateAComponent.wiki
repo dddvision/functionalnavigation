@@ -12,7 +12,7 @@ There are literally an infinite number of ways to represent system dynamics, sen
 Contributors, please take a look at these [http://www.datatool.com/downloads/matlab_style_guidelines.pdf coding guidelines].
 
 A component must:
-  * (add items here)
+  * If written in C++, it must compile using "g++ -Wall -Werror -ansi -pedantic"
 
 A component should:
   * Be self-contained
