@@ -1,8 +1,8 @@
 classdef framework
   properties
-    M
-    x
-    g
+    optimizer
+    trajectory
+    sensor
     cpuDelta
     popsize
     tmin
@@ -23,48 +23,60 @@ classdef framework
         
         % TODO: set adaptively to manage computation
         this.cpuDelta=0.0;
-        this.popsize=5;
+        this.popsize=10;
         this.tmin=1.3;
  
         % initialize optimizer
-        this.M=feval(config.optimizer);
+        this.optimizer=feval(config.optimizer);
         
         % initialize trajectories and sensors
-        this.x=feval(config.trajectory);
-        this.g{1}=feval(config.sensor);
+        this.trajectory=feval(config.trajectory);
+        this.sensor{1}=feval(config.sensor);
         for k=2:this.popsize
-          this.x(k,1)=feval(config.trajectory);
-          this.g{1}(k,1)=feval(config.sensor);
+          this.trajectory(k,1)=feval(config.trajectory);
+          this.sensor{1}(k,1)=feval(config.sensor);
         end
         % TODO: enable multiple sensors
        end
     end
     
-    function [this,xEstimate,costEstimate]=step(this)
+    % Execute one step of the framework to improve the tail portion of
+    %   a set of trajectories
+    %
+    % OUTPUT
+    % xEstimate = trajectory objects, popsize-by-1
+    % cost = non-negative cost associated with each trajectory object, double popsize-by-1
+    % costPotential = uppper bound cost that could have accrued, double scalar
+    function [this,xEstimate,cost,costPotential]=step(this)
       [parameters,meta]=getParameters(this);
       objective('put',this,meta);
       cpuStart=tic;
-      [this.M,costEstimate]=defineProblem(this.M,@objective,parameters);
+      costPotential=0;
+      for k=1:this.popsize
+        costPotential=max(costPotential,upperBound(this.sensor{1}(k),this.tmin));
+      end
+      [this.optimizer,cost]=defineProblem(this.optimizer,@objective,parameters);
       cpuStep=toc(cpuStart);
       while(true)
-        [this.M,parameters,costEstimate]=step(this.M);
+        [this.optimizer,parameters,cost]=step(this.optimizer);
         if((toc(cpuStart)+cpuStep)>this.cpuDelta)
           break;
         end
       end
       this=putParameters(this,parameters,meta);
-      xEstimate=this.x;
+      xEstimate=this.trajectory;
     end
     
   end
 end
 
+% private
 function [bits,meta]=getParameters(this)
   vDynamic=[];
   wDynamic=[];
-  for k=1:numel(this.x)
-    vDynamic=[vDynamic;getBits(this.x(k),this.tmin)];
-    wDynamic=[wDynamic;getBits(this.g{1}(k),this.tmin)];
+  for k=1:numel(this.trajectory)
+    vDynamic=[vDynamic;getBits(this.trajectory(k),this.tmin)];
+    wDynamic=[wDynamic;getBits(this.sensor{1}(k),this.tmin)];
   end
 
   % indexing must deal with empty vectors
@@ -74,24 +86,26 @@ function [bits,meta]=getParameters(this)
   bits=[vDynamic,wDynamic];
 end
 
+% private
 function this=putParameters(this,parameters,meta)
   for k=1:this.popsize
-    this.x(k)=putBits(this.x(k),parameters(k,meta.vDynamicIndex),this.tmin);
-    this.g{1}(k)=putBits(this.g{1}(k),parameters(k,meta.wDynamicIndex),this.tmin);
+    this.trajectory(k)=putBits(this.trajectory(k),parameters(k,meta.vDynamicIndex),this.tmin);
+    this.sensor{1}(k)=putBits(this.sensor{1}(k),parameters(k,meta.wDynamicIndex),this.tmin);
   end
 end
 
+% private
 function varargout=objective(varargin)
   persistent this meta
   parameters=varargin{1};
   if(~ischar(parameters))
     this=putParameters(this,parameters,meta);
-    c=zeros(this.popsize,1);
+    cost=zeros(this.popsize,1);
     for k=1:this.popsize
-      c(k)=evaluate(this.g{1}(k),this.x(k),this.tmin);
+      cost(k)=evaluate(this.sensor{1}(k),this.trajectory(k),this.tmin);
     end
     % TODO: enable multiple sensors
-    varargout{1}=c;
+    varargout{1}=cost;
   elseif(strcmp(parameters,'put'))
     this=varargin{2};
     meta=varargin{3};

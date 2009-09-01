@@ -6,20 +6,22 @@ intwarning('off');
 rand('seed',0);
 randn('seed',0);
 
-config=frameworkconfig;
-H=framework(config);
+thisFrameworkConfig=frameworkConfig;
+thisFramework=framework(thisFrameworkConfig);
+
 while(true)
-  [H,x,c]=step(H);
+  [thisFramework,xEstimate,cost,costPotential]=step(thisFramework);
   
   fprintf('\n');
-  fprintf('\ncost summary:');
-  fprintf('\n%f',c);
+  fprintf('\ncostPotential: %f',costPotential);
+  fprintf('\ncost:');
+  fprintf('\n%f',cost);
   fprintf('\n');
   
 %   figure;
-%   px=exp(-9*c.*c);
+%   px=exp(-9*(cost.*cost));
 %   px=px/norm(px);
-%   display(x,'alpha',px');
+%   display(xEstimate,'alpha',px');
 %   axis('on');
 %   xlabel('North');
 %   ylabel('East');

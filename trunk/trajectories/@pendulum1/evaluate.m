@@ -18,7 +18,7 @@ end
 
 
 % INPUT
-% b = logical bits, 1-by-N or N-by-1
+% b = bits, logical 1-by-N or N-by-1
 %
 % OUTPUT
 % z = number in the range [0,1]

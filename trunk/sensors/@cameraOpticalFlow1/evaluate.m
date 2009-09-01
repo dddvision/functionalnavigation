@@ -1,4 +1,4 @@
-function c=evaluate(this,x,tmin)
+function cost=evaluate(this,x,tmin)
 
 fprintf('\n');
 fprintf('\n%s::evaluate',class(this));
@@ -12,18 +12,23 @@ k=ka:kb;
 % identify sensor events within time domain bounds
 t=gettime(this,k);
 inside=find(t>=tmin);
-k=k(inside);
-t=t(inside);
 
 % check whether at least two events occurred
 if( numel(inside)<2 )
-  c=1;
+  cost=0;
   return;
 end
 
 % arbitrarily select the first and last events
+k=k(inside);
 ka=k(1);
 kb=k(end);
+
+% get optical flow from cache
+data=cameraOpticalFlow1_cache(this,ka,kb);
+
+% get corresponding times
+t=t(inside);
 ta=t(1);
 tb=t(end);
 
@@ -38,9 +43,6 @@ qb=pqb(4:7,:);
 % convert quaternions to Euler angles
 Ea=Quat2Euler(qa);
 Eb=Quat2Euler(qb);
-
-% get optical flow from cache
-data=cameraOpticalFlow1_cache(this,ka,kb);
 
 % get focal parameter scale
 rho=getfocal(this);
@@ -60,8 +62,7 @@ fprintf('\nrotation angles = < %f %f %f >',...
   testTrajectory.Rotation(3));
 
 % compute the cost
-c=computecost(data.Vx_OF,data.Vy_OF,testTrajectory);
-
-fprintf('\ncost = %f',c);
+cost=computecost(data.Vx_OF,data.Vy_OF,testTrajectory);
+fprintf('\ncost = %f',cost);
 
 end

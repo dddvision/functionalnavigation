@@ -2,13 +2,10 @@ function cost = computecost(Vx_OF,Vy_OF,Trajectories)
 % Omar Oreifej - 7/23/2009
 % Calculate Error for candidate trajectories
 
-FIELD_X = 200;
-FIELD_Y = 200;
-MaxError = (FIELD_X.*FIELD_Y.*2);
+[FIELD_Y,FIELD_X] = size(Vx_OF);
 
 % Test every candidate trajectory
 for index=1:size(Trajectories,2)
-    Traj = Trajectories(index);
     
     % Generate potential rotation field
     T = [0 0 0];
@@ -55,8 +52,8 @@ for index=1:size(Trajectories,2)
         end;
     end;
     % Drop magnitude of translation
-    mag = (Vxt.^2 + Vyt.^2).^.5;
-    if (mag~=0)
+    mag = (Vxt.^2 + Vyt.^2).^.5; % TODO: use faster magnitude calculation
+    if (mag~=0) % TODO: handle zeros properly
         Vxt = Vxt./mag;
         Vyt = Vyt./mag;
     end;
@@ -71,12 +68,12 @@ for index=1:size(Trajectories,2)
     Vy_OFTD = Vy_OFT./mag;
 
     % remove NaNs
-    Vx_OFTD(find(isnan(Vx_OFTD)==1)) =0;
+    Vx_OFTD(find(isnan(Vx_OFTD)==1)) =0; % TODO: use faster method than find
     Vy_OFTD(find(isnan(Vy_OFTD)==1)) =0;
 
     % Calculate Error
     ErrorX = (Vx_OFTD - Vxt);
     ErrorY = (Vy_OFTD - Vyt);
     ErrorMag = (ErrorX.^2 + ErrorY.^2).^.5;
-    cost(index) = sum(sum(ErrorMag))./MaxError;
+    cost(index) = sum(ErrorMag(:)); % TODO: check this calculation
 end

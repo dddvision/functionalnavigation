@@ -5,22 +5,29 @@ classdef sensor < seed
   end
   methods (Access=public,Abstract=true)
     
-    % Evaluate cost associated with sets of sensor and trajectory objects
+    % Evaluate a measure of inconsistency between a trajectory and sensor data
     %
     % INPUTS
-    % this = sensor objects, K-by-1
-    % x = trajectory objects, K-by-1
-    % tmin = time domain lower bound
-    % tmax = time domain upper bound
+    % x = trajectory object
+    % tmin = time domain lower bound over which to evaluate, double scalar
     %
     % OUTPUT
-    % c = cost, K-by-1
+    % cost = non-negative value of inconsistency, double scalar
     %
     % NOTE
     % The input trajectory objects represent the motion of the body frame
     % relative to a world frame.  If the sensor frame is not coincident with
     % the body frame, then transformations may be necessary.
-    c=evaluate(this,x,tmin,tmax);
+    cost=evaluate(this,x,tmin);
+    
+    % Return the upper bound of cost given sensor data
+    %
+    % INPUTS
+    % tmin = lower bound of time domain to consider, double scalar
+    %
+    % OUTPUT
+    % costPotential = upper bound of cost given sensor data, double scalar
+    costPotential=upperBound(this,tmin);
     
   end
 end
