@@ -3,8 +3,8 @@
 
 == Quick Start ==
 
-To get started, download the source code and run the Matlab script main.m.
+To get started, you will need to have Matlab and the Image Processing Toolbox.  Then, download the source code and run the script main.m.
 
 == Next Steps ==
 
-The framework does not do much with the default components installed.  However you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate alternative system configurations.
+The framework does not do much with the default components.  A few additional component examples are included in the source, and can be selected by editing frameworkConfig.m.  In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.
