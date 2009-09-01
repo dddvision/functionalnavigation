@@ -47,11 +47,11 @@ classdef trajectory < seed
     % INPUTS
     % this = trajectory objects, 1-by-N or N-by-1
     % varargin = (optional) accepts argument pairs 'alpha', 'scale', 'color'
-    %   alpha = transparency per trajectory, scalar, 1-by-N, or N-by-1
-    %   scale = scale of lines to draw, scalar, 1-by-N, or N-by-1
+    %   alpha = transparency per trajectory, scalar 1-by-N or N-by-1
+    %   scale = scale of lines to draw, scalar 1-by-N or N-by-1
     %   color = color of lines to draw, 1-by-3 or N-by-3
-    %   tmin = time domain lower bound, scalar, 1-by-N, or N-by-1
-    %   tmax = time domain lower bound, scalar, 1-by-N, or N-by-1
+    %   tmin = time domain lower bound, scalar 1-by-N or N-by-1
+    %   tmax = time domain lower bound, scalar 1-by-N or N-by-1
     %
     % OUTPUTS
     % h = handles to trajectory plot elements

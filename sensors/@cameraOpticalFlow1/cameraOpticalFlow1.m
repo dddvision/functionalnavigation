@@ -6,6 +6,7 @@ classdef cameraOpticalFlow1 < sensor
     focalPerturbation
   end
     methods
+      
     function this=cameraOpticalFlow1
       fprintf('\n');
       fprintf('\ncameraOpticalFlow1::cameraOpticalFlow1');
@@ -13,22 +14,6 @@ classdef cameraOpticalFlow1 < sensor
       this.time=[1.2,1.4,1.6]; % TODO: get data from sensor or simulator
       this.focal=100;  % TODO: get data from sensor or simulator
       this.focalPerturbation=logical(rand(1,8)>=0.5);
-    end
-    
-    function bits=getBits(this,tmin)
-      bits=this.focalPerturbation;
-    end
-    
-    function this=putBits(this,bits,tmin)
-      fprintf('\n');
-      fprintf('\ncameraOpticalFlow1::putBits');
-      fprintf('\nbits = ');
-      fprintf('%d',bits);
-      this.focalPerturbation=bits;
-    end
-    
-    function cost=priorCost(this,bits,tmin)
-      cost=zeros(size(bits,1),1);
     end
         
   end

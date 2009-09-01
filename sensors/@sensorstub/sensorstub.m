@@ -26,7 +26,7 @@ classdef sensorstub < sensor
       cost=zeros(size(bits,1),1);
     end
     
-    function c=evaluate(this,x,tmin)
+    function cost=evaluate(this,x,tmin)
       fprintf('\n');
       fprintf('\n%s::evaluate',class(this));
       
@@ -41,8 +41,12 @@ classdef sensorstub < sensor
       fprintf('%f ',pqb);
       fprintf('>');
       
-      c=rand;
-      fprintf('\ncost = %f',c);
+      cost=1000*rand;
+      fprintf('\ncost = %f',cost);
+    end
+    
+    function costPotential=upperBound(this,tmin)
+      costPotential=1000;
     end
     
   end

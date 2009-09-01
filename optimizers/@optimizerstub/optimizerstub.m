@@ -18,9 +18,9 @@ classdef optimizerstub < optimizer
     end
     
     function [this,parameters,cost]=step(this)
-      this.cost=feval(this.objective,this.parameters);
+      cost=feval(this.objective,this.parameters);
       parameters=this.parameters;
-      cost=this.cost;
+      this.cost=cost;
       % TODO: keep the best and randomize the rest
     end
     
