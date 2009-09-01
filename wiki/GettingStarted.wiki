@@ -8,3 +8,5 @@ To get started, you will need to have Matlab and the Image Processing Toolbox.  
 == Next Steps ==
 
 The framework does not do much with the default components.  A few additional component examples are included in the source, and can be selected by editing frameworkConfig.m.  In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.
+
+Note that some components may rely on licensed Matlab toolboxes.
