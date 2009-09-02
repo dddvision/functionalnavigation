@@ -24,6 +24,9 @@ A component should not:
   * Link to obscure external libraries
   * (add items here)
 
+A component must not:
+  * (add items here)
+
 Information on how to wrap code written in different languages:
   * [http://docs.python.org/extending/extending.html How to call C++ from Python]
   * [http://docs.python.org/extending/embedding.html How to call Python from C++]
