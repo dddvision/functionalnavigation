@@ -5,7 +5,7 @@
 
 This project provides a framework for testing navigation algorithms.  Do you want to create a component that will seamlessly integrate with this framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
 
-There are literally an infinite number of ways to represent system dynamics, sensor measurements, and optimization methods.  Therefore, we intend to define clear interfaces and leave issues of information representation to the implementations of individual components.
+There are an infinite number of ways to represent system dynamics, sensor measurements, and optimization methods.  Therefore, we intend to define clear interfaces and leave issues of information representation to the implementations of individual components.
 
 == Interface Control Document (ICD) for All Components ==
 
