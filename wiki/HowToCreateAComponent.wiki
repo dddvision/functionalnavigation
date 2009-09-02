@@ -9,7 +9,9 @@ There are literally an infinite number of ways to represent system dynamics, sen
 
 == Interface Control Document (ICD) for All Components ==
 
-Contributors, please take a look at these [http://www.datatool.com/downloads/matlab_style_guidelines.pdf coding guidelines].
+Contributors may want to look at these external documents for good coding practices and tips:
+  * [http://www.datatool.com/downloads/matlab_style_guidelines.pdf matlab style guidelines].
+  * [http://www-personal.acfr.usyd.edu.au/tbailey/seminars/design.pdf C++ design guidelines].
 
 A component must:
   * If written in C++, it must compile using "g++ -Wall -Werror -ansi -pedantic"
