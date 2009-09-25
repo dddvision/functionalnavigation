@@ -1,11 +1,11 @@
-classdef sensorstub < sensor
+classdef measurestub < measure
   properties (GetAccess=private,SetAccess=private)
     intrinsicStochastic
   end  
   methods
-    function this=sensorstub
+    function this=measurestub
       fprintf('\n');
-      fprintf('\nsensorstub::sensorstub');
+      fprintf('\nmeasurestub::measurestub');
       this.intrinsicStochastic=logical(rand(1,30)>=0.5);
     end
  
