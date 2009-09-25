@@ -1,6 +1,6 @@
-classdef sensor < seed
+classdef measure < seed
   methods (Access=protected)
-    function this=sensor
+    function this=measure
     end
   end
   methods (Access=public,Abstract=true)
@@ -20,13 +20,13 @@ classdef sensor < seed
     % the body frame, then transformations may be necessary.
     cost=evaluate(this,x,tmin);
     
-    % Return the upper bound of cost given sensor data
+    % Return the upper bound of cost for this measure
     %
     % INPUTS
     % tmin = lower bound of time domain to consider, double scalar
     %
     % OUTPUT
-    % costPotential = upper bound of cost given sensor data, double scalar
+    % costPotential = upper bound of cost for this measure, double scalar
     costPotential=upperBound(this,tmin);
     
   end

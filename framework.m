@@ -2,7 +2,7 @@ classdef framework
   properties
     optimizer
     trajectory
-    sensor
+    measure
     cpuDelta
     popsize
     tmin
@@ -16,8 +16,8 @@ classdef framework
       if(nargin>0)
         addpath(config.trajectoryComponentPath);
         fprintf('\npath added: %s',config.trajectoryComponentPath);
-        addpath(config.sensorComponentPath);
-        fprintf('\npath added: %s',config.sensorComponentPath);
+        addpath(config.measureComponentPath);
+        fprintf('\npath added: %s',config.measureComponentPath);
         addpath(config.optimizerComponentPath);
         fprintf('\npath added: %s',config.optimizerComponentPath);
         
@@ -29,14 +29,14 @@ classdef framework
         % initialize optimizer
         this.optimizer=feval(config.optimizer);
         
-        % initialize trajectories and sensors
+        % initialize trajectories and measures
         this.trajectory=feval(config.trajectory);
-        this.sensor{1}=feval(config.sensor);
+        this.measure{1}=feval(config.measure);
         for k=2:this.popsize
           this.trajectory(k,1)=feval(config.trajectory);
-          this.sensor{1}(k,1)=feval(config.sensor);
+          this.measure{1}(k,1)=feval(config.measure);
         end
-        % TODO: enable multiple sensors
+        % TODO: enable multiple measures
        end
     end
     
@@ -53,7 +53,7 @@ classdef framework
       cpuStart=tic;
       costPotential=0;
       for k=1:this.popsize
-        costPotential=max(costPotential,upperBound(this.sensor{1}(k),this.tmin));
+        costPotential=max(costPotential,upperBound(this.measure{1}(k),this.tmin));
       end
       [this.optimizer,cost]=defineProblem(this.optimizer,@objective,parameters);
       cpuStep=toc(cpuStart);
@@ -76,7 +76,7 @@ function [bits,meta]=getParameters(this)
   wDynamic=[];
   for k=1:numel(this.trajectory)
     vDynamic=[vDynamic;getBits(this.trajectory(k),this.tmin)];
-    wDynamic=[wDynamic;getBits(this.sensor{1}(k),this.tmin)];
+    wDynamic=[wDynamic;getBits(this.measure{1}(k),this.tmin)];
   end
 
   % indexing must deal with empty vectors
@@ -90,7 +90,7 @@ end
 function this=putParameters(this,parameters,meta)
   for k=1:this.popsize
     this.trajectory(k)=putBits(this.trajectory(k),parameters(k,meta.vDynamicIndex),this.tmin);
-    this.sensor{1}(k)=putBits(this.sensor{1}(k),parameters(k,meta.wDynamicIndex),this.tmin);
+    this.measure{1}(k)=putBits(this.measure{1}(k),parameters(k,meta.wDynamicIndex),this.tmin);
   end
 end
 
@@ -102,9 +102,9 @@ function varargout=objective(varargin)
     this=putParameters(this,parameters,meta);
     cost=zeros(this.popsize,1);
     for k=1:this.popsize
-      cost(k)=evaluate(this.sensor{1}(k),this.trajectory(k),this.tmin);
+      cost(k)=evaluate(this.measure{1}(k),this.trajectory(k),this.tmin);
     end
-    % TODO: enable multiple sensors
+    % TODO: enable multiple measures
     varargout{1}=cost;
   elseif(strcmp(parameters,'put'))
     this=varargin{2};

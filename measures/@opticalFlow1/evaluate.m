@@ -5,11 +5,11 @@ fprintf('\n%s::evaluate',class(this));
 
 fprintf('\ntmin = %f',tmin);
 
-% get sensor event indices
+% get data event indices
 [ka,kb]=domain(this);
 k=ka:kb;
 
-% identify sensor events within time domain bounds
+% identify data events within time domain bounds
 t=gettime(this,k);
 inside=find(t>=tmin);
 
