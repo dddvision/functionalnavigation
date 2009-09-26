@@ -11,8 +11,8 @@ kbstr=['b',num2str(kb,'%d')];
 if( isfield(cache,kastr) && isfield(cache.(kastr),kbstr) )
     data=cache.(kastr).(kbstr);
 else
-  ia=getgray(this.u,ka);
-  ib=getgray(this.u,kb);  
+  ia=getGray(this.u,ka);
+  ib=getGray(this.u,kb);  
   
   [Vx_OF,Vy_OF]=computeOF(ia,ib);
   [FIELD_Y,FIELD_X]=size(Vx_OF);

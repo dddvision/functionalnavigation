@@ -12,8 +12,8 @@ fprintf('\ntmin = %f',tmin);
 data=opticalFlow1_cache(this,ka,kb);
 
 % get corresponding times
-ta=gettime(this.u,ka);
-tb=gettime(this.u,kb);
+ta=getTime(this.u,ka);
+tb=getTime(this.u,kb);
 
 % evaluate sensor position and orientation
 pqa=evaluate(x,ta);
@@ -28,8 +28,10 @@ Ea=Quat2Euler(qa);
 Eb=Quat2Euler(qb);
 
 % get focal parameter scale
-rho=getfocal(this);
+rhoScale=getFocalScale(this);
+rho=rhoScale*getFocal(this.u,ka);
 
+% TODO: handle case where focal length is different at ka and kb
 testTrajectory.f = rho;
 testTrajectory.Translation = [pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3)];
 testTrajectory.Rotation = [Eb(1)-Ea(1),Eb(2)-Ea(2),Eb(3)-Ea(3)];
