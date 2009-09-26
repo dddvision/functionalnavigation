@@ -12,32 +12,38 @@ classdef framework
     function this=framework(config)
       fprintf('\n');
       fprintf('\nframework::framework');
+
+      if(nargin~=1)
+        error('requires one input argument');
+      end
       
-      if(nargin>0)
-        addpath(config.trajectoryComponentPath);
-        fprintf('\npath added: %s',config.trajectoryComponentPath);
-        addpath(config.measureComponentPath);
-        fprintf('\npath added: %s',config.measureComponentPath);
-        addpath(config.optimizerComponentPath);
-        fprintf('\npath added: %s',config.optimizerComponentPath);
-        
-        % TODO: set adaptively to manage computation
-        this.cpuDelta=0.0;
-        this.popsize=10;
-        this.tmin=1.3;
- 
-        % initialize optimizer
-        this.optimizer=feval(config.optimizer);
-        
-        % initialize trajectories and measures
-        this.trajectory=feval(config.trajectory);
-        this.measure{1}=feval(config.measure);
-        for k=2:this.popsize
-          this.trajectory(k,1)=feval(config.trajectory);
-          this.measure{1}(k,1)=feval(config.measure);
-        end
-        % TODO: enable multiple measures
-       end
+      warning('on','all');
+      intwarning('off');
+      reset(RandStream.getDefaultStream);
+
+      addpath(config.trajectoryComponentPath);
+      fprintf('\npath added: %s',config.trajectoryComponentPath);
+      addpath(config.measureComponentPath);
+      fprintf('\npath added: %s',config.measureComponentPath);
+      addpath(config.optimizerComponentPath);
+      fprintf('\npath added: %s',config.optimizerComponentPath);
+
+      % TODO: set adaptively to manage computation
+      this.cpuDelta=0.0;
+      this.popsize=10;
+      this.tmin=1.3;
+
+      % initialize optimizer
+      this.optimizer=feval(config.optimizer);
+
+      % initialize trajectories and measures
+      this.trajectory=feval(config.trajectory);
+      this.measure{1}=feval(config.measure);
+      for k=2:this.popsize
+        this.trajectory(k,1)=feval(config.trajectory);
+        this.measure{1}(k,1)=feval(config.measure);
+      end
+      % TODO: enable multiple measures
     end
     
     % Execute one step of the framework to improve the tail portion of

@@ -1,7 +1,6 @@
 classdef opticalFlow1 < measure
   properties (GetAccess=private,SetAccess=private)
-    index
-    time
+    u
     focal
     focalPerturbation
   end
@@ -10,9 +9,9 @@ classdef opticalFlow1 < measure
     function this=opticalFlow1
       fprintf('\n');
       fprintf('\nopticalFlow1::opticalFlow1');
-      this.index=[3,4,5]; % TODO: get real or simulated data
-      this.time=[1.2,1.4,1.6]; % TODO: get real or simulated data
-      this.focal=100;  % TODO: get real or simulated data
+      % TODO: get real or simulated data
+      this.u=camera;
+      this.focal=100;
       this.focalPerturbation=logical(rand(1,8)>=0.5);
     end
         

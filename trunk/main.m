@@ -1,10 +1,6 @@
 close all;
 clear classes;
 drawnow;
-warning('on','all');
-intwarning('off');
-rand('seed',0);
-randn('seed',0);
 
 thisFrameworkConfig=frameworkConfig;
 thisFramework=framework(thisFrameworkConfig);
