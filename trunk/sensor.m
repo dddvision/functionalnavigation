@@ -4,28 +4,28 @@ classdef sensor
     end
   end
   methods (Access=public,Abstract=false)
-    % Return the first and last data indices
+    % Return the first and last node indices
     %
     % OUTPUT
-    % a = integer index of first data element, double scalar
-    % b = integer index of last data element, double scalar
+    % a = integer index of first node, double scalar
+    % b = integer index of last node, double scalar
     %
     % NOTES
     % Returns a=NaN, b=NaN if no data is available
     % TODO: use matlab exceptions?
     [a,b]=domain(this);
     
-    % Get time stamps associated with data index
+    % Get time stamp associated with a node
     %
     % INPUT
     % k = integer index, double scalar
     %
     % OUTPUT
-    % time = time stamp for each index, double scalar
+    % time = time stamp, double scalar
     %
     % NOTES
     % Time stamps must not decrease with increasing indices
-    time=gettime(this,k);
+    time=getTime(this,k);
         
   end
 end

@@ -3,7 +3,7 @@ classdef measurestub < measure
     intrinsicStochastic
   end  
   methods
-    function this=measurestub
+    function this=measurestub(u)
       fprintf('\n');
       fprintf('\nmeasurestub::measurestub');
       this.intrinsicStochastic=logical(rand(1,30)>=0.5);

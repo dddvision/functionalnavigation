@@ -21,6 +21,8 @@ classdef framework
       intwarning('off');
       reset(RandStream.getDefaultStream);
 
+      addpath(config.sensorComponentPath);
+      fprintf('\npath added: %s',config.sensorComponentPath);
       addpath(config.trajectoryComponentPath);
       fprintf('\npath added: %s',config.trajectoryComponentPath);
       addpath(config.measureComponentPath);
@@ -37,11 +39,12 @@ classdef framework
       this.optimizer=feval(config.optimizer);
 
       % initialize trajectories and measures
+      thisSensor=feval(config.sensor);
       this.trajectory=feval(config.trajectory);
-      this.measure{1}=feval(config.measure);
+      this.measure{1}=feval(config.measure,thisSensor);
       for k=2:this.popsize
         this.trajectory(k,1)=feval(config.trajectory);
-        this.measure{1}(k,1)=feval(config.measure);
+        this.measure{1}(k,1)=feval(config.measure,thisSensor);
       end
       % TODO: enable multiple measures
     end
