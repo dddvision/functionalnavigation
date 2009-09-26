@@ -5,32 +5,15 @@ fprintf('\n%s::evaluate',class(this));
 
 fprintf('\ntmin = %f',tmin);
 
-% get data event indices
-[ka,kb]=domain(this);
-k=ka:kb;
-
-% identify data events within time domain bounds
-t=gettime(this,k);
-inside=find(t>=tmin);
-
-% check whether at least two events occurred
-if( numel(inside)<2 )
-  cost=0;
-  return;
-end
-
 % arbitrarily select the first and last events
-k=k(inside);
-ka=k(1);
-kb=k(end);
+[ka,kb]=domain(this.u);
 
 % get optical flow from cache
-data=cameraOpticalFlow1_cache(this,ka,kb);
+data=opticalFlow1_cache(this,ka,kb);
 
 % get corresponding times
-t=t(inside);
-ta=t(1);
-tb=t(end);
+ta=gettime(this.u,ka);
+tb=gettime(this.u,kb);
 
 % evaluate sensor position and orientation
 pqa=evaluate(x,ta);

@@ -1,4 +1,4 @@
-classdef linewobble1 < trajectory
+classdef lineWobble1 < trajectory
   properties
     data
     parametersPerSecond
@@ -6,9 +6,9 @@ classdef linewobble1 < trajectory
   methods
     
     % NOTE: this represents a dynamic model of a fictitious system
-    function this=linewobble1
+    function this=lineWobble1
       fprintf('\n');
-      fprintf('\nlinewobble1::linewobble1');
+      fprintf('\nlineWobble1::lineWobble1');
       this.parametersPerSecond=15;
       this.data=logical(rand(1,30)>0.5);
     end

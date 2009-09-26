@@ -8,9 +8,12 @@ classdef matlabGA1
   end
   methods
     function this=matlabGA1
+      fprintf('\n');
+      fprintf('\nmatlabGA1::matlabGA1');
       if( ~license('test','gads_toolbox') )
         error('Matlab GADS toolbox is unavailable');
       end
+            
       this.defaultOptions = gaoptimset;
       this.defaultOptions.PopulationType = 'bitstring';
       this.defaultOptions.PopInitRange = [0;1];
