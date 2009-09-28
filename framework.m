@@ -14,21 +14,15 @@ classdef framework
       fprintf('\nframework::framework');
 
       if(nargin~=1)
-        error('requires one input argument');
+        error('requires configuration argument');
       end
       
       warning('on','all');
       intwarning('off');
       reset(RandStream.getDefaultStream);
 
-      addpath(config.sensorComponentPath);
-      fprintf('\npath added: %s',config.sensorComponentPath);
-      addpath(config.trajectoryComponentPath);
-      fprintf('\npath added: %s',config.trajectoryComponentPath);
-      addpath(config.measureComponentPath);
-      fprintf('\npath added: %s',config.measureComponentPath);
-      addpath(config.optimizerComponentPath);
-      fprintf('\npath added: %s',config.optimizerComponentPath);
+      addpath(config.componentPath);
+      fprintf('\npath added: %s',config.componentPath);
 
       % TODO: set adaptively to manage computation
       this.cpuDelta=0.0;
