@@ -1,10 +1,11 @@
-classdef trajectory < seed
+classdef trajectory
+  
   methods (Access=protected)
     function this=trajectory
     end
   end
+  
   methods (Abstract=true,Access=public)
-    
     % Return the endpoints of the closed time domain of a trajectory
     %
     % OUTPUT
@@ -38,6 +39,34 @@ classdef trajectory < seed
     % Each time outside of the trajectory domain returns 7-by-1 NaN
     posquatdot=derivative(this,t);
     
+    % Extract a tail segment of dynamic parameters from the derived class
+    %
+    % INPUT
+    % tmin = time lower bound, double scalar
+    %
+    % OUTPUT
+    % bits = bitset segment of dynamic parameters, logical 1-by-nvars
+    bits=getBits(this,tmin);
+
+    % Replace a tail segment of dynamic parameters held by the derived class
+    % 
+    % INPUT
+    % bits = bitset segment of dynamic parameters to splice in, logical 1-by-nvars
+    % tmin = time lower bound, double scalar
+    % 
+    % NOTE
+    % This operation will change the derived class behaviour
+    this=putBits(this,bits,tmin);
+
+    % Calculate the prior cost of a set of parameters
+    %
+    % INPUT
+    % bits = bitset segment of dynamic parameters, logical 1-by-nvars
+    % tmin = time lower bound, double scalar
+    %
+    % OUTPUT
+    % cost = non-negative prior cost, double scalar
+    cost=priorCost(this,bits,tmin);
   end
   
   methods (Abstract=false,Access=public)

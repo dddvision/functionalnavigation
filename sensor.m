@@ -1,8 +1,10 @@
 classdef sensor
+  
   methods (Access=protected)
     function this=sensor
     end
   end
+  
   methods (Access=public,Abstract=false)
     % Return the first and last node indices
     %
@@ -26,6 +28,6 @@ classdef sensor
     % NOTES
     % Time stamps must not decrease with increasing indices
     time=getTime(this,k);
-        
   end
+  
 end

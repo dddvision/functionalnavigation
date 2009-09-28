@@ -1,4 +1,5 @@
-classdef framework
+classdef tommas
+  
   properties
     optimizer
     trajectory
@@ -7,11 +8,12 @@ classdef framework
     popsize
     tmin
   end
+  
   methods
-    
-    function this=framework(config)
+    % Construct a Trajectory Optimization Manager for Multiple Algorithms and Sensors
+    function this=tommas(config)
       fprintf('\n');
-      fprintf('\nframework::framework');
+      fprintf('\ntommas::tommas');
 
       if(nargin~=1)
         error('requires configuration argument');
@@ -43,8 +45,7 @@ classdef framework
       % TODO: enable multiple measures
     end
     
-    % Execute one step of the framework to improve the tail portion of
-    %   a set of trajectories
+    % Execute one step to improve the tail portion of a set of trajectories
     %
     % OUTPUT
     % xEstimate = trajectory objects, popsize-by-1

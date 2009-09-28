@@ -2,11 +2,11 @@ close all;
 clear classes;
 drawnow;
 
-thisFrameworkConfig=frameworkConfig;
-thisFramework=framework(thisFrameworkConfig);
+this=tommas(tommasConfig);
 
 while(true)
-  [thisFramework,xEstimate,cost,costPotential]=step(thisFramework);
+
+  [this,xEstimate,cost,costPotential]=step(this);
   
   fprintf('\n');
   fprintf('\ncostPotential: %f',costPotential);
@@ -22,4 +22,5 @@ while(true)
 %   xlabel('North');
 %   ylabel('East');
 %   zlabel('Down');
+
 end
