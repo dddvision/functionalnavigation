@@ -9,18 +9,18 @@ classdef sensor
     % Return the first and last node indices
     %
     % OUTPUT
-    % a = integer index of first node, double scalar
-    % b = integer index of last node, double scalar
+    % a = integer index of first node, uint32 scalar
+    % b = integer index of last node, uint32 scalar
     %
     % NOTES
-    % Returns a=NaN, b=NaN if no data is available
-    % TODO: use matlab exceptions?
+    % Returns empty when no nodes are available
+    % TODO: use exceptions for error handling
     [a,b]=domain(this);
     
     % Get time stamp associated with a node
     %
     % INPUT
-    % k = integer index, double scalar
+    % k = integer index, uint32 scalar
     %
     % OUTPUT
     % time = time stamp, double scalar
