@@ -1,10 +1,11 @@
-classdef measure < seed
+classdef measure
+  
   methods (Access=protected)
     function this=measure
     end
   end
+  
   methods (Access=public,Abstract=true)
-    
     % Evaluate a measure of inconsistency between a trajectory and sensor data
     %
     % INPUTS
@@ -28,6 +29,6 @@ classdef measure < seed
     % OUTPUT
     % costPotential = upper bound of cost for this measure, double scalar
     costPotential=upperBound(this,tmin);
-    
   end
+  
 end

@@ -1,10 +1,11 @@
 classdef optimizer
+  
   methods (Access=protected)
     function this=optimizer
     end
   end
+  
   methods (Access=public,Abstract=true)
-
     % Define a minimization problem
     %
     % INPUT
@@ -27,6 +28,6 @@ classdef optimizer
     % This function may evaluate the objective multiple times, though a
     % single evaluation per step is preferred.
     [this,parameters,cost]=step(this);
-    
   end
+  
 end

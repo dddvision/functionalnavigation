@@ -1,4 +1,4 @@
-function config=frameworkConfig
+function config=tommasConfig
 
 mainpath=fileparts(which('main'));
 config.componentPath=fullfile(mainpath,'components');

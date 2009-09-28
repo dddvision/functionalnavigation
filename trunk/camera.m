@@ -1,5 +1,10 @@
 classdef camera < sensor
 
+  methods (Access=protected)
+    function this=camera
+    end
+  end
+  
   methods (Access=public,Abstract=true)
     % Get a gray image from a node
     %
