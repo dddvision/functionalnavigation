@@ -1,29 +1,9 @@
 classdef measurestub < measure
-  properties (GetAccess=private,SetAccess=private)
-    intrinsicStochastic
-  end  
+  
   methods
     function this=measurestub(u)
       fprintf('\n');
       fprintf('\nmeasurestub::measurestub');
-      this.intrinsicStochastic=logical(rand(1,30)>=0.5);
-    end
- 
-    function bits=getBits(this,tmin)
-      bits=this.intrinsicStochastic;
-    end
-    
-    function this=putBits(this,bits,tmin)
-      fprintf('\n');
-      fprintf('\n%s::putBits',class(this));
-      fprintf('\ntmin = %f',tmin);
-      fprintf('\nbits = ');
-      fprintf('%d',bits);
-      this.intrinsicStochastic=bits;
-    end
- 
-    function cost=priorCost(this,bits,tmin)
-      cost=zeros(size(bits,1),1);
     end
     
     function cost=evaluate(this,x,tmin)
@@ -48,6 +28,6 @@ classdef measurestub < measure
     function costPotential=upperBound(this,tmin)
       costPotential=1000;
     end
-    
   end
+  
 end

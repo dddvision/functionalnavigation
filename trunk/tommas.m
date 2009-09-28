@@ -52,8 +52,8 @@ classdef tommas
     % cost = non-negative cost associated with each trajectory object, double popsize-by-1
     % costPotential = uppper bound cost that could have accrued, double scalar
     function [this,xEstimate,cost,costPotential]=step(this)
-      [parameters,meta]=getParameters(this);
-      objective('put',this,meta);
+      parameters=getParameters(this);
+      objective('put',this);
       cpuStart=tic;
       costPotential=0;
       for k=1:this.popsize
@@ -67,7 +67,7 @@ classdef tommas
           break;
         end
       end
-      this=putParameters(this,parameters,meta);
+      this=putParameters(this,parameters);
       xEstimate=this.trajectory;
     end
     
@@ -75,35 +75,26 @@ classdef tommas
 end
 
 % private
-function [bits,meta]=getParameters(this)
-  vDynamic=[];
-  wDynamic=[];
+function parameters=getParameters(this)
+  parameters=[];
   for k=1:numel(this.trajectory)
-    vDynamic=[vDynamic;getBits(this.trajectory(k),this.tmin)];
-    wDynamic=[wDynamic;getBits(this.measure{1}(k),this.tmin)];
+    parameters=[parameters;getBits(this.trajectory(k),this.tmin)];
   end
-
-  % indexing must deal with empty vectors
-  meta.vDynamicIndex = 1:size(vDynamic,2);
-  meta.wDynamicIndex = numel(meta.vDynamicIndex) + (1:size(wDynamic,2));
-
-  bits=[vDynamic,wDynamic];
 end
 
 % private
-function this=putParameters(this,parameters,meta)
+function this=putParameters(this,parameters)
   for k=1:this.popsize
-    this.trajectory(k)=putBits(this.trajectory(k),parameters(k,meta.vDynamicIndex),this.tmin);
-    this.measure{1}(k)=putBits(this.measure{1}(k),parameters(k,meta.wDynamicIndex),this.tmin);
+    this.trajectory(k)=putBits(this.trajectory(k),parameters(k,:),this.tmin);
   end
 end
 
 % private
 function varargout=objective(varargin)
-  persistent this meta
+  persistent this
   parameters=varargin{1};
   if(~ischar(parameters))
-    this=putParameters(this,parameters,meta);
+    this=putParameters(this,parameters);
     cost=zeros(this.popsize,1);
     for k=1:this.popsize
       cost(k)=evaluate(this.measure{1}(k),this.trajectory(k),this.tmin);
@@ -112,7 +103,6 @@ function varargout=objective(varargin)
     varargout{1}=cost;
   elseif(strcmp(parameters,'put'))
     this=varargin{2};
-    meta=varargin{3};
   else
     error('incorrect argument list');
   end
