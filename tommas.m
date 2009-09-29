@@ -5,7 +5,7 @@ classdef tommas
     trajectory
     measure
     cpuDelta
-    popsize
+    popSize
     tmin
   end
   
@@ -28,9 +28,9 @@ classdef tommas
 
       % TODO: set adaptively to manage computation
       this.cpuDelta=0.0;
-      this.popsize=10;
       this.tmin=1.3;
-
+      this.popSize=config.popSizeDefault;
+      
       % initialize optimizer
       this.optimizer=feval(config.optimizer);
 
@@ -38,7 +38,7 @@ classdef tommas
       thisSensor=feval(config.sensor);
       this.trajectory=feval(config.trajectory);
       this.measure{1}=feval(config.measure,thisSensor);
-      for k=2:this.popsize
+      for k=2:this.popSize
         this.trajectory(k,1)=feval(config.trajectory);
       end
       % TODO: enable multiple measures
@@ -47,8 +47,8 @@ classdef tommas
     % Execute one step to improve the tail portion of a set of trajectories
     %
     % OUTPUT
-    % xEstimate = trajectory objects, popsize-by-1
-    % cost = non-negative cost associated with each trajectory object, double popsize-by-1
+    % xEstimate = trajectory objects, popSize-by-1
+    % cost = non-negative cost associated with each trajectory object, double popSize-by-1
     % costPotential = uppper bound cost that could have accrued, double scalar
     function [this,xEstimate,cost,costPotential]=step(this)
       parameters=getParameters(this);
@@ -80,7 +80,7 @@ end
 
 % private
 function this=putParameters(this,parameters)
-  for k=1:this.popsize
+  for k=1:this.popSize
     this.trajectory(k)=putBits(this.trajectory(k),parameters(k,:),this.tmin);
   end
 end
@@ -91,8 +91,8 @@ function varargout=objective(varargin)
   parameters=varargin{1};
   if(~ischar(parameters))
     this=putParameters(this,parameters);
-    cost=zeros(this.popsize,1);
-    for k=1:this.popsize
+    cost=zeros(this.popSize,1);
+    for k=1:this.popSize
       cost(k)=evaluate(this.measure{1},this.trajectory(k),this.tmin);
     end
     % TODO: enable multiple measures
