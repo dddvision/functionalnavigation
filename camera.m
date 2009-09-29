@@ -35,14 +35,14 @@ classdef camera < sensor
     %
     % INPUT/OUTPUT
     % k = node index, uint32 scalar
-    % ray = unit vector in camera frame, double 3-by-1
-    % xy = point in pixel coordinates, double 2-by-1
+    % ray = unit vectors in camera frame, double 3-by-P
+    % xy = points in pixel coordinates, double 2-by-P
     %
     % NOTES
     % Camera frame axis order is forward-right-down
     % Pixel coordinate interpretation:
-    %   xy(1) = stride along the non-contiguous dimension (Matlab column minus one)
-    %   xy(2) = step along the contiguous dimension (Matlab row minus one)
+    %   x = strides along the non-contiguous dimension (Matlab column minus one)
+    %   y = steps along the contiguous dimension (Matlab row minus one)
     % Points outside the image area return NaN-valued vectors
     xy=projection(this,k,ray);
     ray=inverseProjection(this,k,xy);
