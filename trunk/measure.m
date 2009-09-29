@@ -1,10 +1,5 @@
 classdef measure
   
-  methods (Access=protected)
-    function this=measure
-    end
-  end
-  
   methods (Access=public,Abstract=true)
     % Evaluate a measure of inconsistency between a trajectory and sensor data
     %

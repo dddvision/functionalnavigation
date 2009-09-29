@@ -1,87 +1,51 @@
 classdef camera < sensor
-
-  methods (Access=protected)
-    function this=camera
-    end
-  end
   
+  % TODO: define exceptions for invalid indices and other errors
   methods (Access=public,Abstract=true)
-    % Get grayscale image
-    %
-    % INPUT
-    % k = node index, uint32 scalar
+    % Interpret image layers
     %
     % OUTPUT
-    % gray = grayscale image, uint8 M-by-N
-    %
-    % NOTE
-    % If no image is available, then return value is 0-by-0
-    % TODO: define exceptions for error handling
-    gray=getGray8RowMajor(this,k);
-    gray=getGray8ColMajor(this,k);
+    % str = 
+    %  'rgbi' red-green-blue-infrared
+    %  'rgb'  red-green-blue
+    %  'hsv'  hue-saturation-value
+    %  'v'    grayscale
+    %  'i'    infrared
+    str=layers(this);
     
-    % Get color image
+    % Get an image
     %
     % INPUT
     % k = node index, uint32 scalar
     %
     % OUTPUT
-    % rgb = color image, uint8 M-by-N-by-3
-    %
-    % NOTE
-    % If no image is available, then return value is 0-by-0-by-3
-    % TODO: define exceptions for error handling
-    rgb=getColor32RowMajor(this,k);
-    rgb=getColor32ColMajor(this,k);
+    % im = image, uint8 HEIGHT-by-WIDTH-by-LAYERS
+    im=getImage(this,k);
 
-    
-    %%% GETFOCAL IS LIKELY TO BE DEPRICATED %%%
-    
-    
-    % Get focal length
+    % Get camera frame origin in the body frame
     %
     % INPUT
     % k = node index, uint32 scalar
     %
     % OUTPUT
-    % rho = focal length, double scalar
-    % TODO: provide intrinsic calibration data or forward/reverse projection functions
-    % TODO: define exceptions for error handling
-    rho=getFocal(this,k);
+    % pos = position of camera frame origin in the body frame, double 3-by-1
+    pos=origin(this,k);
     
-    
-    %%% THE FOLLOWING ARE UNDER CONSIDERATION %%%
-
-
-    % Get camera frame represented in the body frame
+    % Project ray vectors to image points and vice-versa
     %
-    % INPUT
-    % k = node index, uint32 scalar
-    %
-    % OUTPUT
-    % posquat = position and quaternion transformation, double 7-by-1
-    % TODO: define exceptions for error handling
-    % posquat=gimbalState(this,k);
-    
-    % Transform ray vectors in the camera frame to image points
-    %
-    % INPUT
+    % INPUT/OUTPUT
     % k = node index, uint32 scalar
     % ray = unit vector in camera frame, double 3-by-1
+    % xy = point in pixel coordinates, double 2-by-1
     %
-    % OUTPUT
-    % ij = point in image coordinates, double 2-by-1
-    % ij=project(this,k,ray);
-    
-    % Transform image points to ray vectors in the camera frame
-    %
-    % INPUT
-    % k = node index, uint32 scalar
-    % ij = point in image coordinates, double 2-by-1
-    %
-    % OUTPUT
-    % ray = unit vector in camera frame, double 3-by-1
-    % ray=inverseProject(this,k,ij);
+    % NOTES
+    % Camera frame axis order is forward-right-down
+    % Pixel coordinate interpretation:
+    %   xy(1) = stride along the non-contiguous dimension (Matlab column minus one)
+    %   xy(2) = step along the contiguous dimension (Matlab row minus one)
+    % Points outside the image area return NaN-valued vectors
+    xy=projection(this,k,ray);
+    ray=inverseProjection(this,k,xy);
   end
  
 end

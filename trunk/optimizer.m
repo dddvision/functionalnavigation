@@ -1,10 +1,5 @@
 classdef optimizer
   
-  methods (Access=protected)
-    function this=optimizer
-    end
-  end
-  
   methods (Access=public,Abstract=true)
     % Define a minimization problem
     %

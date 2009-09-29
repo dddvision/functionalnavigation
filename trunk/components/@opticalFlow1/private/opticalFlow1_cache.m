@@ -11,8 +11,20 @@ kbstr=['b',num2str(kb,'%d')];
 if( isfield(cache,kastr) && isfield(cache.(kastr),kbstr) )
     data=cache.(kastr).(kbstr);
 else
-  ia=getGray8RowMajor(this.u,ka);
-  ib=getGray8RowMajor(this.u,kb);
+  
+  ia=getImage(this.u,ka);
+  ib=getImage(this.u,kb);
+  
+  switch( layers(this.u) )
+    case {'rgb','rgbi'}
+      ia=rgb2gray(ia(:,:,1:3));
+      ib=rgb2gray(ib(:,:,1:3));
+    case {'hsv','hsvi'}
+      ia=ia(:,:,3);
+      ib=ib(:,:,3);
+    otherwise
+      % do nothing
+  end
   
   [Vx_OF,Vy_OF]=computeOF(ia,ib);
   [FIELD_Y,FIELD_X]=size(Vx_OF);
