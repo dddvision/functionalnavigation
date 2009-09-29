@@ -1,11 +1,13 @@
 classdef sensor
   
-  methods (Access=protected)
-    function this=sensor
-    end
-  end
-  
+  % TODO: use exceptions for error handling
   methods (Access=public,Abstract=false)
+    % Lock the sensor data
+    lock(this);
+    
+    % Unlock the sensor data
+    unlock(this);
+    
     % Return first and last valid indices
     %
     % OUTPUT
@@ -14,7 +16,6 @@ classdef sensor
     %
     % NOTES
     % Returns empty when no nodes are available
-    % TODO: use exceptions for error handling
     [a,b]=domain(this);
     
     % Get time stamp
