@@ -2,7 +2,7 @@ close all;
 clear classes;
 drawnow;
 
-DISPLAY_OUTPUT=false;
+DISPLAY_OUTPUT=true;
 
 this=tommas(tommasConfig);
 
@@ -18,13 +18,13 @@ while(true)
   
   if(DISPLAY_OUTPUT)
     figure;
-    px=exp(-9*(cost.*cost));
-    px=px/norm(px);
+    px=exp(-9*(cost.*cost)/(costPotential*costPotential));
     display(xEstimate,'alpha',px');
     axis('on');
     xlabel('North');
     ylabel('East');
     zlabel('Down');
+    drawnow;
   end
 
 end
