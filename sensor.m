@@ -6,21 +6,21 @@ classdef sensor
   end
   
   methods (Access=public,Abstract=false)
-    % Return the first and last node indices
+    % Return first and last valid indices
     %
     % OUTPUT
-    % a = integer index of first node, uint32 scalar
-    % b = integer index of last node, uint32 scalar
+    % a = first valid node index, uint32 scalar
+    % b = last valid node index, uint32 scalar
     %
     % NOTES
     % Returns empty when no nodes are available
     % TODO: use exceptions for error handling
     [a,b]=domain(this);
     
-    % Get time stamp associated with a node
+    % Get time stamp
     %
     % INPUT
-    % k = integer index, uint32 scalar
+    % k = node index, uint32 scalar
     %
     % OUTPUT
     % time = time stamp, double scalar

@@ -1,3 +1,4 @@
+% Using SI units (seconds, meters, radians)
 classdef trajectory
   
   methods (Access=protected)
@@ -16,27 +17,27 @@ classdef trajectory
     % Evaluate a single trajectory at multiple time instants
     %
     % INPUT
-    % t = time in seconds, 1-by-N
+    % t = time, 1-by-N
     %
     % OUTPUT
-    % posquat = position and quaternion at each time, 7-by-N
+    % posquat = position and quaternion at each time, double 7-by-N
     %
     % NOTE
     % Axis order is forward-right-down relative to the base reference frame
-    % Each time outside of the trajectory domain returns 7-by-1 NaN
+    % Each time outside of the trajectory domain returns NaN 7-by-1
     posquat=evaluate(this,t);
     
     % Evaluate time derivative of a single trajectory at multiple time instants
     %
     % INPUT
-    % t = time in seconds, 1-by-N
+    % t = time, 1-by-N
     %
     % OUTPUT
-    % posquatdot = position and quaternion derivative at each time, 7-by-N
+    % posquatdot = position and quaternion derivative at each time, double 7-by-N
     %
     % NOTE
     % Axis order is forward-right-down relative to the base reference frame
-    % Each time outside of the trajectory domain returns 7-by-1 NaN
+    % Each time outside of the trajectory domain returns NaN 7-by-1
     posquatdot=derivative(this,t);
     
     % Extract a tail segment of dynamic parameters from the derived class
@@ -70,7 +71,6 @@ classdef trajectory
   end
   
   methods (Abstract=false,Access=public)
-    
     % Visualize a set of trajectories with optional transparency
     %
     % INPUTS
@@ -113,6 +113,7 @@ classdef trajectory
       end
     end
   end
+  
 end
 
 

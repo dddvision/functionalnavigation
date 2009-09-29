@@ -40,7 +40,6 @@ classdef tommas
       this.measure{1}=feval(config.measure,thisSensor);
       for k=2:this.popsize
         this.trajectory(k,1)=feval(config.trajectory);
-        this.measure{1}(k,1)=feval(config.measure,thisSensor);
       end
       % TODO: enable multiple measures
     end
@@ -55,10 +54,7 @@ classdef tommas
       parameters=getParameters(this);
       objective('put',this);
       cpuStart=tic;
-      costPotential=0;
-      for k=1:this.popsize
-        costPotential=max(costPotential,upperBound(this.measure{1}(k),this.tmin));
-      end
+      costPotential=upperBound(this.measure{1},this.tmin);
       [this.optimizer,cost]=defineProblem(this.optimizer,@objective,parameters);
       cpuStep=toc(cpuStart);
       while(true)
@@ -97,7 +93,7 @@ function varargout=objective(varargin)
     this=putParameters(this,parameters);
     cost=zeros(this.popsize,1);
     for k=1:this.popsize
-      cost(k)=evaluate(this.measure{1}(k),this.trajectory(k),this.tmin);
+      cost(k)=evaluate(this.measure{1},this.trajectory(k),this.tmin);
     end
     % TODO: enable multiple measures
     varargout{1}=cost;
