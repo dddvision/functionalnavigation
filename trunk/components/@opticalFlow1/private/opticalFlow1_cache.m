@@ -27,10 +27,8 @@ else
   end
   
   [Vx_OF,Vy_OF]=computeOF(ia,ib);
-  [FIELD_Y,FIELD_X]=size(Vx_OF);
   data.Vx_OF=Vx_OF;
   data.Vy_OF=Vy_OF;
-  data.costPotential=(FIELD_X.*FIELD_Y.*2); % TODO: check this calculation
   cache.(kastr).(kbstr)=data;
 end
 

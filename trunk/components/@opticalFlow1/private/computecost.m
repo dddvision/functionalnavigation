@@ -3,6 +3,7 @@ function cost = computecost(Vx_OF,Vy_OF,Trajectories)
 % Calculate Error for candidate trajectories
 
 [FIELD_Y,FIELD_X] = size(Vx_OF);
+upperBound=(FIELD_X.*FIELD_Y.*2); % TODO: check this calculation
 
 % Test every candidate trajectory
 for index=1:size(Trajectories,2)
@@ -75,5 +76,5 @@ for index=1:size(Trajectories,2)
     ErrorX = (Vx_OFTD - Vxt);
     ErrorY = (Vy_OFTD - Vyt);
     ErrorMag = (ErrorX.^2 + ErrorY.^2).^.5;
-    cost(index) = sum(ErrorMag(:)); % TODO: check this calculation
+    cost(index) = sum(ErrorMag(:))/upperBound; % TODO: check this calculation
 end

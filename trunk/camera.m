@@ -31,7 +31,7 @@ classdef camera < sensor
     % k = node index, uint32 scalar
     %
     % OUTPUT
-    % posquat = position and orientation in the body frame, double 3-by-1
+    % posquat = position and orientation in the body frame, double 7-by-1
     posquat=offset(this,k);
     
     % Project ray vectors in the camera frame to image points and vice-versa
