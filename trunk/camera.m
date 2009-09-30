@@ -1,6 +1,9 @@
+% NOTES
+% Camera and body frame axis order is forward-right-down
+% Using SI units (meters, seconds, radians)
+% TODO: define exceptions for invalid indices and other errors
 classdef camera < sensor
   
-  % TODO: define exceptions for invalid indices and other errors
   methods (Access=public,Abstract=true)
     % Interpret image layers
     %
@@ -22,16 +25,16 @@ classdef camera < sensor
     % im = image, uint8 HEIGHT-by-WIDTH-by-LAYERS
     im=getImage(this,k);
 
-    % Get camera frame origin in the body frame
+    % Get camera frame position and orientation relative to the body frame
     %
     % INPUT
     % k = node index, uint32 scalar
     %
     % OUTPUT
-    % pos = position of camera frame origin in the body frame, double 3-by-1
-    pos=origin(this,k);
+    % posquat = position and orientation in the body frame, double 3-by-1
+    posquat=offset(this,k);
     
-    % Project ray vectors to image points and vice-versa
+    % Project ray vectors in the camera frame to image points and vice-versa
     %
     % INPUT/OUTPUT
     % k = node index, uint32 scalar
@@ -39,7 +42,6 @@ classdef camera < sensor
     % xy = points in pixel coordinates, double 2-by-P
     %
     % NOTES
-    % Camera frame axis order is forward-right-down
     % Pixel coordinate interpretation:
     %   x = strides along the non-contiguous dimension (Matlab column minus one)
     %   y = steps along the contiguous dimension (Matlab row minus one)
