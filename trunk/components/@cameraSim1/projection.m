@@ -1,7 +1,7 @@
 function xy=projection(this,k,ray)
   global cameraSim1_singleton
   buf=ktor(this,k);
-  rho=cameraSim1_singleton.ring{buf}.rho;
+  rho=cameraSim1_singleton.rho;
   m=cameraSim1_singleton.ring{buf}.size(1);
   n=cameraSim1_singleton.ring{buf}.size(2);
   a=rho/ray(1,:);

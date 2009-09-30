@@ -54,8 +54,8 @@ classdef tommas
       parameters=getParameters(this);
       objective('put',this);
       cpuStart=tic;
-      costPotential=upperBound(this.measure{1},this.tmin);
       [this.optimizer,cost]=defineProblem(this.optimizer,@objective,parameters);
+      costPotential=upperBound(this.measure{1},this.tmin);
       cpuStep=toc(cpuStart);
       while(true)
         [this.optimizer,parameters,cost]=step(this.optimizer);
