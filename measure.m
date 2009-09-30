@@ -15,15 +15,6 @@ classdef measure
     % relative to a world frame.  If the sensor frame is not coincident with
     % the body frame, then transformations may be necessary.
     cost=evaluate(this,x,tmin);
-    
-    % Return the upper bound of cost for this measure
-    %
-    % INPUTS
-    % tmin = lower bound of time domain to consider, double scalar
-    %
-    % OUTPUT
-    % costPotential = upper bound of cost for this measure, double scalar
-    costPotential=upperBound(this,tmin);
   end
   
 end

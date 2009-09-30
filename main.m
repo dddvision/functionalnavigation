@@ -8,17 +8,16 @@ this=tommas(tommasConfig);
 
 while(true)
 
-  [this,xEstimate,cost,costPotential]=step(this);
+  [this,xEstimate,cost]=step(this);
   
   fprintf('\n');
-  fprintf('\ncostPotential: %f',costPotential);
   fprintf('\ncost:');
   fprintf('\n%f',cost);
   fprintf('\n');
   
   if(DISPLAY_OUTPUT)
     figure;
-    px=exp(-9*(cost.*cost)/(costPotential*costPotential));
+    px=exp(-9*(cost.*cost));
     display(xEstimate,'alpha',px');
     axis('on');
     xlabel('North');

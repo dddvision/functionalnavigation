@@ -33,7 +33,7 @@ end
 
 %handle negative first element
 s=sign(q1);
-s(find(s==0))=1;
+s(s==0)=1;
 ns=n.*s;
 
 %normalize

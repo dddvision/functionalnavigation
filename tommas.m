@@ -4,7 +4,7 @@ classdef tommas
     optimizer
     trajectory
     measure
-    cpuDelta
+    iterations
     popSize
     tmin
   end
@@ -27,7 +27,7 @@ classdef tommas
       fprintf('\npath added: %s',config.componentPath);
 
       % TODO: set adaptively to manage computation
-      this.cpuDelta=0.0;
+      this.iterations=3;
       this.tmin=1.3;
       this.popSize=config.popSizeDefault;
       
@@ -50,18 +50,12 @@ classdef tommas
     % xEstimate = trajectory objects, popSize-by-1
     % cost = non-negative cost associated with each trajectory object, double popSize-by-1
     % costPotential = uppper bound cost that could have accrued, double scalar
-    function [this,xEstimate,cost,costPotential]=step(this)
+    function [this,xEstimate,cost]=step(this)
       parameters=getParameters(this);
       objective('put',this);
-      cpuStart=tic;
       [this.optimizer,cost]=defineProblem(this.optimizer,@objective,parameters);
-      costPotential=upperBound(this.measure{1},this.tmin);
-      cpuStep=toc(cpuStart);
-      while(true)
+      for n=1:this.iterations
         [this.optimizer,parameters,cost]=step(this.optimizer);
-        if((toc(cpuStart)+cpuStep)>this.cpuDelta)
-          break;
-        end
       end
       this=putParameters(this,parameters);
       xEstimate=this.trajectory;

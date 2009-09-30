@@ -1,11 +1,12 @@
+% NOTE: this represents a dynamic model of a fictitious system
 classdef lineWobble1 < trajectory
+  
   properties
     data
     parametersPerSecond
   end
+  
   methods
-    
-    % NOTE: this represents a dynamic model of a fictitious system
     function this=lineWobble1
       fprintf('\n');
       fprintf('\nlineWobble1::lineWobble1');
@@ -36,9 +37,9 @@ classdef lineWobble1 < trajectory
     end
     
     function posquat=evaluate(this,t)
-      [ta,tb]=domain(this);
+      ta=domain(this);
 
-      t(t<ta|t>tb)=NaN;
+      t(t<ta)=NaN;
 
       dim=6;
       scalep=0.02;
@@ -74,6 +75,6 @@ classdef lineWobble1 < trajectory
       posquatdot=zeros(7,N);
       posquatdot(:,t<ta|t>tb)=NaN;
     end
-   
   end
+  
 end

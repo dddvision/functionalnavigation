@@ -10,12 +10,14 @@ classdef cameraSim1 < camera
         % H. Hirschmuller and D. Scharstein. Evaluation of cost functions for 
         % stereo matching. In IEEE Computer Society Conference on Computer Vision 
         % and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
-        for k=1:7
-          cameraSim1_singleton.ring{k}.time=1+k/10;
+        fps=3;
+        ringsz=7;
+        for k=1:ringsz
+          cameraSim1_singleton.ring{k}.time=k/fps;
           cameraSim1_singleton.ring{k}.image=getMiddleburyArt(k-1);
         end
         cameraSim1_singleton.rho=1;
-        cameraSim1_singleton.ringsz=uint32(numel(cameraSim1_singleton.ring));     
+        cameraSim1_singleton.ringsz=uint32(ringsz);     
         cameraSim1_singleton.base=uint32(1);
         cameraSim1_singleton.a=uint32(3);
         cameraSim1_singleton.b=uint32(9);

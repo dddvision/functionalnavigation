@@ -5,9 +5,9 @@ fprintf('\n%s::evaluate',class(this));
 
 fprintf('\ntmin = %f',tmin);
 
-% arbitrarily select the first and second images
+% arbitrarily select the last and next-to-last images
 [ka,kb]=domain(this.u);
-kb=min(kb,ka+1);
+ka=max(ka,kb-1);
 
 % get optical flow from cache
 data=opticalFlow1_cache(this,ka,kb);

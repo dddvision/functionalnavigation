@@ -21,12 +21,8 @@ classdef measurestub < measure
       fprintf('%f ',pqb);
       fprintf('>');
       
-      cost=1000*rand;
+      cost=rand;
       fprintf('\ncost = %f',cost);
-    end
-    
-    function costPotential=upperBound(this,tmin)
-      costPotential=1000;
     end
   end
   
