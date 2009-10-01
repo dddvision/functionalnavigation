@@ -1,6 +1,6 @@
 classdef tommasConfig
 
-  properties
+  properties (GetAccess=public,SetAccess=private)
     componentPath=fullfile(fileparts(which('main')),'components');
     
     % TODO: support configuration of multiple sensors/measures

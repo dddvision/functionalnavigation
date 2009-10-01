@@ -1,6 +1,6 @@
 classdef optimizer
   
-  methods (Access=public,Abstract=true)
+  methods (Abstract=true)
     % Define a minimization problem
     %
     % INPUT

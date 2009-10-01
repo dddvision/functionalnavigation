@@ -1,10 +1,12 @@
 classdef optimizerstub < optimizer
-  properties
+  
+  properties (GetAccess=private,SetAccess=private)
     objective
     parameters
     cost
   end
-  methods
+  
+  methods (Access=public)
     function this=optimizerstub
       fprintf('\n');
       fprintf('\noptimizerstub::optimizerstub');
@@ -23,6 +25,6 @@ classdef optimizerstub < optimizer
       this.cost=cost;
       % TODO: keep the best and randomize the rest
     end
-    
   end
+  
 end
