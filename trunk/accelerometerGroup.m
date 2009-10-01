@@ -21,7 +21,7 @@ classdef accelerometerGroup < sensor
     % timeStep = time step, double scalar
     timeStep=getTimeStep(this,id);
     
-    % Get accelerometer position and direction relative to the body frame
+    % Get accelerometer position and orientation relative to the body frame
     %
     % INPUT
     % id = identifier, uint32 scalar
