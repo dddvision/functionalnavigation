@@ -17,8 +17,8 @@ while(true)
   
   if(DISPLAY_OUTPUT)
     figure;
-    px=exp(-9*(cost.*cost));
-    display(xEstimate,'alpha',px');
+    px=exp(-(9/2)*(cost.*cost));
+    display(xEstimate,'alpha',px','tmax',4);
     axis('on');
     xlabel('North');
     ylabel('East');

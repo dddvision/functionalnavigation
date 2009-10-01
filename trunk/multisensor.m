@@ -1,8 +1,7 @@
+% TODO: define this class
 classdef multisensor
   
   methods
-    n=(this);
-    
   end
   
 end

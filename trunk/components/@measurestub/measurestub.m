@@ -1,16 +1,23 @@
 classdef measurestub < measure
   
+  properties
+    u
+  end  
+  
   methods
-    function this=measurestub(u)
+    function this=measurestub(dataobj)
       fprintf('\n');
       fprintf('\nmeasurestub::measurestub');
+      this.u=dataobj;
     end
     
     function cost=evaluate(this,x,tmin)
       fprintf('\n');
       fprintf('\n%s::evaluate',class(this));
       
-      [tZero,tmax]=domain(x);
+      [a,b]=domain(this.u);
+      tmin=getTime(this.u,a);
+      tmax=getTime(this.u,b);
       pqa=evaluate(x,tmin);
       fprintf('\nx(%f) = < ',tmin);
       fprintf('%f ',pqa);
