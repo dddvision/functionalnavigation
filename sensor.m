@@ -8,7 +8,7 @@ classdef sensor
     % Unlock the sensor data
     unlock(this);
     
-    % Return first and last valid indices
+    % Return first and last indices from a valid consecutive list
     %
     % OUTPUT
     % a = first valid node index, uint32 scalar
