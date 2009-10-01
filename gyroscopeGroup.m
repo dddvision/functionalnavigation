@@ -21,7 +21,7 @@ classdef gyroscopeGroup < sensor
     % timeStep = time step, double scalar
     timeStep=getTimeStep(this,id);
     
-    % Get gyroscope position and rotation axis relative to the body frame
+    % Get gyroscope position and orientation relative to the body frame
     %
     % INPUT
     % id = identifier, uint32 scalar
