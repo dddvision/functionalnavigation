@@ -1,6 +1,7 @@
 % NOTES
 % Body frame axis order is forward-right-down
 % Using SI units (meters, seconds, radians)
+% If you need to add optional device methods, then inherit from this class
 % TODO: define exceptions for invalid indices and other errors
 classdef gyroscopeGroup < sensor
   
@@ -9,7 +10,7 @@ classdef gyroscopeGroup < sensor
     %
     % OUTPUT
     % idList = list of identifiers, uint32 
-    idList=numGyroscopes(this);
+    idList=getIDlist(this);
     
     % Get time step associated with a gyroscope
     %
@@ -17,8 +18,8 @@ classdef gyroscopeGroup < sensor
     % id = identifier, uint32 scalar
     %
     % OUTPUT
-    % dt = time step, double scalar
-    dt=getTimeStep(this,id);
+    % timeStep = time step, double scalar
+    timeStep=getTimeStep(this,id);
     
     % Get gyroscope position and rotation axis relative to the body frame
     %
@@ -26,8 +27,8 @@ classdef gyroscopeGroup < sensor
     % id = identifier, uint32 scalar
     %
     % OUTPUT
-    % posdir = position and unit normalized direction vector, double 6-by-1
-    posdir=getOffset(this,id);
+    % offset = position and unit normalized direction vector, double 6-by-1
+    offset=getOffset(this,id);
     
     % Get raw gyroscope data
     %

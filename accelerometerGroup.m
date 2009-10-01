@@ -1,6 +1,7 @@
 % NOTES
 % Body frame axis order is forward-right-down
 % Using SI units (meters, seconds, radians)
+% If you need to add optional device methods, then inherit from this class
 % TODO: define exceptions for invalid indices and other errors
 classdef accelerometerGroup < sensor
   
@@ -9,7 +10,7 @@ classdef accelerometerGroup < sensor
     %
     % OUTPUT
     % idList = list of identifiers, uint32 
-    idList=numAccelerometers(this);
+    idList=getIDlist(this);
     
     % Get time step associated with an accelerometer
     %
@@ -17,8 +18,8 @@ classdef accelerometerGroup < sensor
     % id = identifier, uint32 scalar
     %
     % OUTPUT
-    % deltaTime = time step, double scalar
-    deltaTime=getTimeStep(this,id);
+    % timeStep = time step, double scalar
+    timeStep=getTimeStep(this,id);
     
     % Get accelerometer position and direction relative to the body frame
     %
@@ -26,8 +27,8 @@ classdef accelerometerGroup < sensor
     % id = identifier, uint32 scalar
     %
     % OUTPUT
-    % posdir = position and unit normalized direction vector, double 6-by-1
-    posdir=getOffset(this,id);
+    % offset = position and unit normalized direction vector, double 6-by-1
+    offset=getOffset(this,id);
     
     % Get raw accelerometer data
     %
