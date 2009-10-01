@@ -30,25 +30,24 @@ classdef trajectorystub < trajectory
       cost=zeros(size(bits,1),1);
     end
      
-    function [a,b]=domain(this)
+    function a=domain(this)
       a=0;
-      b=numel(this.dynamicParameters)/this.parametersPerSecond;
     end
    
     function posquat=evaluate(this,t)
       N=numel(t);
       posquat=repmat(this.pose,[1,N]);
       posquat(2,:)=t;
-      [a,b]=domain(this);
-      posquat(:,t<a|t>b)=NaN;
+      a=domain(this);
+      posquat(:,t<a)=NaN;
     end
     
     function posquatdot=derivative(this,t)
       N=numel(t);
       posquatdot=zeros(7,N);
       posquatdot(2,:)=1;
-      [a,b]=domain(this);
-      posquatdot(:,t<a|t>b)=NaN;
+      a=domain(this);
+      posquatdot(:,t<a)=NaN;
     end
   end  
 end

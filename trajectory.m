@@ -2,12 +2,11 @@
 classdef trajectory
   
   methods (Abstract=true,Access=public)
-    % Return the endpoints of the closed time domain of a trajectory
+    % Return the lower bound of the time domain of a trajectory
     %
     % OUTPUT
     % a = time domain lower bound
-    % b = time domain upper bound
-    [a,b]=domain(this);
+    a=domain(this);
     
     % Evaluate a single trajectory at multiple time instants
     %
@@ -96,15 +95,14 @@ classdef trajectory
       alpha=trajectory_display_getparam('alpha',1/K,K,varargin{:});
       scale=trajectory_display_getparam('scale',0.002,K,varargin{:});
       color=trajectory_display_getparam('color',[0,0,0],K,varargin{:});
-      tmin=trajectory_display_getparam('tmin',-inf,K,varargin{:});
-      tmax=trajectory_display_getparam('tmax',inf,K,varargin{:});
+      tmin=trajectory_display_getparam('tmin',0,K,varargin{:});
+      tmax=trajectory_display_getparam('tmax',1,K,varargin{:});
 
       h=[];
       for k=1:K
-        [a,b]=domain(this(k));
+        a=domain(this(k));
         tmink=max(tmin(k),a);
-        tmaxk=min(tmax(k),b);
-        h=[h,trajectory_display_individual(this(k),alpha(k),scale(k),color(k,:),tmink,tmaxk)];
+        h=[h,trajectory_display_individual(this(k),alpha(k),scale(k),color(k,:),tmink,tmax(k))];
       end
     end
   end
