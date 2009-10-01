@@ -9,7 +9,7 @@ classdef gyroscopeGroup < sensor
     % Get list of gyroscope identifiers in the group
     %
     % OUTPUT
-    % idList = list of identifiers, uint32 
+    % idList = list of identifiers, uint32 N-by-1
     idList=getIDlist(this);
     
     % Get time step associated with a gyroscope

@@ -9,7 +9,7 @@ classdef accelerometerGroup < sensor
     % Get list of acccelerometer identifiers in the group
     %
     % OUTPUT
-    % idList = list of identifiers, uint32 
+    % idList = list of identifiers, uint32 N-by-1
     idList=getIDlist(this);
     
     % Get time step associated with an accelerometer
