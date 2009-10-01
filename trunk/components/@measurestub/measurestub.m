@@ -1,10 +1,10 @@
 classdef measurestub < measure
   
-  properties
+  properties (GetAccess=private,SetAccess=private)
     u
   end  
   
-  methods
+  methods (Access=public)
     function this=measurestub(dataobj)
       fprintf('\n');
       fprintf('\nmeasurestub::measurestub');

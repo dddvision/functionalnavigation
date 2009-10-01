@@ -1,12 +1,12 @@
 % NOTE: this represents a dynamic model of a fictitious system
 classdef lineWobble1 < trajectory
   
-  properties
+  properties (GetAccess=private,SetAccess=private)
     data
     parametersPerSecond
   end
   
-  methods
+  methods (Access=public)
     function this=lineWobble1
       fprintf('\n');
       fprintf('\nlineWobble1::lineWobble1');

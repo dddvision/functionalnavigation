@@ -1,22 +1,17 @@
+% NOTES
+% TODO: define exceptions for invalid indices and other errors
 classdef sensor
   
-  % TODO: use exceptions for error handling
-  methods (Access=public,Abstract=false)
-    % Lock the sensor data
-    lock(this);
-    
-    % Unlock the sensor data
-    unlock(this);
-    
+  methods (Abstract=true)
     % Return first and last indices from a valid consecutive list
     %
     % OUTPUT
-    % a = first valid node index, uint32 scalar
-    % b = last valid node index, uint32 scalar
+    % ka = first valid node index, uint32 scalar
+    % kb = last valid node index, uint32 scalar
     %
     % NOTES
     % Returns empty when no nodes are available
-    [a,b]=domain(this);
+    [ka,kb]=domain(this);
     
     % Get time stamp
     %
@@ -29,6 +24,12 @@ classdef sensor
     % NOTES
     % Time stamps must not decrease with increasing indices
     time=getTime(this,k);
+
+    % Lock the data buffer so that indices do not change during subsequent calls
+    lock(this);
+    
+    % Unlock the data buffer for write access from simulated or real sensor
+    unlock(this);
   end
   
 end

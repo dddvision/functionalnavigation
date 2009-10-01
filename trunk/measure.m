@@ -1,6 +1,6 @@
 classdef measure
   
-  methods (Access=public,Abstract=true)
+  methods (Abstract=true)
     % Evaluate a measure of inconsistency between a trajectory and sensor data
     %
     % INPUTS

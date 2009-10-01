@@ -1,7 +1,7 @@
 % Using SI units (seconds, meters, radians)
 classdef trajectory
   
-  methods (Abstract=true,Access=public)
+  methods (Abstract=true)
     % Return the lower bound of the time domain of a trajectory
     %
     % OUTPUT
@@ -64,7 +64,7 @@ classdef trajectory
     cost=priorCost(this,bits,tmin);
   end
   
-  methods (Abstract=false,Access=public)
+  methods (Access=public)
     % Visualize a set of trajectories with optional transparency
     %
     % INPUTS

@@ -1,12 +1,14 @@
 classdef matlabGA1
-  properties
+  
+  properties (GetAccess=private,SetAccess=private)
     objective
     parameters
     cost
     defaultOptions;
     stepGAhandle;
   end
-  methods
+  
+  methods (Access=public)
     function this=matlabGA1
       fprintf('\n');
       fprintf('\nmatlabGA1::matlabGA1');
@@ -51,4 +53,5 @@ classdef matlabGA1
       cd(pathtemp);
     end
   end
+  
 end

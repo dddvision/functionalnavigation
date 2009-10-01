@@ -1,6 +1,6 @@
 classdef tommas
   
-  properties
+  properties (GetAccess=private,SetAccess=private)
     optimizer
     trajectory
     measure
@@ -9,7 +9,7 @@ classdef tommas
     tmin
   end
   
-  methods
+  methods (Access=public)
     % Construct a Trajectory Optimization Manager for Multiple Algorithms and Sensors
     function this=tommas(config)
       fprintf('\n');

@@ -1,10 +1,12 @@
 classdef trajectorystub < trajectory
-  properties
+  
+  properties (GetAccess=private,SetAccess=private)
     pose
     parametersPerSecond
     dynamicParameters
   end
-  methods
+  
+  methods (Access=public)
     function this=trajectorystub
       fprintf('\n');
       fprintf('\ntrajectorystub::trajectorystub');
@@ -49,5 +51,6 @@ classdef trajectorystub < trajectory
       a=domain(this);
       posquatdot(:,t<a)=NaN;
     end
-  end  
+  end
+  
 end

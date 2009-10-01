@@ -5,35 +5,32 @@
 % TODO: define exceptions for invalid indices and other errors
 classdef accelerometerGroup < sensor
   
-  methods
-    % Get list of acccelerometer identifiers in the group
+  methods (Abstract=true)
+    % Get list of acccelerometer identifiers within this group
     %
     % OUTPUT
-    % idList = list of identifiers, uint32 N-by-1
-    idList=getIDlist(this);
+    % accelID = list of member identifiers, uint32 N-by-1
+    accelID=getAccelID(this);
     
-    % Get time step associated with an accelerometer
-    %
-    % INPUT
-    % id = identifier, uint32 scalar
+    % Get time step or period associated with this accelerometer group
     %
     % OUTPUT
     % timeStep = time step, double scalar
-    timeStep=getTimeStep(this,id);
+    timeStep=getTimeStep(this);
     
     % Get accelerometer position and orientation relative to the body frame
     %
     % INPUT
-    % id = identifier, uint32 scalar
+    % accelID = member identifier, uint32 scalar
     %
     % OUTPUT
     % offset = position and unit normalized direction vector, double 6-by-1
-    offset=getOffset(this,id);
+    offset=getOffset(this,accelID);
     
     % Get raw accelerometer data
     %
     % INPUT
-    % id = identifier, uint32 scalar
+    % accelID = member identifier, uint32 scalar
     % k = node index, uint32 scalar
     %
     % OUTPUT
@@ -43,7 +40,7 @@ classdef accelerometerGroup < sensor
     % Specific force is a raw measurement in the sense that it does not compensate for gravity
     % The measurement is taken about the direction of the accelerometer at
     %   the beginning of the preceeding time step
-    specificForce=getSpecificForce(this,id,k);
+    specificForce=getSpecificForce(this,accelID,k);
   end
   
 end

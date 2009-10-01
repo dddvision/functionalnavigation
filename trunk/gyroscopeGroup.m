@@ -5,35 +5,32 @@
 % TODO: define exceptions for invalid indices and other errors
 classdef gyroscopeGroup < sensor
   
-  methods
-    % Get list of gyroscope identifiers in the group
+  methods (Abstract=true)
+    % Get list of gyroscope identifiers within this group
     %
     % OUTPUT
-    % idList = list of identifiers, uint32 N-by-1
-    idList=getIDlist(this);
+    % gyroID = list of member identifiers, uint32 N-by-1
+    gyroID=getGyroID(this);
     
-    % Get time step associated with a gyroscope
-    %
-    % INPUT
-    % id = identifier, uint32 scalar
+    % Get time step or period associated with this gyroscope group
     %
     % OUTPUT
     % timeStep = time step, double scalar
-    timeStep=getTimeStep(this,id);
+    timeStep=getTimeStep(this);
     
     % Get gyroscope position and orientation relative to the body frame
     %
     % INPUT
-    % id = identifier, uint32 scalar
+    % gyroID = member identifier, uint32 scalar
     %
     % OUTPUT
     % offset = position and unit normalized direction vector, double 6-by-1
-    offset=getOffset(this,id);
+    offset=getOffset(this,gyroID);
     
     % Get raw gyroscope data
     %
     % INPUT
-    % id = identifier, uint32 scalar
+    % gyroID = member identifier, uint32 scalar
     % k = node index, uint32 scalar
     %
     % OUTPUT
@@ -43,7 +40,7 @@ classdef gyroscopeGroup < sensor
     % Average angular rate is a raw measurement from a typical integrating gyroscope
     % The rate is measured via right-hand rule about the direction of the 
     %   gyroscope at the beginning of the preceeding time step
-    averageRate=getAverageRate(this,id,k);
+    averageRate=getAverageRate(this,gyroID,k);
   end
   
 end
