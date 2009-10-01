@@ -1,5 +1,6 @@
 % NOTES
-% Camera and body frame axis order is forward-right-down
+% Body frame axis order is forward-right-dowm
+% Camera frame axis order is forward-right-down
 % Using SI units (meters, seconds, radians)
 % TODO: define exceptions for invalid indices and other errors
 classdef camera < sensor
@@ -14,7 +15,7 @@ classdef camera < sensor
     %  'hsv'  hue-saturation-value
     %  'v'    grayscale
     %  'i'    infrared
-    str=layers(this);
+    str=getLayers(this);
     
     % Get an image
     %
@@ -24,7 +25,13 @@ classdef camera < sensor
     % OUTPUT
     % im = image, uint8 HEIGHT-by-WIDTH-by-LAYERS
     im=getImage(this,k);
-
+    
+    % Check whether the camera frame moves relative to the body frame
+    %
+    % OUTPUT
+    % flag = true if the offset changes, false otherwise, bool
+    flag=isOffsetDynamic(this);
+    
     % Get camera frame position and orientation relative to the body frame
     %
     % INPUT
@@ -32,7 +39,13 @@ classdef camera < sensor
     %
     % OUTPUT
     % posquat = position and orientation in the body frame, double 7-by-1
-    posquat=offset(this,k);
+    posquat=getOffset(this,k);
+        
+    % Check whether the camera projection changes over time
+    %
+    % OUTPUT
+    % flag = true if the projection changes, false otherwise, bool
+    isProjectionDynamic(this);
     
     % Project ray vectors in the camera frame to image points and vice-versa
     %

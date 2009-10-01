@@ -15,7 +15,7 @@ else
   ia=getImage(this.u,ka);
   ib=getImage(this.u,kb);
   
-  switch( layers(this.u) )
+  switch( getLayers(this.u) )
     case {'rgb','rgbi'}
       ia=rgb2gray(ia(:,:,1:3));
       ib=rgb2gray(ib(:,:,1:3));
