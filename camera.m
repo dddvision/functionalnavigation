@@ -38,14 +38,14 @@ classdef camera < sensor
     % k = node index, uint32 scalar
     %
     % OUTPUT
-    % posquat = position and orientation in the body frame, double 7-by-1
-    posquat=getOffset(this,k);
+    % offset = position and orientation in the body frame, double 7-by-1
+    offset=getOffset(this,k);
         
     % Check whether the camera projection changes over time
     %
     % OUTPUT
     % flag = true if the projection changes, false otherwise, bool
-    isProjectionDynamic(this);
+    flag=isProjectionDynamic(this);
     
     % Project ray vectors in the camera frame to image points and vice-versa
     %
