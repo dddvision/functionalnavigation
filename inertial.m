@@ -2,6 +2,7 @@
 % This class defines a synchronously time-stamped group of inertial sensors
 %   rigidly attached to a body with different positions and orientations
 % The body frame axis order is forward-right-down
+% Rotation is measured via the right-hand rule
 classdef inertial < sensor
 
   methods (Abstract)
