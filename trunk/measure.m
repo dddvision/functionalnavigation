@@ -1,5 +1,11 @@
 classdef measure
   
+  methods (Static=true)
+    function str=baseClass
+      str='measure';
+    end  
+  end
+  
   methods (Abstract=true)
     % Evaluate a measure of inconsistency between a trajectory and sensor data
     %

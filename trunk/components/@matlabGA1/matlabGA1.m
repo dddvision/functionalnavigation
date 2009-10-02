@@ -1,4 +1,4 @@
-classdef matlabGA1
+classdef matlabGA1 < optimizer
   
   properties (GetAccess=private,SetAccess=private)
     objective
