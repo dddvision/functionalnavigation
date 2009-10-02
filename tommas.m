@@ -34,10 +34,15 @@ classdef tommas
       % initialize optimizer
       this.optimizer=feval(config.optimizer);
 
-      % initialize trajectories and measures
-      thisSensor=feval(config.sensor);
+      % initialize trajectories
       this.trajectory=feval(config.trajectory);
-      this.measure{1}=feval(config.measure,thisSensor);
+      
+      % match measures to sensors
+      allSensors=feval([config.multiSensor,'.',config.multiSensor]);
+      list=listSensors(allSensors,'camera');
+      cam=getSensor(allSensors,list(1));
+      
+      this.measure{1}=feval(config.measure,cam);
       for k=2:this.popSize
         this.trajectory(k,1)=feval(config.trajectory);
       end

@@ -1,6 +1,12 @@
 % Using SI units (seconds, meters, radians)
 classdef trajectory
   
+  methods (Static=true)
+    function str=baseClass
+      str='trajectory';
+    end  
+  end
+  
   methods (Abstract=true)
     % Return the lower bound of the time domain of a trajectory
     %

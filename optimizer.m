@@ -1,5 +1,11 @@
 classdef optimizer
   
+  methods (Static=true)
+    function str=baseClass
+      str='optimizer';
+    end  
+  end
+  
   methods (Abstract=true)
     % Define a minimization problem
     %

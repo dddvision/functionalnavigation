@@ -2,7 +2,13 @@
 % TODO: handle invalid indices and other errors
 classdef multiSensor
   
-  methods (Access=protected)
+  methods (Static=true)
+    function str=baseClass
+      str='multiSensor';
+    end  
+  end
+  
+  methods (Abstract=true)
     % Count number of sensor instances of a given class
     %
     % INPUT
