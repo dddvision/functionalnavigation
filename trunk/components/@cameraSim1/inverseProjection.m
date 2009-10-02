@@ -1,4 +1,4 @@
-function ray=inverseProjection(this,k,xy)
+function ray=inverseProjection(this,k,view,xy)
   global cameraSim1_singleton
   buf=ktor(this,k);
   rho=cameraSim1_singleton.rho;

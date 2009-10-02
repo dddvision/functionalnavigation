@@ -1,3 +1,3 @@
-function flag=isOffsetDynamic(this)
+function flag=isOffsetDynamic(this,view)
 flag=false;
 end

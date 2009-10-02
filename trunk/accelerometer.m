@@ -6,8 +6,8 @@ classdef accelerometer < inertial
     % Get raw accelerometer data
     %
     % INPUT
-    % ax = zero-based axis index, uint32 scalar
     % k = data index, uint32 scalar
+    % ax = zero-based axis index, uint32 scalar
     %
     % OUTPUT
     % specificForce = average specific force during the preceeding integration period, double scalar
@@ -15,9 +15,9 @@ classdef accelerometer < inertial
     % NOTES
     % Specific force is a raw measurement from a typical integrating accelerometer
     % This measurement has not been gravity compensated
-    % This measurement is taken about the direction of the axis at the 
-    %   beginning of the preceeding time step
-    specificForce=getSpecificForce(this,ax,k);
+    % This measurement is taken by integrating about the instantaneous
+    %   axis as it moves during the preceeding time step
+    specificForce=getSpecificForce(this,k,ax);
   end
   
 end

@@ -6,17 +6,17 @@ classdef gyroscope < inertial
     % Get raw gyroscope data
     %
     % INPUT
-    % ax = zero-based axis index, uint32 scalar
     % k = data index, uint32 scalar
+    % ax = zero-based axis index, uint32 scalar
     %
     % OUTPUT
     % angularRate = average angular rate during the preceeding integration period, double scalar
     %
     % NOTES
     % Average angular rate is a raw measurement from a typical integrating gyroscope
-    % This measurement is taken about the direction of the axis at the 
-    %   beginning of the preceeding time step using the right-hand-rule
-    angularRate=getAngularRate(this,ax,k);
+    % This measurement is taken by integrating about the instantaneous
+    %   axis as it moves during the preceeding time step
+    angularRate=getAngularRate(this,k,ax);
   end
   
 end

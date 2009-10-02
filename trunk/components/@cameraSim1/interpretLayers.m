@@ -1,3 +1,3 @@
-function str=interpretLayers(this)
-  str='rgb';
+function str=interpretLayers(this,view)
+str='rgb';
 end

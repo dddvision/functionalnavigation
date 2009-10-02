@@ -1,4 +1,4 @@
-function xy=projection(this,k,ray)
+function xy=projection(this,k,view,ray)
   global cameraSim1_singleton
   buf=ktor(this,k);
   rho=cameraSim1_singleton.rho;

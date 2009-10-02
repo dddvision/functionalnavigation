@@ -1,3 +1,3 @@
-function flag=isProjectionDynamic(this)
+function flag=isProjectionDynamic(this,view)
 flag=false;
 end

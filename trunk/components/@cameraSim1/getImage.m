@@ -1,4 +1,4 @@
-function im=getImage(this,k)
+function im=getImage(this,k,view)
   global cameraSim1_singleton
   if( (k<cameraSim1_singleton.a)||(k>cameraSim1_singleton.b) )
     im=zeros(0,0,3);
