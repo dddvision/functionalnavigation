@@ -1,8 +1,7 @@
 % NOTES
 % Body frame axis order is forward-right-dowm
 % Camera frame axis order is forward-right-down
-% Using SI units (meters, seconds, radians)
-% TODO: define exceptions for invalid indices and other errors
+% If you need to add optional device methods, then inherit from this class
 classdef camera < sensor
   
   methods (Abstract=true)
@@ -15,12 +14,12 @@ classdef camera < sensor
     %  'hsv'  hue-saturation-value
     %  'v'    grayscale
     %  'i'    infrared
-    str=getLayers(this);
+    str=interpretLayers(this);
     
     % Get an image
     %
     % INPUT
-    % k = node index, uint32 scalar
+    % k = data index, uint32 scalar
     %
     % OUTPUT
     % im = image, uint8 HEIGHT-by-WIDTH-by-LAYERS
@@ -35,11 +34,12 @@ classdef camera < sensor
     % Get camera frame position and orientation relative to the body frame
     %
     % INPUT
-    % k = node index, uint32 scalar
+    % k = data index, uint32 scalar
     %
     % OUTPUT
-    % offset = position and quaternion in the body frame, double 7-by-1
-    offset=getOffset(this,k);
+    % p = position of camera origin in the body frame, double 3-by-1
+    % q = orientation of camera frame in the body frame as a quaternion, double 4-by-1
+    [p,q]=getOffset(this,k);
         
     % Check whether the camera projection changes over time
     %
@@ -50,17 +50,17 @@ classdef camera < sensor
     % Project ray vectors in the camera frame to image points and vice-versa
     %
     % INPUT/OUTPUT
-    % k = node index, uint32 scalar
+    % k = data index, uint32 scalar
     % ray = unit vectors in camera frame, double 3-by-P
-    % p = points in pixel coordinates, double 2-by-P
+    % pix = points in pixel coordinates, double 2-by-P
     %
     % NOTES
     % Pixel coordinate interpretation:
-    %   p(1,:) = strides along the non-contiguous dimension (Matlab column minus one)
-    %   p(2,:) = steps along the contiguous dimension (Matlab row minus one)
+    %   pix(1,:) = strides along the non-contiguous dimension (Matlab column minus one)
+    %   pix(2,:) = steps along the contiguous dimension (Matlab row minus one)
     % Points outside the image area return NaN-valued vectors
-    p=projection(this,k,ray);
-    ray=inverseProjection(this,k,p);
+    pix=projection(this,k,ray);
+    ray=inverseProjection(this,k,pix);
   end
  
 end
