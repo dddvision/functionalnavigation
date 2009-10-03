@@ -1,7 +1,7 @@
 function cost=evaluate(this,x,tmin)
 
 fprintf('\n');
-fprintf('\n%s::evaluate',class(this));
+fprintf('\nopticalFlowPDollar::evaluate');
 
 fprintf('\ntmin = %f',tmin);
 

@@ -1,9 +1,7 @@
 classdef optimizer
   
-  methods (Static=true)
-    function str=baseClass
-      str='optimizer';
-    end  
+  properties (SetAccess=private,GetAccess=public)
+    baseClass='optimizer';  
   end
   
   methods (Abstract=true)

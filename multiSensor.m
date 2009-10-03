@@ -2,10 +2,8 @@
 % TODO: handle invalid indices and other errors
 classdef multiSensor
   
-  methods (Static=true)
-    function str=baseClass
-      str='multiSensor';
-    end  
+  properties (SetAccess=private,GetAccess=public)
+    baseClass='multiSensor';  
   end
   
   methods (Abstract=true)

@@ -1,9 +1,7 @@
 classdef measure
   
-  methods (Static=true)
-    function str=baseClass
-      str='measure';
-    end  
+  properties (SetAccess=private,GetAccess=public)
+    baseClass='measure';
   end
   
   methods (Abstract=true)

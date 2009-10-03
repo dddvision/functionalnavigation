@@ -1,4 +1,4 @@
-classdef trajectorystub < trajectory
+classdef trajectoryStub < trajectory
   
   properties (GetAccess=private,SetAccess=private)
     pose
@@ -7,9 +7,9 @@ classdef trajectorystub < trajectory
   end
   
   methods (Access=public)
-    function this=trajectorystub
+    function this=trajectoryStub
       fprintf('\n');
-      fprintf('\ntrajectorystub::trajectorystub');
+      fprintf('\ntrajectoryStub::trajectoryStub');
       this.parametersPerSecond=15;
       this.pose=[0;0;0;1;0;0;0];
       this.dynamicParameters=logical(rand(1,30)>0.5);
@@ -21,7 +21,7 @@ classdef trajectorystub < trajectory
 
     function this=putBits(this,bits,tmin)
       fprintf('\n');
-      fprintf('\n%s::putBits',class(this));
+      fprintf('\ntrajectoryStub::putBits');
       fprintf('\ntmin = %f',tmin);
       fprintf('\nbits = ');
       fprintf('%d',bits);

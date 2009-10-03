@@ -28,23 +28,22 @@ classdef tommas
 
       % TODO: set adaptively to manage computation
       this.iterations=3;
-      this.tmin=1.3;
+      this.tmin=0;
       this.popSize=config.popSizeDefault;
       
       % initialize optimizer
-      this.optimizer=feval(config.optimizer);
+      this.optimizer=unwrapComponent(config.optimizer);
 
-      % initialize trajectories
-      this.trajectory=feval(config.trajectory);
-      
       % match measures to sensors
-      allSensors=feval([config.multiSensor,'.',config.multiSensor]);
+      allSensors=unwrapComponent(config.multiSensor);
       list=listSensors(allSensors,'camera');
       cam=getSensor(allSensors,list(1));
-      
-      this.measure{1}=feval(config.measure,cam);
+      this.measure{1}=unwrapComponent(config.measure,cam);
+     
+      % initialize trajectories
+      this.trajectory=unwrapComponent(config.trajectory);
       for k=2:this.popSize
-        this.trajectory(k,1)=feval(config.trajectory);
+        this.trajectory(k,1)=unwrapComponent(config.trajectory);
       end
       % TODO: enable multiple measures
     end
