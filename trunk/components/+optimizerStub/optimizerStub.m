@@ -1,4 +1,4 @@
-classdef optimizerstub < optimizer
+classdef optimizerStub < optimizer
   
   properties (GetAccess=private,SetAccess=private)
     objective
@@ -7,9 +7,9 @@ classdef optimizerstub < optimizer
   end
   
   methods (Access=public)
-    function this=optimizerstub
+    function this=optimizerStub
       fprintf('\n');
-      fprintf('\noptimizerstub::optimizerstub');
+      fprintf('\noptimizerStub::optimizerStub');
     end
     
     function [this,initialCost]=defineProblem(this,objectiveFunction,initialParameters)

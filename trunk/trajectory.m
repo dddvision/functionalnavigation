@@ -1,10 +1,8 @@
 % Using SI units (seconds, meters, radians)
 classdef trajectory
   
-  methods (Static=true)
-    function str=baseClass
-      str='trajectory';
-    end  
+  properties (SetAccess=private,GetAccess=public)
+    baseClass='trajectory';
   end
   
   methods (Abstract=true)

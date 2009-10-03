@@ -1,19 +1,19 @@
-classdef measurestub < measure
+classdef measureStub < measure
   
   properties (GetAccess=private,SetAccess=private)
     u
   end  
   
   methods (Access=public)
-    function this=measurestub(dataobj)
+    function this=measureStub(dataobj)
       fprintf('\n');
-      fprintf('\nmeasurestub::measurestub');
+      fprintf('\nmeasureStub::measureStub');
       this.u=dataobj;
     end
     
     function cost=evaluate(this,x,tmin)
       fprintf('\n');
-      fprintf('\n%s::evaluate',class(this));
+      fprintf('\nmeasureStub::evaluate');
       
       [a,b]=domain(this.u);
       tmin=getTime(this.u,a);

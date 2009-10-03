@@ -1,5 +1,5 @@
 % NOTE: this represents a dynamic model of a fictitious system
-classdef lineWobble1 < trajectory
+classdef wobble1 < trajectory
   
   properties (GetAccess=private,SetAccess=private)
     data
@@ -7,9 +7,9 @@ classdef lineWobble1 < trajectory
   end
   
   methods (Access=public)
-    function this=lineWobble1
+    function this=wobble1
       fprintf('\n');
-      fprintf('\nlineWobble1::lineWobble1');
+      fprintf('\nwobble1::wobble1');
       this.parametersPerSecond=15;
       this.data=logical(rand(1,30)>0.5);
     end
@@ -20,7 +20,7 @@ classdef lineWobble1 < trajectory
 
     function this=putBits(this,bits,tmin)
       fprintf('\n');
-      fprintf('\n%s::putBits',class(this));
+      fprintf('\nwobble1::putBits');
       fprintf('\ntmin = %f',tmin);
       fprintf('\nbits = ');
       fprintf('%d',bits);
