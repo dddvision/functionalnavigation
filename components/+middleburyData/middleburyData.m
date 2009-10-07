@@ -1,3 +1,8 @@
+% REFERENCE
+% Middlebury College "Art" dataset
+% H. Hirschmuller and D. Scharstein. Evaluation of cost functions for 
+% stereo matching. In IEEE Computer Society Conference on Computer Vision 
+% and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
 classdef middleburyData < multiSensor
 
   properties (GetAccess=private,SetAccess=private)
@@ -7,7 +12,7 @@ classdef middleburyData < multiSensor
 
   methods (Access=public)
     function this=middleburyData
-      this.sensors{1}=middleburyData.cameraSim1;
+      this.sensors{1}=middleburyData.cameraSim;
       this.names{1}='CAMERA';
     end
     

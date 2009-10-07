@@ -1,6 +1,7 @@
 classdef tommas
   
   properties (GetAccess=private,SetAccess=private)
+    sensorHandles
     optimizer
     trajectory
     measure
