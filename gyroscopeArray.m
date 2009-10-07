@@ -1,6 +1,6 @@
 % NOTES
 % If you need to add optional device methods, then inherit from this class
-classdef gyroscope < inertialElement
+classdef gyroscopeArray < inertialElement
   
   methods (Abstract=true)
     % Get raw gyroscope data

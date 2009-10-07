@@ -1,9 +1,9 @@
 % NOTES
-% This class defines a synchronously time-stamped group of inertial sensors
+% This class defines a synchronously time-stamped array of inertial sensors
 %   rigidly attached to a body with different positions and orientations
 % The body frame axis order is forward-right-down
 % Rotation is measured via the right-hand rule
-classdef inertialElement < sensor
+classdef inertialArray < sensor
 
   methods (Abstract)
     % Get inertial integration time
@@ -16,7 +16,7 @@ classdef inertialElement < sensor
     %   the time stamps of consecutively indexed data
     dt=getIntegrationTime(this);
     
-    % Get number of axes in the group
+    % Get number of axes in the array
     %
     % OUTPUT
     % num = number of axes, uint32 N-by-1
