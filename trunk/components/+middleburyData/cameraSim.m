@@ -1,4 +1,4 @@
-classdef cameraSim < camera
+classdef cameraSim < cameraArray
   
   properties
     ring
@@ -50,8 +50,7 @@ classdef cameraSim < camera
     
     function im=getImage(this,k,view)
       assert(isa(k,'uint32'));
-      assert(isa(view,'uint32'));
-      assert(view==0);
+      assert(this.isLocked);
       assert(k>=this.a);
       assert(k<=this.b);
       im=this.ring{ktor(this,k)}.image;
@@ -65,7 +64,9 @@ classdef cameraSim < camera
       flag=false;
     end
     
-    function xy=projection(this,k,view,ray)
+    function xy=projection(this,ray,k,view)
+      assert(isa(k,'uint32'));
+      assert(this.isLocked);
       buf=ktor(this,k);
       m=this.ring{buf}.sz(1);
       n=this.ring{buf}.sz(2);
@@ -76,7 +77,9 @@ classdef cameraSim < camera
           (u1+1)*((m-1)/2)];
     end
     
-    function ray=inverseProjection(this,k,view,xy)
+    function ray=inverseProjection(this,xy,k,view)
+      assert(isa(k,'uint32'));
+      assert(this.isLocked);
       buf=ktor(this,k);
       m=this.ring{buf}.sz(1);
       n=this.ring{buf}.sz(2);
@@ -91,6 +94,8 @@ classdef cameraSim < camera
     end
     
     function [p,q]=getFrame(this,k,view)
+      assert(isa(k,'uint32'));
+      assert(this.isLocked);
       p=[0;0;0];
       q=[1;0;0;0];
     end

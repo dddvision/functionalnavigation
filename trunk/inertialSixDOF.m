@@ -3,7 +3,7 @@
 %   one accelerometer and one gyroscope on each axis
 %   shared time stamps
 %   shared origin
-classdef inertialSixDOF < accelerometer & gyroscope
+classdef inertialSixDOF < accelerometerArray & gyroscopeArray
 
   methods (Abstract=true)
     % Get sensor frame position and orientation relative to the body frame

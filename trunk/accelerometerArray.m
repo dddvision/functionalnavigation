@@ -1,6 +1,6 @@
 % NOTES
 % If you need to add optional device methods, then inherit from this class
-classdef accelerometer < inertialElement
+classdef accelerometerArray < inertialElement
   
   methods (Abstract=true)
     % Get raw accelerometer data
