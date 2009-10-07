@@ -1,6 +1,6 @@
 classdef measure
   
-  properties (SetAccess=private,GetAccess=public)
+  properties (Constant=true,GetAccess=public)
     baseClass='measure';
   end
   

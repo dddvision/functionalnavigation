@@ -5,7 +5,7 @@ classdef tommasConfig
     
     % TODO: support configuration of multiple sensors/measures
     % TODO: measure/sensor compatibility checking
-    multiSensor='middleburyData';
+    multiSensor='middleburyData'; % 'middleburyData'
     trajectory='wobble1'; % try 'trajectoryStub' or 'wobble1'
     measure='opticalFlowPDollar'; % try 'measureStub' or 'opticalFlowPDollar'
     optimizer='matlabGA1'; % try 'optimizerStub' or 'matlabGA1'

@@ -2,36 +2,41 @@
 % TODO: handle invalid indices and other errors
 classdef multiSensor
   
-  properties (SetAccess=private,GetAccess=public)
-    baseClass='multiSensor';  
+  properties (Constant=true,GetAccess=public)
+    baseClass='multiSensor';
   end
-  
+
   methods (Abstract=true)
-    % Count number of sensor instances of a given class
+    % List available sensors of a given class
     %
     % INPUT
     % type = class identifier, string
     %
     % OUTPUT
-    % list = list of unique sensor identifiers for the given class, uint32 N-by-1
+    % list = list of unique sensor identifiers, uint32 N-by-1
     %
     % NOTE
-    % Sensors that inherit from the given class will also be included 
+    % Sensors that inherit from the given class will also be included in
+    %   the output list
     list=listSensors(this,type);
     
     % Get sensor name
     %
     % INPUT
-    % id = unique identifier of a sensor, uint32 scalar
+    % id = zero-based index, uint32 scalar
     %
     % OUTPUT
     % name = sensor name, string
+    %
+    % NOTE
+    % The name does not need to be unique, but a specific name helps the 
+    %   user to configure the framework.
     name=getName(this,id);
-    
+
     % Get instance of a sensor
     %
     % INPUT
-    % id = unique identifier of a sensor, uint32 scalar
+    % id = zero-based index, uint32 scalar
     %
     % OUTPUT
     % obj = sensor instance

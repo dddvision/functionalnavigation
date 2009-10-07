@@ -3,13 +3,11 @@
 % TODO: handle invalid indices and other errors
 classdef sensor
   
+  properties (Constant=true,GetAccess=public)
+    baseClass='sensor';  
+  end
+  
   methods (Abstract=true)
-    % Get sensor name
-    %
-    % OUTPUT
-    % name = sensor name, string
-    name=getName(this);
-    
     % Return first and last indices of a consecutive list of data elements
     %
     % OUTPUT
@@ -34,11 +32,11 @@ classdef sensor
     
     % Temporarily lock the data buffer of this sensor so that subsequent
     %   function calls will be deterministic
-    lock(this);
+    this=lock(this);
     
     % Unlock the data buffer of this sensor so that new data can be added 
     %   and old data can expire
-    unlock(this);
+    this=unlock(this);
   end
   
 end

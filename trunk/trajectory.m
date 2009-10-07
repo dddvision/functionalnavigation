@@ -1,7 +1,7 @@
 % Using SI units (seconds, meters, radians)
 classdef trajectory
   
-  properties (SetAccess=private,GetAccess=public)
+  properties (Constant=true,GetAccess=public)
     baseClass='trajectory';
   end
   
