@@ -65,26 +65,26 @@ classdef tommas
       this=putParameters(this,parameters);
       xEstimate=this.trajectory;
     end
+  end
+  
+  methods (Access=private)
+    function parameters=getParameters(this)
+      parameters=[];
+      for k=1:numel(this.trajectory)
+        parameters=[parameters;getBits(this.trajectory(k),this.tmin)];
+      end
+    end
     
+    function this=putParameters(this,parameters)
+      for k=1:this.popSize
+        this.trajectory(k)=putBits(this.trajectory(k),parameters(k,:),this.tmin);
+      end
+    end
   end
+  
 end
 
-% private
-function parameters=getParameters(this)
-  parameters=[];
-  for k=1:numel(this.trajectory)
-    parameters=[parameters;getBits(this.trajectory(k),this.tmin)];
-  end
-end
-
-% private
-function this=putParameters(this,parameters)
-  for k=1:this.popSize
-    this.trajectory(k)=putBits(this.trajectory(k),parameters(k,:),this.tmin);
-  end
-end
-
-% private
+% A configurable objective function
 function varargout=objective(varargin)
   persistent this
   parameters=varargin{1};
