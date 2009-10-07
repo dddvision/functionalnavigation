@@ -1,3 +1,3 @@
-function unlock(this)
+function this=unlock(this)
   % do nothing
 end

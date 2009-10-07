@@ -11,11 +11,12 @@ kbstr=['b',num2str(kb,'%d')];
 if( isfield(cache,kastr) && isfield(cache.(kastr),kbstr) )
     data=cache.(kastr).(kbstr);
 else
+  view=uint32(0);
   
-  ia=getImage(this.u,ka);
-  ib=getImage(this.u,kb);
+  ia=getImage(this.u,ka,view);
+  ib=getImage(this.u,kb,view);
   
-  switch( interpretLayers(this.u) )
+  switch( interpretLayers(this.u,view) )
     case {'rgb','rgbi'}
       ia=rgb2gray(ia(:,:,1:3));
       ib=rgb2gray(ib(:,:,1:3));

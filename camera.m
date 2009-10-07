@@ -44,18 +44,21 @@ classdef camera < sensor
     %
     % OUTPUT
     % flag = true if the offset changes, false otherwise, bool
-    flag=isOffsetDynamic(this,view);
+    flag=isFrameDynamic(this,view);
     
-    % Get camera frame position and orientation relative to the body frame
+    % Get sensor frame position and orientation relative to the body frame
     %
     % INPUT
     % k = data index, uint32 scalar
     % view = zero-based view index, uint32 scalar
     %
     % OUTPUT
-    % p = position of camera origin in the body frame, double 3-by-1
-    % q = orientation of camera frame in the body frame as a quaternion, double 4-by-1
-    [p,q]=getOffset(this,k,view);
+    % p = position of sensor origin in the body frame, double 3-by-1
+    % q = orientation of sensor frame in the body frame as a quaternion, double 4-by-1
+    %
+    % NOTE
+    % The camera frame origin is coincident with its focal point
+    [p,q]=getFrame(this,k,view);
         
     % Check whether the camera projection changes over time
     %
@@ -80,7 +83,8 @@ classdef camera < sensor
     % Pixel coordinate interpretation:
     %   pix(1,:) = strides along the non-contiguous dimension (Matlab column minus one)
     %   pix(2,:) = steps along the contiguous dimension (Matlab row minus one)
-    % Points outside the image area return NaN-valued vectors
+    % Points outside the valid image area return NaN-valued vectors
+    % Region masking can be indicated through NaN-valued returns
     pix=projection(this,k,view,ray);
     ray=inverseProjection(this,k,view,pix);
   end

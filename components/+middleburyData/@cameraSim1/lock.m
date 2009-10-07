@@ -1,3 +1,3 @@
-function lock(this)
+function this=lock(this)
  % do nothing
 end
