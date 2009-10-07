@@ -28,7 +28,7 @@ qb=pqb(4:7,:);
 Ea=Quat2Euler(qa);
 Eb=Quat2Euler(qb);
 
-% TODO: handle case where focal length is different at ka and kb
+% TODO: handle nonlinear and possibly dynamic projections
 testTrajectory.f = 100;
 testTrajectory.Translation = [pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3)];
 testTrajectory.Rotation = [Eb(1)-Ea(1),Eb(2)-Ea(2),Eb(3)-Ea(3)];

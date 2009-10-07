@@ -88,7 +88,7 @@ classdef tommas
   
 end
 
-% A configurable objective function
+% Configurable objective function
 function varargout=objective(varargin)
   persistent this
   parameters=varargin{1};
@@ -106,3 +106,19 @@ function varargout=objective(varargin)
     error('incorrect argument list');
   end
 end
+
+% Turn a package identifier into an object
+%
+% INPUT
+% pkg = package identifier (directory name without '+' prefix), string
+% varargin = arguments for the class constructor
+%
+% OUTPUT
+% obj = instantiated object, class determined by pkg
+%
+% NOTES
+% The package directory must be on the path
+function obj=unwrapComponent(pkg,varargin)
+obj=feval([pkg,'.',pkg],varargin{:});
+end
+
