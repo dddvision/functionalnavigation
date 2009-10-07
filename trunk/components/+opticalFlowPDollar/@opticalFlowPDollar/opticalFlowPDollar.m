@@ -1,15 +1,15 @@
 classdef opticalFlowPDollar < measure
   
   properties (GetAccess=private,SetAccess=private)
-    u
+    cameraHandle
   end
   
   methods (Access=public)
-    function this=opticalFlowPDollar(u)
+    function this=opticalFlowPDollar(cameraHandle)
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::opticalFlowPDollar');
       % TODO: get real or simulated data
-      this.u=u;
+      this.cameraHandle=cameraHandle;
     end     
   end
   

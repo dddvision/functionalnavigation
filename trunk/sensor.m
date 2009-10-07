@@ -1,7 +1,7 @@
 % NOTES
 % All sensors use SI units (meters, seconds, radians)
-% TODO: handle invalid indices and other errors
-classdef sensor
+% TODO: deal with invalid indices and other errors
+classdef sensor < handle
   
   properties (Constant=true,GetAccess=public)
     baseClass='sensor';  
@@ -30,13 +30,19 @@ classdef sensor
     % Time stamps must not decrease with increasing indices
     time=getTime(this,k);
     
-    % Temporarily lock the data buffer of this sensor so that subsequent
-    %   function calls will be deterministic
-    this=lock(this);
+    % Temporarily lock the data buffer of this sensor
+    %
+    % NOTES
+    % This causes subsequent function calls to be deterministic
+    % Blocks until active buffer transactions are completed
+    lock(this);
     
-    % Unlock the data buffer of this sensor so that new data can be added 
-    %   and old data can expire
-    this=unlock(this);
+    % Unlock the data buffer of this sensor
+    %
+    % NOTES
+    % This allows new data to be added and old data to expire
+    % Blocks until active buffer transactions are completed
+    unlock(this);
   end
   
 end

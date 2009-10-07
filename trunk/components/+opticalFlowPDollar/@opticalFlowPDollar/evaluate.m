@@ -6,15 +6,15 @@ fprintf('\nopticalFlowPDollar::evaluate');
 fprintf('\ntmin = %f',tmin);
 
 % arbitrarily select the last and next-to-last images
-[ka,kb]=domain(this.u);
+[ka,kb]=domain(this.cameraHandle);
 ka=max(ka,kb-1);
 
 % get optical flow from cache
 data=opticalFlow1_cache(this,ka,kb);
 
 % get corresponding times
-ta=getTime(this.u,ka);
-tb=getTime(this.u,kb);
+ta=getTime(this.cameraHandle,ka);
+tb=getTime(this.cameraHandle,kb);
 
 % evaluate sensor position and orientation
 pqa=evaluate(x,ta);
