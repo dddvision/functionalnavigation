@@ -1,6 +1,6 @@
 % NOTES
 % If you need to add optional device methods, then inherit from this class
-classdef accelerometerArray < inertialElement
+classdef accelerometerArray < inertialArray
   
   methods (Abstract=true)
     % Get raw accelerometer data
@@ -18,6 +18,9 @@ classdef accelerometerArray < inertialElement
     % This measurement is taken by integrating about the instantaneous
     %   axis as it moves during the preceeding time step
     specificForce=getSpecificForce(this,k,ax);
+    
+    % TODO: add error model
+
   end
   
 end

@@ -1,6 +1,6 @@
 % NOTES
 % If you need to add optional device methods, then inherit from this class
-classdef gyroscopeArray < inertialElement
+classdef gyroscopeArray < inertialArray
   
   methods (Abstract=true)
     % Get raw gyroscope data
@@ -17,6 +17,9 @@ classdef gyroscopeArray < inertialElement
     % This measurement is taken by integrating about the instantaneous
     %   axis as it moves during the preceeding time step
     angularRate=getAngularRate(this,k,ax);
+    
+    % TODO: add error model
+    
   end
   
 end

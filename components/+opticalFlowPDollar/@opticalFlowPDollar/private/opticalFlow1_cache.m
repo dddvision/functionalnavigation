@@ -11,12 +11,10 @@ kbstr=['b',num2str(kb,'%d')];
 if( isfield(cache,kastr) && isfield(cache.(kastr),kbstr) )
     data=cache.(kastr).(kbstr);
 else
-  view=uint32(0);
+  ia=getImage(this.cameraHandle,ka);
+  ib=getImage(this.cameraHandle,kb);
   
-  ia=getImage(this.cameraHandle,ka,view);
-  ib=getImage(this.cameraHandle,kb,view);
-  
-  switch( interpretLayers(this.cameraHandle,view) )
+  switch( interpretLayers(this.cameraHandle) )
     case {'rgb','rgbi'}
       ia=rgb2gray(ia(:,:,1:3));
       ib=rgb2gray(ib(:,:,1:3));
