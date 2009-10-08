@@ -1,4 +1,4 @@
-classdef cameraSim < cameraArray
+classdef cameraSim < camera
   
   properties (SetAccess=private,GetAccess=private)
     localCache
@@ -8,6 +8,9 @@ classdef cameraSim < cameraArray
     tk
     imsize
     cameraType
+    layers
+    frameDynamic
+    projectionDynamic
   end
   
   methods (Access=public)
@@ -17,11 +20,16 @@ classdef cameraSim < cameraArray
       fnames=sortrows(cat(1,info(:).name));
       this.ka=uint32(str2double(fnames(1,6:11)));
       this.kb=uint32(str2double(fnames(end,6:11)));
-      this.tk=getfield(load(fullfile(localCache,'workspace.mat'),'T_cam'),'T_cam');
+      S=load(fullfile(localCache,'workspace.mat'),'T_cam');
+      this.tk=S.T_cam;
       this.isLocked=true;
       this.imsize=size(getImage(this,this.ka));
       this.isLocked=false;
-      this.cameraType=getfield(load(fullfile(localCache,'workspace.mat'),'CAMERA_TYPE'),'CAMERA_TYPE');
+      S=load(fullfile(localCache,'workspace.mat'),'CAMERA_TYPE');
+      this.cameraType=S.CAMERA_TYPE;
+      this.layers='rgb';
+      this.frameDynamic=false;
+      this.projectionDynamic=false;
     end
     
     function [ka,kb]=domain(this)
@@ -42,38 +50,34 @@ classdef cameraSim < cameraArray
 
     function unlock(this)
       this.isLocked=false;
-    end    
-    
-    function num=numViews(this)
-      num=uint32(1);
     end
     
-    function str=interpretLayers(this,view)
-      str='rgb';
+    function str=interpretLayers(this,varargin)
+      str=this.layers;
     end
     
-    function im=getImage(this,k,view)
+    function im=getImage(this,k,varargin)
       assert(isa(k,'uint32'));
       assert(this.isLocked);
       im=imread([this.localCache,'/color',num2str(k,'%06d'),'.png']);
     end
     
-    function flag=isFrameDynamic(this,view)
-      flag=false;
+    function flag=isFrameDynamic(this,varargin)
+      flag=this.frameDynamic;
     end
     
-    function [p,q]=getFrame(this,k,view)
+    function [p,q]=getFrame(this,k,varargin)
       assert(isa(k,'uint32'));
       assert(this.isLocked);
       p=[0;0;0];
       q=[1;0;0;0];
     end
         
-    function flag=isProjectionDynamic(this,view)
-      flag=false;
+    function flag=isProjectionDynamic(this,varargin)
+      flag=this.projectionDynamic;
     end
 
-    function pix=projection(this,ray,k,view)
+    function pix=projection(this,ray,varargin)
       assert(this.isLocked);
       
       switch(this.cameraType)
@@ -101,7 +105,7 @@ classdef cameraSim < cameraArray
       
     end
     
-    function ray=inverseProjection(this,pix,k,view)
+    function ray=inverseProjection(this,pix,varargin)
       assert(this.isLocked);
       
       switch(this.cameraType)

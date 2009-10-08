@@ -20,6 +20,7 @@ classdef inertialSixDOF < accelerometerArray & gyroscopeArray
   methods (Access=public)
     % This subclass provides exactly three axes
     function num=numAxes(this)
+      assert(isa(this,'inertialSixDOF'));
       num=uint32(3);
     end
     

@@ -36,8 +36,8 @@ classdef tommas
       this.optimizer=unwrapComponent(config.optimizer);
 
       % TODO: match multiple measures to multiple sensors
-      allSensors=unwrapComponent(config.multiSensor);
-      list=listSensors(allSensors,'cameraArray');
+      allSensors=unwrapComponent(config.sensorContainer);
+      list=listSensors(allSensors,'camera');
       this.sensorHandles{1}=getSensor(allSensors,list(1));
       this.measure{1}=unwrapComponent(config.measure,this.sensorHandles{1});
      

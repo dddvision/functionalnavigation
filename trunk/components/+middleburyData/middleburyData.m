@@ -3,7 +3,7 @@
 % H. Hirschmuller and D. Scharstein. Evaluation of cost functions for 
 % stereo matching. In IEEE Computer Society Conference on Computer Vision 
 % and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
-classdef middleburyData < multiSensor
+classdef middleburyData < sensorContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensors
@@ -18,12 +18,14 @@ classdef middleburyData < multiSensor
     
     function list=listSensors(this,type)
       assert(isa(type,'char'));
-      list=uint32([]);
-      for k=1:numel(this.sensors)
+      K=numel(this.sensors);
+      flag=false(K,1);
+      for k=1:K
         if(isa(this.sensors{k},type))
-          list=[list;uint32(k-1)];
+          flag(k)=true;
         end
       end
+      list=uint32(find(flag)-1);
     end
     
     function name=getName(this,id)
