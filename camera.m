@@ -1,22 +1,21 @@
 % NOTES
-% This class defines a synchronously time-stamped array of cameras
-%   rigidly attached to a body with different positions and orientations
-% Body frame axis order is forward-right-dowm
-% Camera frame axis order is forward-right-down
+% This class defines a single camera as a special case of a camera array
 % If you need to add optional device methods, then inherit from this class
-classdef cameraArray < sensor
+classdef camera < cameraArray
   
-  methods (Abstract=true)
-    % Get number of camera views in the array
-    %
-    % OUTPUT
-    % num = number of views, uint32 N-by-1
-    num=numViews(this);
+  methods (Access=public)
+    % This class provides one view
+    function num=numViews(this)
+      assert(isa(this,'camera'));
+      num=uint32(1);
+    end
+  end
     
+  methods (Abstract=true)
     % Interpret image layers
     %
     % INPUT
-    % view = zero-based view index, uint32 scalar
+    % varargin = ignored arguments
     %
     % OUTPUT
     % str = 
@@ -25,32 +24,32 @@ classdef cameraArray < sensor
     %  'hsv'  hue-saturation-value
     %  'v'    grayscale
     %  'i'    infrared
-    str=interpretLayers(this,view);
+    str=interpretLayers(this,varargin);
     
     % Get an image
     %
     % INPUT
     % k = data index, uint32 scalar
-    % view = zero-based view index, uint32 scalar
+    % varargin = ignored arguments
     %
     % OUTPUT
     % im = image, uint8 HEIGHT-by-WIDTH-by-LAYERS
-    im=getImage(this,k,view);
+    im=getImage(this,k,varargin);
     
     % Check whether the camera frame moves relative to the body frame
     %
     % INPUT
-    % view = zero-based view index, uint32 scalar
+    % varargin = ignored arguments
     %
     % OUTPUT
     % flag = true if the offset changes, false otherwise, bool
-    flag=isFrameDynamic(this,view);
+    flag=isFrameDynamic(this,varargin);
     
     % Get sensor frame position and orientation relative to the body frame
     %
     % INPUT
     % k = data index, uint32 scalar
-    % view = zero-based view index, uint32 scalar
+    % varargin = ignored arguments
     %
     % OUTPUT
     % p = position of sensor origin in the body frame, double 3-by-1
@@ -58,22 +57,22 @@ classdef cameraArray < sensor
     %
     % NOTE
     % The camera frame origin is coincident with its focal point
-    [p,q]=getFrame(this,k,view);
+    [p,q]=getFrame(this,k,varargin);
         
     % Check whether the camera projection changes over time
     %
     % INPUT
-    % view = zero-based view index, uint32 scalar
+    % varargin = ignored arguments
     %
     % OUTPUT
     % flag = true if the projection changes, false otherwise, bool
-    flag=isProjectionDynamic(this,view);
+    flag=isProjectionDynamic(this,varargin);
     
     % Project ray vectors in the camera frame to image points and vice-versa
     %
     % INPUT
     % k = data index, uint32 scalar
-    % view = zero-based view index, uint32 scalar
+    % varargin = ignored arguments
     %
     % INPUT/OUTPUT
     % ray = unit vectors in camera frame, double 3-by-P
@@ -85,8 +84,8 @@ classdef cameraArray < sensor
     %   pix(2,:) = steps along the contiguous dimension (Matlab row minus one)
     % Points outside the valid image area return NaN-valued vectors
     % Region masking can be indicated through NaN-valued returns
-    pix=projection(this,ray,k,view);
-    ray=inverseProjection(this,pix,k,view);
+    pix=projection(this,ray,k,varargin);
+    ray=inverseProjection(this,pix,k,varargin);
   end
  
 end

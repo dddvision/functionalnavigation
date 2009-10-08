@@ -1,9 +1,9 @@
 % NOTES
 % TODO: handle invalid indices and other errors
-classdef multiSensor
+classdef sensorContainer
   
   properties (Constant=true,GetAccess=public)
-    baseClass='multiSensor';
+    baseClass='sensorContainer';
   end
 
   methods (Abstract=true)

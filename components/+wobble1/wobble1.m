@@ -4,6 +4,7 @@ classdef wobble1 < trajectory
   properties (GetAccess=private,SetAccess=private)
     data
     parametersPerSecond
+    prior
   end
   
   methods (Access=public)
@@ -12,9 +13,11 @@ classdef wobble1 < trajectory
       fprintf('\nwobble1::wobble1');
       this.parametersPerSecond=15;
       this.data=logical(rand(1,30)>0.5);
+      this.prior=0;
     end
 
     function bits=getBits(this,tmin)
+      assert(isa(tmin,'double'));
       bits=this.data;
     end
 
@@ -28,7 +31,8 @@ classdef wobble1 < trajectory
     end
     
     function cost=priorCost(this,bits,tmin)
-      cost=zeros(size(bits,1),1);
+      assert(isa(tmin,'double'));
+      cost=repmat(this.prior,[size(bits,1),1]);
     end
     
     function [a,b]=domain(this)
@@ -69,7 +73,7 @@ classdef wobble1 < trajectory
     
     % TODO: implement this function properly
     function posquatdot=derivative(this,t)
-      warning('derivative of this trajectory type is not yet supported');
+      fprintf('\nwarning: wobble1::trajectory is not fully supported');
       N=numel(t);
       [ta,tb]=domain(this);
       posquatdot=zeros(7,N);
@@ -121,21 +125,26 @@ end
 % INPUT/OUTPUT
 % Q = quaternions (4-by-n)
 function Q=QuatNorm(Q)
-  %extract elements
+  % input checking
+  if(size(Q,1)~=4)
+    error('argument must be 4-by-n');
+  end
+
+  % extract elements
   q1=Q(1,:);
   q2=Q(2,:);
   q3=Q(3,:);
   q4=Q(4,:);
 
-  %normalization factor
+  % normalization factor
   n=sqrt(q1.*q1+q2.*q2+q3.*q3+q4.*q4);
 
-  %handle negative first element
+  % handle negative first element and zero denominator
   s=sign(q1);
-  s(s==0)=1;
   ns=n.*s;
-
-  %normalize
+  ns(ns==0)=1;
+  
+  % normalize
   Q(1,:)=q1./ns;
   Q(2,:)=q2./ns;
   Q(3,:)=q3./ns;

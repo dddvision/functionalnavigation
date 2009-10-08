@@ -274,13 +274,8 @@ end
 % Q = quaternions (4-by-n)
 function Q=QuatNorm(Q)
   % input checking
-  if size(Q,1)~=4
+  if(size(Q,1)~=4)
     error('argument must be 4-by-n');
-  end
-
-  % handle symbolic input
-  if ~isnumeric(Q)
-    return;
   end
 
   % extract elements
@@ -292,17 +287,11 @@ function Q=QuatNorm(Q)
   % normalization factor
   n=sqrt(q1.*q1+q2.*q2+q3.*q3+q4.*q4);
 
-  % handle small normalization factors
-  bad=find(abs(n-1)>0.00001);
-  if ~isempty(bad)
-    warning('quaternion is poorly scaled');
-  end
-
-  % handle negative first element
+  % handle negative first element and zero denominator
   s=sign(q1);
-  s(s==0)=1;
   ns=n.*s;
-
+  ns(ns==0)=1;
+  
   % normalize
   Q(1,:)=q1./ns;
   Q(2,:)=q2./ns;
