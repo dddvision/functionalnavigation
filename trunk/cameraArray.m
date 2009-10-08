@@ -3,6 +3,7 @@
 %   rigidly attached to a body with different positions and orientations
 % Body frame axis order is forward-right-dowm
 % Camera frame axis order is forward-right-down
+% All methods assume view=0 when the view argument is not present
 % If you need to add optional device methods, then inherit from this class
 classdef cameraArray < sensor
   
@@ -49,7 +50,7 @@ classdef cameraArray < sensor
     % Get sensor frame position and orientation relative to the body frame
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % k = (default=min(domain(this))) data index, uint32 scalar
     % view = (default=0) zero-based view index, uint32 scalar
     %
     % OUTPUT
@@ -72,7 +73,7 @@ classdef cameraArray < sensor
     % Project ray vectors in the camera frame to image points and vice-versa
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % k = (default=min(domain(this))) data index, uint32 scalar
     % view = (default=0) zero-based view index, uint32 scalar
     %
     % INPUT/OUTPUT

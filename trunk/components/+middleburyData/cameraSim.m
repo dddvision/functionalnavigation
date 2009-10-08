@@ -21,15 +21,15 @@ classdef cameraSim < cameraArray
       end
       this.rho=1;
       this.base=uint32(1);
-      this.a=uint32(3);
-      this.b=uint32(9);
+      this.ka=uint32(3);
+      this.kb=uint32(9);
       this.sz=size(this.ring{1}.image);
       this.isLocked=false;
     end
     
     function [a,b]=domain(this)
-      a=this.a;
-      b=this.b;
+      a=this.ka;
+      b=this.kb;
     end
     
     function time=getTime(this,k)
@@ -51,8 +51,8 @@ classdef cameraSim < cameraArray
     function im=getImage(this,k,view)
       assert(isa(k,'uint32'));
       assert(this.isLocked);
-      assert(k>=this.a);
-      assert(k<=this.b);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       im=this.ring{ktor(this,k)}.image;
     end
     
@@ -60,35 +60,6 @@ classdef cameraSim < cameraArray
       str='rgb';
     end
     
-    function flag=isProjectionDynamic(this,view)
-      flag=false;
-    end
-    
-    function xy=projection(this,ray,k,view)
-      assert(isa(k,'uint32'));
-      assert(this.isLocked);
-      buf=ktor(this,k);
-      m=this.ring{buf}.sz(1);
-      n=this.ring{buf}.sz(2);
-      coef=this.rho/ray(1,:);
-      u1=coef.*ray(3,:);
-      u2=coef.*ray(2,:);
-      xy=[(u2+1)*((n-1)/2);
-          (u1+1)*((m-1)/2)];
-    end
-    
-    function ray=inverseProjection(this,xy,k,view)
-      assert(isa(k,'uint32'));
-      assert(this.isLocked);
-      buf=ktor(this,k);
-      m=this.ring{buf}.sz(1);
-      n=this.ring{buf}.sz(2);
-      u1=xy(2,:)*(2/(m-1))-1;
-      u2=xy(1,:)*(2/(n-1))-1;
-      den=sqrt(u1.*u1+u2.*u2+this.rho*this.rho);
-      ray=[this.rho./den;u2./den;u1./den];
-    end
-
     function flag=isFrameDynamic(this,view)
       flag=false;
     end
@@ -99,11 +70,40 @@ classdef cameraSim < cameraArray
       p=[0;0;0];
       q=[1;0;0;0];
     end
+    
+    function flag=isProjectionDynamic(this,view)
+      flag=false;
+    end
+    
+    function pix=projection(this,ray,k,view)
+      assert(isa(k,'uint32'));
+      assert(this.isLocked);
+      buf=ktor(this,k);
+      m=this.ring{buf}.sz(1);
+      n=this.ring{buf}.sz(2);
+      coef=this.rho/ray(1,:);
+      u1=coef.*ray(3,:);
+      u2=coef.*ray(2,:);
+      pix=[(u2+1)*((n-1)/2);
+           (u1+1)*((m-1)/2)];
+    end
+    
+    function ray=inverseProjection(this,pix,k,view)
+      assert(isa(k,'uint32'));
+      assert(this.isLocked);
+      buf=ktor(this,k);
+      m=this.ring{buf}.sz(1);
+      n=this.ring{buf}.sz(2);
+      u1=pix(2,:)*(2/(m-1))-1;
+      u2=pix(1,:)*(2/(n-1))-1;
+      den=sqrt(u1.*u1+u2.*u2+this.rho*this.rho);
+      ray=[this.rho./den;u2./den;u1./den];
+    end
   end
   
   methods (Access=private)
     function r=ktor(this,k)
-      r=mod(this.base+k-this.a-1,this.ringsz)+1;
+      r=mod(this.base+k-this.ka-uint32(1),this.ringsz)+uint32(1);
     end
     
     function rgb=getMiddleburyArt(this,num)
