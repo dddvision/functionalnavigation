@@ -3,7 +3,9 @@
 
 == Quick Start ==
 
-To get started, you will need to have Matlab and the Image Processing Toolbox.  Then, download the source code and run the script main.m.
+Download the source code and run the script main.m.
+
+You will need Matlab R2008a or later, the Image Processing Toolbox, and the Genetic Algorithm and Direct Search (GADS) toolbox.  
 
 == Next Steps ==
 
