@@ -1,4 +1,3 @@
-% NOTES
 % This class defines a synchronously time-stamped array of inertial sensors
 %   rigidly attached to a body with different positions and orientations
 % The body frame axis order is forward-right-down
