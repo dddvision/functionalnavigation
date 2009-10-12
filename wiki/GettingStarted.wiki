@@ -5,7 +5,7 @@
 
 Download the source code and run the script main.m.
 
-You will need Matlab R2008a or later, the Image Processing Toolbox, and the Genetic Algorithm and Direct Search (GADS) toolbox.  
+You will need Matlab {{{R2008a}}} or later, the Image Processing Toolbox, and the Genetic Algorithm and Direct Search (GADS) toolbox.  
 
 == Next Steps ==
 
