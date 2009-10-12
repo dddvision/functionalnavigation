@@ -1,4 +1,3 @@
-% NOTES
 % This class defines a synchronously time-stamped array of cameras
 %   rigidly attached to a body with different positions and orientations
 % Body frame axis order is forward-right-dowm

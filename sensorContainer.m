@@ -1,4 +1,4 @@
-% NOTES
+% This class defines a uniform interface to all sensor data
 % TODO: handle invalid indices and other errors
 classdef sensorContainer
   

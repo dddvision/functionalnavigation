@@ -1,4 +1,4 @@
-% NOTES
+% This class defines methods shared by synchronously time-stamped sensors
 % All sensors use SI units (meters, seconds, radians)
 % TODO: deal with invalid indices and other errors
 classdef sensor < handle

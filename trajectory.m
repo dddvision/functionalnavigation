@@ -1,3 +1,4 @@
+% This class defines a 6-DOF body trajectory
 % Using SI units (seconds, meters, radians)
 classdef trajectory
   

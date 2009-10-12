@@ -1,3 +1,4 @@
+% This class defines the interface to an optimization engine
 classdef optimizer
   
   properties (Constant=true,GetAccess=public)
