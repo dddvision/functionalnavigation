@@ -1,13 +1,13 @@
 #summary This document explains how to create several types of framework components or plug-ins.
 #labels Featured,Phase-Implementation
 
-== Introduction ==
+=== Introduction ===
 
 This project provides a framework for testing navigation algorithms.  Do you want to create a component that will seamlessly integrate with this framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
 
 There are an infinite number of ways to represent system dynamics, sensor measurements, and optimization methods.  Therefore, we intend to define clear interfaces and leave issues of information representation to the implementations of individual components.
 
-== Interface Control Document (ICD) for All Components ==
+=== Interface Control Document (ICD) for All Components ===
 
 Contributors may want to look at these external documents for good coding practices and tips:
   * [http://www.datatool.com/downloads/matlab_style_guidelines.pdf Matlab style guidelines].
@@ -32,7 +32,7 @@ Information on how to wrap code written in different languages:
   * [http://docs.python.org/extending/embedding.html How to call Python from C++]
   * [http://www.mathworks.com/support/tech-notes/1600/1605.html How to call C++ from Matlab]
 
-== Interface Control Documents (ICDs) for Individual Components ==
+=== Interface Control Documents (ICDs) for Individual Components ===
 
   * [InterfaceDynamicModels Interface for Dynamic Models]
   * [InterfaceSensorModels Interface for Sensor Models]
