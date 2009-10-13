@@ -13,6 +13,6 @@ The framework does not do much with the default components.  A few additional co
 
 Note that some components may rely on licensed Matlab toolboxes.
 
-== Framework Class Diagram ==
+== Class Diagram ==
 
 <img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagram.png" width=800>
