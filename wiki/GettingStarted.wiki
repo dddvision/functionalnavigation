@@ -1,22 +1,20 @@
 #summary Read this first!
 #labels Featured,Phase-Deploy
 
-== Quick Start ==
+=== Quick Start ===
 
 Download the source code and run the script main.m.
 
 You will need Matlab {{{R2008a}}} or later, the Image Processing Toolbox, and the Genetic Algorithm and Direct Search (GADS) toolbox.  
 
-== Next Steps ==
+=== Next Steps ===
 
-The framework comes with a few default examples of components.  Alternatives can be selected by editing frameworkConfig.m.  In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.
+The framework comes with a few default examples of components.  Alternatives can be selected by editing frameworkConfig.m.  In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.  Some components may rely on licensed Matlab toolboxes.
 
-Note that some components may rely on licensed Matlab toolboxes.
-
-== Class Diagram ==
+=== Class Diagram ===
 
 <img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagram.png" width=800>
 
-== Class Diagram Notation (from Design Patterns) ==
+=== Class Diagram Notation (from Design Patterns) ===
 
 <img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagramNotation.png" width=600>
