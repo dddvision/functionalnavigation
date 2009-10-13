@@ -10,7 +10,7 @@ There are an infinite number of ways to represent system dynamics, sensor measur
 == Interface Control Document (ICD) for All Components ==
 
 Contributors may want to look at these external documents for good coding practices and tips:
-  * [http://www.datatool.com/downloads/matlab_style_guidelines.pdf matlab style guidelines].
+  * [http://www.datatool.com/downloads/matlab_style_guidelines.pdf Matlab style guidelines].
   * [http://www-personal.acfr.usyd.edu.au/tbailey/seminars/design.pdf C++ design guidelines].
 
 A component must:
