@@ -1,6 +1,10 @@
 close all;
 clear classes;
 drawnow;
+matlab_version=version('-release');
+if(str2double(matlab_version(1:4))<2008)
+  error('requires Matlab version 2008a or greater');
+end
 
 DISPLAY_OUTPUT=true;
 
