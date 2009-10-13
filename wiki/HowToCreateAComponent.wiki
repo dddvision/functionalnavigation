@@ -38,4 +38,10 @@ Information on how to wrap code written in different languages:
   * [InterfaceSensorModels Interface for Sensor Models]
   * [InterfaceOptimizationMethods Interface for Optimization Methods]
 
+=== Class Diagram ===
+
 <img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagram.png" width=800>
+
+=== Class Diagram Notation (from Design Patterns) ===
+
+<img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagramNotation.png" width=600>
