@@ -9,7 +9,7 @@ You will need Matlab {{{R2008a}}} or later, the Image Processing Toolbox, and th
 
 == Next Steps ==
 
-The framework does not do much with the default components.  A few additional component examples are included in the source, and can be selected by editing frameworkConfig.m.  In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.
+The framework comes with a few default examples of components.  Alternatives can be selected by editing frameworkConfig.m.  In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.
 
 Note that some components may rely on licensed Matlab toolboxes.
 
