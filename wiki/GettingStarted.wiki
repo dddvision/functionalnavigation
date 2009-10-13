@@ -16,3 +16,7 @@ Note that some components may rely on licensed Matlab toolboxes.
 == Class Diagram ==
 
 <img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagram.png" width=800>
+
+== Class Diagram Notation (from Design Patterns) ==
+
+<img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagramNotation.png" width=600>
