@@ -38,4 +38,4 @@ Information on how to wrap code written in different languages:
   * [InterfaceSensorModels Interface for Sensor Models]
   * [InterfaceOptimizationMethods Interface for Optimization Methods]
 
-http://functionalnavigation.googlecode.com/svn/wiki/HowToCreateAComponent.attach/classDiagram.png
+<img src="http://functionalnavigation.googlecode.com/files/classDiagram.png" width=800>
