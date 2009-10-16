@@ -97,8 +97,8 @@ classdef cameraSim < camera
           u2=scale.*c2;
           u1(behind)=NaN;
           u2(behind)=NaN;
-          pix=[(u1+1)*((m-1)/2);
-               (u2+1)*((n-1)/2)];
+          pix=[(u2+1)*((n-1)/2);
+               (u1+1)*((m-1)/2)];
         otherwise
           error('unrecognized camera type');
       end   
@@ -112,8 +112,8 @@ classdef cameraSim < camera
         case 2
           m=this.imsize(1);
           n=this.imsize(2);
-          down=(pix(1,:)+1)*2/(n-1)+(m+1)/(1-n);
-          right=(pix(2,:)+1)*(2/(n-1))+(1+n)/(1-n);
+          down=(pix(2,:)+1)*2/(n-1)+(m+1)/(1-n);
+          right=(pix(1,:)+1)*(2/(n-1))+(1+n)/(1-n);
           r=sqrt(down.*down+right.*right);
           a=(r>1);
           b=(r==0);

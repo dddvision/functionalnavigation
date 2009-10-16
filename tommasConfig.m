@@ -5,12 +5,13 @@ classdef tommasConfig
     
     % TODO: support configuration of multiple sensors/measures
     % TODO: measure/sensor compatibility checking
-    sensorContainer='thesisDataDDiel'; % try 'middleburyData' or 'thesisDataDDiel'
-    trajectory='wobble1'; % try 'trajectoryStub' or 'wobble1'
-    measure='opticalFlowPDollar'; % try 'measureStub' or 'opticalFlowPDollar'
-    optimizer='matlabGA1'; % try 'optimizerStub' or 'matlabGA1'
+    dataContainer = 'middleburyData'; % try 'middleburyData' or 'thesisDataDDiel'
+    dynamicModel = 'wobble1'; % try 'dynamicModelStub' or 'wobble1'
+    measure = 'opticalFlowPDollar'; % try 'measureStub' or 'opticalFlowPDollar'
+    optimizer = 'matlabGA1'; % try 'optimizerStub' or 'matlabGA1'
     
-    popSizeDefault=10; % (10) default number of trajectories to test
+    popSizeDefault = 10; % (10) default number of trajectories to test
+    numIterationsDefault = 3; % (3) default number of iterations
   end
     
 end

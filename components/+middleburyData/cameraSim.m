@@ -7,7 +7,8 @@ classdef cameraSim < camera
     ka
     kb
     rho
-    sz
+    M
+    N
     isLocked
     layers
     frameDynamic
@@ -26,7 +27,8 @@ classdef cameraSim < camera
       this.base=uint32(1);
       this.ka=uint32(3);
       this.kb=uint32(9);
-      this.sz=size(this.ring{1}.image);
+      this.M=size(this.ring{1}.image,1);
+      this.N=size(this.ring{1}.image,2); 
       this.isLocked=false;
       this.layers='rgb';
       this.frameDynamic=false;
@@ -66,8 +68,7 @@ classdef cameraSim < camera
       flag=this.frameDynamic;
     end
     
-    function [p,q]=getFrame(this,k,varargin)
-      assert(isa(k,'uint32'));
+    function [p,q]=getFrame(this,varargin)
       assert(this.isLocked);
       p=[0;0;0];
       q=[1;0;0;0];
@@ -77,26 +78,22 @@ classdef cameraSim < camera
       flag=this.projectionDynamic;
     end
     
-    function pix=projection(this,ray,k,varargin)
-      assert(isa(k,'uint32'));
+    function pix=projection(this,ray,varargin)
       assert(this.isLocked);
-      buf=ktor(this,k);
-      m=this.ring{buf}.sz(1);
-      n=this.ring{buf}.sz(2);
-      coef=this.rho/ray(1,:);
-      u1=coef.*ray(3,:);
+      m=this.M;
+      n=this.N;
+      coef=this.rho./ray(1,:);
+      u1=((n-1)/(m-1))*coef.*ray(3,:);
       u2=coef.*ray(2,:);
       pix=[(u2+1)*((n-1)/2);
            (u1+1)*((m-1)/2)];
     end
     
-    function ray=inverseProjection(this,pix,k,varargin)
-      assert(isa(k,'uint32'));
+    function ray=inverseProjection(this,pix,varargin)
       assert(this.isLocked);
-      buf=ktor(this,k);
-      m=this.ring{buf}.sz(1);
-      n=this.ring{buf}.sz(2);
-      u1=pix(2,:)*(2/(m-1))-1;
+      m=this.M;
+      n=this.N;
+      u1=((m-1)/(n-1))*(pix(2,:)*(2/(m-1))-1);
       u2=pix(1,:)*(2/(n-1))-1;
       den=sqrt(u1.*u1+u2.*u2+this.rho*this.rho);
       ray=[this.rho./den;u2./den;u1./den];

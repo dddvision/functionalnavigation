@@ -1,4 +1,4 @@
-classdef trajectoryStub < trajectory
+classdef dynamicModelStub < dynamicModel
   
   properties (GetAccess=private,SetAccess=private)
     pose
@@ -7,9 +7,9 @@ classdef trajectoryStub < trajectory
   end
   
   methods (Access=public)
-    function this=trajectoryStub
+    function this=dynamicModelStub
       fprintf('\n');
-      fprintf('\ntrajectoryStub::trajectoryStub');
+      fprintf('\ndynamicModelStub::dynamicModelStub');
       this.parametersPerSecond=15;
       this.pose=[0;0;0;1;0;0;0];
       this.dynamicParameters=logical(rand(1,30)>0.5);
@@ -21,7 +21,7 @@ classdef trajectoryStub < trajectory
 
     function this=putBits(this,bits,tmin)
       fprintf('\n');
-      fprintf('\ntrajectoryStub::putBits');
+      fprintf('\ndynamicModelStub::putBits');
       fprintf('\ntmin = %f',tmin);
       fprintf('\nbits = ');
       fprintf('%d',bits);
