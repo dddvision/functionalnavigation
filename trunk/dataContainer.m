@@ -1,9 +1,9 @@
-% This class defines a uniform interface to all sensor data
+% This class defines a uniform interface to sensor data and ground truth
 % TODO: handle invalid indices and other errors
-classdef sensorContainer
+classdef dataContainer
   
   properties (Constant=true,GetAccess=public)
-    baseClass='sensorContainer';
+    baseClass='dataContainer';
   end
 
   methods (Abstract=true)
@@ -31,7 +31,7 @@ classdef sensorContainer
     % NOTE
     % The name does not need to be unique, but a specific name helps the 
     %   user to configure the framework.
-    name=getName(this,id);
+    name=getSensorName(this,id);
 
     % Get instance of a sensor
     %
@@ -44,6 +44,22 @@ classdef sensorContainer
     % NOTE
     % The specific subclass of the output depends on the given identifier
     obj=getSensor(this,id);
+    
+    % Check whether a refernce trajectory is available
+    %
+    % OUTPUT
+    % flag = true if available, false otherwise, bool scalar
+    flag=hasReferenceTrajectory(this);
+    
+    % Get reference trajectory
+    %
+    % OUTPUT
+    % x = trajectory instance
+    %
+    % NOTE
+    % The body follows this trajectory while recording sensor data
+    % Causes an error if trajectory is not available
+    x=getReferenceTrajectory(this);
   end
   
 end

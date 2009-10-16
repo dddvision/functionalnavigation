@@ -2,10 +2,6 @@
 % Using SI units (seconds, meters, radians)
 classdef trajectory
   
-  properties (Constant=true,GetAccess=public)
-    baseClass='trajectory';
-  end
-  
   methods (Abstract=true)
     % Return the lower bound of the time domain of a trajectory
     %
@@ -38,35 +34,6 @@ classdef trajectory
     % Axis order is forward-right-down relative to the base reference frame
     % Each time outside of the trajectory domain returns NaN 7-by-1
     posquatdot=derivative(this,t);
-    
-    % Extract a tail segment of dynamic parameters from the derived class
-    %
-    % INPUT
-    % tmin = time lower bound, double scalar
-    %
-    % OUTPUT
-    % bits = bitset segment of dynamic parameters, logical 1-by-nvars
-    bits=getBits(this,tmin);
-
-    % Replace a tail segment of dynamic parameters held by the derived class
-    % 
-    % INPUT
-    % bits = bitset segment of dynamic parameters to splice in, logical 1-by-nvars
-    % tmin = time lower bound, double scalar
-    % 
-    % NOTE
-    % This operation will change the derived class behaviour
-    this=putBits(this,bits,tmin);
-
-    % Calculate the prior cost of a set of parameters
-    %
-    % INPUT
-    % bits = bitset segment of dynamic parameters, logical 1-by-nvars
-    % tmin = time lower bound, double scalar
-    %
-    % OUTPUT
-    % cost = non-negative prior cost, double scalar
-    cost=priorCost(this,bits,tmin);
   end
   
   methods (Access=public)
@@ -118,7 +85,7 @@ end
 function h=trajectory_display_individual(this,alpha,scale,color,tmin,tmax)
   h=[];
 
-  bigsteps=10;
+  bigsteps=1+floor(tmax);
   substeps=10;
 
   t=tmin:((tmax-tmin)/bigsteps/substeps):tmax;

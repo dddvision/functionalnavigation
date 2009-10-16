@@ -1,5 +1,5 @@
-% NOTE: this represents a dynamic model of a fictitious system
-classdef wobble1 < trajectory
+% This class represents a dynamic model of a fictitious system
+classdef wobble1 < dynamicModel
   
   properties (GetAccess=private,SetAccess=private)
     data
@@ -73,7 +73,7 @@ classdef wobble1 < trajectory
     
     % TODO: implement this function properly
     function posquatdot=derivative(this,t)
-      fprintf('\nwarning: wobble1::trajectory is not fully supported');
+      fprintf('\nwarning: wobble1::derivative is not fully supported');
       N=numel(t);
       [ta,tb]=domain(this);
       posquatdot=zeros(7,N);

@@ -3,9 +3,9 @@ classdef tommas
   properties (GetAccess=private,SetAccess=private)
     sensorHandles
     optimizer
-    trajectory
+    dynamicModel
     measure
-    iterations
+    numIterations
     popSize
     tmin
   end
@@ -28,22 +28,22 @@ classdef tommas
       fprintf('\npath added: %s',config.componentPath);
 
       % TODO: set adaptively to manage computation
-      this.iterations=3;
       this.tmin=0;
       this.popSize=config.popSizeDefault;
+      this.numIterations=config.numIterationsDefault;
       
       % initialize optimizer
       this.optimizer=unwrapComponent(config.optimizer);
 
       % TODO: match multiple measures to multiple sensors
-      allSensors=unwrapComponent(config.sensorContainer);
-      list=listSensors(allSensors,'camera');
-      this.sensorHandles{1}=getSensor(allSensors,list(1));
+      data=unwrapComponent(config.dataContainer);
+      list=listSensors(data,'camera');
+      this.sensorHandles{1}=getSensor(data,list(1));
       this.measure{1}=unwrapComponent(config.measure,this.sensorHandles{1});
      
       % initialize trajectories
       for k=1:this.popSize
-        this.trajectory{k}=unwrapComponent(config.trajectory);
+        this.dynamicModel{k}=unwrapComponent(config.dynamicModel);
       end
     end
     
@@ -60,28 +60,28 @@ classdef tommas
         lock(this.sensorHandles{s});
       end
       [this.optimizer,cost]=defineProblem(this.optimizer,@objective,parameters);
-      for n=1:this.iterations
+      for n=1:this.numIterations
         [this.optimizer,parameters,cost]=step(this.optimizer);
       end
       for s=1:numel(this.sensorHandles)
         unlock(this.sensorHandles{s});
       end
       this=putParameters(this,parameters);
-      xEstimate=cat(1,this.trajectory{:});
+      xEstimate=cat(1,this.dynamicModel{:});
     end
   end
   
   methods (Access=private)
     function parameters=getParameters(this)
       parameters=[];
-      for k=1:numel(this.trajectory)
-        parameters=[parameters;getBits(this.trajectory{k},this.tmin)];
+      for k=1:numel(this.dynamicModel)
+        parameters=[parameters;getBits(this.dynamicModel{k},this.tmin)];
       end
     end
     
     function this=putParameters(this,parameters)
       for k=1:this.popSize
-        this.trajectory{k}=putBits(this.trajectory{k},parameters(k,:),this.tmin);
+        this.dynamicModel{k}=putBits(this.dynamicModel{k},parameters(k,:),this.tmin);
       end
     end
   end
@@ -96,7 +96,7 @@ function varargout=objective(varargin)
     this=putParameters(this,parameters);
     cost=zeros(this.popSize,1);
     for k=1:this.popSize
-      cost(k)=evaluate(this.measure{1},this.trajectory{k},this.tmin);
+      cost(k)=evaluate(this.measure{1},this.dynamicModel{k},this.tmin);
     end
     % TODO: enable multiple measures
     varargout{1}=cost;

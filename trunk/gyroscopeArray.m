@@ -17,9 +17,6 @@ classdef gyroscopeArray < inertialArray
     % This measurement is taken by integrating about the instantaneous
     %   axis as it moves during the preceding time step
     angularRate=getAngularRate(this,k,ax);
-    
-    % TODO: add error model
-    
   end
   
 end
