@@ -2,22 +2,35 @@
 
 === Introduction ===
 
-As a camera moves, light rays from the environment slice through a theoretical unit sphere centered at the camera’s focus, resulting in patterns of light that appear to flow around the sphere.  Given the camera projection equations and the body trajectory, one can predict the induced rotation field and the direction of the translation field.  This section describes how.
+As a camera moves, light rays from the environment slice through a theoretical unit sphere centered at the camera’s focus, resulting in patterns of light that appear to flow around the sphere.  Given the camera projection equations and a hypothetical body trajectory, one can predict the induced rotation field and the direction of the translation field.  This section describes how to compute the rotation field and the direction, but not the magnitude, of the translation field.
 
-=== Algorithm ===
+=== Algorithm: Compute Induced Flow ===
 
-  * Get an image from a camera.
+  * Get an image from the camera.
   * Query the image size.
-  * Generate coordinates 'x' for each pixel (ex. using meshgrid).
+  * Generate coordinates 'x' for each pixel (ex. using `meshgrid`).
 {{{
 x = [ 0 0 0 0 0 1 1 1 1 1 2 2 2 2 2 ... ]
     [ 0 1 2 3 4 0 1 2 3 4 0 1 2 3 4 ... ]
 }}}
   * Put the pixel coordinates through the inverse camera projection to get ray vectors `c`.
 <img src="http://functionalnavigation.googlecode.com/svn/wiki/StandardPerspectiveRays.png">
-  * Evaluate the body trajectory at two time instants `ta` and `tb`.
-  * Calculate the rotation matrix `M` that represents the camera frame at time `tb` relative to the camera frame at time `ta`.
-  * Rotate the ray vectors by pre-multiplying by the transpose of the rotation matrix (ie. `c_new=transpose(M)*c`).
+
+==== Rotation Field ====
+
+  * Get hypothetical body poses at two time instants `ta` and `tb`.
+  * Compute the rotation matrix `R` that represents the camera frame at time `tb` relative to the camera frame at time `ta`.
+  * Rotate the ray vectors by pre-multiplying by the transpose of the rotation matrix (ie. `c_new=transpose(R)*c`).
   * Put the new rays `c_new` through the forward camera projection to get new pixel coordinates `x_new`.
-  * The rotational flow field is simply the pixel coordinate difference `u=x-x_new`.
+  * The rotational flow field is the pixel coordinate difference `u=x-x_new`.
 <img src="http://functionalnavigation.googlecode.com/svn/wiki/StandardPerspectiveRotation.png">
+
+==== Translation Field ====
+
+  * Get hypothetical body poses at two time instants `ta` and `tb`.
+  * Compute the translation vector `T` that represents the position of the camera frame origin at time `tb` relative to the camera frame origin at time `ta`.
+  * Normalize the translation vector to a length that is very small relative to a unit magnitude (ie. `T_norm=1E-8*T/sqrt(dot(T,T))`).
+  * Translate the camera rays by the negative of the camera translation (ie. `c_new=c-T_norm`).
+  * Put the new rays `c_new` through the forward camera projection to get new pixel coordinates `x_new`.
+  * The translational flow field is the pixel coordinate difference `u=x-x_new`, where each flow vector can be normalized to an arbitrary magnitude, taking care not to divide by zero.
+<img src="http://functionalnavigation.googlecode.com/svn/wiki/StandardPerspectiveTranslation.png">
