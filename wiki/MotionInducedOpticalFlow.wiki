@@ -10,7 +10,7 @@ As a camera moves, light rays from the environment slice through a theoretical u
 
   * Get an image from the camera.
   * Query the image size.
-  * Generate coordinates 'x' for each pixel (ex. using `meshgrid`).
+  * Generate coordinates `x` for each pixel (ex. using `meshgrid`).
 {{{
 x = [ 0 0 0 0 0 1 1 1 1 1 2 2 2 2 2 ... ]
     [ 0 1 2 3 4 0 1 2 3 4 0 1 2 3 4 ... ]
