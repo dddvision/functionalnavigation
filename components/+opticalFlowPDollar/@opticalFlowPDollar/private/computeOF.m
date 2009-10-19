@@ -43,9 +43,7 @@
 function [Vx,Vy] = computeOF(I1,I2)
 
 SIZE = [200,200];
-%I1 = rgb2gray(I1);
 I1 = imresize(I1,SIZE);
-%I2 = rgb2gray(I2);
 I2 = imresize(I2,SIZE);
 
 % Set paramters
@@ -53,9 +51,6 @@ winN = [];
 winSig = 18;
 sigma = 1;
 thr = 3e-6;
-show = 3;
-SAMPLE_SIZE = 5;
-SCALE = 2;
 SHAPE = 'same';
 PAD_SIZE = winSig;
 I1 = padarray(I1,[PAD_SIZE PAD_SIZE],0,'both');
@@ -92,7 +87,7 @@ I2 = gaussSmooth(I2,sigma,SHAPE);
 
 % Compute components of outer product of gradient of frame 1
 [Gx,Gy]=gradient(I1);
-Gxx=Gx.^2;  Gxy=Gx.*Gy;   Gyy=Gy.^2;
+Gxx=Gx.*Gx;  Gxy=Gx.*Gy;   Gyy=Gy.*Gy;
 if( isempty(winSig) )
     maskWidth = 2*winN+1;  maskArea = maskWidth^2;
     Axx=localSum(Gxx,maskWidth,SHAPE) / maskArea;
@@ -106,9 +101,9 @@ else
 end;
 
 % Find determinant, trace, and eigenvalues of A'A
-detA=Axx.*Ayy-Axy.^2;
+detA=Axx.*Ayy-Axy.*Axy;
 trA=Axx+Ayy;
-V1=0.5*sqrt(trA.^2-4*detA);
+V1=0.5*sqrt(trA.*trA-4*detA);
 
 % Compute inner product of gradient with time derivative
 It=I2-I1;    IxIt=-Gx.*It;   IyIt=-Gy.*It;
@@ -133,12 +128,11 @@ Vx(reliab<thr) = 0;   Vy(reliab<thr) = 0;
 % remove the padding ..
 Vx = Vx((PAD_SIZE+1:end-PAD_SIZE),(PAD_SIZE+1:end-PAD_SIZE));
 Vy = Vy((PAD_SIZE+1:end-PAD_SIZE),(PAD_SIZE+1:end-PAD_SIZE));
-I1 = I1((PAD_SIZE+1:end-PAD_SIZE),(PAD_SIZE+1:end-PAD_SIZE));
-I2 = I2((PAD_SIZE+1:end-PAD_SIZE),(PAD_SIZE+1:end-PAD_SIZE));
 
-% show quiver plot on top of reliab
-if( show )
-    figure(show); clf; im(I1(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end),[],0);
-    hold('on'); quiver( Vx(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end), Vy(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end), SCALE,'-b'); hold('off');
-    drawnow;
-end
+% figure;
+% imagesc(I1(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end));
+% axis('image');
+% hold('on');
+% quiver( Vx(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end), Vy(1:SAMPLE_SIZE:end,1:SAMPLE_SIZE:end), SCALE,'-b');
+% hold('off');
+% drawnow;
