@@ -24,10 +24,6 @@ classdef tommas
 
       % TODO: set adaptively to manage computation
       this.tmin=0;
-      
-      % add component path
-      addpath(config.componentPath);
-      fprintf('\npath added: %s',config.componentPath);
 
       % initialize trajectories
       for k=1:config.popSizeDefault

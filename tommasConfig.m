@@ -1,8 +1,6 @@
 classdef tommasConfig
 
   properties (Constant=true)
-    componentPath=fullfile(fileparts(which('main')),'components');
-    
     % TODO: support configuration of multiple sensors/measures
     % TODO: measure/sensor compatibility checking
     dataContainer = 'thesisDataDDiel'; % try 'middleburyData' or 'thesisDataDDiel'
@@ -13,6 +11,14 @@ classdef tommasConfig
     % TODO: reference all trajectories to reference date
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test
+  end
+  
+  methods (Access=public)
+    function this=tommasConfig
+      componentPath=fullfile(fileparts(which('main')),'components');
+      addpath(componentPath);
+      fprintf('\npath added: %s',componentPath);
+    end
   end
     
 end
