@@ -9,8 +9,11 @@ classdef bodyReference < trajectory
   methods (Access=public)
     function this=bodyReference(localCache)
       S=load(fullfile(localCache,'workspace.mat'),'BodyPath');
-      this.bodyPath=S.BodyPath([5,6,7,1,2,3,4],:);
-      this.bodyPathDiff=[];
+      if(isfield(S,'BodyPath'))
+        this.bodyPath=S.BodyPath([5,6,7,1,2,3,4],:);
+      else
+        this.bodyPath='[0*t;0*t;0*t;1+0*t;0*t;0*t;0*t]';
+      end
       this.a=0;
     end
   

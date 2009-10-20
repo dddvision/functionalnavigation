@@ -99,6 +99,8 @@ classdef cameraSim < camera
           u2(behind)=NaN;
           pix=[(u2+1)*((n-1)/2);
                (u1+1)*((m-1)/2)];
+        case 4
+          error('gantry camera not yet implemented');       
         otherwise
           error('unrecognized camera type');
       end   

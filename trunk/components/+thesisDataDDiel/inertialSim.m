@@ -13,7 +13,7 @@ classdef inertialSim < inertialSixDOF
     function this=inertialSim(localCache)
       this.pFrame=[0;0;0];
       this.qFrame=[1;0;0;0];
-      [this.time,this.gyro,this.accel]=ReadIMUdat(localCache,'inertia_MMIMU.dat');
+      [this.time,this.gyro,this.accel]=ReadIMUdat(localCache,'inertia.dat');
       this.isLocked=false;
     end
 

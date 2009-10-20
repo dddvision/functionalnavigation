@@ -8,6 +8,11 @@ if(str2double(matlab_version(1:4))<2008)
   error('requires Matlab version 2008a or greater');
 end
 
+% add path to component repository
+componentPath=fullfile(fileparts(mfilename),'components');
+addpath(componentPath);
+fprintf('\npath added: %s',componentPath);
+
 % get the configuration file
 config=tommasConfig;
 
