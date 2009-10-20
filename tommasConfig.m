@@ -12,13 +12,5 @@ classdef tommasConfig
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test
   end
-  
-  methods (Access=public)
-    function this=tommasConfig
-      componentPath=fullfile(fileparts(which('main')),'components');
-      addpath(componentPath);
-      fprintf('\npath added: %s',componentPath);
-    end
-  end
     
 end
