@@ -2,7 +2,6 @@ close all;
 clear classes;
 drawnow;
 
-% test
 % check matlab version
 matlab_version=version('-release');
 if(str2double(matlab_version(1:4))<2008)
