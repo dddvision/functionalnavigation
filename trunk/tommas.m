@@ -203,7 +203,7 @@ function testCameraArrayProjection(cam)
       rays=[c1(:)';c2(:)';c3(:)'];
 
       % project these rays to the given camera
-      pix=projection(cam,rays,kb,view);
+      pix=projection(cam,rays,kb,view)
 
       % grab pixels using bilinear interpolation
       newPixels=interp2(gray,pix(1,:)+1,pix(2,:)+1,'*linear',NaN);

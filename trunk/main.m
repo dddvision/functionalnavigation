@@ -10,14 +10,14 @@ end
 
 % add path to component repository
 componentPath=fullfile(fileparts(mfilename),'components');
-addpath(componentPath);
+addpath(genpath(componentPath));
 fprintf('\npath added: %s',componentPath);
 
 % get the configuration file
 config=tommasConfig;
 
 % run diagnostic tests on a component
-tommas.testComponent(config.dataContainer);
+%tommas.testComponent(config.dataContainer);
 
 % create an instance of the trajectory optimization manager
 tom=tommas(tommasConfig);
