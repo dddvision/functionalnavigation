@@ -47,11 +47,15 @@ classdef matlabGA1 < optimizer
       
       % workaround to access stepGA from the gads toolbox
       pathtemp=pwd;
-      toolboxpath=fileparts(which('ga'));
-      cd(fullfile(toolboxpath,'private'));
-      this.stepGAhandle=@stepGA;
+      %path1 = fileparts(which('ga'));
+      %path2 = fullfile(path1,'private');
+      cd(fullfile(fileparts(which('ga')),'private'));
+      %cd(path2);
+      temp = @stepGA;
       cd(pathtemp);
-    end
+      this.stepGAhandle = temp;
+        
+   end
     
     function [this,initialCost]=defineProblem(this,objectiveFunction,initialParameters)
       initialCost=feval(objectiveFunction,initialParameters);

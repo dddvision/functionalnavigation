@@ -5,7 +5,7 @@ classdef tommasConfig
     % TODO: measure/sensor compatibility checking
     dataContainer = 'thesisDataDDiel'; % try 'middleburyData' or 'thesisDataDDiel'
     dynamicModel = 'wobble1'; % try 'dynamicModelStub' or 'wobble1'
-    measure = 'opticalFlowPDollar'; % try 'measureStub' or 'opticalFlowPDollar'
+    measure = 'opticalFlowLK'; % try 'measureStub' or 'opticalFlowPDollar' or 'opticalFlowLK' or 'opticalFlowPyramid'
     optimizer = 'matlabGA1'; % try 'optimizerStub' or 'matlabGA1'
     
     % TODO: reference all trajectories to reference date
