@@ -32,7 +32,8 @@ classdef opticalFlowLK < measure
 	  if(interpretLayers(this.cameraHandle)=='rgb')
 	    im1=rgb2gray(im1); 
 	    im2=rgb2gray(im2); 
-	  end
+    end
+    imsize=size(im1);
 	  [u,v]=lucasKanade(this,im1,im2);  
 	  pa=pqa(1:3,:);
 	  qa=pqa(4:7,:);
@@ -46,7 +47,7 @@ classdef opticalFlowLK < measure
 	  rotation(1)=Eb(1)-Ea(1);
 	  rotation(2)=Eb(2)-Ea(2);
 	  rotation(3)=Eb(3)-Ea(3);
-	  [uvr, uvt]=generateFlow(this,translation,rotation);
+	  [uvr, uvt]=generateFlow(this,translation,rotation,imsize);
 	  cost=computeCost(this,u,v,uvr, uvt);
 	  fprintf('\ncost = %f',cost);
 
@@ -101,7 +102,7 @@ classdef opticalFlowLK < measure
 		ft=ft(1:size(ft,1)-1, 1:size(ft,2)-1);
 	end
 
-	function [uvr, uvt] = generateFlow(x,translation,rotation)
+	function [uvr, uvt] = generateFlow(x,translation,rotation,imsize)
 		
 		s1=sin(rotation(1));
 		c1=cos(rotation(1));
@@ -110,8 +111,9 @@ classdef opticalFlowLK < measure
 		s3=sin(rotation(3));
 		c3=cos(rotation(3));
 		R=[c3*c2, c3*s2*s1-s3*c1, s3*s1+c3*s2*c1; s3*c2, c3*c1+s3*s2*s1, s3*s2*c1-c3*s1; -s2, c2*s1, c2*c1];
-		[m,n]=getImageSize(x.cameraHandle);
-		[jj,ii]=meshgrid((1:m)-1,(1:n)-1);
+		m=imsize(1);
+    n=imsize(2);
+		[ii,jj]=ndgrid((1:m)-1,(1:n)-1);
 		pix=[jj(:)';ii(:)'];
 		ray=inverseProjection(x.cameraHandle,pix);
 		ray_new=transpose(R)*ray; 

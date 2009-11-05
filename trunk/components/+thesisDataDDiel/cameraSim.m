@@ -31,11 +31,6 @@ classdef cameraSim < camera
       this.frameDynamic=false;
       this.projectionDynamic=false;
     end
-    
-    function [m,n]=getImageSize(this)
-      m=this.imsize(1); 
-      n=this.imsize(2); 
-    end
       
     function [ka,kb]=domain(this)
       assert(this.isLocked);

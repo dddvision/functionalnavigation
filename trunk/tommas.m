@@ -193,7 +193,7 @@ function testCameraArrayProjection(cam)
     fig=figure;
     for FOCAL=(WIDTH-1)/2*(1:-0.1:0.1)
       % create rays corresponding to your desired camera
-      [c2,c3]=meshgrid((1:WIDTH)-CENTER_HORZ,(1:HEIGHT)-CENTER_VERT);
+      [c3,c2]=ndgrid((1:HEIGHT)-CENTER_VERT,(1:WIDTH)-CENTER_HORZ);
       c1=repmat(FOCAL,[HEIGHT,WIDTH]);
       mag=sqrt(c1.*c1+c2.*c2+c3.*c3);
       mag(abs(mag)<eps)=NaN;
@@ -203,7 +203,7 @@ function testCameraArrayProjection(cam)
       rays=[c1(:)';c2(:)';c3(:)'];
 
       % project these rays to the given camera
-      pix=projection(cam,rays,kb,view)
+      pix=projection(cam,rays,kb,view);
 
       % grab pixels using bilinear interpolation
       newPixels=interp2(gray,pix(1,:)+1,pix(2,:)+1,'*linear',NaN);
@@ -237,7 +237,7 @@ function testCameraArrayProjectionRoundTrip(cam)
     WIDTH=size(img,2);
 
     % enumerate pixels
-    [jj,ii]=meshgrid((1:WIDTH)-1,(1:HEIGHT)-1);
+    [ii,jj]=ndgrid((1:HEIGHT)-1,(1:WIDTH)-1);
     pix=[jj(:)';ii(:)'];
 
     % create ray vectors from pixels
