@@ -17,16 +17,20 @@ classdef bodyReference < trajectory
       a=this.a;
     end
 
-    function posquat=evaluate(this,t)
-      assert(isa(t,'double'));
+    function [lonLatAlt,quaternion]=evaluate(this,t)
       t(t<this.a)=NaN;
+      assert(isa(t,'double'));
       posquat=double(eval(this.bodyPath)); % depends on t
+      lonLatAlt=posquat(1:3,:);
+      quaternion=posquat(4:7,:);
     end
 
-    function posquatdot=derivative(this,t)
-      assert(isa(t,'double'));
+    function [lonLatAltRate,quaternionRate]=derivative(this,t)
       t(t<this.a)=NaN;
+      assert(isa(t,'double'));
       posquatdot=double(eval(this.bodyPathDiff)); % depends on t
+      lonLatAltRate=posquatdot(1:3,:);
+      quaternionRate=posquatdot(4:7,:);
     end
   end
   

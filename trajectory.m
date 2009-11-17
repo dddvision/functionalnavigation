@@ -1,12 +1,11 @@
-% This class defines a 6-DOF body trajectory
-% Using SI units (seconds, meters, radians)
+% This class defines a 6-DOF body trajectory in the vicinity of Earth
 classdef trajectory
   
   methods (Abstract=true)
     % Return the lower bound of the time domain of a trajectory
     %
     % OUTPUT
-    % a = time domain lower bound
+    % a = time domain lower bound, double scalar
     a=domain(this);
     
     % Evaluate a single trajectory at multiple time instants
@@ -15,12 +14,16 @@ classdef trajectory
     % t = time, 1-by-N
     %
     % OUTPUT
-    % posquat = position and quaternion at each time, double 7-by-N
+    % lonLatAlt = body position at each time, double 3-by-N
+    % quaternion = body orientation at each time, double 4-by-N
     %
     % NOTE
-    % Axis order is forward-right-down relative to the base reference frame
-    % Each time outside of the trajectory domain returns NaN 7-by-1
-    posquat=evaluate(this,t);
+    % Using SI units (seconds, meters, radians)
+    % The origin is at the equatorial meridian on the surface of the WGS84 
+    %   ellipsoid with the body axes aligned with east-north-up
+    % Quaternions are in scalar-first format
+    % Evaluation outside of the domain returns NaN in corresponding columns
+    [lonLatAlt,quaternion]=evaluate(this,t);
     
     % Evaluate time derivative of a single trajectory at multiple time instants
     %
@@ -28,12 +31,9 @@ classdef trajectory
     % t = time, 1-by-N
     %
     % OUTPUT
-    % posquatdot = position and quaternion derivative at each time, double 7-by-N
-    %
-    % NOTE
-    % Axis order is forward-right-down relative to the base reference frame
-    % Each time outside of the trajectory domain returns NaN 7-by-1
-    posquatdot=derivative(this,t);
+    % lonLatAltRate = derivative of body position at each time, double 3-by-N
+    % quaternionRate = derivative of body orientation at each time, double 4-by-N
+    [lonLatAltRate,quaternionRate]=derivative(this,t);
   end
   
   methods (Access=public)
@@ -90,9 +90,7 @@ function h=trajectory_display_individual(this,alpha,scale,color,tmin,tmax)
 
   t=tmin:((tmax-tmin)/bigsteps/substeps):tmax;
 
-  pq=evaluate(this,t);
-  p=pq(1:3,:);
-  q=pq(4:7,:);
+  [p,q]=evaluate(this,t);
 
   h=[h,trajectory_display_plotframe(p(:,1),q(:,1),alpha,scale,color)]; % plot first frame
   for bs=1:bigsteps

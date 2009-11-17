@@ -1,7 +1,10 @@
+% This class represents a dynamic model of a fictitious system
 classdef dynamicModelStub < dynamicModel
   
   properties (GetAccess=private,SetAccess=private)
-    pose
+    a
+    lonLatAlt
+    quaternion
     parametersPerSecond
     dynamicParameters
   end
@@ -10,12 +13,15 @@ classdef dynamicModelStub < dynamicModel
     function this=dynamicModelStub
       fprintf('\n');
       fprintf('\ndynamicModelStub::dynamicModelStub');
+      this.a=0;
       this.parametersPerSecond=15;
-      this.pose=[0;0;0;1;0;0;0];
+      this.lonLatAlt=[0;0;0];
+      this.quaternion=[1;0;0;0];
       this.dynamicParameters=logical(rand(1,30)>0.5);
     end
 
     function bits=getBits(this,tmin)
+      assert(isa(tmin,'double'));
       bits=this.dynamicParameters;
     end
 
@@ -27,30 +33,35 @@ classdef dynamicModelStub < dynamicModel
       fprintf('%d',bits);
       this.dynamicParameters=bits;
     end
-    
-    function cost=priorCost(this,bits,tmin)
-      cost=zeros(size(bits,1),1);
-    end
      
     function a=domain(this)
-      a=0;
+      a=this.a;
     end
    
-    function posquat=evaluate(this,t)
+    function [lonLatAlt,quaternion]=evaluate(this,t)
       N=numel(t);
-      posquat=repmat(this.pose,[1,N]);
-      posquat(2,:)=t;
-      a=domain(this);
-      posquat(:,t<a)=NaN;
+      lonLatAlt=repmat(this.lonLatAlt,[1,N]);
+      lonLatAlt(2,:)=t;
+      quaternion=repmat(this.quaternion,[1,N]);
+      lonLatAlt(:,t<this.a)=NaN;
+      quaternion(:,t<this.a)=NaN;
     end
     
-    function posquatdot=derivative(this,t)
+    function [lonLatAltRate,quaternionRate]=derivative(this,t)
       N=numel(t);
-      posquatdot=zeros(7,N);
-      posquatdot(2,:)=1;
-      a=domain(this);
-      posquatdot(:,t<a)=NaN;
+      lonLatAltRate=zeros(3,N);
+      lonLatAltRate(2,:)=1;
+      quaternionRate=zeros(4,N);
+      lonLatAltRate(:,t<this.a)=NaN;
+      quaternionRate(:,t<this.a)=NaN;
     end
   end
   
+  methods (Static=true)
+    function cost=priorCost(bits,tmin)
+      assert(isa(tmin,'double'));
+      cost=zeros(size(bits,1),1);
+    end
+  end
+    
 end

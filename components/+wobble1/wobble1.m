@@ -4,7 +4,6 @@ classdef wobble1 < dynamicModel
   properties (GetAccess=private,SetAccess=private)
     data
     parametersPerSecond
-    prior
   end
   
   methods (Access=public)
@@ -13,7 +12,6 @@ classdef wobble1 < dynamicModel
       fprintf('\nwobble1::wobble1');
       this.parametersPerSecond=15;
       this.data=logical(rand(1,30)>0.5);
-      this.prior=0;
     end
 
     function bits=getBits(this,tmin)
@@ -30,17 +28,12 @@ classdef wobble1 < dynamicModel
       this.data=bits;
     end
     
-    function cost=priorCost(this,bits,tmin)
-      assert(isa(tmin,'double'));
-      cost=repmat(this.prior,[size(bits,1),1]);
-    end
-    
     function [a,b]=domain(this)
       a=0;
       b=numel(this.data)/this.parametersPerSecond;
     end
     
-    function posquat=evaluate(this,t)
+    function [lonLatAlt,quaternion]=evaluate(this,t)
       ta=domain(this);
 
       t(t<ta)=NaN;
@@ -67,17 +60,26 @@ classdef wobble1 < dynamicModel
       pnoise=scalep*[rate_bias(1)*sint;rate_bias(2)*sint;rate_bias(3)*sint];
       qnoise=scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
 
-      posquat=[[0*t;t;0.*t]+pnoise;
-      AxisAngle2Quat(qnoise)];
+      lonLatAlt=[0*t;t;0.*t]+pnoise;
+      quaternion=AxisAngle2Quat(qnoise);
     end
     
     % TODO: implement this function properly
-    function posquatdot=derivative(this,t)
+    function [lonLatAltRate,quaternionRate]=derivative(this,t)
       fprintf('\nwarning: wobble1::derivative is not fully supported');
       N=numel(t);
-      [ta,tb]=domain(this);
-      posquatdot=zeros(7,N);
-      posquatdot(:,t<ta|t>tb)=NaN;
+      ta=domain(this);
+      lonLatAltRate=zeros(3,N);
+      quaternionRate=zeros(4,N);
+      lonLatAltRate(:,t<ta)=NaN;
+      quaternionRate(:,t<ta)=NaN;
+    end
+  end
+  
+  methods (Static=true)
+    function cost=priorCost(bits,tmin)
+      assert(isa(tmin,'double'));
+      cost=zeros(size(bits,1),1);
     end
   end
   
