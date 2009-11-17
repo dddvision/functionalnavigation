@@ -74,12 +74,12 @@ if( isa(I1,'uint8') )
 else
     if( ~isa(I1,'double'))
         I1=double(I1); I2=double(I2);
-    end;
+    end
     if( abs(max([I1(:); I2(:)]))>1 )
         minval = min([I1(:); I2(:)]);  I1=I1-minval;  I2=I2-minval;
         maxval = max([I1(:); I2(:)]);  I1=I1/maxval;  I2=I2/maxval;
-    end;
-end;
+    end
+end
 
 % smooth images (using the 'smooth' flag causes this to be slow)
 I1 = gaussSmooth(I1,sigma,SHAPE);
@@ -98,7 +98,7 @@ else
     Axx=gaussSmooth(Gxx,winSig,SHAPE,2);
     Axy=gaussSmooth(Gxy,winSig,SHAPE,2);
     Ayy=gaussSmooth(Gyy,winSig,SHAPE,2);
-end;
+end
 
 % Find determinant, trace, and eigenvalues of A'A
 detA=Axx.*Ayy-Axy.*Axy;
@@ -113,7 +113,7 @@ if( isempty(winSig) )
 else
     ATbx=gaussSmooth(IxIt,winSig,SHAPE,2);
     ATby=gaussSmooth(IyIt,winSig,SHAPE,2);
-end;
+end
 
 % Compute components of velocity vectors
 Vx=(1./(detA+eps)).*(Ayy.*ATbx-Axy.*ATby);

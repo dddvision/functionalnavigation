@@ -27,8 +27,8 @@ for index=1:size(Trajectories,2)
             V = P*A*T' + B*R';
             Vxr(i,j) = V(1);
             Vyr(i,j) = V(2);
-        end;
-    end;
+        end
+    end
 
     % Generate potential translation direction field
     T = Trajectories(index).Translation;
@@ -50,14 +50,14 @@ for index=1:size(Trajectories,2)
             V = P*A*T' + B*R';
             Vxt(i,j) = V(1);
             Vyt(i,j) = V(2);
-        end;
-    end;
+        end
+    end
     % Drop magnitude of translation
     mag = (Vxt.^2 + Vyt.^2).^.5; % TODO: use faster magnitude calculation
     if (mag~=0) % TODO: handle zeros properly
         Vxt = Vxt./mag;
         Vyt = Vyt./mag;
-    end;
+    end
 
     % remove rotation effect
     Vx_OFT = (Vx_OF - Vxr);

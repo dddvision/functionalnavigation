@@ -53,7 +53,7 @@ if(isempty(strmatch(shape, char({'same', 'valid', 'full', 'smooth'}))))
 
 shapeorig = shape;
 smoothFlag = (strcmp(shape,'smooth'));
-if( smoothFlag ); shape = 'same'; end;
+if( smoothFlag ); shape = 'same'; end
 
 % get dimensions of A and B
 ndA = ndims(A);  ndB = ndims(B); nd = max(ndA,ndB);
@@ -65,13 +65,13 @@ if (ndA<ndB); sizA = [sizA ones(1,ndB-ndA)]; end
 if( smoothFlag )
   if( ~all( mod(sizB,2)==1 ) )
     error('If flag==''smooth'' then must have odd sized mask');
-  end;
+  end
   if( ~all( B>0 ) )
     error('If flag==''smooth'' then mask must have >0 values.');
-  end;
+  end
   if( any( (sizB-1)/2>sizA ) )
     error('B is more then twice as big as A, cannot use flag==''smooth''');
-  end;
+  end
 end
 
 % OPTIMIZATION for 3D conv when B is actually 2D - calls (spatial) conv2
@@ -120,11 +120,11 @@ if ( spatialPt < frequenPt )
   end
 else
   C = convnFreq( A, B, sizA, sizB, shape );
-end;
+end
 
 
 % now correct boundary effects (if shape=='smooth')
-if( ~smoothFlag ); return; end;
+if( ~smoothFlag ); return; end
 C = convnBound( A, B, C, sizA, sizB );
 
 function C = convnBound( A, B, C, sizA, sizB )
