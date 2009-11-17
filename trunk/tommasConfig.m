@@ -7,8 +7,8 @@ classdef tommasConfig
     % select testbed components
     dataContainer = 'thesisDataDDiel';
     dynamicModel = 'wobble1';
-    measure = 'opticalFlowLK';
     optimizer = 'matlabGA1';
+    measures = {'opticalFlowPDollar'};
     
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test

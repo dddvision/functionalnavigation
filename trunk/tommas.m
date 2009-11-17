@@ -1,23 +1,20 @@
-classdef tommas
+classdef tommas < tommasConfig
   
   properties (GetAccess=private,SetAccess=private)
-    sensorHandle
-    dynamicModel
+    u
+    M
+    F
+    g
     cost
-    measures
-    optimizer
     tmin
   end
   
   methods (Access=public)
     
     % Construct a Trajectory Optimization Manager for Multiple Algorithms and Sensors
-    function this=tommas(config)
+    function this=tommas
       fprintf('\n');
       fprintf('\ntommas::tommas');
-      if(nargin~=1)
-        error('requires configuration argument');
-      end
       warning('on','all');
       intwarning('off');
       reset(RandStream.getDefaultStream);
@@ -26,24 +23,26 @@ classdef tommas
       this.tmin=0;
 
       % initialize trajectories
-      for k=1:config.popSizeDefault
-        this.dynamicModel{k}=unwrapComponent(config.dynamicModel);
+      for k=1:this.popSizeDefault
+        this.F{k}=unwrapComponent(this.dynamicModel);
       end
 
       % TODO: match multiple measures to multiple sensors
-      data=unwrapComponent(config.dataContainer);
+      data=unwrapComponent(this.dataContainer);
       list=listSensors(data,'camera');
-      this.sensorHandle{1}=getSensor(data,list(1));
-      this.measures{1}=unwrapComponent(config.measure,this.sensorHandle{1});
-      
+      this.u{1}=getSensor(data,list(1));
+      for k=1:numel(this.measures)
+        this.g{k}=unwrapComponent(this.measures{k},this.u{k});
+      end
+        
       % initialize optimizer
-      this.optimizer=unwrapComponent(config.optimizer);
+      this.M=unwrapComponent(this.optimizer);
      
       % determine initial costs
       parameters=getParameters(this);
       objective('put',this);
       lockSensors(this);
-      [this.optimizer,this.cost]=defineProblem(this.optimizer,@objective,parameters);
+      [this.M,this.cost]=defineProblem(this.M,@objective,parameters);
       unlockSensors(this);
     end
     
@@ -53,7 +52,7 @@ classdef tommas
     % xEst = trajectory objects, popSize-by-1
     % cEst = non-negative cost associated with each trajectory object, double popSize-by-1
     function [xEst,cEst]=getResults(this)
-      xEst=cat(1,this.dynamicModel{:});
+      xEst=cat(1,this.F{:});
       cEst=this.cost;
     end
     
@@ -61,7 +60,7 @@ classdef tommas
     function this=step(this)
       objective('put',this);
       lockSensors(this);
-      [this.optimizer,parameters,this.cost]=step(this.optimizer);
+      [this.M,parameters,this.cost]=step(this.M);
       unlockSensors(this);
       this=putParameters(this,parameters);
     end
@@ -80,34 +79,35 @@ classdef tommas
         case 'optimizer'
           testOptimizer(component);
         otherwise
-          warning('unrecognized component type');
+          warning('testComponent:exception','unrecognized component type');
       end      
     end
   end
   
   methods (Access=private)
     function lockSensors(this)
-      for s=1:numel(this.sensorHandle)
-        lock(this.sensorHandle{s});
+      for s=1:numel(this.u)
+        lock(this.u{s});
       end
     end
     
     function unlockSensors(this)
-      for s=1:numel(this.sensorHandle)
-        unlock(this.sensorHandle{s});
+      for s=1:numel(this.u)
+        unlock(this.u{s});
       end
     end
     
     function parameters=getParameters(this)
-      parameters=[];
-      for k=1:numel(this.dynamicModel)
-        parameters=[parameters;getBits(this.dynamicModel{k},this.tmin)];
+      K=numel(this.F);
+      parameters=repmat(getBits(this.F{1},this.tmin),[K,1]);
+      for k=2:K
+        parameters(k,:)=getBits(this.F{k},this.tmin);
       end
     end
     
     function this=putParameters(this,parameters)
-      for k=1:numel(this.dynamicModel)
-        this.dynamicModel{k}=putBits(this.dynamicModel{k},parameters(k,:),this.tmin);
+      for k=1:numel(this.F)
+        this.F{k}=putBits(this.F{k},parameters(k,:),this.tmin);
       end
     end
   end
@@ -119,11 +119,11 @@ function varargout=objective(varargin)
   persistent this
   parameters=varargin{1};
   if(~ischar(parameters))
-    K=numel(this.dynamicModel);
+    K=numel(this.F);
     this=putParameters(this,parameters);
     cost=zeros(K,1);
     for k=1:K
-      cost(k)=evaluate(this.measures{1},this.dynamicModel{k},this.tmin);
+      cost(k)=evaluate(this.g{1},this.F{k},this.tmin);
     end
     % TODO: enable multiple measures
     varargout{1}=cost;

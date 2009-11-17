@@ -24,7 +24,9 @@ classdef dynamicModel < trajectory
     % NOTE
     % This operation will change the derived class behaviour
     this=putBits(this,bits,tmin);
-
+  end
+  
+  methods (Static=true,Abstract=true)
     % Calculate the prior cost of a set of parameters
     %
     % INPUT
@@ -33,7 +35,7 @@ classdef dynamicModel < trajectory
     %
     % OUTPUT
     % cost = non-negative prior cost, double scalar
-    cost=priorCost(this,bits,tmin);
+    cost=priorCost(bits,tmin);
   end
-  
+    
 end

@@ -18,14 +18,14 @@ classdef measureStub < measure
       [a,b]=domain(this.u);
       tmin=getTime(this.u,a);
       tmax=getTime(this.u,b);
-      pqa=evaluate(x,tmin);
+      [pa,qa]=evaluate(x,tmin);
       fprintf('\nx(%f) = < ',tmin);
-      fprintf('%f ',pqa);
+      fprintf('%f ',[pa;qa]);
       fprintf('>');
    
-      pqb=evaluate(x,tmax);      
+      [pb,qb]=evaluate(x,tmax);      
       fprintf('\nx(%f) = < ',tmax);
-      fprintf('%f ',pqb);
+      fprintf('%f ',[pb;qb]);
       fprintf('>');
       
       cost=rand;

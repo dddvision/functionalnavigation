@@ -13,14 +13,11 @@ componentPath=fullfile(fileparts(mfilename),'components');
 addpath(genpath(componentPath));
 fprintf('\npath added: %s',componentPath);
 
-% get the configuration file
-config=tommasConfig;
-
 % run diagnostic tests on a component
-%tommas.testComponent(config.dataContainer);
+%tommas.testComponent('thesisDataDDiel');
 
 % create an instance of the trajectory optimization manager
-tom=tommas(tommasConfig);
+tom=tommas;
 
 % get initial trajectories and costs
 [xEst,cEst]=getResults(tom);
@@ -42,9 +39,9 @@ figure;
 px=exp(-(9/2)*(cEst.*cEst));
 display(xEst,'alpha',px','tmax',4);
 axis('on');
-xlabel('North');
-ylabel('East');
-zlabel('Down');
+xlabel('Longitude');
+ylabel('Latitude');
+zlabel('Altitude');
 drawnow;
 
 % done

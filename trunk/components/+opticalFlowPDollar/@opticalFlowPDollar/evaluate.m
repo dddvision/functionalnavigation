@@ -17,12 +17,8 @@ ta=getTime(this.cameraHandle,ka);
 tb=getTime(this.cameraHandle,kb);
 
 % evaluate sensor position and orientation
-pqa=evaluate(x,ta);
-pqb=evaluate(x,tb);
-pa=pqa(1:3,:);
-qa=pqa(4:7,:);
-pb=pqb(1:3,:);
-qb=pqb(4:7,:);
+[pa,qa]=evaluate(x,ta);
+[pb,qb]=evaluate(x,tb);
  
 % convert quaternions to Euler angles
 Ea=Quat2Euler(qa);
