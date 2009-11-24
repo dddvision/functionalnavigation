@@ -10,9 +10,8 @@ classdef gps < sensor
     % k = data index, uint32 scalar
     %
     % OUTPUT
-    % offset = position of antenna origin, double 3-by-1
-    % direction = unit normalized direction vector, 3-by-1
-    offset = getAntennaOffset(this,k);
+    % offset = position of antenna origin in the body frame, double 3-by-1
+    offset=getAntennaOffset(this,k);
     
     % Get a position measurement
     %
@@ -23,13 +22,13 @@ classdef gps < sensor
     % lon = longitude in radians, double scalar
     % lat = latitude in  radians, double scalar
     % alt = altitude above WGS84 ellipsoid in meters, double scalar
-    [lon,lat,alt] = getPosition(this,k);
+    [lon,lat,alt]=getPosition(this,k);
  
     % Check whether precision information is available
     % 
     % OUTPUT
     % flag = true if precision data is available, false otherwise, bool
-    flag = hasPrecision(this);
+    flag=hasPrecision(this);
     
     % Get precision information
     %
@@ -40,7 +39,7 @@ classdef gps < sensor
     % hDop = horizontal dilution of precision (unitless), double scalar
     % vDop = vertical dilution of precision (unitless), double scalar
     % sigmaR = standard deviation of equivalent circular error (meters), double scalar
-    [hDop,vDop,sigmaR] = getPrecision(this,k);
+    [hDop,vDop,sigmaR]=getPrecision(this,k);
   end 
  
 end
