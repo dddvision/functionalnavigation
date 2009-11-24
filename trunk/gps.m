@@ -4,15 +4,15 @@
 classdef gps < sensor
     
   methods (Abstract=true)
-    % Get sensor offset relative to the body frame
+    % Get antenna offset relative to the body frame
     %
     % INPUT
     % k = data index, uint32 scalar
     %
     % OUTPUT
-    % offset = position of sensor origin, double 3-by-1
+    % offset = position of antenna origin, double 3-by-1
     % direction = unit normalized direction vector, 3-by-1
-    offset = getOffset(this,k);
+    offset = getAntennaOffset(this,k);
     
     % Get a position measurement
     %
@@ -28,8 +28,7 @@ classdef gps < sensor
     % Check whether precision information is available
     % 
     % OUTPUT
-    % flag = true if precision data is available from the sensor, 
-    %        false otherwise, bool
+    % flag = true if precision data is available, false otherwise, bool
     flag = hasPrecision(this);
     
     % Get precision information
@@ -38,9 +37,9 @@ classdef gps < sensor
     % k = data index, uint32 scalar
     %
     % OUTPUT 
-    % hDop = horizontal dilution  of precision (unitless), double scalar
+    % hDop = horizontal dilution of precision (unitless), double scalar
     % vDop = vertical dilution of precision (unitless), double scalar
-    % sigmaR = scale of equivalent spherical error (meters), double scalar
+    % sigmaR = standard deviation of equivalent circular error (meters), double scalar
     [hDop,vDop,sigmaR] = getPrecision(this,k);
   end 
  
