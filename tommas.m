@@ -1,3 +1,4 @@
+% Trajectory Optimization Manager for Multiple Algorithms and Sensors
 classdef tommas < tommasConfig
   
   properties (GetAccess=private,SetAccess=private)
@@ -11,7 +12,6 @@ classdef tommas < tommasConfig
   
   methods (Access=public)
     
-    % Construct a Trajectory Optimization Manager for Multiple Algorithms and Sensors
     function this=tommas
       fprintf('\n');
       fprintf('\ntommas::tommas');
@@ -19,9 +19,9 @@ classdef tommas < tommasConfig
       intwarning('off');
       reset(RandStream.getDefaultStream);
 
-      % TODO: set adaptively to manage computation
+      % TODO: move choice of tmin into the optimizer
       this.tmin=0;
-
+      
       % initialize trajectories
       for k=1:this.popSizeDefault
         this.F{k}=unwrapComponent(this.dynamicModel);
@@ -123,7 +123,14 @@ function varargout=objective(varargin)
     this=putParameters(this,parameters);
     cost=zeros(K,1);
     for k=1:K
-      cost(k)=evaluate(this.g{1},this.F{k},this.tmin);
+      % TODO: move this algorithm into the optimizer
+      [a,b]=getNodes(this.g{1});
+      n=getEdgesBackward(this.g{1},a,b);
+      if( isempty(n) )
+        cost(k)=0;
+      else
+        cost(k)=computeEdgeCost(this.g{1},this.F{k},n(1),b);
+      end
     end
     % TODO: enable multiple measures
     varargout{1}=cost;
