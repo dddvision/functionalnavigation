@@ -12,21 +12,46 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       this.cameraHandle=cameraHandle;
     end
     
-    function cost=evaluate(this,x,tmin)
-      assert(isa(tmin,'double'));
-      fprintf('\n');
-      fprintf('\nopticalFlowPyramid::evaluate');
+    function [a,b]=getNodes(this)
       [a,b]=domain(this.cameraHandle);
-      tmin=getTime(this.cameraHandle,a);
-      tmax=getTime(this.cameraHandle,b);
-      [pa,qa]=evaluate(x,tmin);
-      fprintf('\nx(%f) = < ',tmin);
+    end
+    
+    function n=getEdgesForward(this,a,b)
+      [aa,bb]=domain(this.cameraHandle);
+      if( (b<=a)||(a<aa)||(b>bb) )
+        n=uint32([]);
+      else
+        n=uint32((a+1):b);
+      end
+    end
+    
+    function n=getEdgesBackward(this,a,b)
+      [aa,bb]=domain(this.cameraHandle);
+      if( (b<=a)||(a<aa)||(b>bb) )
+        n=uint32([]);
+      else
+        n=uint32(a:(b-1));
+      end
+    end
+    
+    function cost=computeEdgeCost(this,x,a,b)
+      fprintf('\n');
+      fprintf('\nopticalFlowPyramid::computeEdgeCost');
+      
+      [aa,bb]=domain(this.cameraHandle);
+      assert((b>a)&&(a>=aa)&&(b<=bb));
+      
+      ta=getTime(this.cameraHandle,a);
+      tb=getTime(this.cameraHandle,b);
+      [pa,qa]=evaluate(x,ta);
+      fprintf('\nx(%f) = < ',ta);
       fprintf('%f ',[pa;qa]);
       fprintf('>');
-      [pb,qb]=evaluate(x,tmax);      
-      fprintf('\nx(%f) = < ',tmax);
+      [pb,qb]=evaluate(x,tb);      
+      fprintf('\nx(%f) = < ',tb);
       fprintf('%f ',[pb;qb]);
       fprintf('>');
+      
       im1=getImage(this.cameraHandle,a); 
       im2=getImage(this.cameraHandle,b); 
       if( strcmp(interpretLayers(this.cameraHandle),'rgb') )
@@ -34,7 +59,9 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
         im2=rgb2gray(im2); 
       end
       imsize=size(im1);
+      
       [u,v]=hierarchicalLK(this,im1,im2);
+      
       Ea=quat2EulerDD(qa);
       Eb=quat2EulerDD(qb);
       translation(1)=pb(1)-pa(1);
@@ -44,14 +71,13 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       rotation(2)=Eb(2)-Ea(2);
       rotation(3)=Eb(3)-Ea(3);	
       [uvr,uvt]=generateFlow(this,translation,rotation,imsize);
+      
       cost=computeCost(u,v,uvr, uvt);
       fprintf('\ncost = %f',cost);
     end
-    
   end
   
   methods (Access=private)
-  
 		% Hierarchical Lucas Kanade (using pyramids)
 		% Tested for pyramids of height 1, 2, 3 only... operation with
 		% pyramids of height 4 might be unreliable
