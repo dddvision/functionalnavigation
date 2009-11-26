@@ -16,6 +16,7 @@ classdef measure
     %
     % NOTES
     % Return values are empty when no nodes are available
+    % Node indices are not transferrable between object instances
     [a,b]=getNodes(this);
     
     % Get node indices in the interval [a,b] that share an edge with node a
@@ -48,10 +49,11 @@ classdef measure
     %
     % INPUTS
     % x = trajectory object
-    % tmin = time domain lower bound over which to evaluate, double scalar
+    % a = lower node index, uint32 scalar
+    % b = upper node index, uint32 scalar
     %
     % OUTPUT
-    % cost = non-negative value of inconsistency, double scalar
+    % cost = non-negative amount of inconsistency in the interval [0,1], double scalar
     %
     % NOTE
     % The input trajectory objects represent the motion of the body frame
