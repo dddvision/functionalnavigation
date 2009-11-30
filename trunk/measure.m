@@ -1,66 +1,64 @@
-% This class defines how a cost measure is applied to a trajectory
+% This class defines a graph of measures between sensor data and a trajectory
 classdef measure
   
   properties (Constant=true,GetAccess=public)
     baseClass='measure';
   end
   
-  methods (Abstract=true)
-    % TODO: Add constructor that accepts a sensor
-    
-    % Return first and last indices of a consecutive list of nodes
-    %
-    % OUTPUT
-    % a = first valid node index, uint32 scalar
-    % b = last valid node index, uint32 scalar
-    %
-    % NOTES
-    % Return values are empty when no nodes are available
-    % Node indices are not transferrable between object instances
-    [a,b]=getNodes(this);
-    
-    % Get node indices in the interval [a,b] that share an edge with node a
+  properties (SetAccess=private,GetAccess=protected)
+     sensor
+     trajectory
+  end
+  
+  methods (Access=protected)
+    % Construct a measure given a sensor and a trajectory
     %
     % INPUT
-    % a = lower node index, uint32 scalar
-    % b = upper node index, uint32 scalar
-    %
-    % OUTPUT
-    % n = indices shared with node a, uint32 N-by-1
-    %
-    % NOTES
-    % Output is sorted in ascending order
-    n=getEdgesForward(this,a,b);
-
-    % Get node indices in the interval [a,b] that share an edge with node b
-    %
-    % INPUT
-    % a = lower node index, uint32 scalar
-    % b = upper node index, uint32 scalar
-    %
-    % OUTPUT
-    % n = indices shared with node b, uint32 N-by-1
-    %
-    % NOTES
-    % Output is sorted in ascending order
-    n=getEdgesBackward(this,a,b);
-    
-    % Evaluate a measure of inconsistency between a trajectory and sensor data
-    %
-    % INPUTS
+    % u = sensor object
     % x = trajectory object
-    % a = lower node index, uint32 scalar
-    % b = upper node index, uint32 scalar
-    %
-    % OUTPUT
-    % cost = non-negative amount of inconsistency in the interval [0,1], double scalar
     %
     % NOTE
-    % The input trajectory objects represent the motion of the body frame
-    % relative to a world frame.  If the sensor frame is not coincident with
+    % Subclass constructor must pass identical arguments to this 
+    %   constructor using the syntax this=this@measure(u,x);
+    % The input trajectory object represents the motion of the body frame
+    % relative to a world frame. If the sensor frame is not coincident with
     % the body frame, then the sensor frame offset may need to be 
     % kinematically composed with the body frame to locate the sensor.
-    cost=computeEdgeCost(this,x,a,b);
+    function this=measure(u,x)
+      if(nargin~=0)
+        this.sensor=u;
+        this.trajectory=x;
+      end
+    end
+  end
+    
+  methods (Access=public)
+    % Set the trajectory property
+    %
+    % INPUT
+    % x = trajectory object
+    function this=setTrajectory(this,x)
+      this.trajectory=x;
+    end
+  end
+  
+  methods (Abstract=true)
+    % Get all edges in the adjacency graph
+    %
+    % OUTPUT
+    % a = lower node index for each edge, uint32 N-by-1
+    % b = upper node index for each edge, uint32 N-by-1
+    [a,b]=getEdges(this);
+    
+    % Evaluate a measure of an edge
+    %
+    % INPUTS
+    % a = lower node index, uint32 scalar
+    % b = upper node index, uint32 scalar
+    %
+    % OUTPUT
+    % cost = non-negative measure in the interval [0,1], double scalar
+    cost=computeEdgeCost(this,a,b);
   end
   
 end

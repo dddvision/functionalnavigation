@@ -32,7 +32,7 @@ classdef tommas < tommasConfig
       list=listSensors(data,'camera');
       this.u{1}=getSensor(data,list(1));
       for k=1:numel(this.measures)
-        this.g{k}=unwrapComponent(this.measures{k},this.u{k});
+        this.g{k}=unwrapComponent(this.measures{k},this.u{k},this.F{1});
       end
         
       % initialize optimizer
@@ -123,13 +123,13 @@ function varargout=objective(varargin)
     this=putParameters(this,parameters);
     cost=zeros(K,1);
     for k=1:K
-      % TODO: move this algorithm into the optimizer
-      [a,b]=getNodes(this.g{1});
-      n=getEdgesBackward(this.g{1},a,b);
-      if( isempty(n) )
+      % TODO: compute cost for multiple edges
+      [a,b]=getEdges(this.g{1});
+      if( isempty(a) )
         cost(k)=0;
       else
-        cost(k)=computeEdgeCost(this.g{1},this.F{k},n(1),b);
+        this.g{1}=setTrajectory(this.g{1},this.F{k});
+        cost(k)=computeEdgeCost(this.g{1},a(1),b(1));
       end
     end
     % TODO: enable multiple measures
@@ -170,6 +170,7 @@ end
 function testCameraArrayProjection(cam)
   % find out which images are available
   [ka,kb]=domain(cam);
+  assert(isa(ka,'uint32'));
 
   for view=1:numViews(cam);
 
@@ -228,6 +229,7 @@ end
 function testCameraArrayProjectionRoundTrip(cam)
   % find out which images are available
   [ka,kb]=domain(cam);
+  assert(isa(ka,'uint32'));
 
   for view=1:numViews(cam);
 
