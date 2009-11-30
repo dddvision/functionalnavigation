@@ -1,60 +1,47 @@
 classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & measure
   
-  properties (GetAccess=private,SetAccess=private)
-    cameraHandle
-  end  
-  
   methods (Access=public)
     
-    function this=opticalFlowPyramid(cameraHandle)
+    function this=opticalFlowPyramid(u,x)
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::opticalFlowPyramid');
-      this.cameraHandle=cameraHandle;
+      this=this@measure(u,x);
     end
     
-    function [a,b]=getNodes(this)
-      [a,b]=domain(this.cameraHandle);
-    end
-    
-    function n=getEdgesForward(this,a,b)
-      [aa,bb]=domain(this.cameraHandle);
-      if( (b<=a)||(a<aa)||(b>bb) )
-        n=uint32([]);
+    function [a,b]=getEdges(this)
+      fprintf('\n');
+      fprintf('\nopticalFlowPyramid::getEdges');
+      [aa,bb]=domain(this.sensor);
+      if( aa==bb )
+        a=[];
+        b=[];
       else
-        n=uint32((a+1):b);
+        a=aa;
+        b=bb;
       end
     end
     
-    function n=getEdgesBackward(this,a,b)
-      [aa,bb]=domain(this.cameraHandle);
-      if( (b<=a)||(a<aa)||(b>bb) )
-        n=uint32([]);
-      else
-        n=uint32(a:(b-1));
-      end
-    end
-    
-    function cost=computeEdgeCost(this,x,a,b)
+    function cost=computeEdgeCost(this,a,b)
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::computeEdgeCost');
       
-      [aa,bb]=domain(this.cameraHandle);
+      [aa,bb]=domain(this.sensor);
       assert((b>a)&&(a>=aa)&&(b<=bb));
       
-      ta=getTime(this.cameraHandle,a);
-      tb=getTime(this.cameraHandle,b);
-      [pa,qa]=evaluate(x,ta);
+      ta=getTime(this.sensor,a);
+      tb=getTime(this.sensor,b);
+      [pa,qa]=evaluate(this.trajectory,ta);
       fprintf('\nx(%f) = < ',ta);
       fprintf('%f ',[pa;qa]);
       fprintf('>');
-      [pb,qb]=evaluate(x,tb);      
+      [pb,qb]=evaluate(this.trajectory,tb);      
       fprintf('\nx(%f) = < ',tb);
       fprintf('%f ',[pb;qb]);
       fprintf('>');
       
-      im1=getImage(this.cameraHandle,a); 
-      im2=getImage(this.cameraHandle,b); 
-      if( strcmp(interpretLayers(this.cameraHandle),'rgb') )
+      im1=getImage(this.sensor,a); 
+      im2=getImage(this.sensor,b); 
+      if( strcmp(interpretLayers(this.sensor),'rgb') )
         im1=rgb2gray(im1); 
         im2=rgb2gray(im2); 
       end
@@ -177,16 +164,16 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       n=imsize(2);
       [ii,jj]=ndgrid((1:m)-1,(1:n)-1);
       pix=[jj(:)';ii(:)'];
-      ray=inverseProjection(this.cameraHandle,pix);
+      ray=inverseProjection(this.sensor,pix);
       ray_new=transpose(R)*ray; 
-      x_new=projection(this.cameraHandle,ray_new);
+      x_new=projection(this.sensor,ray_new);
       fr(1,:)=pix(1,:)-x_new(1,:);
       fr(2,:)=pix(2,:)-x_new(2,:);
       T_norm=(1E-8)*translation/sqrt(dot(translation,translation));
       ray_new(1,:)=ray(1,:)-T_norm(3);
       ray_new(2,:)=ray(2,:)-T_norm(1);
       ray_new(3,:)=ray(3,:)-T_norm(2);
-      x_new=projection(this.cameraHandle,ray_new);
+      x_new=projection(this.sensor,ray_new);
       ft(1,:)=pix(1,:)-x_new(1,:);
       ft(2,:)=pix(2,:)-x_new(2,:);
       uvr(1,:,:)=reshape(fr(1,:),m,n);

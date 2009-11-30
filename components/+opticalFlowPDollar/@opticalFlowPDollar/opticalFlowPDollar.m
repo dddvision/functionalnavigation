@@ -1,56 +1,42 @@
 classdef opticalFlowPDollar < measure
   
-  properties (GetAccess=private,SetAccess=private)
-    cameraHandle
-  end
-  
   methods (Access=public)
-    function this=opticalFlowPDollar(cameraHandle)
+    function this=opticalFlowPDollar(u,x)
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::opticalFlowPDollar');
-      % TODO: get real or simulated data
-      this.cameraHandle=cameraHandle;
+      this=this@measure(u,x);
     end
     
-    function [a,b]=getNodes(this)
-      [a,b]=domain(this.cameraHandle);
-    end
-    
-    function n=getEdgesForward(this,a,b)
-      [aa,bb]=domain(this.cameraHandle);
-      if( (b<=a)||(a<aa)||(b>bb) )
-        n=uint32([]);
+    function [a,b]=getEdges(this)
+      fprintf('\n');
+      fprintf('\nopticalFlowPDollar::getEdges');
+      [aa,bb]=domain(this.sensor);
+      if( aa==bb )
+        a=[];
+        b=[];
       else
-        n=uint32((a+1):b);
+        a=aa;
+        b=bb;
       end
     end
     
-    function n=getEdgesBackward(this,a,b)
-      [aa,bb]=domain(this.cameraHandle);
-      if( (b<=a)||(a<aa)||(b>bb) )
-        n=uint32([]);
-      else
-        n=uint32(a:(b-1));
-      end
-    end
-    
-    function cost=computeEdgeCost(this,x,a,b)
+    function cost=computeEdgeCost(this,a,b)
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::computeEdgeCost');
       
-      [aa,bb]=domain(this.cameraHandle);
+      [aa,bb]=domain(this.sensor);
       assert((b>a)&&(a>=aa)&&(b<=bb));
       
       % get optical flow from cache
       data=opticalFlow1_cache(this,a,b);
 
       % get corresponding times
-      ta=getTime(this.cameraHandle,a);
-      tb=getTime(this.cameraHandle,b);
+      ta=getTime(this.sensor,a);
+      tb=getTime(this.sensor,b);
 
       % evaluate sensor position and orientation
-      [pa,qa]=evaluate(x,ta);
-      [pb,qb]=evaluate(x,tb);
+      [pa,qa]=evaluate(this.trajectory,ta);
+      [pb,qb]=evaluate(this.trajectory,tb);
 
       % convert quaternions to Euler angles
       Ea=Quat2Euler(qa);

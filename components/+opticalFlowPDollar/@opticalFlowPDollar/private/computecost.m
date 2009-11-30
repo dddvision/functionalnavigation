@@ -54,10 +54,14 @@ for index=1:size(Trajectories,2)
     end
     % Drop magnitude of translation
     mag = (Vxt.^2 + Vyt.^2).^.5; % TODO: use faster magnitude calculation
-    if (mag~=0) % TODO: handle zeros properly
-        Vxt = Vxt./mag;
-        Vyt = Vyt./mag;
-    end
+    bad = logical(abs(mag(:))<eps);
+    mag(bad) = eps;
+    Vxt = Vxt./mag;
+    Vyt = Vyt./mag;
+    
+    % remove bad pixels
+    Vxt(bad)=0;
+    Vyt(bad)=0;
 
     % remove rotation effect
     Vx_OFT = (Vx_OF - Vxr);
@@ -65,12 +69,14 @@ for index=1:size(Trajectories,2)
 
     % Drop magnitude and keep direction only
     mag = (Vx_OFT.^2 + Vy_OFT.^2).^.5;
+    bad = logical(abs(mag(:))<eps);
+    mag(bad) = eps;
     Vx_OFTD = Vx_OFT./mag;
     Vy_OFTD = Vy_OFT./mag;
 
-    % remove NaNs
-    Vx_OFTD(find(isnan(Vx_OFTD)==1)) =0; % TODO: use faster method than find
-    Vy_OFTD(find(isnan(Vy_OFTD)==1)) =0;
+    % remove bad pixels
+    Vx_OFTD(bad)=0;
+    Vy_OFTD(bad)=0;
 
     % Calculate Error
     ErrorX = (Vx_OFTD - Vxt);
