@@ -1,6 +1,6 @@
 Coding tasks:
 
- * Move TODO statements from the framework to here (leave components alone).
+ * Move TODO statements here, unless they only refer to a local change.
  * Separate dataContainer stuff from the trajectory optimization manager.
  * Wrap the "objective" so that optimizer never sees trajectories directly?
  * Make class aliases for "time", "index", "real" and other simple classes?
