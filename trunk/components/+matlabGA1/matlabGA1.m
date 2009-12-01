@@ -64,29 +64,16 @@ classdef matlabGA1 < optimizer
     % Requires a license for the Matlab GADS toolbox
     function [this,parameters,cost]=step(this)
       % TODO: move these lines to defineProblem?
-      popsize=numel(this.parameters);
+      [popsize,nvars]=size(this.parameters);
       options=this.defaultOptions;
       options.PopulationSize=popsize;
       options.EliteCount=max(1,popsize/20);
       nullstate=struct('FunEval',0);
       %nullobjective=@(x) zeros(size(x,1),1);
       
-      % reshape parameters
-      nvars=numel(this.parameters{1});
-      parameters=false(popsize,nvars);
-      for k=1:popsize
-        parameters(k,:)=this.parameters{k}(:);
-      end
-      
-      % compute cost and create new parameters
-      [cost,parameters]=feval(this.stepGAhandle,this.cost,parameters,options,nullstate,nvars,this.objective);
+      [cost,parameters]=feval(this.stepGAhandle,this.cost,this.parameters,options,nullstate,nvars,this.objective);
+      this.parameters=parameters;
       this.cost=cost;
-
-      % reshape parameters
-      for k=1:popsize
-        this.parameters{k}(:)=parameters(k,:);
-      end
-      parameters=this.parameters;
     end
   end
   

@@ -6,24 +6,36 @@ classdef dynamicModel < trajectory
   end
   
   methods (Abstract=true)
-    % Extract a tail segment of dynamic parameters from the derived class
+    % Extract a tail segment of dynamic parameters
     %
     % INPUT
     % tmin = time lower bound, double scalar
     %
     % OUTPUT
-    % bits = bitset segment of dynamic parameters, logical D-by-T
+    % bits = bitset segment of dynamic parameters, logical 1-by-nvars
     bits=getBits(this,tmin);
 
-    % Replace a tail segment of dynamic parameters held by the derived class
+    % Replace a tail segment of dynamic parameters
     % 
     % INPUT
-    % bits = bitset segment of dynamic parameters to splice in, logical length D*T
+    % bits = bitset segment of dynamic parameters to splice in, logical 1-by-nvars
     % tmin = time lower bound, double scalar
     % 
     % NOTE
     % This operation will change the derived class behaviour
     this=putBits(this,bits,tmin);
   end
+  
+%   methods (Static=true,Abstract=true)
+%     % Calculate the prior cost of a set of parameters
+%     %
+%     % INPUT
+%     % bits = bitset segment of dynamic parameters, logical 1-by-nvars
+%     % tmin = time lower bound, double scalar
+%     %
+%     % OUTPUT
+%     % cost = non-negative prior cost, double scalar
+%     cost=priorCost(bits,tmin);
+%   end
     
 end

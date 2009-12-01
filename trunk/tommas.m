@@ -99,15 +99,15 @@ classdef tommas < tommasConfig
     
     function parameters=getParameters(this)
       K=numel(this.F);
-      parameters=cell(K,1);
-      for k=1:K
-        parameters{k}=getBits(this.F{k},this.tmin);
+      parameters=repmat(getBits(this.F{1},this.tmin),[K,1]);
+      for k=2:K
+        parameters(k,:)=getBits(this.F{k},this.tmin);
       end
     end
     
     function this=putParameters(this,parameters)
       for k=1:numel(this.F)
-        this.F{k}=putBits(this.F{k},parameters{k},this.tmin);
+        this.F{k}=putBits(this.F{k},parameters(k,:),this.tmin);
       end
     end
   end
@@ -120,10 +120,6 @@ function varargout=objective(varargin)
   parameters=varargin{1};
   if(~ischar(parameters))
     K=numel(this.F);
-    % TODO: should not have to convert vectorized parameters back to cell array format
-    if(~iscell(parameters))
-      parameters=mat2cell(parameters,ones(K,1),size(parameters,2));
-    end
     this=putParameters(this,parameters);
     cost=zeros(K,1);
     [a,b]=findEdges(this.g{1});
@@ -131,9 +127,8 @@ function varargout=objective(varargin)
       if( isempty(a) )
         cost(k)=0;
       else
-        this.g{1}=setTrajectory(this.g{1},this.F{k});
-        % TODO: compute cost for multiple edges
         cost(k)=computeEdgeCost(this.g{1},a(1),b(1));
+        % TODO: compute cost for multiple edges
       end
     end
     % TODO: enable multiple measures

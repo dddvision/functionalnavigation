@@ -5,10 +5,10 @@ classdef tommasConfig
 
   properties (Constant=true)
     % select testbed components
-    dataContainer = 'thesisDataDDiel';
-    dynamicModel = 'dynamicModelStub';
-    optimizer = 'optimizerStub';
-    measures = {'measureStub'};
+    dataContainer = 'middleburyData';
+    dynamicModel = 'wobble1';
+    optimizer = 'matlabGA1';
+    measures = {'opticalFlowPDollar'};
     
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test

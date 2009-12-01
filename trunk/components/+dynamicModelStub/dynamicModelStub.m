@@ -15,11 +15,11 @@ classdef dynamicModelStub < dynamicModel
       fprintf('\n');
       fprintf('\ndynamicModelStub::dynamicModelStub');
       this.a=0;
-      this.b=2;
+      this.b=3;
       this.parametersPerSecond=15;
       this.lonLatAlt=[0;0;0];
       this.quaternion=[1;0;0;0];
-      this.dynamicParameters=logical(rand(2,30)>0.5);
+      this.dynamicParameters=logical(rand(1,45)>0.5);
     end
 
     function bits=getBits(this,tmin)
