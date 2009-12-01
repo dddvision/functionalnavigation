@@ -3,7 +3,7 @@ Coding tasks:
  * Move TODO statements from the framework to here (leave components alone).
  * Separate dataContainer stuff from the trajectory optimization manager.
  * Wrap the "objective" so that optimizer never sees trajectories directly?
- * Make class aliases for "time", "index", and other simple classes?
+ * Make class aliases for "time", "index", "real" and other simple classes?
  * Replace zero-based indices with non-zero-bases indices when possible.
  * Clarify time system by introducing t0 reference?
  * Add mlint testing requirement in how to make a component wiki.
