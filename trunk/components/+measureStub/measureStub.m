@@ -7,9 +7,9 @@ classdef measureStub < measure
       this=this@measure(u,x);
     end
     
-    function [a,b]=getEdges(this)
+    function [a,b]=findEdges(this)
       fprintf('\n');
-      fprintf('\nmeasureStub::getEdges');
+      fprintf('\nmeasureStub::findEdges');
       [aa,bb]=domain(this.sensor);
       if( aa==bb )
         a=[];

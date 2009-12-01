@@ -7,9 +7,9 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       this=this@measure(u,x);
     end
     
-    function [a,b]=getEdges(this)
+    function [a,b]=findEdges(this)
       fprintf('\n');
-      fprintf('\nopticalFlowLK::getEdges');
+      fprintf('\nopticalFlowLK::findEdges');
       [aa,bb]=domain(this.sensor);
       if( aa==bb )
         a=[];

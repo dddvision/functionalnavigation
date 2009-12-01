@@ -18,7 +18,7 @@ classdef measure
     % x = trajectory object
     %
     % NOTE
-    % Subclass constructor must pass identical arguments to this 
+    % A subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@measure(u,x);
     % The input trajectory object represents the motion of the body frame
     % relative to a world frame. If the sensor frame is not coincident with
@@ -31,24 +31,17 @@ classdef measure
       end
     end
   end
-    
-  methods (Access=public)
-    % Set the trajectory property
-    %
-    % INPUT
-    % x = trajectory object
-    function this=setTrajectory(this,x)
-      this.trajectory=x;
-    end
-  end
   
   methods (Abstract=true)
-    % Get all edges in the adjacency graph
+    % Find all edges in the adjacency graph
     %
     % OUTPUT
     % a = lower node index for each edge, uint32 N-by-1
     % b = upper node index for each edge, uint32 N-by-1
-    [a,b]=getEdges(this);
+    %
+    % NOTE
+    % Indices must be sorted in ascending order, first by lower then by upper
+    [a,b]=findEdges(this);
     
     % Evaluate a measure of an edge
     %
@@ -59,6 +52,12 @@ classdef measure
     % OUTPUT
     % cost = non-negative measure in the interval [0,1], double scalar
     cost=computeEdgeCost(this,a,b);
+  end
+  
+  methods (Access=public)
+    function this=setTrajectory(this,x)
+      this.trajectory=x;
+    end
   end
   
 end

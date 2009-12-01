@@ -80,6 +80,7 @@ classdef cameraSim < camera
     function pix=projection(this,ray,varargin)
       assert(this.isLocked);
       
+      % TODO: support other camera types
       switch(this.cameraType)
         case 2
           m=this.imsize(1);
@@ -110,6 +111,7 @@ classdef cameraSim < camera
     function ray=inverseProjection(this,pix,varargin)
       assert(this.isLocked);
       
+      % TODO: support other camera types
       switch(this.cameraType)
         case 2
           m=this.imsize(1);
@@ -136,6 +138,8 @@ classdef cameraSim < camera
           c2(a)=NaN;
           c3(a)=NaN;
           ray=cat(1,c1,c2,c3);
+        case 4
+          error('gantry camera not yet implemented');     
         otherwise
           error('unrecognized camera type');
       end      
