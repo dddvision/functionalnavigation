@@ -6,7 +6,8 @@ classdef trajectory
     %
     % OUTPUT
     % a = time domain lower bound, double scalar
-    a=domain(this);
+    % b = time domain upper bound, double scalar
+    [a,b]=domain(this);
     
     % Evaluate a single trajectory at multiple time instants
     %

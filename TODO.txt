@@ -1,26 +1,27 @@
 Coding tasks:
 
- * Move TODO statements from the framework to here (leave components alone)
- * Separate the framework into parts: a) providing measures to optimizers; b) providing sensor data to algorithms.
- * Make an "objective" wrapper that passes trajectories to measures?
+ * Move TODO statements from the framework to here (leave components alone).
+ * Separate dataContainer stuff from the trajectory optimization manager.
+ * Wrap the "objective" so that optimizer never sees trajectories directly?
  * Make class aliases for "time", "index", and other simple classes?
  * Replace zero-based indices with non-zero-bases indices when possible.
  * Clarify time system by introducing t0 reference?
  * Add mlint testing requirement in how to make a component wiki.
- * Implement derivative() function in wobble1
- * Add rangefinder class that could also represent bearing-only tracker output
+ * Implement derivative() function in wobble1.
+ * Add rangefinder class that could also represent bearing-only tracker output.
+ * Remove dependence on Symbolic Toolbox.
 
  * dataContainer
    * Coordinate with Jimmy Touma for AFRL data.
    * Avinash's GPS dataset
    * VAMAV OpenSceneGraph simulator?
-   * Packagin King Air flight?
+   * Packaging King Air flight?
    * Interfacing with Paul Metzger's simulator?
 
  * dynamicModel
+   * Make dynamicModelStub a discrete LTI system defined by A,B,C,D
    * Require [ta,tb] as inputs to the constructor?
    * Split up lat,lon,alt outputs or leave them together?
-   * Change from logical parameters to sets of six parameters in the range [-1,1]?
    * Method to extend number of model parameters to cover a later time.
    * Dynamic model takes inputs pqa, deltat, and parameters?
    * Recompute trajectory only when parameters change.

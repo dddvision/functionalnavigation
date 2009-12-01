@@ -10,7 +10,7 @@ classdef optimizer
     %
     % INPUT
     % objectiveFunction = function handle of vectorized objective
-    % initialParameters = initial parameters in the domain of the objective, logical popsize-by-nvars
+    % initialParameters = initial parameters in the domain of the objective, cell array popsize-by-1
     %
     % OUTPUT
     % initialCost = cost associated with initialParameters, double popsize-by-1
@@ -19,7 +19,7 @@ classdef optimizer
     % Execute one step of the optimizer to evolve seeds toward lower cost
     %
     % OUTPUT
-    % parameters = parameters in the domain of the objective, logical popsize-by-nvars
+    % parameters = parameters in the domain of the objective, cell array popsize-by-1
     % cost = cost associated with parameters, double popsize-by-1
     %
     % NOTES

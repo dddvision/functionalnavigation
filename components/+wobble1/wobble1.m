@@ -23,9 +23,9 @@ classdef wobble1 < dynamicModel
       fprintf('\n');
       fprintf('\nwobble1::putBits');
       fprintf('\ntmin = %f',tmin);
+      this.data(:)=bits(:);
       fprintf('\nbits = ');
-      fprintf('%d',bits);
-      this.data=bits;
+      fprintf('%d',this.data);
     end
     
     function [a,b]=domain(this)
@@ -76,12 +76,12 @@ classdef wobble1 < dynamicModel
     end
   end
   
-  methods (Static=true)
-    function cost=priorCost(bits,tmin)
-      assert(isa(tmin,'double'));
-      cost=zeros(size(bits,1),1);
-    end
-  end
+%   methods (Static=true)
+%     function cost=priorCost(bits,tmin)
+%       assert(isa(tmin,'double'));
+%       cost=zeros(size(bits,1),1);
+%     end
+%   end
   
 end
 
