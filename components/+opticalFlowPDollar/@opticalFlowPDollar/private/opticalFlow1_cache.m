@@ -1,6 +1,5 @@
 % Builds a tree of cache data indexed by pairs of indices
-% This creates a single cache store for all objects of this type
-
+% This creates a single cache store shared among all instances
 function data=opticalFlow1_cache(this,ka,kb)
 
 persistent cache

@@ -1,11 +1,21 @@
 classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & measure
   
+  properties (SetAccess=private,GetAccess=private)
+    sensor
+    trajectory
+  end
+  
   methods (Access=public)
-    
     function this=opticalFlowPyramid(u,x)
+      this=this@measure(u,x);
+      this.sensor=u;
+      this.trajectory=x;
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::opticalFlowPyramid');
-      this=this@measure(u,x);
+    end
+    
+    function this=setTrajectory(this,x)
+      this.trajectory=x;
     end
     
     function [a,b]=findEdges(this)

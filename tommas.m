@@ -12,6 +12,7 @@ classdef tommas < tommasConfig
   
   methods (Access=public)
     
+    % Constructor
     function this=tommas
       fprintf('\n');
       fprintf('\ntommas::tommas');
@@ -46,16 +47,6 @@ classdef tommas < tommasConfig
       unlockSensors(this);
     end
     
-    % Get the most recent trajectory and cost estimates
-    %
-    % OUTPUT
-    % xEst = trajectory objects, popSize-by-1
-    % cEst = non-negative cost associated with each trajectory object, double popSize-by-1
-    function [xEst,cEst]=getResults(this)
-      xEst=cat(1,this.F{:});
-      cEst=this.cost;
-    end
-    
     % Execute one step to improve the tail portion of a set of trajectories
     function this=step(this)
       objective('put',this);
@@ -64,9 +55,22 @@ classdef tommas < tommasConfig
       unlockSensors(this);
       this=putParameters(this,parameters);
     end
+    
+    % Get the most recent trajectory and cost estimates
+    %
+    % OUTPUT
+    % xEst = trajectory instances, popSize-by-1
+    % cEst = non-negative cost associated with each trajectory instance, double popSize-by-1
+    function [xEst,cEst]=getResults(this)
+      xEst=cat(1,this.F{:});
+      cEst=this.cost;
+    end    
   end
   
   methods (Access=public,Static=true)
+    % Test a TOMMAS component
+    %
+    % componentString = name of the package containing the component, string
     function testComponent(componentString)
       component=unwrapComponent(componentString);
       switch(component.baseClass)
@@ -127,8 +131,10 @@ function varargout=objective(varargin)
       if( isempty(a) )
         cost(k)=0;
       else
-        cost(k)=computeEdgeCost(this.g{1},a(1),b(1));
+        % TODO: update all measures
+        this.g{1}=setTrajectory(this.g{1},this.F{k});
         % TODO: compute cost for multiple edges
+        cost(k)=computeEdgeCost(this.g{1},a(1),b(1));
       end
     end
     % TODO: enable multiple measures
@@ -147,7 +153,7 @@ end
 % varargin = arguments for the class constructor
 %
 % OUTPUT
-% obj = instantiated object, class determined by pkg
+% obj = object instance, class determined by pkg
 %
 % NOTES
 % The package directory must be on the path
