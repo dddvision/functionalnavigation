@@ -1,6 +1,5 @@
 % Example application that uses the TOMMAS framework
 function main
-
   % clear the workspace and the screen
   evalin('base','clear(''classes'')');
   close('all');
@@ -13,8 +12,8 @@ function main
   end
   
   % add component repository to the path
-  componentPath=fullfile(fileparts(mfilename),'components');
-  addpath(genpath(componentPath));
+  componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
+  addpath(componentPath);
   fprintf('\npath added: %s',componentPath);
 
   % run diagnostic tests on a component
@@ -42,7 +41,6 @@ function main
   fprintf('\n');
   fprintf('\nDone');
   fprintf('\n');
-
 end
 
 % Visualize a set of trajectories with optional transparency

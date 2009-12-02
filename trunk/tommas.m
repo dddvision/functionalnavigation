@@ -28,12 +28,12 @@ classdef tommas < tommasConfig
         this.F{k}=unwrapComponent(this.dynamicModel);
       end
 
-      % TODO: match multiple measures to multiple sensors
-      data=unwrapComponent(this.dataContainer);
-      list=listSensors(data,'camera');
-      this.u{1}=getSensor(data,list(1));
+      % initialize measures with sensors and trajectories
       for k=1:numel(this.measures)
-        this.g{k}=unwrapComponent(this.measures{k},this.u{k},this.F{1});
+        data=unwrapComponent(this.measures{k}.dataContainer);
+        list=listSensors(data,this.measures{k}.sensor);
+        this.u{k}=getSensor(data,list(1));
+        this.g{k}=unwrapComponent(this.measures{k}.measure,this.u{k},this.F{1});
       end
         
       % initialize optimizer
@@ -123,21 +123,20 @@ function varargout=objective(varargin)
   persistent this
   parameters=varargin{1};
   if(~ischar(parameters))
-    K=numel(this.F);
+    numIndividuals=numel(this.F);
+    numGraphs=numel(this.g);
     this=putParameters(this,parameters);
-    cost=zeros(K,1);
-    [a,b]=findEdges(this.g{1});
-    for k=1:K
-      if( isempty(a) )
-        cost(k)=0;
-      else
-        % TODO: update all measures
-        this.g{1}=setTrajectory(this.g{1},this.F{k});
-        % TODO: compute cost for multiple edges
-        cost(k)=computeEdgeCost(this.g{1},a(1),b(1));
+    cost=zeros(numIndividuals,1);
+    for graph=1:numGraphs
+      [a,b]=findEdges(this.g{graph});
+      for individual=1:numIndividuals
+        if( ~isempty(a) )
+          this.g{graph}=setTrajectory(this.g{graph},this.F{individual});
+          cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},a(1),b(1));
+          % TODO: compute cost for multiple edges
+        end
       end
     end
-    % TODO: enable multiple measures
     varargout{1}=cost;
   elseif(strcmp(parameters,'put'))
     this=varargin{2};
