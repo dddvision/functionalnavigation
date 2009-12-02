@@ -8,10 +8,13 @@ classdef tommasConfig
     
     % select optimizer
     optimizer = 'matlabGA1';
+  
+    % select data container
+    dataContainer = 'middleburyData';
     
-    % match each measure to specific dataContainer and sensor, cell array of structs
-    measures = {struct('measure','measureStub','dataContainer','middleburyData','sensor','cameraArray');...
-                struct('measure','opticalFlowPDollar','dataContainer','middleburyData','sensor','cameraArray')};
+    % match each measure to a specific sensor class, cell array of structs
+    measures = {struct('measure','measureStub','sensor','cameraArray');...
+                struct('measure','opticalFlowPDollar','sensor','cameraArray')};
     
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test

@@ -23,15 +23,18 @@ classdef tommas < tommasConfig
       % TODO: move choice of tmin into the optimizer
       this.tmin=0;
       
+      % access sensor data
+      data=unwrapComponent(this.dataContainer);
+      
       % initialize trajectories
       for k=1:this.popSizeDefault
         this.F{k}=unwrapComponent(this.dynamicModel);
       end
-
+      
       % initialize measures with sensors and trajectories
       for k=1:numel(this.measures)
-        data=unwrapComponent(this.measures{k}.dataContainer);
         list=listSensors(data,this.measures{k}.sensor);
+        % TODO: distinguish between multiple sensors of the same type
         this.u{k}=getSensor(data,list(1));
         this.g{k}=unwrapComponent(this.measures{k}.measure,this.u{k},this.F{1});
       end
