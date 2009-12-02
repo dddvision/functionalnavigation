@@ -47,7 +47,7 @@ classdef measureStub < measure
       fprintf('%f ',[pb;qb]);
       fprintf('>');
       
-      cost=rand;
+      cost=0;
       fprintf('\ncost = %f',cost);
     end
   end
