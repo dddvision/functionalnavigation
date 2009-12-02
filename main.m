@@ -61,8 +61,11 @@ function h=mainDisplay(xEst,cEst)
   fprintf('\ncost:');
   fprintf('\n%f',cEst);
 
+  % nonlinearity of transparency display
+  gamma=2;
+  
   K=numel(xEst);
-  px=(1-cEst)/max(1-cEst);
+  px=((1-cEst)/max(1-cEst)).^gamma;
   [alpha,scale,color,tmin,tmax]=mainDisplayGetAllSettings(K,'alpha',px');
   
   % graphical display
@@ -132,6 +135,10 @@ persistent xo yo zo
   end
   ys=scale*yo;
   zs=scale*zo;
+  
+  % halve alpha because two faces will be plotted to create each line
+  alpha=alpha/2;
+  
   N=numel(x);
   h=[];
   if( N>1 )
@@ -156,7 +163,7 @@ persistent xo yo zo
         xp=a(1)+M(1,1)*xs+M(1,2)*ys+M(1,3)*zs;
         yp=a(2)+M(2,1)*xs+M(2,2)*ys+M(2,3)*zs;
         zp=a(3)+M(3,1)*xs+M(3,3)*zs;
-        h=[h,patch(xp,yp,zp,color,'FaceAlpha',alpha/2,'LineStyle','none','Clipping','off')];
+        h=[h,patch(xp,yp,zp,color,'FaceAlpha',alpha,'LineStyle','none','Clipping','off')];
       end
       a=b;
     end

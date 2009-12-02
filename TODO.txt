@@ -12,6 +12,7 @@ Coding tasks:
  * Remove dependence on Symbolic Toolbox.
 
  * dataContainer
+   * Find a way to distinguish between multiple sensors that derive from the same class.
    * Coordinate with Jimmy Touma for AFRL data.
    * Avinash's GPS dataset
    * VAMAV OpenSceneGraph simulator?
