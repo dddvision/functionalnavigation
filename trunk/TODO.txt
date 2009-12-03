@@ -1,15 +1,23 @@
 Coding tasks:
 
- * Move TODO statements here, unless they only refer to a local change.
+ * Figure out how to handle errors, invalid indices, exceptions.
+ * Test mainDisplay to ensure inputs can be either row or column vectors.
  * Separate dataContainer stuff from the trajectory optimization manager.
  * Wrap the "objective" so that optimizer never sees trajectories directly?
  * Make class aliases for "time", "index", "real" and other simple classes?
  * Replace zero-based indices with non-zero-bases indices when possible.
- * Clarify time system by introducing t0 reference?
  * Add mlint testing requirement in how to make a component wiki.
  * Implement derivative() function in wobble1.
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Remove dependence on Symbolic Toolbox.
+ * Clarify time system by introducing t0 reference?
+ * Implement measure/sensor compatibility checking.
+ * Formally ask UCF to fix TODO statements in their code.
+ * Formally ask UCF to combine all opticalFlow methods.
+
+ * optimizer
+   * Move choice of tmin from tommasConfig to the optimizer?
+   * Hide the creation of a plain "objective" behind the optimizer interface.
 
  * dataContainer
    * Find a way to distinguish between multiple sensors that derive from the same class.
@@ -18,14 +26,15 @@ Coding tasks:
    * VAMAV OpenSceneGraph simulator?
    * Packaging King Air flight?
    * Interfacing with Paul Metzger's simulator?
+   * Support projection and inverseProjection for Gantry camera data.
 
  * dynamicModel
-   * Make dynamicModelStub a discrete LTI system defined by A,B,C,D
    * Require [ta,tb] as inputs to the constructor?
-   * Split up lat,lon,alt outputs or leave them together?
+   * Make dynamicModelStub a discrete LTI system defined by A,B,C,D.
    * Method to extend number of model parameters to cover a later time.
    * Dynamic model takes inputs pqa, deltat, and parameters?
    * Recompute trajectory only when parameters change.
+   * Consider optionally returning derivative from evaluate to save computation.
 
  * measure
    * Require [ta,tb] as inputs to the constructor?

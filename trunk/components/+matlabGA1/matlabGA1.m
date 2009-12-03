@@ -4,8 +4,8 @@ classdef matlabGA1 < optimizer
     objective
     parameters
     cost
-    defaultOptions;
-    stepGAhandle;
+    defaultOptions
+    stepGAhandle
   end
   
   methods (Access=public)
@@ -51,27 +51,24 @@ classdef matlabGA1 < optimizer
       temp = @stepGA;
       cd(pathtemp);
       this.stepGAhandle = temp;
-        
    end
     
     function [this,initialCost]=defineProblem(this,objectiveFunction,initialParameters)
       initialCost=feval(objectiveFunction,initialParameters);
+      
+      [popsize,nvars]=size(initialParameters);
       this.objective=objectiveFunction;
       this.parameters=initialParameters;
       this.cost=initialCost;
+      this.defaultOptions.PopulationSize=popsize;
+      this.defaultOptions.EliteCount=max(1,popsize/20);
     end
     
     % Requires a license for the Matlab GADS toolbox
     function [this,parameters,cost]=step(this)
-      % TODO: move these lines to defineProblem?
-      [popsize,nvars]=size(this.parameters);
-      options=this.defaultOptions;
-      options.PopulationSize=popsize;
-      options.EliteCount=max(1,popsize/20);
       nullstate=struct('FunEval',0);
       %nullobjective=@(x) zeros(size(x,1),1);
-      
-      [cost,parameters]=feval(this.stepGAhandle,this.cost,this.parameters,options,nullstate,nvars,this.objective);
+      [cost,parameters]=feval(this.stepGAhandle,this.cost,this.parameters,this.defaultOptions,nullstate,nvars,this.objective);
       this.parameters=parameters;
       this.cost=cost;
     end

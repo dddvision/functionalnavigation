@@ -80,7 +80,6 @@ classdef cameraSim < camera
     function pix=projection(this,ray,varargin)
       assert(this.isLocked);
       
-      % TODO: support other camera types
       switch(this.cameraType)
         case 2
           m=this.imsize(1);
@@ -111,7 +110,6 @@ classdef cameraSim < camera
     function ray=inverseProjection(this,pix,varargin)
       assert(this.isLocked);
       
-      % TODO: support other camera types
       switch(this.cameraType)
         case 2
           m=this.imsize(1);

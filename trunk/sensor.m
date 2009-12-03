@@ -2,7 +2,6 @@
 % All sensors use SI units (meters, radians, seconds)
 % Time refers to GPS time referenced to zero at 1980-00-06T00:00:00 GMT
 % GPS time is a few seconds ahead of UTC
-% TODO: deal with invalid indices and other errors
 classdef sensor < handle
   
   properties (Constant=true,GetAccess=public)

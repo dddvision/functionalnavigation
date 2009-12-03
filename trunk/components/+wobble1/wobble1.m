@@ -1,5 +1,5 @@
 % This class represents a dynamic model of a fictitious system
-classdef wobble1 < dynamicModel
+classdef wobble1 < wobble1.wobble1Config & dynamicModel
   
   properties (GetAccess=private,SetAccess=private)
     data
@@ -33,46 +33,50 @@ classdef wobble1 < dynamicModel
       b=numel(this.data)/this.parametersPerSecond;
     end
     
-    function [lonLatAlt,quaternion]=evaluate(this,t)
+    % Remember that derivitive() must match evaluate()
+    function [ecef,quaternion]=evaluate(this,t)
       ta=domain(this);
-
       t(t<ta)=NaN;
-
-      dim=6;
-      scalep=0.02;
-      scaleq=0.1;
-
-      omegabits=6;
-      scaleomega=10;
-
-      vaxis=this.data((omegabits+1):(end-mod(numel(this.data),dim)));
-      bpa=numel(vaxis)/dim;
-      rate_bias=zeros(dim,1);
-      for d=1:dim
+      vaxis=this.data((this.omegabits+1):(end-mod(numel(this.data),this.dim)));
+      bpa=numel(vaxis)/this.dim;
+      rate_bias=zeros(this.dim,1);
+      for d=1:this.dim
         bits=vaxis((d-1)*bpa+(1:bpa))';
         rate_bias(d)=(1-2*bitsplit(bits));
       end
-
-      bits=this.data(1:omegabits)';
-      omega=scaleomega*(1-2*bitsplit(bits));
+      bits=this.data(1:this.omegabits)';
+      omega=this.scaleomega*(1-2*bitsplit(bits));
+      
       sint=sin(omega*t);
 
-      pnoise=scalep*[rate_bias(1)*sint;rate_bias(2)*sint;rate_bias(3)*sint];
-      qnoise=scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
+      pnoise=this.scalep*[rate_bias(1)*sint;rate_bias(2)*sint;rate_bias(3)*sint];
+      qnoise=this.scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
 
-      lonLatAlt=[0*t;t;0.*t]+pnoise;
+      ecef=[0*t;t;0.*t]+pnoise;
       quaternion=AxisAngle2Quat(qnoise);
     end
     
-    % TODO: implement this function properly
-    function [lonLatAltRate,quaternionRate]=derivative(this,t)
-      fprintf('\nwarning: wobble1::derivative is not fully supported');
-      N=numel(t);
+    % Remember that derivitive() must match evaluate()
+    function [ecefRate,quaternionRate]=derivative(this,t)
       ta=domain(this);
-      lonLatAltRate=zeros(3,N);
-      quaternionRate=zeros(4,N);
-      lonLatAltRate(:,t<ta)=NaN;
-      quaternionRate(:,t<ta)=NaN;
+      t(t<ta)=NaN;
+      vaxis=this.data((this.omegabits+1):(end-mod(numel(this.data),this.dim)));
+      bpa=numel(vaxis)/this.dim;
+      rate_bias=zeros(this.dim,1);
+      for d=1:this.dim
+        bits=vaxis((d-1)*bpa+(1:bpa))';
+        rate_bias(d)=(1-2*bitsplit(bits));
+      end
+      bits=this.data(1:this.omegabits)';
+      omega=this.scaleomega*(1-2*bitsplit(bits));
+      
+      omegacos=omega*cos(omega*t);
+      
+      pnoise=this.scalep*[rate_bias(1)*omegacos;rate_bias(2)*omegacos;rate_bias(3)*omegacos];
+      qnoise=this.scaleq*[rate_bias(4)*omegacos;rate_bias(5)*omegacos;rate_bias(6)*omegacos];
+
+      ecefRate=[0*t;1+0*t;0.*t]+pnoise;
+      quaternionRate=[0*t;qnoise/2]; % small angle approximation
     end
   end
   

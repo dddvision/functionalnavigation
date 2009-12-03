@@ -1,4 +1,5 @@
 classdef bodyReference < trajectory
+    
   properties (SetAccess=private, GetAccess=private)
     pts
     gpsTime
@@ -23,7 +24,6 @@ classdef bodyReference < trajectory
     end
     
     function posquat = evaluate(this,t)
-      
       tmppos = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, this.simConfig.splineTension, 0);
       
       [lat, lon, alt] = globalSatData.ecef2lolah(tmppos(:,1), tmppos(:,2), tmppos(:,3));
@@ -33,7 +33,7 @@ classdef bodyReference < trajectory
     function posquatdot = derivative(this,t)
       [tmp, posquatdot] = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, c, 0);
       posdot = [posdot 0 0 0 0];
-      
     end
   end
+  
 end

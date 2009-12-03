@@ -16,7 +16,7 @@ classdef optimizer
     % initialCost = cost associated with initialParameters, double popsize-by-1
     [this,initialCost]=defineProblem(this,objectiveFunction,initialParameters);
     
-    % Execute one step of the optimizer to evolve seeds toward lower cost
+    % Execute one step of the optimizer to evolve parameters toward lower cost
     %
     % OUTPUT
     % parameters = parameters in the domain of the objective, cell array popsize-by-1

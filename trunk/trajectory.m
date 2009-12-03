@@ -1,4 +1,5 @@
 % This class defines a 6-DOF body trajectory in the vicinity of Earth
+% Using SI units (seconds, meters, radians)
 classdef trajectory
   
   methods (Abstract=true)
@@ -15,16 +16,17 @@ classdef trajectory
     % t = time, 1-by-N
     %
     % OUTPUT
-    % lonLatAlt = body position at each time, double 3-by-N
+    % ecef = body position at each time, double 3-by-N
     % quaternion = body orientation at each time, double 4-by-N
     %
     % NOTE
-    % Using SI units (seconds, meters, radians)
-    % The origin is at the equatorial meridian on the surface of the WGS84 
-    %   ellipsoid with the body axes aligned with east-north-up
+    % Using an Earth Centered Earth Fixed (ECEF) frame convention:
+    %   Axis 1 goes through the equator at the prime meridian
+    %   Axis 2 completes the frame using the right-hand-rule
+    %   Axis 3 goes through the north pole
     % Quaternions are in scalar-first format
     % Evaluation outside of the domain returns NaN in corresponding columns
-    [lonLatAlt,quaternion]=evaluate(this,t);
+    [ecef,quaternion]=evaluate(this,t);
     
     % Evaluate time derivative of a single trajectory at multiple time instants
     %
@@ -32,9 +34,9 @@ classdef trajectory
     % t = time, 1-by-N
     %
     % OUTPUT
-    % lonLatAltRate = derivative of body position at each time, double 3-by-N
+    % ecefRate = derivative of body position at each time, double 3-by-N
     % quaternionRate = derivative of body orientation at each time, double 4-by-N
-    [lonLatAltRate,quaternionRate]=derivative(this,t);
+    [ecefRate,quaternionRate]=derivative(this,t);
   end
   
 end
