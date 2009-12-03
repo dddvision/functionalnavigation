@@ -7,7 +7,6 @@ classdef tommas < tommasConfig
     F
     g
     cost
-    tmin
   end
   
   methods (Access=public)
@@ -19,9 +18,6 @@ classdef tommas < tommasConfig
       warning('on','all');
       intwarning('off');
       reset(RandStream.getDefaultStream);
-
-      % TODO: move choice of tmin into the optimizer
-      this.tmin=0;
       
       % access sensor data
       data=unwrapComponent(this.dataContainer);
@@ -34,7 +30,6 @@ classdef tommas < tommasConfig
       % initialize measures with sensors and trajectories
       for k=1:numel(this.measures)
         list=listSensors(data,this.measures{k}.sensor);
-        % TODO: distinguish between multiple sensors of the same type
         this.u{k}=getSensor(data,list(1));
         this.g{k}=unwrapComponent(this.measures{k}.measure,this.u{k},this.F{1});
       end
@@ -132,11 +127,13 @@ function varargout=objective(varargin)
     cost=zeros(numIndividuals,1);
     for graph=1:numGraphs
       [a,b]=findEdges(this.g{graph});
+      numEdges=numel(a);
       for individual=1:numIndividuals
         if( ~isempty(a) )
           this.g{graph}=setTrajectory(this.g{graph},this.F{individual});
-          cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},a(1),b(1));
-          % TODO: compute cost for multiple edges
+          for edge=1:numEdges
+            cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},a(1),b(1));
+          end
         end
       end
     end

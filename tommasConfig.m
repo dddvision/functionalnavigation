@@ -1,5 +1,3 @@
-% TODO: measure/sensor compatibility checking
-% TODO: reference all trajectories to reference date
 classdef tommasConfig
 
   properties (Constant=true)
@@ -18,6 +16,9 @@ classdef tommasConfig
     
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test
+    
+    % optimize starting at this time
+    tmin=0;
   end
     
 end

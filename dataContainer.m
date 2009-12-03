@@ -1,5 +1,4 @@
 % This class defines a uniform interface to sensor data and ground truth
-% TODO: handle invalid indices and other errors
 classdef dataContainer
   
   properties (Constant=true,GetAccess=public)

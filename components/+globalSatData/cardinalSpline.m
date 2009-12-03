@@ -1,5 +1,3 @@
-function [pos, posdot] = cardinalSpline(t, pts, test_t, c, testFlag)
-
 % pts is a M x N matrix of M points
 % of dimensionality N which are to be
 % interpolated
@@ -7,6 +5,7 @@ function [pos, posdot] = cardinalSpline(t, pts, test_t, c, testFlag)
 % c is the tension parameter
 %    c = 0 <-- Catman Hull spline
 % First compute the slopes at each point
+function [pos, posdot] = cardinalSpline(t, pts, test_t, c, testFlag)
 
 Npts = size(pts,1);
 

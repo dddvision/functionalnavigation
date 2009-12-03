@@ -51,9 +51,6 @@ end
 %
 % OUTPUTS
 % h = handles to trajectory plot elements
-%
-% NOTE
-% TODO: make sure inputs can be either row or column vectors
 function h=mainDisplay(xEst,cEst)
 
   % text display
@@ -72,9 +69,9 @@ function h=mainDisplay(xEst,cEst)
   hfigure=figure;
   haxes=gca;
   axis('on');
-  xlabel('Longitude');
-  ylabel('Latitude');
-  zlabel('Altitude');
+  xlabel('ECEF_X');
+  ylabel('ECEF_Y');
+  zlabel('ECEF_Z');
   set(hfigure,'color',[1,1,1]);
   set(haxes,'Units','normalized');
   set(haxes,'Position',[0,0,1,1]);

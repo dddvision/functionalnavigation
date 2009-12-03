@@ -19,11 +19,14 @@ classdef optimizerStub < optimizer
       this.cost=initialCost;
     end
     
+    % Sorts the parameter sets by their cost
+    % Does not evolve them toward lower cost
     function [this,parameters,cost]=step(this)
-      cost=feval(this.objective,this.parameters);
       parameters=this.parameters;
+      cost=feval(this.objective,parameters);
+      [cost,index]=sort(cost);
+      parameters=parameters(index,:);
       this.cost=cost;
-      % TODO: keep the best and randomize the rest
     end
   end
   
