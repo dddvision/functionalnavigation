@@ -59,7 +59,7 @@ function h=mainDisplay(xEst,cEst)
   fprintf('\n%f',cEst);
 
   % nonlinearity of transparency display
-  gamma=2;
+  gamma=4;
   
   K=numel(xEst);
   px=((1-cEst)/max(1-cEst)).^gamma;
