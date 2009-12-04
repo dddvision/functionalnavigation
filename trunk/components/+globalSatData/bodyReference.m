@@ -4,7 +4,6 @@ classdef bodyReference < trajectory
     pts
     gpsTime
     zone
-    a
     simConfig
   end
   
@@ -19,20 +18,28 @@ classdef bodyReference < trajectory
       this.pts = [X Y Z];
     end
     
-    function a = domain(this)
-      a = [this.gpsTime(1) this.gpsTime(end)];
+    function [a,b] = domain(this)
+      a = this.gpsTime(1);
+      b = this.gpsTime(end);
     end
     
-    function posquat = evaluate(this,t)
-      tmppos = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, this.simConfig.splineTension, 0);
-      
-      [lat, lon, alt] = globalSatData.ecef2lolah(tmppos(:,1), tmppos(:,2), tmppos(:,3));
-      posquat = [lon lat alt 0 0 0 0];
+    function [ecef,quat] = evaluate(this,t)
+      [a,b] = domain(this);
+      ecef = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, this.simConfig.splineTension, 0);
+      ecef = ecef';
+      K=numel(t);
+      quat = [ones(1,K);zeros(3,K)];
+      ecef(:,(t<a)|(t>b))=NaN;
+      quat(:,(t<a)|(t>b))=NaN;
     end
     
-    function posquatdot = derivative(this,t)
-      [tmp, posquatdot] = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, c, 0);
-      posdot = [posdot 0 0 0 0];
+    function [ecefRate,quatRate] = derivative(this,t)
+      [a,b] = domain(this);
+      [tmp, ecefRate] = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, c, 0);
+      ecefRate = ecefRate';
+      quatRate = zeros(4,numel(t));
+      ecefRate(:,(t<a)|(t>b))=NaN;
+      quatRate(:,(t<a)|(t>b))=NaN;
     end
   end
   

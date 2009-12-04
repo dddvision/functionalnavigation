@@ -6,12 +6,9 @@ classdef gps < sensor
   methods (Abstract=true)
     % Get antenna offset relative to the body frame
     %
-    % INPUT
-    % k = data index, uint32 scalar
-    %
     % OUTPUT
     % offset = position of antenna origin in the body frame, double 3-by-1
-    offset=getAntennaOffset(this,k);
+    offset=getAntennaOffset(this);
     
     % Get a position measurement
     %
@@ -22,7 +19,7 @@ classdef gps < sensor
     % lon = longitude in radians, double scalar
     % lat = latitude in  radians, double scalar
     % alt = altitude above WGS84 ellipsoid in meters, double scalar
-    [lon,lat,alt]=getPosition(this,k);
+    [lon,lat,alt]=getGlobalPosition(this,k);
  
     % Check whether precision information is available
     % 

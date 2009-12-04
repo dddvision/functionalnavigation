@@ -15,10 +15,12 @@ function main
   componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
   addpath(componentPath);
   fprintf('\npath added: %s',componentPath);
-
+   
   % run diagnostic tests on a component
-  %tommas.testComponent('thesisDataDDiel');
+  % tommas.testComponent('thesisDataDDiel');
 
+  tommas.testComponent('globalSatData');
+  
   % create an instance of the trajectory optimization manager
   tom=tommas;
 
@@ -46,24 +48,24 @@ end
 % Visualize a set of trajectories with optional transparency
 %
 % INPUTS
-% xEst = trajectory instances, 1-by-N or N-by-1
-% cEst = costs, double 1-by-N or N-by-1
+% x = trajectory instances, 1-by-N or N-by-1
+% c = costs, double 1-by-N or N-by-1
 %
 % OUTPUTS
 % h = handles to trajectory plot elements
-function h=mainDisplay(xEst,cEst)
+function h=mainDisplay(x,c)
 
   % text display
   fprintf('\n');
   fprintf('\ncost:');
-  fprintf('\n%f',cEst);
+  fprintf('\n%f',c);
 
   % nonlinearity of transparency display
   gamma=4;
   
-  K=numel(xEst);
-  px=((1-cEst)/max(1-cEst)).^gamma;
-  [alpha,scale,color,tmin,tmax]=mainDisplayGetAllSettings(K,'alpha',px');
+  K=numel(x);
+  px=((1-c)/max(1-c)).^gamma;
+  [alpha,color]=mainDisplayGetAllSettings(K,'alpha',px');
   
   % graphical display
   hfigure=figure;
@@ -76,41 +78,36 @@ function h=mainDisplay(xEst,cEst)
   set(haxes,'Units','normalized');
   set(haxes,'Position',[0,0,1,1]);
   set(haxes,'DataAspectRatio',[1,1,1]);
-  axis(haxes,'off');
+  %axis(haxes,'off');
 
   h=[];
   for k=1:K
-    [a,b]=domain(xEst(k));
-    tmink=max(tmin(k),a);
-    tmaxk=min(tmax(k),b);
-    h=[h,mainDisplayIndividual(xEst(k),alpha(k),scale(k),color(k,:),tmink,tmaxk)];
+    [a,b]=domain(x(k));
+    h=[h,mainDisplayIndividual(x(k),alpha(k),color(k,:),a,b)];
   end
   drawnow;  
 end
 
 % varargin = (optional) accepts argument pairs 'alpha', 'scale', 'color'
 %   alpha = transparency per trajectory, scalar 1-by-N or N-by-1
-%   scale = scale of lines to draw, scalar 1-by-N or N-by-1
 %   color = color of lines to draw, 1-by-3 or N-by-3
-%   tmin = time domain lower bound, scalar 1-by-N or N-by-1
-%   tmax = time domain lower bound, scalar 1-by-N or N-by-1
-function [alpha,scale,color,tmin,tmax]=mainDisplayGetAllSettings(K,varargin)
+%   scale = thickness of lines to draw, 1-by-N or N-by-1
+function [alpha,color]=mainDisplayGetAllSettings(K,varargin)
   alpha=mainDisplayGetSettings('alpha',1/K,K,varargin{:});
-  scale=mainDisplayGetSettings('scale',0.002,K,varargin{:});
   color=mainDisplayGetSettings('color',[0,0,0],K,varargin{:});
-  tmin=mainDisplayGetSettings('tmin',0,K,varargin{:});
-  tmax=mainDisplayGetSettings('tmax',1,K,varargin{:});
 end
 
-function h=mainDisplayIndividual(this,alpha,scale,color,tmin,tmax)
+function h=mainDisplayIndividual(x,alpha,color,tmin,tmax)
   h=[];
 
-  bigsteps=1+floor(tmax);
+  bigsteps=(1+floor(tmax))-tmin;
   substeps=10;
 
   t=tmin:((tmax-tmin)/bigsteps/substeps):tmax;
 
-  [p,q]=evaluate(this,t);
+  [p,q]=evaluate(x,t);
+  
+  scale=0.002*norm(max(p(:,1:substeps:end),[],2)-min(p(:,1:substeps:end),[],2));
 
   h=[h,mainDisplayPlotFrame(p(:,1),q(:,1),alpha,scale,color)]; % plot first frame
   for bs=1:bigsteps

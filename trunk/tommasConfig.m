@@ -5,7 +5,7 @@ classdef tommasConfig
     dynamicModel = 'wobble1';
     
     % select optimizer
-    optimizer = 'matlabGA1';
+    optimizer = 'optimizerStub';
   
     % select data container
     dataContainer = 'middleburyData';

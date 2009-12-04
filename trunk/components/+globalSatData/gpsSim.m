@@ -44,7 +44,7 @@ classdef gpsSim < gps
       time=this.measurementTimes(k);
     end
     
-    function [lon, lat, alt] = getPosition(this,k)
+    function [lon, lat, alt] = getGlobalPosition(this,k)
       posquat = evaluate(this.refTraj, this.measurementTimes(k));
       true_lon = posquat(1);
       true_lat = posquat(2);
@@ -69,8 +69,6 @@ classdef gpsSim < gps
       
     end
     
-    
-    
     function [vDOP, hDOP, sigmaR] = getPrecision(this,k)
       
       % Pick the closest vDOP and hDOP in the data to
@@ -83,7 +81,7 @@ classdef gpsSim < gps
       sigmaR = this.sigmaR;
     end
     
-    function offset = getOffset(this)
+    function offset = getAntennaOffset(this)
       offset = [0 0 0];
     end
     

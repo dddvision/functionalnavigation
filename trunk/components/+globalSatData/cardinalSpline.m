@@ -16,10 +16,14 @@ end
 wt = (1-c)./2;
 m = zeros(size(pts));
 for dim = 1:size(pts,2)
-  for indx = 2:Npts-1
+  for indx = 2:(Npts-1)
     m(indx,:) = wt*(pts(indx+1,:)-pts(indx-1,:));
   end
 end
+
+m(1,:) = 2*wt*(pts(2,:)-pts(1,:));
+m(end,:) = 2*wt*(pts(end,:)-pts(end-1,:));
+
 
 if ~isempty(test_t)
   for indx = 1:length(test_t)
