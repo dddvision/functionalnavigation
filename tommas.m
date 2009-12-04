@@ -28,10 +28,16 @@ classdef tommas < tommasConfig
       end
       
       % initialize measures with sensors and trajectories
+      kvalid=1;
       for k=1:numel(this.measures)
         list=listSensors(data,this.measures{k}.sensor);
-        this.u{k}=getSensor(data,list(1));
-        this.g{k}=unwrapComponent(this.measures{k}.measure,this.u{k},this.F{1});
+        if(isempty(list))
+          fprintf('\n\nWarning: sensor type was unavailable: %s',this.measures{k}.sensor);
+        else
+          this.u{kvalid}=getSensor(data,list(1));
+          this.g{kvalid}=unwrapComponent(this.measures{kvalid}.measure,this.u{kvalid},this.F{1});
+          kvalid=kvalid+1;
+        end
       end
         
       % initialize optimizer
@@ -169,6 +175,17 @@ function testDataContainer(container)
     testCameraArrayProjectionRoundTrip(sensor);
     unlock(sensor);
   end
+  
+  if hasReferenceTrajectory(container)
+      refTraj = getReferenceTrajectory(container);
+      list = listSensors(container,'gps');
+      for k = 1:numel(list)
+          sensor = getSensor(container,  list(k));
+          lock(sensor)
+          testGPSsimulation(sensor, refTraj);
+          unlock(sensor);
+      end
+  end
 end
 
 function testCameraArrayProjection(cam)
@@ -280,4 +297,21 @@ function testCameraArrayProjectionRoundTrip(cam)
     title('Test Camera Array Projection Round Trip (image area should be gray)');
     drawnow;
   end
+end
+
+function testGPSsimulation(gps, refTraj)
+  % Find the domain (valid indices) of the gps data
+  [ka, kb] = domain(gps);
+
+  % For each valid index, get the true trajectory position
+  % and compare with the simulated gps position
+  for indx = ka:kb
+    currTime = getTime(gps,indx);
+    [gps_lon, gps_lat, gps_alt] = getGlobalPosition(gps,indx);
+    gps_pos(indx,:) = [gps_lon gps_lat gps_alt];
+    true_posquat = evaluate(refTraj,currTime);
+    true_pos(indx,:) = true_posquat(1:3);
+  end
+
+  err = true_pos - gps_pos;
 end

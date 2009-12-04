@@ -37,7 +37,7 @@ while str ~= -1
     end
     alt(counter) = antennaAltitude;
     [X(counter), Y(counter), Z(counter)] = ...
-      globalSatData.lolah2ecef(degtorad(long), degtorad(lat), antennaAltitude);
+      globalSatData.lolah2ecef((pi/180)*long, (pi/180)*lat, antennaAltitude);
     
   end
   
