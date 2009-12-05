@@ -12,12 +12,12 @@ classdef sensor < handle
     % Return first and last indices of a consecutive list of data elements
     %
     % OUTPUT
-    % ka = first valid data index, uint32 scalar
-    % kb = last valid data index, uint32 scalar
+    % a = first valid data index, uint32 scalar
+    % b = last valid data index, uint32 scalar
     %
     % NOTES
-    % Return values are empty when no data is available
-    [ka,kb]=domain(this);
+    % Return values are empty when no data is available or sensor is unlocked
+    [a,b]=dataDomain(this);
     
     % Get time stamp
     %
@@ -29,6 +29,7 @@ classdef sensor < handle
     %
     % NOTES
     % Time stamps must not decrease with increasing indices
+    % Return value is NaN when the data index is invalid
     time=getTime(this,k);
     
     % Temporarily lock the data buffer of this sensor

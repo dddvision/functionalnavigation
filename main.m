@@ -18,8 +18,7 @@ function main
    
   % run diagnostic tests on a component
   % tommas.testComponent('thesisDataDDiel');
-
-  tommas.testComponent('globalSatData');
+  % tommas.testComponent('globalSatData');
   
   % create an instance of the trajectory optimization manager
   tom=tommas;
@@ -69,12 +68,12 @@ function h=mainDisplay(x,c)
   
   % graphical display
   hfigure=figure;
+  set(hfigure,'color',[1,1,1]);
   haxes=gca;
   axis('on');
   xlabel('ECEF_X');
   ylabel('ECEF_Y');
   zlabel('ECEF_Z');
-  set(hfigure,'color',[1,1,1]);
   set(haxes,'Units','normalized');
   set(haxes,'Position',[0,0,1,1]);
   set(haxes,'DataAspectRatio',[1,1,1]);
@@ -82,8 +81,7 @@ function h=mainDisplay(x,c)
 
   h=[];
   for k=1:K
-    [a,b]=domain(x(k));
-    h=[h,mainDisplayIndividual(x(k),alpha(k),color(k,:),a,b)];
+    h=[h,mainDisplayIndividual(x(k),alpha(k),color(k,:))];
   end
   drawnow;  
 end
@@ -97,8 +95,10 @@ function [alpha,color]=mainDisplayGetAllSettings(K,varargin)
   color=mainDisplayGetSettings('color',[0,0,0],K,varargin{:});
 end
 
-function h=mainDisplayIndividual(x,alpha,color,tmin,tmax)
+function h=mainDisplayIndividual(x,alpha,color)
   h=[];
+  
+  [tmin,tmax]=domain(x(k));
 
   bigsteps=(1+floor(tmax))-tmin;
   substeps=10;

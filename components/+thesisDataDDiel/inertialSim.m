@@ -34,7 +34,7 @@ classdef inertialSim < inertialSixDOF
       q=this.qFrame;
     end
     
-    function [ka,kb]=domain(this)
+    function [ka,kb]=dataDomain(this)
       assert(this.isLocked);
       ka=uint32(1);
       kb=uint32(numel(this.time));

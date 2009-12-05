@@ -35,7 +35,7 @@ classdef cameraSim < camera
       this.projectionDynamic=false;
     end
     
-    function [a,b]=domain(this)
+    function [a,b]=dataDomain(this)
       a=this.ka;
       b=this.kb;
     end

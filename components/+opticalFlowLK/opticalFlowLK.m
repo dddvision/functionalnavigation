@@ -21,7 +21,7 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowLK::findEdges');
-      [aa,bb]=domain(this.sensor);
+      [aa,bb]=dataDomain(this.sensor);
       if( aa==bb )
         a=[];
         b=[];
@@ -35,7 +35,7 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       fprintf('\n');
       fprintf('\nopticalFlowLK::computeEdgeCost');
       
-      [aa,bb]=domain(this.sensor);
+      [aa,bb]=dataDomain(this.sensor);
       assert((b>a)&&(a>=aa)&&(b<=bb));
       
       ta=getTime(this.sensor,a);

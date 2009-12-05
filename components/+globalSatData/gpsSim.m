@@ -34,7 +34,7 @@ classdef gpsSim < gps
       this.isLocked = false;
     end
     
-    function [ka,kb]=domain(this)
+    function [ka,kb]=dataDomain(this)
       assert(this.isLocked);
       ka=uint32(1);
       kb=uint32(length(this.measurementTimes));
