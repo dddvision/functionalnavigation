@@ -23,23 +23,19 @@ classdef bodyReference < trajectory
       b = this.gpsTime(end);
     end
     
-    function [ecef,quat] = evaluate(this,t)
+    function [ecef,quat,ecefRate,quatRate] = evaluate(this,t)
       [a,b] = domain(this);
-      ecef = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, this.simConfig.splineTension, 0);
+      [ecef,ecefRate] = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, this.simConfig.splineTension, 0);
       ecef = ecef';
+      ecefRate = ecefRate';
       K=numel(t);
       quat = [ones(1,K);zeros(3,K)];
-      ecef(:,(t<a)|(t>b))=NaN;
-      quat(:,(t<a)|(t>b))=NaN;
-    end
-    
-    function [ecefRate,quatRate] = derivative(this,t)
-      [a,b] = domain(this);
-      [tmp, ecefRate] = globalSatData.cardinalSpline(this.gpsTime, this.pts, t, c, 0);
-      ecefRate = ecefRate';
-      quatRate = zeros(4,numel(t));
-      ecefRate(:,(t<a)|(t>b))=NaN;
-      quatRate(:,(t<a)|(t>b))=NaN;
+      quatRate = zeros(4,K);
+      bad=(t<a)|(t>b);
+      ecef(:,bad)=NaN;
+      quat(:,bad)=NaN;
+      ecefRate(:,bad)=NaN;
+      quatRate(:,bad)=NaN;
     end
   end
   

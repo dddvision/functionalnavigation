@@ -10,7 +10,7 @@ classdef trajectory
     % b = time domain upper bound, double scalar
     [a,b]=domain(this);
     
-    % Evaluate a single trajectory at multiple time instants
+    % Evaluate a single trajectory and its time derivative at multiple instants
     %
     % INPUT
     % t = time, 1-by-N
@@ -18,6 +18,8 @@ classdef trajectory
     % OUTPUT
     % ecef = body position at each time, double 3-by-N
     % quaternion = body orientation at each time, double 4-by-N
+    % ecefRate = derivative of body position at each time, double 3-by-N
+    % quaternionRate = derivative of body orientation at each time, double 4-by-N
     %
     % NOTE
     % Using an Earth Centered Earth Fixed (ECEF) frame convention:
@@ -26,17 +28,7 @@ classdef trajectory
     %   Axis 3 goes through the north pole
     % Quaternions are in scalar-first format
     % Evaluation outside of the domain returns NaN in corresponding columns
-    [ecef,quaternion]=evaluate(this,t);
-    
-    % Evaluate time derivative of a single trajectory at multiple time instants
-    %
-    % INPUT
-    % t = time, 1-by-N
-    %
-    % OUTPUT
-    % ecefRate = derivative of body position at each time, double 3-by-N
-    % quaternionRate = derivative of body orientation at each time, double 4-by-N
-    [ecefRate,quaternionRate]=derivative(this,t);
+    [ecef,quaternion,ecefRate,quaternionRate]=evaluate(this,t);
   end
   
 end

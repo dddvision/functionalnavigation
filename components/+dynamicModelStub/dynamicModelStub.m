@@ -4,7 +4,7 @@ classdef dynamicModelStub < dynamicModel
   properties (GetAccess=private,SetAccess=private)
     a
     b
-    lonLatAlt
+    ecef
     quaternion
     parametersPerSecond
     dynamicParameters
@@ -17,7 +17,7 @@ classdef dynamicModelStub < dynamicModel
       this.a=0;
       this.b=3;
       this.parametersPerSecond=15;
-      this.lonLatAlt=[0;0;0];
+      this.ecef=[0;0;0];
       this.quaternion=[1;0;0;0];
       this.dynamicParameters=logical(rand(1,45)>0.5);
     end
@@ -41,23 +41,18 @@ classdef dynamicModelStub < dynamicModel
       b=this.b;
     end
    
-    function [lonLatAlt,quaternion]=evaluate(this,t)
+    function [ecef,quaternion,ecefRate,quaternionRate]=evaluate(this,t)
       N=numel(t);
-      lonLatAlt=repmat(this.lonLatAlt,[1,N]);
-      lonLatAlt(2,:)=t;
+      ecef=repmat(this.ecef,[1,N]);
+      ecef(2,:)=t;
       quaternion=repmat(this.quaternion,[1,N]);
-      bad=(t<this.a)|(t>this.b);
-      lonLatAlt(:,bad)=NaN;
-      quaternion(:,bad)=NaN;
-    end
-    
-    function [lonLatAltRate,quaternionRate]=derivative(this,t)
-      N=numel(t);
-      lonLatAltRate=zeros(3,N);
-      lonLatAltRate(2,:)=1;
+      ecefRate=zeros(3,N);
+      ecefRate(2,:)=1;
       quaternionRate=zeros(4,N);
       bad=(t<this.a)|(t>this.b);
-      lonLatAltRate(:,bad)=NaN;
+      ecef(:,bad)=NaN;
+      quaternion(:,bad)=NaN;
+      ecefRate(:,bad)=NaN;
       quaternionRate(:,bad)=NaN;
     end
   end

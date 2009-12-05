@@ -98,7 +98,7 @@ end
 function h=mainDisplayIndividual(x,alpha,color)
   h=[];
   
-  [tmin,tmax]=domain(x(k));
+  [tmin,tmax]=domain(x);
 
   bigsteps=(1+floor(tmax))-tmin;
   substeps=10;
@@ -107,7 +107,7 @@ function h=mainDisplayIndividual(x,alpha,color)
 
   [p,q]=evaluate(x,t);
   
-  scale=0.002*norm(max(p(:,1:substeps:end),[],2)-min(p(:,1:substeps:end),[],2));
+  scale=0.001*norm(max(p(:,1:substeps:end),[],2)-min(p(:,1:substeps:end),[],2));
 
   h=[h,mainDisplayPlotFrame(p(:,1),q(:,1),alpha,scale,color)]; % plot first frame
   for bs=1:bigsteps
