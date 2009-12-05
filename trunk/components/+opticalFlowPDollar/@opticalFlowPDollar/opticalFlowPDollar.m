@@ -21,7 +21,7 @@ classdef opticalFlowPDollar < measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::findEdges');
-      [aa,bb]=domain(this.sensor);
+      [aa,bb]=dataDomain(this.sensor);
       if( aa==bb )
         a=[];
         b=[];
@@ -35,7 +35,7 @@ classdef opticalFlowPDollar < measure
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::computeEdgeCost');
       
-      [aa,bb]=domain(this.sensor);
+      [aa,bb]=dataDomain(this.sensor);
       assert((b>a)&&(a>=aa)&&(b<=bb));
       
       % get optical flow from cache

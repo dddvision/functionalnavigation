@@ -21,7 +21,7 @@ classdef measureStub < measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nmeasureStub::findEdges');
-      [aa,bb]=domain(this.sensor);
+      [aa,bb]=dataDomain(this.sensor);
       if( aa==bb )
         a=[];
         b=[];

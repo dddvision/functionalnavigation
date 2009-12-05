@@ -16,25 +16,26 @@ Coding tasks:
  * Formally ask UCF to combine all opticalFlow methods.
 
  * optimizer
+   * Move most of tommas into the optimizer.
    * Move choice of tmin from tommasConfig to the optimizer?
    * Hide the creation of a plain "objective" behind the optimizer interface.
 
  * dataContainer
+   *** Support projection and inverseProjection for Gantry camera data.
    * Find a way to distinguish between multiple sensors that derive from the same class.
    * Coordinate with Jimmy Touma for AFRL data.
-   * Avinash's GPS dataset
+   * Convert thesis symbolic BodyPath to char and talk to Seth Teller about saving it.
    * VAMAV OpenSceneGraph simulator?
    * Packaging King Air flight?
    * Interfacing with Paul Metzger's simulator?
-   * Support projection and inverseProjection for Gantry camera data.
 
  * dynamicModel
+   * Optionally return derivative from evaluate to save computation.
    * Require [ta,tb] as inputs to the constructor?
    * Make dynamicModelStub a discrete LTI system defined by A,B,C,D.
    * Method to extend number of model parameters to cover a later time.
    * Dynamic model takes inputs pqa, deltat, and parameters?
    * Recompute trajectory only when parameters change.
-   * Consider optionally returning derivative from evaluate to save computation.
 
  * measure
    * Require [ta,tb] as inputs to the constructor?

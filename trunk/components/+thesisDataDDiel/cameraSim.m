@@ -32,7 +32,7 @@ classdef cameraSim < camera
       this.projectionDynamic=false;
     end
       
-    function [ka,kb]=domain(this)
+    function [ka,kb]=dataDomain(this)
       assert(this.isLocked);
       ka=this.ka;
       kb=this.kb;

@@ -177,20 +177,20 @@ function testDataContainer(container)
   end
   
   if hasReferenceTrajectory(container)
-      refTraj = getReferenceTrajectory(container);
-      list = listSensors(container,'gps');
-      for k = 1:numel(list)
-          sensor = getSensor(container,  list(k));
-          lock(sensor)
-          testGPSsimulation(sensor, refTraj);
-          unlock(sensor);
-      end
+    refTraj = getReferenceTrajectory(container);
+    list = listSensors(container,'gps');
+    for k = 1:numel(list)
+      sensor = getSensor(container,list(k));
+      lock(sensor)
+      testGPSsimulation(sensor,refTraj);
+      unlock(sensor);
+    end
   end
 end
 
 function testCameraArrayProjection(cam)
   % find out which images are available
-  [ka,kb]=domain(cam);
+  [ka,kb]=dataDomain(cam);
   assert(isa(ka,'uint32'));
 
   for view=1:numViews(cam);
@@ -249,7 +249,7 @@ end
 
 function testCameraArrayProjectionRoundTrip(cam)
   % find out which images are available
-  [ka,kb]=domain(cam);
+  [ka,kb]=dataDomain(cam);
   assert(isa(ka,'uint32'));
 
   for view=1:numViews(cam);
@@ -299,19 +299,21 @@ function testCameraArrayProjectionRoundTrip(cam)
   end
 end
 
-function testGPSsimulation(gps, refTraj)
-  % Find the domain (valid indices) of the gps data
-  [ka, kb] = domain(gps);
+% Find the domain (valid indices) of the gps data
+function err=testGPSsimulation(gps, refTraj)
+  [ka,kb] = dataDomain(gps);
 
   % For each valid index, get the true trajectory position
   % and compare with the simulated gps position
-  for indx = ka:kb
+  K=1+kb-ka;
+  gps_pos=zeros(3,K);
+  true_pos=zeros(3,K);
+  for indx = 1:K
     currTime = getTime(gps,indx);
-    [gps_lon, gps_lat, gps_alt] = getGlobalPosition(gps,indx);
+    [gps_lon, gps_lat, gps_alt] = getGlobalPosition(gps,ka+indx-1);
     gps_pos(indx,:) = [gps_lon gps_lat gps_alt];
     true_posquat = evaluate(refTraj,currTime);
     true_pos(indx,:) = true_posquat(1:3);
   end
-
   err = true_pos - gps_pos;
 end
