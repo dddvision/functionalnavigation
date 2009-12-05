@@ -3,13 +3,10 @@ Coding tasks:
  * Figure out how to handle errors, invalid indices, exceptions.
  * Test mainDisplay to ensure inputs can be either row or column vectors.
  * Separate dataContainer stuff from the trajectory optimization manager.
- * Wrap the "objective" so that optimizer never sees trajectories directly?
  * Make class aliases for "time", "index", "real" and other simple classes?
  * Replace zero-based indices with non-zero-bases indices when possible.
  * Add mlint testing requirement in how to make a component wiki.
- * Implement derivative() function in wobble1.
  * Add rangefinder class that could also represent bearing-only tracker output.
- * Remove dependence on Symbolic Toolbox.
  * Clarify time system by introducing t0 reference?
  * Implement measure/sensor compatibility checking.
  * Formally ask UCF to fix TODO statements in their code.
@@ -19,23 +16,25 @@ Coding tasks:
    * Move most of tommas into the optimizer.
    * Move choice of tmin from tommasConfig to the optimizer?
    * Hide the creation of a plain "objective" behind the optimizer interface.
+   * Wrap the "objective" so that optimizer never sees trajectories directly?
 
  * dataContainer
    *** Support projection and inverseProjection for Gantry camera data.
    * Find a way to distinguish between multiple sensors that derive from the same class.
    * Coordinate with Jimmy Touma for AFRL data.
-   * Convert thesis symbolic BodyPath to char and talk to Seth Teller about saving it.
+   * Remove dependence on Symbolic Toolbox.
+     * Convert thesis symbolic BodyPath and its derivative to char and talk to Seth Teller about saving/moving it.
    * VAMAV OpenSceneGraph simulator?
    * Packaging King Air flight?
    * Interfacing with Paul Metzger's simulator?
 
  * dynamicModel
-   * Optionally return derivative from evaluate to save computation.
    * Require [ta,tb] as inputs to the constructor?
    * Make dynamicModelStub a discrete LTI system defined by A,B,C,D.
    * Method to extend number of model parameters to cover a later time.
    * Dynamic model takes inputs pqa, deltat, and parameters?
    * Recompute trajectory only when parameters change.
+   * Handle display of trajectories with infinite domain bounds.
 
  * measure
    * Require [ta,tb] as inputs to the constructor?

@@ -33,8 +33,7 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
       b=numel(this.data)/this.parametersPerSecond;
     end
     
-    % Remember that derivitive() must match evaluate()
-    function [ecef,quaternion]=evaluate(this,t)
+    function [ecef,quaternion,ecefRate,quaternionRate]=evaluate(this,t)
       ta=domain(this);
       t(t<ta)=NaN;
       vaxis=this.data((this.omegabits+1):(end-mod(numel(this.data),this.dim)));
@@ -48,35 +47,18 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
       omega=this.scaleomega*(1-2*bitsplit(bits));
       
       sint=sin(omega*t);
+      omegacos=omega*cos(omega*t);
 
       pnoise=this.scalep*[rate_bias(1)*sint;rate_bias(2)*sint;rate_bias(3)*sint];
       qnoise=this.scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
+      
+      pdnoise=this.scalep*[rate_bias(1)*omegacos;rate_bias(2)*omegacos;rate_bias(3)*omegacos];
+      qdnoise=this.scaleq*[rate_bias(4)*omegacos;rate_bias(5)*omegacos;rate_bias(6)*omegacos];
 
       ecef=[0*t;t;0.*t]+pnoise;
       quaternion=AxisAngle2Quat(qnoise);
-    end
-    
-    % Remember that derivitive() must match evaluate()
-    function [ecefRate,quaternionRate]=derivative(this,t)
-      ta=domain(this);
-      t(t<ta)=NaN;
-      vaxis=this.data((this.omegabits+1):(end-mod(numel(this.data),this.dim)));
-      bpa=numel(vaxis)/this.dim;
-      rate_bias=zeros(this.dim,1);
-      for d=1:this.dim
-        bits=vaxis((d-1)*bpa+(1:bpa))';
-        rate_bias(d)=(1-2*bitsplit(bits));
-      end
-      bits=this.data(1:this.omegabits)';
-      omega=this.scaleomega*(1-2*bitsplit(bits));
-      
-      omegacos=omega*cos(omega*t);
-      
-      pnoise=this.scalep*[rate_bias(1)*omegacos;rate_bias(2)*omegacos;rate_bias(3)*omegacos];
-      qnoise=this.scaleq*[rate_bias(4)*omegacos;rate_bias(5)*omegacos;rate_bias(6)*omegacos];
-
-      ecefRate=[0*t;1+0*t;0.*t]+pnoise;
-      quaternionRate=[0*t;qnoise/2]; % small angle approximation
+      ecefRate=[0*t;1+0*t;0.*t]+pdnoise;
+      quaternionRate=[0*t;qdnoise/2]; % small angle approximation
     end
   end
   
