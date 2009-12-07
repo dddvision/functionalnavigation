@@ -15,8 +15,9 @@ classdef gpsSim < gps
     refTraj
     measurementTimes
     xyzErrors
+    precisionFlag
+    offset
   end
-  
   
   methods (Access=public)
     function this=gpsSim
@@ -25,7 +26,7 @@ classdef gpsSim < gps
       this.gpsData = readGPSdataFile(simConfig.TLoLaAltFile);
       this.sigmaR = simConfig.sigmaR;
       
-      % If trajectory is to be interolated, find times at which data
+      % If trajectory is to be interpolated, find times at which data
       % must be made available
       if simConfig.interpTraj
         this.measurementTimes = ceil(this.gpsData.time(1)):floor(this.gpsData.time(end));
@@ -37,23 +38,39 @@ classdef gpsSim < gps
       this.xyzErrors = globalSatData.readNoiseData('gtGPSdata.txt'); % Error samples (easting, northing, altitude)
       this.refTraj = globalSatData.bodyReference;
       this.isLocked = false;
+      this.precisionFlag = true;
+      this.offset = [0;0;0];
+      this.ka=uint32(1);
+      this.kb=uint32(length(this.measurementTimes));
     end
     
     function [ka,kb]=dataDomain(this)
-      % Return first and last indices of a consecutive list of data elements
       assert(this.isLocked);
-      ka=uint32(1);
-      kb=uint32(length(this.measurementTimes));
+      ka=this.ka;
+      kb=this.kb;
     end
     
     function time=getTime(this,k)
-      % Get time stamp at required data index
-      % Return value is NaN when the data index is invalid
+      assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       time=this.measurementTimes(k);
     end
     
-    function [lon, lat, alt] = getGlobalPosition(this,k)
-      % Get a position (lon,lat,alt) measurement
+    function isLocked=lock(this)
+      this.isLocked=true;
+      isLocked=this.isLocked;
+    end
+
+    function isUnlocked=unlock(this)
+      this.isLocked=false;
+      isUnlocked=~this.isLocked;
+    end
+    
+    function [lon,lat,alt]=getGlobalPosition(this,k)
+      assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       
       % Evaluate the reference trajectory at the measurement time
       posquat = evaluate(this.refTraj, this.measurementTimes(k));
@@ -62,8 +79,7 @@ classdef gpsSim < gps
       true_alt = posquat(3);
       
       % Convert true (lon,lat,alt) coordinates to ECEF coordinates
-      [true_X, true_Y, true_Z] = ...
-        globalSatData.lolah2ecef(true_lon, true_lat, true_alt);
+      [true_X,true_Y,true_Z]=globalSatData.lolah2ecef(true_lon,true_lat,true_alt);
       
       % Add error based on real Global Sat gps data
       numErrSamples = size(this.xyzErrors,1);
@@ -74,20 +90,19 @@ classdef gpsSim < gps
       Z = true_Z+this.xyzErrors(noiseSample,3);
       
       % Convert noisy ECEF positions to (lon,lat,alt)
-      [lon, lat, alt] = globalSatData.ecef2lolah(X, Y, Z);
+      [lon,lat,alt] = globalSatData.ecef2lolah(X,Y,Z);
     end
     
     function flag = hasPrecision(this)
-      % Check whether precision information is available
-      % flag = true if precision data is available, false otherwise
-      flag = true;
+      flag=this.precisionFlag;
     end
     
-    function [vDOP, hDOP, sigmaR] = getPrecision(this,k)
-      % Get GPS precision  data
+    % Picks the closest vDOP and hDOP in the data to the requested index
+    function [vDOP,hDOP,sigmaR] = getPrecision(this,k)
+      assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       
-      % Pick the closest vDOP and hDOP in the data to
-      % the requested index
       currTime = this.measurementTimes(k);
       nearestDataIndx = find(min(abs(currTime-this.gpsData.time)));
       vDOP = this.gpsData.vDOP(nearestDataIndx);
@@ -96,23 +111,11 @@ classdef gpsSim < gps
     end
     
     function offset = getAntennaOffset(this)
-      % Get antenna offset relative to the body frame
-      offset = [0 0 0];
-    end
-    
-    function lock(this)
-      % Temporarily lock the data buffer of this sensor
-      this.isLocked=true;
-    end
-    
-    function unlock(this)
-      % Unlock the data buffer of this sensor
-      this.isLocked=false;
+      offset=this.offset;
     end
   end
 end
 
-function gpsData=readGPSdataFile(fname)
 % Read a csv file that contains ascii GPS data
 % Each line has the
 % Time Lon Lat Alt hDop vDop
@@ -122,33 +125,31 @@ function gpsData=readGPSdataFile(fname)
 % Alt --> Altitude in meters (double)
 % hDop --> Horizontal dilution of precision (double)
 % vDop --> Vertical dilution of precision (double)
+function gpsData=readGPSdataFile(fname)
+  maindir = pwd;
+  currdir = [maindir '/components/+globalSatData'];
+  full_fname = fullfile(currdir, fname);
 
-maindir = pwd;
-currdir = [maindir '/components/+globalSatData'];
-full_fname = fullfile(currdir, fname);
+  csvdata = csvread(full_fname);
 
-csvdata = csvread(full_fname);
+  % Only keep measurements that are made in increasing order
+  % of time
 
-% Only keep measurements that are made in increasing order
-% of time
-
-gpsTime = csvdata(:,1);
-keepIndx = 1;
-lastTime = gpsTime(1);
-for indx = 2:length(gpsTime)
-  if gpsTime(indx) > lastTime
-    keepIndx = [keepIndx indx];
-    lastTime = gpsTime(indx);
+  gpsTime = csvdata(:,1);
+  keepIndx = 1;
+  lastTime = gpsTime(1);
+  for indx = 2:length(gpsTime)
+    if gpsTime(indx) > lastTime
+      keepIndx = [keepIndx indx];
+      lastTime = gpsTime(indx);
+    end
   end
-end
 
-csvdata = csvdata(keepIndx,:);
-gpsData.time = csvdata(:,1);
-gpsData.lon = csvdata(:,2);
-gpsData.lat = csvdata(:,3);
-gpsData.alt = csvdata(:,4);
-gpsData.hDOP = csvdata(:,5);
-gpsData.vDOP = csvdata(:,6);
-
-
+  csvdata = csvdata(keepIndx,:);
+  gpsData.time = csvdata(:,1);
+  gpsData.lon = csvdata(:,2);
+  gpsData.lat = csvdata(:,3);
+  gpsData.alt = csvdata(:,4);
+  gpsData.hDOP = csvdata(:,5);
+  gpsData.vDOP = csvdata(:,6);
 end
