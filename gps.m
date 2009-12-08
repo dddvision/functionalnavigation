@@ -25,7 +25,7 @@ classdef gps < sensor
     % Check whether precision information is available
     % 
     % OUTPUT
-    % flag = true if precision data is available, false otherwise, bool
+    % flag = true if precision data is available and false otherwise, logical scalar
     flag=hasPrecision(this);
     
     % Get precision information

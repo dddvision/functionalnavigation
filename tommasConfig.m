@@ -8,10 +8,10 @@ classdef tommasConfig
     optimizer = 'optimizerStub';
   
     % select data container
-    dataContainer = 'globalSatData';
+    dataContainer = 'middleburyData';
     
     % match each measure to a specific sensor class, cell array of structs
-    measures = {struct('measure','measureStub','sensor','camera');...
+    measures = {struct('measure','measureStub','sensor','gps');...
                 struct('measure','opticalFlowPDollar','sensor','camera')};
     
     % referenceDate = datestr(now,30);

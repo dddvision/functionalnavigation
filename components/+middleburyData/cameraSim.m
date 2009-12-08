@@ -7,6 +7,7 @@ classdef cameraSim < camera
     ka
     kb
     rho
+    frame
     M
     N
     isLocked
@@ -33,6 +34,7 @@ classdef cameraSim < camera
       this.layers='rgb';
       this.frameDynamic=false;
       this.projectionDynamic=false;
+      this.frame=[0;0;0;1;0;0;0];
     end
     
     function [ka,kb]=dataDomain(this)
@@ -42,7 +44,6 @@ classdef cameraSim < camera
     end
     
     function time=getTime(this,k)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       time=this.ring{ktor(this,k)}.time;
@@ -59,7 +60,6 @@ classdef cameraSim < camera
     end
     
     function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       numStrides=this.N;
@@ -68,7 +68,6 @@ classdef cameraSim < camera
     end
     
     function im=getImage(this,k,varargin)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       im=this.ring{ktor(this,k)}.image;
@@ -83,9 +82,8 @@ classdef cameraSim < camera
     end
     
     function [p,q]=getFrame(this,varargin)
-      assert(this.isLocked);
-      p=[0;0;0];
-      q=[1;0;0;0];
+      p=this.frame(1:3);
+      q=this.frame(4:7);
     end
     
     function flag=isProjectionDynamic(this,varargin)
@@ -93,7 +91,6 @@ classdef cameraSim < camera
     end
     
     function pix=projection(this,ray,varargin)
-      assert(this.isLocked);
       m=double(this.M);
       n=double(this.N);
       coef=this.rho./ray(1,:);
@@ -104,7 +101,6 @@ classdef cameraSim < camera
     end
     
     function ray=inverseProjection(this,pix,varargin)
-      assert(this.isLocked);
       m=double(this.M);
       n=double(this.N);
       u1=((m-1)/(n-1))*(pix(2,:)*(2/(m-1))-1);

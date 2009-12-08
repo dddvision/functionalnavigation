@@ -35,7 +35,7 @@ classdef tommas < tommasConfig
           fprintf('\n\nWarning: sensor type was unavailable: %s',this.measures{k}.sensor);
         else
           this.u{kvalid}=getSensor(data,list(1));
-          this.g{kvalid}=unwrapComponent(this.measures{kvalid}.measure,this.u{kvalid},this.F{1});
+          this.g{kvalid}=unwrapComponent(this.measures{k}.measure,this.u{kvalid},this.F{1});
           kvalid=kvalid+1;
         end
       end
