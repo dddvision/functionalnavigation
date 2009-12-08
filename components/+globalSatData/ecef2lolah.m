@@ -1,9 +1,20 @@
 function [lon, lat, alt] = ecef2lolah(x, y, z)
 
+% Convert Earth-Centered Earth-Fixed (ECEF) coordinates to 
+% [Longitude, Latitude, Altitude] coordinates 
+% 
+% Usage: [lon, lat, alt] = ecef2lolah(x, y, z)
+%
+% Inputs:
+%   [x,y,z]  = ECEF coordinates
+%
+% Outputs
+%   lon = longitude in radians
+%   lat = latitude in radians
+%   alt = height above WGS84 ellipsoid in meters
+%   
 % Ref: http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
 %      Retrieved 11/30/2009
-% Note that lon and lat are in radians
-% alt is the height above the WGS ellipsoid
 
 % WGS84 parameters
 a = 6378137;
