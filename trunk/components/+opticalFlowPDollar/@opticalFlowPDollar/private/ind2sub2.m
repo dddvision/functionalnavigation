@@ -8,11 +8,11 @@ function sub = ind2sub2( siz, ind )
 % USAGE
 %  sub = ind2sub2( siz, ind )
 %
-% INPUTS
+% INPUT
 %  siz     - size of array into which ind is an index
 %  ind     - linear index (or vector of indicies) into given array
 %
-% OUTPUTS
+% OUTPUT
 %  sub     - sub(i,:) is the ith set of subscripts into the array.
 %
 % EXAMPLE

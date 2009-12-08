@@ -1,12 +1,9 @@
 % This class defines a synchronously time-stamped array of cameras
 %   rigidly attached to a body with different positions and orientations
-% Body frame axis order is forward-right-dowm
-% Camera frame axis order is forward-right-down
-% If you need to add optional device methods, then inherit from this class
 classdef cameraArray < sensor
   
   methods (Abstract=true)
-    % Get number of camera views in the array
+    % Get number of cameras in the array
     %
     % OUTPUT
     % num = number of views, uint32 N-by-1
@@ -24,7 +21,25 @@ classdef cameraArray < sensor
     %  'hsv'  hue-saturation-value
     %  'v'    grayscale
     %  'i'    infrared
+    %
+    % NOTES
+    % Throws an exception when view index is out of range
     str=interpretLayers(this,view);
+    
+    % Get image size
+    %
+    % INPUT
+    % k = data index, uint32 scalar
+    % view = zero-based view index, uint32 scalar
+    %
+    % OUTPUT
+    % numStrides = number of strides along the non-contiguous dimension (Matlab columns), uint32 scalar
+    % numSteps = number of steps along the contiguous dimension (Matlab rows), uint32 scalar
+    % numLayers = number of color layers at each pixel location
+    %
+    % NOTES
+    % Throws an exception when either input index is out of range
+    [numStrides,numSteps,numLayers]=getImageSize(this,k,view);
     
     % Get an image
     %
@@ -33,7 +48,10 @@ classdef cameraArray < sensor
     % view = zero-based view index, uint32 scalar
     %
     % OUTPUT
-    % im = image, uint8 HEIGHT-by-WIDTH-by-LAYERS
+    % im = image, uint8 height-by-width-by-layers
+    %
+    % NOTES
+    % Throws an exception when either input index is out of range
     im=getImage(this,k,view);
     
     % Check whether the camera frame moves relative to the body frame
@@ -43,6 +61,9 @@ classdef cameraArray < sensor
     %
     % OUTPUT
     % flag = true if the offset changes, false otherwise, bool
+    %
+    % NOTES
+    % Throws an exception when view index is out of range
     flag=isFrameDynamic(this,view);
     
     % Get sensor frame position and orientation relative to the body frame
@@ -55,8 +76,10 @@ classdef cameraArray < sensor
     % p = position of sensor origin in the body frame, double 3-by-1
     % q = orientation of sensor frame in the body frame as a quaternion, double 4-by-1
     %
-    % NOTE
-    % The camera frame origin is coincident with its focal point
+    % NOTES
+    % Body frame axis order is forward-right-dowm
+    % Camera frame axis order is forward-right-down
+    % Throws an exception when either input index is out of range
     [p,q]=getFrame(this,k,view);
         
     % Check whether the camera projection changes over time
@@ -66,6 +89,9 @@ classdef cameraArray < sensor
     %
     % OUTPUT
     % flag = true if the projection changes, false otherwise, bool
+    %
+    % NOTES
+    % Throws an exception when view index is out of range
     flag=isProjectionDynamic(this,view);
     
     % Project ray vectors in the camera frame to image points and vice-versa
@@ -84,6 +110,8 @@ classdef cameraArray < sensor
     %   pix(2,:) = steps along the contiguous dimension (Matlab row minus one)
     % Points outside the valid image area return NaN-valued vectors
     % Region masking can be indicated through NaN-valued returns
+    % Camera frame origin is coincident with focal point of the projection
+    % Throws an exception when either input index is out of range
     pix=projection(this,ray,k,view);
     ray=inverseProjection(this,pix,k,view);
   end

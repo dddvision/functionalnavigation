@@ -15,6 +15,7 @@ classdef measure
     % NOTES
     % A subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@measure(u,x);
+    % Does not modify sensor lock state
     function this=measure(u,x)
       assert(isa(u,'sensor'));
       assert(isa(x,'trajectory'));
@@ -26,6 +27,9 @@ classdef measure
     %
     % INPUT
     % x = trajectory instance
+    %
+    % NOTES
+    % Does not modify sensor lock state
     this=setTrajectory(this,x);
     
     % Find all edges in the adjacency graph
@@ -36,11 +40,12 @@ classdef measure
     %
     % NOTES
     % Indices must be sorted in ascending order, first by lower then by upper
+    % Does not modify sensor lock state
     [a,b]=findEdges(this);
     
     % Evaluate a measure of an edge
     %
-    % INPUTS
+    % INPUT
     % a = lower node index, uint32 scalar
     % b = upper node index, uint32 scalar
     %
@@ -49,9 +54,10 @@ classdef measure
     %
     % NOTES
     % A trajectory represents the motion of the body frame relative to a 
-    % world frame. If the sensor frame is not coincident with the body 
-    % frame, then the sensor frame offset may need to be kinematically 
-    % composed with the body frame to locate the sensor.
+    %   world frame. If the sensor frame is not coincident with the body 
+    %   frame, then the sensor frame offset may need to be kinematically 
+    %   composed with the body frame to locate the sensor.
+    % Does not modify sensor lock state
     cost=computeEdgeCost(this,a,b);
   end
   

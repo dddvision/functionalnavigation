@@ -39,26 +39,39 @@ classdef cameraSim < camera
     end
     
     function time=getTime(this,k)
-      assert(isa(k,'uint32'));
       assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       time=this.tk(k);
     end
     
-    function lock(this)
+    function isLocked=lock(this)
       this.isLocked=true;
+      isLocked=this.isLocked;
     end
 
-    function unlock(this)
+    function isUnlocked=unlock(this)
       this.isLocked=false;
+      isUnlocked=~this.isLocked;
     end
     
     function str=interpretLayers(this,varargin)
       str=this.layers;
     end
     
-    function im=getImage(this,k,varargin)
-      assert(isa(k,'uint32'));
+    function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)
       assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
+      numStrides=this.imsize(2);
+      numSteps=this.imsize(1);
+      numLayers=length(this.layers);
+    end
+    
+    function im=getImage(this,k,varargin)
+      assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       im=imread([this.localCache,'/color',num2str(k,'%06d'),'.png']);
     end
     
@@ -67,8 +80,9 @@ classdef cameraSim < camera
     end
     
     function [p,q]=getFrame(this,k,varargin)
-      assert(isa(k,'uint32'));
       assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       p=[0;0;0];
       q=[1;0;0;0];
     end
@@ -143,6 +157,5 @@ classdef cameraSim < camera
       end      
     end
   end
-
+  
 end
-

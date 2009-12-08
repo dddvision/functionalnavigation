@@ -1,7 +1,8 @@
 % This class defines methods shared by synchronously time-stamped sensors
-% All sensors use SI units (meters, radians, seconds)
-% Time refers to GPS time referenced to zero at 1980-00-06T00:00:00 GMT
-% GPS time is a few seconds ahead of UTC
+% Using GPS time referenced to zero at 1980-00-06T00:00:00 GMT
+%   GPS time is a few seconds ahead of UTC
+% All derived class methods throw an exception while the sensor is unlocked
+% All sensors use SI units and radians unless otherwise stated
 classdef sensor < handle
   
   properties (Constant=true,GetAccess=public)
@@ -16,7 +17,8 @@ classdef sensor < handle
     % b = last valid data index, uint32 scalar
     %
     % NOTES
-    % Return values are empty when no data is available or sensor is unlocked
+    % Return values are empty when no data is available
+    % Throws an exception if sensor is unlocked
     [a,b]=dataDomain(this);
     
     % Get time stamp
@@ -29,22 +31,28 @@ classdef sensor < handle
     %
     % NOTES
     % Time stamps must not decrease with increasing indices
-    % Return value is NaN when the data index is invalid
+    % Throws an exception if data index is invalid or sensor is unlocked
     time=getTime(this,k);
     
-    % Temporarily lock the data buffer of this sensor
+    % Lock the data buffer so that other member functions will be deterministic
+    %
+    % OUTPUT
+    % isLocked = true if successful and false otherwise, logical scalar
     %
     % NOTES
-    % This causes subsequent function calls to be deterministic
-    % Blocks until active buffer transactions are completed
-    lock(this);
+    % Returns false if data is unavailable
+    % Does not wait for hardware events
+    isLocked=lock(this);
     
-    % Unlock the data buffer of this sensor
+    % Unlock the data buffer so that new data can be added and old data can expire
+    %
+    % OUTPUT
+    % isUnlocked = true if successful and false otherwise, logical scalar
     %
     % NOTES
-    % This allows new data to be added and old data to expire
-    % Blocks until active buffer transactions are completed
-    unlock(this);
+    % Returns true if data is unavailable
+    % Does not wait for hardware events
+    isUnlocked=unlock(this);
   end
   
 end

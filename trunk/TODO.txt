@@ -1,6 +1,4 @@
-Coding tasks:
-
- * Figure out how to handle errors, invalid indices, exceptions.
+general:
  * Test mainDisplay to ensure inputs can be either row or column vectors.
  * Separate dataContainer stuff from the trajectory optimization manager.
  * Make class aliases for "time", "index", "real" and other simple classes?
@@ -10,56 +8,58 @@ Coding tasks:
  * Clarify time system by introducing t0 reference?
  * Implement measure/sensor compatibility checking.
  * Formally ask UCF to fix TODO statements in their code.
- * Formally ask UCF to combine all opticalFlow methods.
+ * Write unit tests to check interfaces and exception handling.
 
- * optimizer
-   * Move most of tommas into the optimizer.
-   * Move choice of tmin from tommasConfig to the optimizer?
-   * Hide the creation of a plain "objective" behind the optimizer interface.
-   * Wrap the "objective" so that optimizer never sees trajectories directly?
-
- * dataContainer
-   *** Support projection and inverseProjection for Gantry camera data.
-   * Find a way to distinguish between multiple sensors that derive from the same class.
-   * Coordinate with Jimmy Touma for AFRL data.
-   * Remove dependence on Symbolic Toolbox.
-     * Convert thesis symbolic BodyPath and its derivative to char and talk to Seth Teller about saving/moving it.
-   * VAMAV OpenSceneGraph simulator?
-   * Packaging King Air flight?
-   * Interfacing with Paul Metzger's simulator?
-
- * dynamicModel
-   * Require [ta,tb] as inputs to the constructor?
-   * Make dynamicModelStub a discrete LTI system defined by A,B,C,D.
-   * Method to extend number of model parameters to cover a later time.
-   * Dynamic model takes inputs pqa, deltat, and parameters?
-   * Recompute trajectory only when parameters change.
-   * Handle display of trajectories with infinite domain bounds.
-
- * measure
-   * Require [ta,tb] as inputs to the constructor?
-   * Clarify throughout the documentation that all measures are two-point
-   * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
-   * Add accuracy tolerance input to computeEdgeCost?
-   * Measure should advertise the type of sensor that it needs.
-   * Make getEdges list nodes in a interval restricted by upper AND lower indices.
-   * Add SIFT or SURF visual measure.
-   * Speed up optical flow.
-   * Add an example of a GPS measure or fold into measureStub.
-  
- * cameraArray
-   * Add function getImageSize().
-   * Should masking be sepate from projection?
-
-Demonstrations:
-
- * Make tabletop hardware setup
+demonstration:
+ *** Design tabletop hardware setup
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
-Papers to review:
+optimizer:
+ * Move most of tommas into the optimizer.
+ * Move choice of tmin from tommasConfig to the optimizer?
+ * Hide the creation of a plain "objective" behind the optimizer interface.
+ * Wrap the "objective" so that optimizer never sees trajectories directly?
+ * Have Rob create linkage-based GA crossover function.
 
+dataContainer:
+ *** Support projection and inverseProjection for Gantry camera data.
+ * Make stub that contains all sensors and type checks its inputs.
+ * Find a way to distinguish between multiple sensors that derive from the same class.
+ * Coordinate with Jimmy Touma for AFRL data.
+ * Remove dependence on Symbolic Toolbox.
+   * Convert thesis symbolic BodyPath and its derivative to char and talk to Seth Teller about saving/moving it.
+ * VAMAV OpenSceneGraph simulator?
+ * Packaging King Air flight?
+ * Interfacing with Paul Metzger's simulator?
+
+dynamicModel:
+ * Require [ta,tb] as inputs to the constructor?
+ * Make dynamicModelStub a discrete LTI system defined by A,B,C,D.
+ * Method to extend number of model parameters to cover a later time.
+ * Dynamic model takes inputs pqa, deltat, and parameters?
+ * Recompute trajectory only when parameters change.
+ * Handle display of trajectories with infinite domain bounds.
+
+measure:
+ * Require [ta,tb] as inputs to the constructor?
+ * Clarify throughout the documentation that all measures are two-point
+ * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
+ * Add accuracy tolerance input to computeEdgeCost?
+ * Measure should advertise the type of sensor that it needs.
+ * Make getEdges list nodes in a interval restricted by upper AND lower indices.
+ * Add SIFT or SURF visual measure.
+ * Speed up optical flow.
+ * Add an example of a GPS measure or fold into measureStub.
+  
+cameraArray:
+ * Add function getImageSize().
+ * Should masking be sepate from projection?
+
+research:
  * Olsen: Pose graphs
+ * review other code in projects/1490/software
+ * elements of statistical learning
  * Cramer-Rao: cov(your estimator)>=inv(information)
  * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
  * Natalia Hernandez Gardiol @ CSAIL:

@@ -1,5 +1,4 @@
 % This class defines how to access data from a gyroscope
-% If you need to add optional device methods, then inherit from this class
 classdef gyroscopeArray < inertialArray
   
   methods (Abstract=true)
@@ -16,6 +15,9 @@ classdef gyroscopeArray < inertialArray
     % Average angular rate is a raw measurement from a typical integrating gyroscope
     % This measurement is taken by integrating about the instantaneous
     %   axis as it moves during the preceding time step
+    %
+    % NOTES
+    % Throws an exception if either input index is out of range
     angularRate=getAngularRate(this,k,ax);
   end
   

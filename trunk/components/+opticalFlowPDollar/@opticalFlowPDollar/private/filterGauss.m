@@ -13,13 +13,13 @@ function G = filterGauss( dims, mu, C, show )
 % USAGE
 %  G = filterGauss( dims, [mu], [C], [show] )
 %
-% INPUTS
+% INPUT
 %  dims    - n element vector of dimensions of final Gaussian
 %  mu      - [] n element vector specifying the mean
 %  C       - [] nxn cov matrix, nx1 set of vars, or variance
 %  show    - [0] figure to use for optional display
 %
-% OUTPUTS
+% OUTPUT
 %  G       - image of the created Gaussian
 %
 % EXAMPLE

@@ -8,7 +8,7 @@
 %  [Vx,Vy,reliab]=optFlowLk( I1, I2, winN, ...
 %    [winSig], [sigma], [thr], [show] )
 %
-% INPUTS
+% INPUT
 %  I1, I2  - input images to calculate flow between
 %  winN    - window radius for hard window (=[] if winSig provided)
 %  winSig  - [] sigma for soft 'gauss' window (=[] if winN provided)
@@ -16,7 +16,7 @@
 %  thr     - [3e-6] ABSOLUTE reliability threshold (min eigenvalue)
 %  show    - [0] figure to use for display (no display if == 0)
 %
-% OUTPUTS
+% OUTPUT
 %  Vx, Vy  - x,y components of flow  [Vx>0->right, Vy>0->down]
 %  reliab  - reliability of flow in given window (cornerness of window)
 %

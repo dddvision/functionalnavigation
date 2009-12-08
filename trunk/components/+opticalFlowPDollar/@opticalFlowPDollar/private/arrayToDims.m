@@ -10,12 +10,12 @@ function IC = arrayToDims( I, dims, padEl )
 % USAGE
 %  IC = arrayToDims( I, dims, [padEl] )
 %
-% INPUTS
+% INPUT
 %  I         - n dim array to crop window from (for arrays can only crop)
 %  dims      - dimensions to make I
 %  padEl     - [0] element with which to pad
 %
-% OUTPUTS
+% OUTPUT
 %  IC        - cropped array
 %
 % EXAMPLE

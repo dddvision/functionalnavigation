@@ -21,7 +21,7 @@ classdef dynamicModel < trajectory
     % bits = bitset segment of dynamic parameters to splice in, logical 1-by-nvars
     % tmin = time lower bound, double scalar
     % 
-    % NOTE
+    % NOTES
     % This operation will change the derived class behaviour
     this=putBits(this,bits,tmin);
   end

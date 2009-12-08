@@ -27,33 +27,47 @@ classdef cameraSim < camera
       this.base=uint32(1);
       this.ka=uint32(3);
       this.kb=uint32(9);
-      this.M=size(this.ring{1}.image,1);
-      this.N=size(this.ring{1}.image,2); 
+      this.M=uint32(size(this.ring{1}.image,1));
+      this.N=uint32(size(this.ring{1}.image,2)); 
       this.isLocked=false;
       this.layers='rgb';
       this.frameDynamic=false;
       this.projectionDynamic=false;
     end
     
-    function [a,b]=dataDomain(this)
-      a=this.ka;
-      b=this.kb;
+    function [ka,kb]=dataDomain(this)
+      assert(this.isLocked);
+      ka=this.ka;
+      kb=this.kb;
     end
     
     function time=getTime(this,k)
+      assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       time=this.ring{ktor(this,k)}.time;
     end
     
-    function lock(this)
+    function isLocked=lock(this)
       this.isLocked=true;
+      isLocked=this.isLocked;
+    end
+
+    function isUnlocked=unlock(this)
+      this.isLocked=false;
+      isUnlocked=~this.isLocked;
     end
     
-    function unlock(this)
-      this.isLocked=false;
+    function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)
+      assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
+      numStrides=this.N;
+      numSteps=this.M;
+      numLayers=length(this.layers);
     end
     
     function im=getImage(this,k,varargin)
-      assert(isa(k,'uint32'));
       assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
@@ -80,8 +94,8 @@ classdef cameraSim < camera
     
     function pix=projection(this,ray,varargin)
       assert(this.isLocked);
-      m=this.M;
-      n=this.N;
+      m=double(this.M);
+      n=double(this.N);
       coef=this.rho./ray(1,:);
       u1=((n-1)/(m-1))*coef.*ray(3,:);
       u2=coef.*ray(2,:);
@@ -91,8 +105,8 @@ classdef cameraSim < camera
     
     function ray=inverseProjection(this,pix,varargin)
       assert(this.isLocked);
-      m=this.M;
-      n=this.N;
+      m=double(this.M);
+      n=double(this.N);
       u1=((m-1)/(n-1))*(pix(2,:)*(2/(m-1))-1);
       u2=pix(1,:)*(2/(n-1))-1;
       den=sqrt(u1.*u1+u2.*u2+this.rho*this.rho);

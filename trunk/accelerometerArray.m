@@ -1,5 +1,4 @@
 % This class defines how to access data from an accelerometer
-% If you need to add optional device methods, then inherit from this class
 classdef accelerometerArray < inertialArray
   
   methods (Abstract=true)
@@ -17,6 +16,9 @@ classdef accelerometerArray < inertialArray
     % This measurement has not been gravity compensated
     % This measurement is taken by integrating about the instantaneous
     %   axis as it moves during the preceding time step
+    %
+    % NOTES
+    % Throws an exception if either input index is out of range
     specificForce=getSpecificForce(this,k,ax);
   end
   

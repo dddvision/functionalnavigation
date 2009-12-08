@@ -17,7 +17,7 @@ function filterVisualize( f, show, arg )
 % USAGE
 %  filterVisualize( f, [show], [arg] )
 %
-% INPUTS
+% INPUT
 %  f         - filter to visualize
 %  show      - [1] figure to use for display (0->uses current)
 %  arg       - different meanding depending on dimension
@@ -25,7 +25,7 @@ function filterVisualize( f, show, arg )
 %              d=2: [''] 'row' OR 'col': display centeral row OR col line
 %              d=3: [.1] frac of max value of f at which to draw surfaces
 %
-% OUTPUTS
+% OUTPUT
 %
 % EXAMPLE
 %  f=filterBinomial1d( 10, 0 ); filterVisualize( f, 1 ); %1d
