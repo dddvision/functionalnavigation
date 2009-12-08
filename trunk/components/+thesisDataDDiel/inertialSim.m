@@ -28,7 +28,6 @@ classdef inertialSim < inertialSixDOF
     end
     
     function time=getTime(this,k)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       time=this.time(k);      
@@ -54,14 +53,12 @@ classdef inertialSim < inertialSixDOF
     end
 
     function specificForce=getSpecificForce(this,k,ax)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       specificForce=this.accel(ax+1,k);
     end
     
     function angularRate=getAngularRate(this,k,ax)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       angularRate=this.gyro(ax+1,k);

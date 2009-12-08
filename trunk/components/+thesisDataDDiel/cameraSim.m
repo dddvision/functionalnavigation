@@ -39,7 +39,6 @@ classdef cameraSim < camera
     end
     
     function time=getTime(this,k)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       time=this.tk(k);
@@ -60,7 +59,6 @@ classdef cameraSim < camera
     end
     
     function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       numStrides=this.imsize(2);
@@ -69,7 +67,6 @@ classdef cameraSim < camera
     end
     
     function im=getImage(this,k,varargin)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       im=imread([this.localCache,'/color',num2str(k,'%06d'),'.png']);
@@ -80,7 +77,6 @@ classdef cameraSim < camera
     end
     
     function [p,q]=getFrame(this,k,varargin)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       p=[0;0;0];
@@ -91,9 +87,7 @@ classdef cameraSim < camera
       flag=this.projectionDynamic;
     end
 
-    function pix=projection(this,ray,varargin)
-      assert(this.isLocked);
-      
+    function pix=projection(this,ray,varargin)      
       switch(this.cameraType)
         case 2
           m=this.imsize(1);
@@ -122,8 +116,6 @@ classdef cameraSim < camera
     end
     
     function ray=inverseProjection(this,pix,varargin)
-      assert(this.isLocked);
-      
       switch(this.cameraType)
         case 2
           m=this.imsize(1);

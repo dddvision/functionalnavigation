@@ -51,7 +51,6 @@ classdef gpsSim < gps
     end
     
     function time=getTime(this,k)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       time=this.measurementTimes(k);
@@ -68,7 +67,6 @@ classdef gpsSim < gps
     end
     
     function [lon,lat,alt]=getGlobalPosition(this,k)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       
@@ -99,7 +97,6 @@ classdef gpsSim < gps
     
     % Picks the closest vDOP and hDOP in the data to the requested index
     function [vDOP,hDOP,sigmaR] = getPrecision(this,k)
-      assert(this.isLocked);
       assert(k>=this.ka);
       assert(k<=this.kb);
       

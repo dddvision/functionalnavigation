@@ -1,7 +1,6 @@
 % This class defines methods shared by synchronously time-stamped sensors
 % Using GPS time referenced to zero at 1980-00-06T00:00:00 GMT
 %   GPS time is a few seconds ahead of UTC
-% All derived class methods throw an exception while the sensor is unlocked
 % All sensors use SI units and radians unless otherwise stated
 classdef sensor < handle
   
@@ -31,7 +30,7 @@ classdef sensor < handle
     %
     % NOTES
     % Time stamps must not decrease with increasing indices
-    % Throws an exception if data index is invalid or sensor is unlocked
+    % Throws an exception if data index is invalid
     time=getTime(this,k);
     
     % Lock the data buffer so that other member functions will be deterministic
