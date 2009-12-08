@@ -30,12 +30,12 @@ function C = convnFast( A, B, shape )
 % USAGE
 %  C = convnFast( A, B, [shape] )
 %
-% INPUTS
+% INPUT
 %  A       - d dimensional input matrix
 %  B       - d dimensional matrix to convolve with A
 %  shape   - ['full'] 'valid', 'full', 'same', or 'smooth'
 %
-% OUTPUTS
+% OUTPUT
 %  C       - result of convolution
 %
 % EXAMPLE

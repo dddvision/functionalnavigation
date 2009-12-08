@@ -9,12 +9,12 @@ function ps = normpdf2( xs, m, C )
 % USAGE
 %  ps = normpdf2( xs, m, C )
 %
-% INPUTS
+% INPUT
 %  xs  - points to evaluated (Nxd or dxN)
 %  m   - mean vector (dx1 or 1xd)
 %  C   - Covariance matrix (dxd)
 %
-% OUTPUTS
+% OUTPUT
 %  ps  - probability density at each x (Nx1)
 %
 % EXAMPLE

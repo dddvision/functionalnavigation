@@ -15,7 +15,7 @@ function [ x, er ] = checkNumArgs( x, siz, intFlag, signFlag )
 % USAGE
 %  [ x, er ] = checkNumArgs( x, siz, intFlag, signFlag )
 %
-% INPUTS
+% INPUT
 %  x           - numeric array
 %  siz         - []: does not test size of x
 %              - [if not []]: intended size for x
@@ -29,7 +29,7 @@ function [ x, er ] = checkNumArgs( x, siz, intFlag, signFlag )
 %                 1: entires of x must be positive
 %                 2: entires of x must be strictly positive
 %
-% OUTPUTS
+% OUTPUT
 %  x   - if x was a scalar it may have been replicated into a matrix
 %  er  - contains error msg if anything was wrong with x
 %

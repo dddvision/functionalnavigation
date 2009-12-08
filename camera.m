@@ -1,10 +1,8 @@
 % This class defines a single camera as a special case of a camera array
-% These abstract methods make the camera array “view” argument optional
-% If you need to add optional device methods, then inherit from this class
 classdef camera < cameraArray
   
   methods (Access=public)
-    % This class provides one view
+    % Limits the cameraArray to providing exactly one view
     function num=numViews(this)
       assert(isa(this,'camera'));
       num=uint32(1);
@@ -12,7 +10,9 @@ classdef camera < cameraArray
   end
     
   methods (Abstract=true)
+    % These redefined methods do not require the 'view' argument
     str=interpretLayers(this,varargin);
+    [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin);
     im=getImage(this,k,varargin);
     flag=isFrameDynamic(this,varargin);
     [p,q]=getFrame(this,k,varargin);

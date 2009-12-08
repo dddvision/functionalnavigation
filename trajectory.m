@@ -21,7 +21,7 @@ classdef trajectory
     % ecefRate = derivative of body position at each time, double 3-by-N
     % quaternionRate = derivative of body orientation at each time, double 4-by-N
     %
-    % NOTE
+    % NOTES
     % Using an Earth Centered Earth Fixed (ECEF) frame convention:
     %   Axis 1 goes through the equator at the prime meridian
     %   Axis 2 completes the frame using the right-hand-rule

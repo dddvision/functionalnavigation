@@ -4,6 +4,8 @@ classdef inertialSim < inertialSixDOF
     pFrame
     qFrame
     time
+    ka
+    kb
     gyro
     accel
     isLocked
@@ -15,14 +17,31 @@ classdef inertialSim < inertialSixDOF
       this.qFrame=[1;0;0;0];
       [this.time,this.gyro,this.accel]=ReadIMUdat(localCache,'inertia.dat');
       this.isLocked=false;
+      this.ka=uint32(1);
+      this.kb=uint32(numel(this.time));
     end
 
-    function lock(this)
-      this.isLocked=true;
+    function [ka,kb]=dataDomain(this)
+      assert(this.isLocked);
+      ka=this.ka;
+      kb=this.kb;
     end
     
-    function unlock(this)
+    function time=getTime(this,k)
+      assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
+      time=this.time(k);      
+    end
+    
+    function isLocked=lock(this)
+      this.isLocked=true;
+      isLocked=this.isLocked;
+    end
+
+    function isUnlocked=unlock(this)
       this.isLocked=false;
+      isUnlocked=~this.isLocked;
     end
     
     function dt=getIntegrationTime(this)
@@ -33,28 +52,18 @@ classdef inertialSim < inertialSixDOF
       p=this.pFrame;
       q=this.qFrame;
     end
-    
-    function [ka,kb]=dataDomain(this)
-      assert(this.isLocked);
-      ka=uint32(1);
-      kb=uint32(numel(this.time));
-    end
-    
-    function time=getTime(this,k)
-      assert(isa(k,'uint32'));
-      assert(this.isLocked);
-      time=this.time(k);      
-    end
 
     function specificForce=getSpecificForce(this,k,ax)
-      assert(isa(k,'uint32'));
       assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       specificForce=this.accel(ax+1,k);
     end
     
     function angularRate=getAngularRate(this,k,ax)
-      assert(isa(k,'uint32'));
       assert(this.isLocked);
+      assert(k>=this.ka);
+      assert(k<=this.kb);
       angularRate=this.gyro(ax+1,k);
     end
   end

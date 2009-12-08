@@ -1,6 +1,4 @@
 % This class defines a single global positioning sensor 
-% If you need to add optional device methods, then inherit from this class
-% Using SI units (meters, seconds, radians)
 classdef gps < sensor
     
   methods (Abstract=true)
@@ -19,6 +17,9 @@ classdef gps < sensor
     % lon = longitude in radians, double scalar
     % lat = latitude in  radians, double scalar
     % alt = altitude above WGS84 ellipsoid in meters, double scalar
+    %
+    % NOTES
+    % Throws an exception if the data index is out of range
     [lon,lat,alt]=getGlobalPosition(this,k);
  
     % Check whether precision information is available
@@ -36,6 +37,9 @@ classdef gps < sensor
     % hDop = horizontal dilution of precision (unitless), double scalar
     % vDop = vertical dilution of precision (unitless), double scalar
     % sigmaR = standard deviation of equivalent circular error (meters), double scalar
+    %
+    % NOTES
+    % Throws an exception if the data index is out of range
     [hDop,vDop,sigmaR]=getPrecision(this,k);
   end 
  

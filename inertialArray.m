@@ -1,7 +1,5 @@
 % This class defines a synchronously time-stamped array of inertial sensors
 %   rigidly attached to a body with different positions and orientations
-% The body frame axis order is forward-right-down
-% Rotation is measured via the right-hand rule
 classdef inertialArray < sensor
 
   methods (Abstract)
@@ -29,6 +27,11 @@ classdef inertialArray < sensor
     % OUTPUT
     % offset = position of origin, double 3-by-1
     % direction = unit normalized direction vector, 3-by-1
+    %
+    % NOTES
+    % The body frame axis order is forward-right-down
+    % Rotation is measured via the right-hand rule
+    % Throws an exception of the input index is out of range
     [offset,direction]=getAxis(this,ax);
   end
   

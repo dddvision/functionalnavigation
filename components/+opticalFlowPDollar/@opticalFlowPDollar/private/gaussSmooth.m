@@ -8,14 +8,14 @@ function [L,filters] = gaussSmooth( I, sigmas, shape, radius )
 % USAGE
 %  [L,filters] = gaussSmooth( I, sigmas, [shape], [radius] )
 %
-% INPUTS
+% INPUT
 %  I       - input image
 %  sigmas  - either n dimensional or 1 dimensional vector of standard devs
 %            if sigmas(n)<=.3 then does not smooth along that dimension
 %  shape   - ['full'] shape flag 'valid', 'full', 'same', or 'smooth'
 %  radius  - [2.25] radius in units of standard deviation
 %
-% OUTPUTS
+% OUTPUT
 %  L       - smoothed image
 %  filters - actual filters used, cell array of length n
 %

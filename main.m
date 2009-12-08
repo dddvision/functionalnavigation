@@ -46,11 +46,11 @@ end
 
 % Visualize a set of trajectories with optional transparency
 %
-% INPUTS
+% INPUT
 % x = trajectory instances, 1-by-N or N-by-1
 % c = costs, double 1-by-N or N-by-1
 %
-% OUTPUTS
+% OUTPUT
 % h = handles to trajectory plot elements
 function h=mainDisplay(x,c)
 

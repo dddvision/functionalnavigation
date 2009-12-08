@@ -7,13 +7,13 @@ function I = arrayCrop( I, strLocs, endLocs, padEl )
 % USAGE
 %  I = arrayCrop( I, strLocs, endLocs, [padEl] )
 %
-% INPUTS
+% INPUT
 %  I          - n dimensional array to crop window from
 %  strLocs    - locs at which to start cropping along each dim
 %  endLocs    - locs at which to end cropping along each dim
 %  padEl      - [0] element with which to pad
 %
-% OUTPUTS
+% OUTPUT
 %  I          - cropped array
 %
 % EXAMPLE

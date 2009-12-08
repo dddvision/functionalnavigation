@@ -14,7 +14,7 @@ classdef dataContainer
     % OUTPUT
     % list = list of unique sensor identifiers, uint32 N-by-1
     %
-    % NOTE
+    % NOTES
     % Sensors that inherit from the given class will also be included in
     %   the output list
     list=listSensors(this,type);
@@ -27,9 +27,10 @@ classdef dataContainer
     % OUTPUT
     % name = sensor name, string
     %
-    % NOTE
+    % NOTES
     % The name does not need to be unique, but a specific name helps the 
     %   user to configure the framework.
+    % Throws an exception if input index is out of range
     name=getSensorName(this,id);
 
     % Get instance of a sensor
@@ -40,8 +41,9 @@ classdef dataContainer
     % OUTPUT
     % obj = sensor instance
     %
-    % NOTE
+    % NOTES
     % The specific subclass of the output depends on the given identifier
+    % Throws an exception if input index is out of range
     obj=getSensor(this,id);
     
     % Check whether a refernce trajectory is available
@@ -55,9 +57,9 @@ classdef dataContainer
     % OUTPUT
     % x = trajectory instance
     %
-    % NOTE
+    % NOTES
     % The body follows this trajectory while recording sensor data
-    % Causes an error if trajectory is not available
+    % Throws an exception if trajectory is not available
     x=getReferenceTrajectory(this);
   end
   
