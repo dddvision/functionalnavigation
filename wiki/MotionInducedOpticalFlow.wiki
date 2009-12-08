@@ -2,7 +2,7 @@
 
 === Introduction ===
 
-As a camera moves, light rays from the environment slice through a theoretical unit sphere centered at the camera’s focus, resulting in patterns of light that appear to flow around the sphere.  Given the camera projection equations and a hypothetical body trajectory, one can predict the induced rotation field and the direction of the translation field.  This section describes how to compute the rotation field and the direction, but not the magnitude, of the translation field.
+As a camera moves, light rays from the environment slice through a theoretical unit sphere centered at the camera???s focus, resulting in patterns of light that appear to flow around the sphere.  Given the camera projection equations and a hypothetical body trajectory, one can predict the induced rotation field and the direction of the translation field.  This section describes how to compute the rotation field and the direction, but not the magnitude, of the translation field.
 
 === Algorithm: Compute Camera Rays ===
 
@@ -10,7 +10,7 @@ As a camera moves, light rays from the environment slice through a theoretical u
 
   * Get an image from the camera.
   * Query the image size.
-  * Generate coordinates `x` for each pixel (ex. using `meshgrid`).
+  * Generate coordinates `x` for each pixel (ex. using `ndgrid`).
 {{{
 x = [ 0 0 0 0 0 1 1 1 1 1 2 2 2 2 2 ... ]
     [ 0 1 2 3 4 0 1 2 3 4 0 1 2 3 4 ... ]
