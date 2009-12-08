@@ -1,6 +1,5 @@
-classdef configGPSsimulator
+classdef globalSatDataConfig
   
-  % TODO: document input file specification
   properties (Constant=true)
     %  Specify input filename 
     %  File must contain comma separated data in the following form
@@ -13,8 +12,7 @@ classdef configGPSsimulator
     %     vDOP =  vertical dilution of precision
     TLoLaAltFile = 'testTraj.txt';
     
-    % Flag to determine if simulator should interpolate given  trajectory
-    % points
+    % Flag to determine if simulator should interpolate given  trajectory points
     % If 'true', gps data is simulated at one second intervals
     interpTraj = true;
     
@@ -22,7 +20,7 @@ classdef configGPSsimulator
     splineTension = 0;
     
     % Standard deviation of equivalent circular error (meters)
-    sigmaR = 6.7; %%% DO NOT CHANGE
+    sigmaR = 6.7; % should be based on environment and hardware
   end
   
 end

@@ -181,7 +181,7 @@ function testDataContainer(container)
     list = listSensors(container,'gps');
     for k = 1:numel(list)
       sensor = getSensor(container,list(k));
-      lock(sensor)
+      lock(sensor);
       testGPSsimulation(sensor,refTraj);
       unlock(sensor);
     end
@@ -300,20 +300,92 @@ function testCameraArrayProjectionRoundTrip(cam)
 end
 
 % Find the domain (valid indices) of the gps data
-function err=testGPSsimulation(gps, refTraj)
-  [ka,kb] = dataDomain(gps);
+function testGPSsimulation(gpsHandle,refTraj)
+  [ka,kb] = dataDomain(gpsHandle);
 
   % For each valid index, get the true trajectory position
   % and compare with the simulated gps position
   K=1+kb-ka;
-  gps_pos=zeros(3,K);
-  true_pos=zeros(3,K);
+  gpsPos=zeros(3,K);
+  truePos=zeros(3,K);
   for indx = 1:K
-    currTime = getTime(gps,indx);
-    [gps_lon, gps_lat, gps_alt] = getGlobalPosition(gps,ka+indx-1);
-    gps_pos(indx,:) = [gps_lon gps_lat gps_alt];
-    true_posquat = evaluate(refTraj,currTime);
-    true_pos(indx,:) = true_posquat(1:3);
+    currTime = getTime(gpsHandle,indx);
+    truePos(:,indx) = evaluate(refTraj,currTime);
+    [gpsPos(1,indx),gpsPos(2,indx),gpsPos(3,indx)] = getGlobalPosition(gpsHandle,ka+indx-1);
   end
-  err = true_pos - gps_pos;
+  err = truePos-lolah2ecef(gpsPos);
+  errmag = sqrt(err(1,:).*err(1,:)+err(2,:).*err(2,:)+err(3,:).*err(3,:));
+  figure;
+  hist(errmag);
+  title('gps error histogram');
+end
+
+% Converts from LOLAH to ECEF
+%
+% INPUT
+% lolah = [ Longitude (radians) ; Latitude (radians) ; Height (meters) ], 3-by-N
+%
+% OUTPUT
+% ecef = Earth Centered Earth Fixed coordinates
+%        UEN orientation at the meridian/equator origin (meters), 3-by-N
+% 
+% Ref: http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
+%      Retrieved 11/30/2009
+function ecef=lolah2ecef(lolah)
+  lon = lolah(1,:);
+  lat = lolah(2,:);
+  alt = lolah(3,:);
+  a = 6378137;
+  finv = 298.257223563;
+  b = a-a/finv;
+  a2 = a.*a;
+  b2 = b.*b;
+  e = sqrt((a2-b2)./a2);
+  slat = sin(lat);
+  clat = cos(lat);
+  N = a./sqrt(1-(e*e)*(slat.*slat));
+  ecef = [(alt+N).*clat.*cos(lon);
+          (alt+N).*clat.*sin(lon);
+          ((b2./a2)*N+alt).*slat];
+end
+
+% Converts ECEF coordinates to longitude, latitude, height
+%
+% INPUT
+% ecef = points in ECEF coordinates, 3-by-N
+%
+% OUTPUT
+% lolah = converted points, 3-by-N
+%   lolah(1,:) = longitude in radians
+%   lolah(2,:) = geodetic (not geocentric) latitude in radians
+%   lolah(3,:) = height above the WGS84 Earth ellipsoid in meters
+%
+% NOTES
+% J. Zhu, "Conversion of Earth-centered Earth-fixed coordinates to geodetic
+% coordinates," Aerospace and Electronic Systems, vol. 30, pp. 957-961, 1994.
+function lolah=ecef2lolah(ecef)
+  X = ecef(1,:);
+  Y = ecef(2,:);
+  Z = ecef(3,:);
+  a = 6378137.0;
+  finv = 298.257223563;
+  f = 1/finv;
+  b = a-a/finv;
+  e2 = 2*f-f^2;
+  ep2 = f*(2-f)/((1-f)^2);
+  r2 = X.^2+Y.^2;
+  r = sqrt(r2);
+  E2 = a^2 - b^2;
+  F = 54*b^2*Z.^2;
+  G = r2 + (1-e2)*Z.^2 - e2*E2;
+  c = (e2*e2*F.*r2)./(G.*G.*G);
+  s = ( 1 + c + sqrt(c.*c + 2*c) ).^(1/3);
+  P = F./(3*(s+1./s+1).^2.*G.*G);
+  Q = sqrt(1+2*e2*e2*P);
+  ro = -(e2*P.*r)./(1+Q) + sqrt((a*a/2)*(1+1./Q) - ((1-e2)*P.*Z.^2)./(Q.*(1+Q)) - P.*r2/2);
+  tmp = (r - e2*ro).^2;
+  U = sqrt( tmp + Z.^2 );
+  V = sqrt( tmp + (1-e2)*Z.^2 );
+  zo = (b^2*Z)./(a*V);
+  lolah = [atan2(Y,X);atan( (Z + ep2*zo)./r );U.*( 1 - b^2./(a*V))];
 end
