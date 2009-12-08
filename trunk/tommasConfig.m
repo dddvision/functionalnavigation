@@ -8,11 +8,11 @@ classdef tommasConfig
     optimizer = 'optimizerStub';
   
     % select data container
-    dataContainer = 'middleburyData';
+    dataContainer = 'globalSatData';
     
     % match each measure to a specific sensor class, cell array of structs
     measures = {struct('measure','measureStub','sensor','gps');...
-                struct('measure','opticalFlowPDollar','sensor','camera')};
+                struct('measure','measureStub','sensor','gps')};
     
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test
