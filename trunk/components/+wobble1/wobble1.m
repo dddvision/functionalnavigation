@@ -47,18 +47,23 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
       omega=this.scaleomega*(1-2*bitsplit(bits));
       
       sint=sin(omega*t);
-      omegacos=omega*cos(omega*t);
 
       pnoise=this.scalep*[rate_bias(1)*sint;rate_bias(2)*sint;rate_bias(3)*sint];
-      qnoise=this.scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
-      
-      pdnoise=this.scalep*[rate_bias(1)*omegacos;rate_bias(2)*omegacos;rate_bias(3)*omegacos];
-      qdnoise=this.scaleq*[rate_bias(4)*omegacos;rate_bias(5)*omegacos;rate_bias(6)*omegacos];
-
       ecef=[0*t;t;0.*t]+pnoise;
-      quaternion=AxisAngle2Quat(qnoise);
-      ecefRate=[0*t;1+0*t;0.*t]+pdnoise;
-      quaternionRate=[0*t;qdnoise/2]; % small angle approximation
+      
+      if( nargout>1 )
+        qnoise=this.scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
+        quaternion=AxisAngle2Quat(qnoise);
+        if( nargout>2 )
+          omegacos=omega*cos(omega*t);
+          pdnoise=this.scalep*[rate_bias(1)*omegacos;rate_bias(2)*omegacos;rate_bias(3)*omegacos];
+          ecefRate=[0*t;1+0*t;0.*t]+pdnoise;
+          if( nargout>3 )      
+            qdnoise=this.scaleq*[rate_bias(4)*omegacos;rate_bias(5)*omegacos;rate_bias(6)*omegacos];
+            quaternionRate=[0*t;qdnoise/2]; % small angle approximation
+          end
+        end
+      end
     end
   end
   

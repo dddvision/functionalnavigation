@@ -1,5 +1,3 @@
-function [x, y, z] = lolah2ecef(lon, lat, alt)
-
 % Convert [Longitude, Latitude, Altitude] coordinates to Earth-Centered
 % Earth-Fixed (ECEF) coordinates
 % 
@@ -15,17 +13,17 @@ function [x, y, z] = lolah2ecef(lon, lat, alt)
 %   
 % Ref: http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
 %      Retrieved 11/30/2009
-
-% WGS84 parameters
-a = 6378137;
-b = 6356752.3142;
-
-e = sqrt((a.^2-b.^2)./a.^2);
-
-% Compute prime vertical of curvature (meters)
-N = a./sqrt(1-e.^2*(sin(lat).^2));
-
-x = (alt+N).*cos(lat).*cos(lon);
-y = (alt+N).*cos(lat).*sin(lon);
-
-z = ((b.^2./a.^2)*N + alt).*sin(lat);
+function [x, y, z] = lolah2ecef(lon, lat, alt)
+  a = 6378137;
+  finv = 298.257223563;
+  b = a-a/finv;
+  a2 = a.*a;
+  b2 = b.*b;
+  e = sqrt((a2-b2)./a2);
+  slat = sin(lat);
+  clat = cos(lat);
+  N = a./sqrt(1-(e*e)*(slat.*slat));
+  x = (alt+N).*clat.*cos(lon);
+  y = (alt+N).*clat.*sin(lon);
+  z = ((b2./a2)*N+alt).*slat;
+end

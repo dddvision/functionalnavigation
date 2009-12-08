@@ -1,4 +1,5 @@
 general:
+ * Clarify configuration file naming policy, especially for dataContainer.
  * Test mainDisplay to ensure inputs can be either row or column vectors.
  * Separate dataContainer stuff from the trajectory optimization manager.
  * Make class aliases for "time", "index", "real" and other simple classes?
@@ -24,6 +25,7 @@ optimizer:
 
 dataContainer:
  *** Support projection and inverseProjection for Gantry camera data.
+ *** Expand middleburyData configuration to access other data than "Art".
  * Make stub that contains all sensors and type checks its inputs.
  * Find a way to distinguish between multiple sensors that derive from the same class.
  * Coordinate with Jimmy Touma for AFRL data.
@@ -40,6 +42,7 @@ dynamicModel:
  * Dynamic model takes inputs pqa, deltat, and parameters?
  * Recompute trajectory only when parameters change.
  * Handle display of trajectories with infinite domain bounds.
+ * Specify evaluate outputs using string like 'pqrs'?
 
 measure:
  * Require [ta,tb] as inputs to the constructor?

@@ -4,15 +4,16 @@ classdef bodyReference < trajectory
     pts
     gpsTime
     zone
-    simConfig
+    splineTension
   end
   
   methods (Access=public)
     function this = bodyReference
-      this.simConfig = globalSatData.configGPSsimulator;
+      config = globalSatData.globalSatDataConfig;
+      this.splineTension = config.splineTension;
       maindir = pwd;
       currdir = [maindir '/components/+globalSatData'];
-      full_fname = fullfile(currdir, this.simConfig.TLoLaAltFile);
+      full_fname = fullfile(currdir,config.TLoLaAltFile);
       [this.gpsTime, lon, lat, alt, vDOP, hDOP]= textread(full_fname,'%f %f %f %f %f %f', 'delimiter',',');
       [X, Y, Z] = globalSatData.lolah2ecef(lon, lat, alt);
       this.pts = [X Y Z];
@@ -25,7 +26,7 @@ classdef bodyReference < trajectory
     
     function [ecef,quat,ecefRate,quatRate] = evaluate(this,t)
       [a,b] = domain(this);
-      [ecef,ecefRate] = cardinalSpline(this.gpsTime, this.pts, t, this.simConfig.splineTension, 0);
+      [ecef,ecefRate] = cardinalSpline(this.gpsTime, this.pts, t, this.splineTension, 0);
       ecef = ecef';
       ecefRate = ecefRate';
       K=numel(t);
@@ -69,14 +70,14 @@ m(1,:) = 2*wt*(pts(2,:)-pts(1,:));
 m(end,:) = 2*wt*(pts(end,:)-pts(end-1,:));
 
 
-if ~isempty(test_t)
+if( ~isempty(test_t) )
   for indx = 1:length(test_t)
     % Find the t indices between which the current test_t
     % lies
     t_indx = find(test_t(indx) >= t);
     t_indx = t_indx(end);
     
-    if isempty(t_indx) | t_indx == 1
+    if( (isempty(t_indx)) || (t_indx==1) )
       t_indx = 1;
     end
     
@@ -96,6 +97,7 @@ if ~isempty(test_t)
     h01dot = -6*curr_t.^2-6*curr_t;
     h11dot = 3*curr_t.^2-2*curr_t;
     
+    % TODO: preallocate pos, posdot
     pos(indx,:) = h00.*pts(t_indx,:) + h10.*m(t_indx,:) + ...
       h01.*pts(t_indx+1,:) + h11.*m(t_indx+1,:);
     posdot(indx,:) = h00dot.*pts(t_indx,:) + h10dot.*m(t_indx,:) + ...
@@ -103,7 +105,6 @@ if ~isempty(test_t)
     
   end
 end
-
 
 if testFlag == 1
   interp_pts = [ ];
@@ -122,8 +123,9 @@ if testFlag == 1
       
       tmp_pts = h00.*pts(count,:) + h10.*m(count,:) + ...
         h01.*pts(count+1,:) + h11.*m(count+1,:);
-      interp_pts = [interp_pts; tmp_pts];
       
+      % TODO: preallocate interp_pts
+      interp_pts = [interp_pts; tmp_pts];
     end
   end
   hold off
@@ -132,6 +134,7 @@ if testFlag == 1
   plot(pts(:,1), pts(:,2), 'ro','linewidth',2);
   set(gca,'ydir','reverse')
   if ~isempty(test_t)
+    % TODO: check whether out_pts is defined in all cases
     plot(out_pts(:,1), out_pts(:,2), 'gp')
   end
 end
