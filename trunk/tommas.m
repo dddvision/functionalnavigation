@@ -167,6 +167,7 @@ function obj=unwrapComponent(pkg,varargin)
 end
 
 function testDataContainer(container)
+  % Unit tests
   list=listSensors(container,'cameraArray');
   for k=1:numel(list)
     sensor=getSensor(container,list(k));
@@ -176,13 +177,14 @@ function testDataContainer(container)
     unlock(sensor);
   end
   
+  % Navigation performance tests
   if hasReferenceTrajectory(container)
     refTraj = getReferenceTrajectory(container);
     list = listSensors(container,'gps');
     for k = 1:numel(list)
       sensor = getSensor(container,list(k));
       lock(sensor);
-      testGPSsimulation(sensor,refTraj);
+      testGPSaccuracy(sensor,refTraj);
       unlock(sensor);
     end
   end
@@ -299,25 +301,42 @@ function testCameraArrayProjectionRoundTrip(cam)
   end
 end
 
-% Find the domain (valid indices) of the gps data
-function testGPSsimulation(gpsHandle,refTraj)
+% For each valid index in the GPS data domain, evaluate the reference
+%   trajectory and compare with the reported GPS position
+function testGPSaccuracy(gpsHandle,refTraj)
   [ka,kb] = dataDomain(gpsHandle);
-
-  % For each valid index, get the true trajectory position
-  % and compare with the simulated gps position
   K=1+kb-ka;
-  gpsPos=zeros(3,K);
-  truePos=zeros(3,K);
+  gpsLonLatAlt=zeros(3,K);
+  trueECEF=zeros(3,K);
   for indx = 1:K
     currTime = getTime(gpsHandle,indx);
-    truePos(:,indx) = evaluate(refTraj,currTime);
-    [gpsPos(1,indx),gpsPos(2,indx),gpsPos(3,indx)] = getGlobalPosition(gpsHandle,ka+indx-1);
+    trueECEF(:,indx) = evaluate(refTraj,currTime);
+    [gpsLonLatAlt(1,indx),gpsLonLatAlt(2,indx),gpsLonLatAlt(3,indx)] = getGlobalPosition(gpsHandle,ka+indx-1);
   end
-  err = truePos-lolah2ecef(gpsPos);
-  errmag = sqrt(err(1,:).*err(1,:)+err(2,:).*err(2,:)+err(3,:).*err(3,:));
+  trueLonLatAlt = ecef2lolah(trueECEF);
+  errLonLatAlt = gpsLonLatAlt-trueLonLatAlt;
+  
   figure;
-  hist(errmag);
-  title('gps error histogram');
+  hist(errLonLatAlt(1,:));
+  title('GPS error (longitude)');
+  
+  figure;
+  hist(errLonLatAlt(2,:));
+  title('GPS error (latitude)');
+  
+  figure;
+  hist(errLonLatAlt(3,:));
+  title('GPS error (altitude)');
+  
+  figure;
+  earthRadius = 6378137;
+  plot3(earthRadius*errLonLatAlt(1,:),earthRadius*errLonLatAlt(2,:),errLonLatAlt(3,:),'b.');
+  title('GPS error (scatter plot)');
+  xlabel('east (meters)');
+  ylabel('north (meters)');
+  zlabel('altitude (meters)');
+  axis('equal');
+  drawnow;
 end
 
 % Converts from LOLAH to ECEF
@@ -329,25 +348,26 @@ end
 % ecef = Earth Centered Earth Fixed coordinates
 %        UEN orientation at the meridian/equator origin (meters), 3-by-N
 % 
-% Ref: http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
-%      Retrieved 11/30/2009
-function ecef=lolah2ecef(lolah)
-  lon = lolah(1,:);
-  lat = lolah(2,:);
-  alt = lolah(3,:);
-  a = 6378137;
-  finv = 298.257223563;
-  b = a-a/finv;
-  a2 = a.*a;
-  b2 = b.*b;
-  e = sqrt((a2-b2)./a2);
-  slat = sin(lat);
-  clat = cos(lat);
-  N = a./sqrt(1-(e*e)*(slat.*slat));
-  ecef = [(alt+N).*clat.*cos(lon);
-          (alt+N).*clat.*sin(lon);
-          ((b2./a2)*N+alt).*slat];
-end
+% NOTES
+% http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
+%   Retrieved 11/30/2009
+% function ecef=lolah2ecef(lolah)
+%   lon = lolah(1,:);
+%   lat = lolah(2,:);
+%   alt = lolah(3,:);
+%   a = 6378137;
+%   finv = 298.257223563;
+%   b = a-a/finv;
+%   a2 = a.*a;
+%   b2 = b.*b;
+%   e = sqrt((a2-b2)./a2);
+%   slat = sin(lat);
+%   clat = cos(lat);
+%   N = a./sqrt(1-(e*e)*(slat.*slat));
+%   ecef = [(alt+N).*clat.*cos(lon);
+%           (alt+N).*clat.*sin(lon);
+%           ((b2./a2)*N+alt).*slat];
+% end
 
 % Converts ECEF coordinates to longitude, latitude, height
 %
@@ -362,7 +382,7 @@ end
 %
 % NOTES
 % J. Zhu, "Conversion of Earth-centered Earth-fixed coordinates to geodetic
-% coordinates," Aerospace and Electronic Systems, vol. 30, pp. 957-961, 1994.
+%   coordinates," Aerospace and Electronic Systems, vol. 30, pp. 957-961, 1994.
 function lolah=ecef2lolah(ecef)
   X = ecef(1,:);
   Y = ecef(2,:);

@@ -13,8 +13,8 @@ classdef bodyReference < trajectory
       this.splineTension = config.splineTension;
       maindir = pwd;
       currdir = [maindir '/components/+globalSatData'];
-      full_fname = fullfile(currdir,config.TLoLaAltFile);
-      [this.gpsTime, lon, lat, alt, vDOP, hDOP]= textread(full_fname,'%f %f %f %f %f %f', 'delimiter',',');
+      full_fname = fullfile(currdir,config.referenceTrajectoryFile);
+      [this.gpsTime, lon, lat, alt, vDOP, hDOP] = textread(full_fname,'%f %f %f %f %f %f', 'delimiter',',');
       [X, Y, Z] = globalSatData.lolah2ecef(lon, lat, alt);
       this.pts = [X Y Z];
     end
