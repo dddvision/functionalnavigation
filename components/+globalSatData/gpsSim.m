@@ -14,7 +14,7 @@ classdef gpsSim < gps
     isLocked
     refTraj
     measurementTimes
-    xyzErrors
+    txyzErrors
     precisionFlag
     offset
   end
@@ -24,25 +24,16 @@ classdef gpsSim < gps
       % Read the configuration file
       config = globalSatData.globalSatDataConfig;
       this.sigmaR = config.sigmaR;
-      
-      this.gpsData = readGPSdataFile(config.TLoLaAltFile);
-      
-      % If trajectory is to be interpolated, find times at which data
-      % must be made available
-      if( config.interpTraj )
-        this.measurementTimes = ceil(this.gpsData.time(1)):floor(this.gpsData.time(end));
-      else
-        this.measurementTimes = this.gpsData.time;
-      end
+      this.gpsData = readGPSdataFile(config.referenceTrajectoryFile);
       
       % Read the noise errors from real Global Sat gps data file
-      this.xyzErrors = readNoiseData('gtGPSdata.txt'); % Error samples (easting, northing, altitude)
+      this.txyzErrors = readNoiseData('gtGPSdata.txt'); % Error samples (easting, northing, altitude)
       this.refTraj = globalSatData.bodyReference;
       this.isLocked = false;
       this.precisionFlag = true;
       this.offset = [0;0;0];
       this.ka = uint32(1);
-      this.kb = uint32(length(this.measurementTimes));
+      this.kb = uint32(size(this.txyzErrors,1));
     end
     
     function [ka,kb]=dataDomain(this)
@@ -54,7 +45,11 @@ classdef gpsSim < gps
     function time=getTime(this,k)
       assert(k>=this.ka);
       assert(k<=this.kb);
-      time=this.measurementTimes(k);
+      
+      ta=domain(this.refTraj);
+      numErrSamples = size(this.txyzErrors,1);
+      noiseSample = 1+mod(k,numErrSamples-1);
+      time = ta + this.txyzErrors(noiseSample,1);
     end
     
     function isLocked=lock(this)
@@ -72,18 +67,18 @@ classdef gpsSim < gps
       assert(k<=this.kb);
       
       % Evaluate the reference trajectory at the measurement time
-      ecef = evaluate(this.refTraj, this.measurementTimes(k));
+      ecef = evaluate(this.refTraj,getTime(this,k));
       true_X = ecef(1);
       true_Y = ecef(2);
       true_Z = ecef(3);
       
-      % Add error based on real Global Sat gps data
-      numErrSamples = size(this.xyzErrors,1);
-      noiseSample = 1+mod(k, numErrSamples-1);
+      numErrSamples = size(this.txyzErrors,1);
+      noiseSample = 1+mod(k,numErrSamples-1);
       
-      X = true_X+this.xyzErrors(noiseSample,1);
-      Y = true_Y+this.xyzErrors(noiseSample,2);
-      Z = true_Z+this.xyzErrors(noiseSample,3);
+      % Add error based on real Global Sat gps data
+      X = true_X+this.txyzErrors(noiseSample,2);
+      Y = true_Y+this.txyzErrors(noiseSample,3);
+      Z = true_Z+this.txyzErrors(noiseSample,4);
       
       % Convert noisy ECEF positions to (lon,lat,alt)
       [lon,lat,alt] = globalSatData.ecef2lolah(X,Y,Z);
@@ -147,7 +142,7 @@ end
 % NOTES
 % Refer to data formats at
 % http://www.gpsinformation.org/dale/nmea.htm#GSA
-function xyzErrors=readNoiseData(fname)
+function txyzErrors=readNoiseData(fname)
   maindir = pwd;
   currdir = [maindir '/components/+globalSatData'];
   full_fname = fullfile(currdir, fname);
@@ -179,7 +174,8 @@ function xyzErrors=readNoiseData(fname)
         long = -long;
       end
       
-      % length of X,Y,Z is not known in advance
+      % length of T,X,Y,Z are not known in advance
+      T(counter) = str2double(time);
       [X(counter), Y(counter), Z(counter)] = ...
         globalSatData.lolah2ecef((pi/180)*long, (pi/180)*lat, antennaAltitude);
     end
@@ -187,9 +183,10 @@ function xyzErrors=readNoiseData(fname)
   end
   fclose(fid);
 
-  xyzErrors(:,1) = X - mean(X);
-  xyzErrors(:,2) = Y - mean(Y);
-  xyzErrors(:,3) = Z - mean(Z);
+  txyzErrors(:,1) = T - T(1);
+  txyzErrors(:,2) = X - mean(X);
+  txyzErrors(:,3) = Y - mean(Y);
+  txyzErrors(:,4) = Z - mean(Z);
 end
 
 % INPUTS

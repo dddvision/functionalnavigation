@@ -16,8 +16,7 @@
 %   Axis 2 completes the frame using the right-hand-rule
 %   Axis 3 goes through the north pole
 % J. Zhu, "Conversion of Earth-centered Earth-fixed coordinates to geodetic
-% coordinates," Aerospace and Electronic Systems, vol. 30, pp. 957-961,
-% 1994.
+% coordinates," Aerospace and Electronic Systems, vol. 30, pp. 957-961, 1994.
 function [lon, lat, alt] = ecef2lolah(X,Y,Z)
   a = 6378137.0;
   finv = 298.257223563;
