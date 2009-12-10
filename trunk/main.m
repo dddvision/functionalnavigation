@@ -30,7 +30,7 @@ function main
   mainDisplay(xEst,cEst);
 
   % take an optimization step
-  tom=step(tom);
+  step(tom);
 
   % get trajectory and cost estimates
   [xEst,cEst]=getResults(tom);

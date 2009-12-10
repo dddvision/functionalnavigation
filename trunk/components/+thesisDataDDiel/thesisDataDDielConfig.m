@@ -1,4 +1,4 @@
-classdef thesisDataDDielConfig
+classdef thesisDataDDielConfig  < handle
   properties (Constant=true)
     % dataset name: 'Factory7', 'GantryB', 'GantryC', or 'GantryF'
     dataSetName='Factory7';

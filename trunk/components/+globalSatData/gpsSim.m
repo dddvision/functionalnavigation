@@ -1,7 +1,7 @@
 classdef gpsSim < gps
   
   properties
-    gpsData
+    refData
     ka
     kb
     time
@@ -14,7 +14,7 @@ classdef gpsSim < gps
     isLocked
     refTraj
     measurementTimes
-    txyzErrors
+    noise
     precisionFlag
     offset
   end
@@ -24,16 +24,25 @@ classdef gpsSim < gps
       % Read the configuration file
       config = globalSatData.globalSatDataConfig;
       this.sigmaR = config.sigmaR;
-      this.gpsData = readGPSdataFile(config.referenceTrajectoryFile);
+      this.refData = readGPSdataFile(config.referenceTrajectoryFile);
       
       % Read the noise errors from real Global Sat gps data file
-      this.txyzErrors = readNoiseData('gtGPSdata.txt'); % Error samples (easting, northing, altitude)
+      this.noise = readNoiseData('gtGPSdata.txt'); % Error samples (easting, northing, altitude)
       this.refTraj = globalSatData.bodyReference;
+      [ta,tb] = domain(this.refTraj);
+      tdelta = tb-ta;
+      this.noise = this.noise(:,this.noise(1,:)<tdelta);
       this.isLocked = false;
       this.precisionFlag = true;
       this.offset = [0;0;0];
-      this.ka = uint32(1);
-      this.kb = uint32(size(this.txyzErrors,1));
+      N=size(this.noise,2);
+      if(N>0)
+        this.ka = uint32(1);
+        this.kb = uint32(N);
+      else
+        this.ka = intmax('uint32');
+        this.kb = uint32(0);
+      end
     end
     
     function [ka,kb]=dataDomain(this)
@@ -45,11 +54,8 @@ classdef gpsSim < gps
     function time=getTime(this,k)
       assert(k>=this.ka);
       assert(k<=this.kb);
-      
       ta=domain(this.refTraj);
-      numErrSamples = size(this.txyzErrors,1);
-      noiseSample = 1+mod(k,numErrSamples-1);
-      time = ta + this.txyzErrors(noiseSample,1);
+      time=ta+this.noise(1,k);
     end
     
     function isLocked=lock(this)
@@ -68,20 +74,12 @@ classdef gpsSim < gps
       
       % Evaluate the reference trajectory at the measurement time
       ecef = evaluate(this.refTraj,getTime(this,k));
-      true_X = ecef(1);
-      true_Y = ecef(2);
-      true_Z = ecef(3);
-      
-      numErrSamples = size(this.txyzErrors,1);
-      noiseSample = 1+mod(k,numErrSamples-1);
+      [lon,lat,alt] = globalSatData.ecef2lolah(ecef(1,:),ecef(2,:),ecef(3,:));
       
       % Add error based on real Global Sat gps data
-      X = true_X+this.txyzErrors(noiseSample,2);
-      Y = true_Y+this.txyzErrors(noiseSample,3);
-      Z = true_Z+this.txyzErrors(noiseSample,4);
-      
-      % Convert noisy ECEF positions to (lon,lat,alt)
-      [lon,lat,alt] = globalSatData.ecef2lolah(X,Y,Z);
+      lon = lon+this.noise(2,k);
+      lat = lat+this.noise(3,k);
+      alt = alt+this.noise(4,k);
     end
     
     function flag = hasPrecision(this)
@@ -93,10 +91,10 @@ classdef gpsSim < gps
       assert(k>=this.ka);
       assert(k<=this.kb);
       
-      currTime = this.measurementTimes(k);
-      nearestDataIndx = find(min(abs(currTime-this.gpsData.time)));
-      vDOP = this.gpsData.vDOP(nearestDataIndx);
-      hDOP = this.gpsData.hDOP(nearestDataIndx);
+      timeDiff = abs(getTime(this,k)-this.refData.time);
+      nearestDataIndx = find(timeDiff==min(timeDiff));
+      vDOP = this.refData.vDOP(nearestDataIndx);
+      hDOP = this.refData.hDOP(nearestDataIndx);
       sigmaR = this.sigmaR;
     end
     
@@ -115,7 +113,7 @@ end
 % Alt --> Altitude in meters (double)
 % hDop --> Horizontal dilution of precision (double)
 % vDop --> Vertical dilution of precision (double)
-function gpsData=readGPSdataFile(fname)
+function refData=readGPSdataFile(fname)
   maindir = pwd;
   currdir = [maindir '/components/+globalSatData'];
   full_fname = fullfile(currdir, fname);
@@ -123,17 +121,16 @@ function gpsData=readGPSdataFile(fname)
   csvdata = csvread(full_fname);
 
   % Only keep measurements that are made in increasing order of time
-
   gpsTime = csvdata(:,1);
   keepIndx = logical([diff(gpsTime);1] >= 0);
-
   csvdata = csvdata(keepIndx,:);
-  gpsData.time = csvdata(:,1);
-  gpsData.lon = csvdata(:,2);
-  gpsData.lat = csvdata(:,3);
-  gpsData.alt = csvdata(:,4);
-  gpsData.hDOP = csvdata(:,5);
-  gpsData.vDOP = csvdata(:,6);
+
+  refData.time = csvdata(:,1);
+  refData.lon = csvdata(:,2);
+  refData.lat = csvdata(:,3);
+  refData.alt = csvdata(:,4);
+  refData.hDOP = csvdata(:,5);
+  refData.vDOP = csvdata(:,6);
 end
 
 % Read a text file that contains an ascii GPS data stream
@@ -142,51 +139,50 @@ end
 % NOTES
 % Refer to data formats at
 % http://www.gpsinformation.org/dale/nmea.htm#GSA
-function txyzErrors=readNoiseData(fname)
-  maindir = pwd;
-  currdir = [maindir '/components/+globalSatData'];
+function noise=readNoiseData(fname)
+  currdir = fileparts(mfilename('fullpath'));
   full_fname = fullfile(currdir, fname);
 
   fid = fopen(full_fname,'r');
-  counter = 0;
-
   str = fgetl(fid);
-
+  counter = 0;
   while str ~= -1
     if strmatch(str(1:6), '$GPGGA')
 
       counter = counter + 1;
       
       % collect all outputs from strread, then use those that are needed
-      [strId, time, lat, latDir, long, longDir, quality, numSat, ...
-        precision, antennaAltitude,mStr1,geoidalSep, mStr2, ...
+      [strId, time, latstr, latDir, lonstr, lonDir, quality, numSat, ...
+        precision, alt,mStr1,geoidalSep, mStr2, ...
         ageData, stationId] = ...
         strread(str,'%s %s %s %s %s %s %d %d %f %f %s %f %s %f %s', ...
         'delimiter',',');
 
-      [long, lat] = ll_string2deg(lat,long);
+      [lond,latd] = ll_string2deg(latstr,lonstr);
 
       if strmatch(latDir, 'W')
-        lat = -lat;
+        latd = -latd;
       end
 
-      if strmatch(longDir, 'S');
-        long = -long;
+      if strmatch(lonDir, 'S');
+        lond = -lond;
       end
       
       % length of T,X,Y,Z are not known in advance
       T(counter) = str2double(time);
-      [X(counter), Y(counter), Z(counter)] = ...
-        globalSatData.lolah2ecef((pi/180)*long, (pi/180)*lat, antennaAltitude);
+      A(counter) = (pi/180)*lond;
+      B(counter) = (pi/180)*latd;
+      C(counter) = alt;
     end
     str = fgetl(fid);
   end
   fclose(fid);
 
-  txyzErrors(:,1) = T - T(1);
-  txyzErrors(:,2) = X - mean(X);
-  txyzErrors(:,3) = Y - mean(Y);
-  txyzErrors(:,4) = Z - mean(Z);
+  noise = zeros(4,counter);
+  noise(1,:) = T(:) - T(1);
+  noise(2,:) = A(:) - mean(A);
+  noise(3,:) = B(:) - mean(B);
+  noise(4,:) = C(:) - mean(C);
 end
 
 % INPUTS

@@ -22,6 +22,7 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
     function this=putBits(this,bits,tmin)
       fprintf('\n');
       fprintf('\nwobble1::putBits');
+      assert(nargout==1);
       fprintf('\ntmin = %f',tmin);
       this.data(:)=bits(:);
       fprintf('\nbits = ');

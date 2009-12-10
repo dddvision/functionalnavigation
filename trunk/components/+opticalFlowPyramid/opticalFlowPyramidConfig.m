@@ -1,4 +1,4 @@
-classdef opticalFlowPyramidConfig
+classdef opticalFlowPyramidConfig  < handle
   properties (Constant=true)
     windowSize=3; 
     numLevels=3; 

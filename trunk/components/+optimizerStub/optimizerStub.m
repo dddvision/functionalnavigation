@@ -12,7 +12,7 @@ classdef optimizerStub < optimizer
       fprintf('\noptimizerStub::optimizerStub');
     end
     
-    function [this,initialCost]=defineProblem(this,objectiveFunction,initialParameters)
+    function initialCost=defineProblem(this,objectiveFunction,initialParameters)
       initialCost=feval(objectiveFunction,initialParameters);
       this.objective=objectiveFunction;
       this.parameters=initialParameters;
@@ -21,7 +21,7 @@ classdef optimizerStub < optimizer
     
     % Sorts the parameter sets by their cost
     % Does not evolve them toward lower cost
-    function [this,parameters,cost]=step(this)
+    function [parameters,cost]=step(this)
       parameters=this.parameters;
       cost=feval(this.objective,parameters);
       [cost,index]=sort(cost);

@@ -3,31 +3,53 @@ classdef measureStub < measure
   properties (SetAccess=private,GetAccess=private)
     sensor
     trajectory
+    diagonal
   end
   
   methods (Access=public)
-    function this=measureStub(u,x)
-      this=this@measure(u,x);
+    function this=measureStub(u)
+      this=this@measure(u);
       this.sensor=u;
-      this.trajectory=x;
+      this.diagonal=false;
       fprintf('\n');
       fprintf('\nmeasureStub::measureStub');
     end
     
+    function [ka,kb]=dataDomain(this)
+      [ka,kb]=dataDomain(this.sensor);
+    end
+    
+    function time=getTime(this,k)
+      time=getTime(this.sensor,k);
+    end
+    
+    function isLocked=lock(this)
+      isLocked=lock(this.sensor);
+    end
+    
+    function isUnlocked=unlock(this)
+      isUnlocked=unlock(this.sensor);
+    end
+    
     function this=setTrajectory(this,x)
+      assert(nargout==1);
       this.trajectory=x;
+    end
+    
+    function flag=isDiagonal(this)
+      flag=this.diagonal;
     end
     
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nmeasureStub::findEdges');
-      [aa,bb]=dataDomain(this.sensor);
-      if( aa==bb )
+      [ka,kb]=dataDomain(this.sensor);
+      if( ka==kb )
         a=[];
         b=[];
       else
-        a=aa;
-        b=bb;
+        a=ka;
+        b=kb;
       end
     end
         

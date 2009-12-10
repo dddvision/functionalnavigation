@@ -22,7 +22,7 @@ classdef dynamicModel < trajectory
     % tmin = time lower bound, double scalar
     % 
     % NOTES
-    % This operation will change the derived class behaviour
+    % Throws an exception if the number of outputs is incorrect
     this=putBits(this,bits,tmin);
   end
   

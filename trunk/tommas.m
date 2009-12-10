@@ -1,5 +1,5 @@
 % Trajectory Optimization Manager for Multiple Algorithms and Sensors
-classdef tommas < tommasConfig
+classdef tommas < tommasConfig & handle
   
   properties (GetAccess=private,SetAccess=private)
     u
@@ -19,9 +19,6 @@ classdef tommas < tommasConfig
       intwarning('off');
       reset(RandStream.getDefaultStream);
       
-      % access sensor data
-      data=unwrapComponent(this.dataContainer);
-      
       % initialize trajectories
       for k=1:this.popSizeDefault
         this.F{k}=unwrapComponent(this.dynamicModel);
@@ -30,12 +27,13 @@ classdef tommas < tommasConfig
       % initialize measures with sensors and trajectories
       kvalid=1;
       for k=1:numel(this.measures)
+        data=unwrapComponent(this.dataContainer);
         list=listSensors(data,this.measures{k}.sensor);
         if(isempty(list))
           fprintf('\n\nWarning: sensor type was unavailable: %s',this.measures{k}.sensor);
         else
           this.u{kvalid}=getSensor(data,list(1));
-          this.g{kvalid}=unwrapComponent(this.measures{k}.measure,this.u{kvalid},this.F{1});
+          this.g{kvalid}=unwrapComponent(this.measures{k}.measure,this.u{kvalid});
           kvalid=kvalid+1;
         end
       end
@@ -47,17 +45,17 @@ classdef tommas < tommasConfig
       parameters=getParameters(this);
       objective('put',this);
       lockSensors(this);
-      [this.M,this.cost]=defineProblem(this.M,@objective,parameters);
+      this.cost=defineProblem(this.M,@objective,parameters);
       unlockSensors(this);
     end
     
     % Execute one step to improve the tail portion of a set of trajectories
-    function this=step(this)
+    function step(this)
       objective('put',this);
       lockSensors(this);
-      [this.M,parameters,this.cost]=step(this.M);
+      [parameters,this.cost]=step(this.M);
       unlockSensors(this);
-      this=putParameters(this,parameters);
+      putParameters(this,parameters);
     end
     
     % Get the most recent trajectory and cost estimates
@@ -113,7 +111,7 @@ classdef tommas < tommasConfig
       end
     end
     
-    function this=putParameters(this,parameters)
+    function putParameters(this,parameters)
       for k=1:numel(this.F)
         this.F{k}=putBits(this.F{k},parameters(k,:),this.tmin);
       end
@@ -129,7 +127,7 @@ function varargout=objective(varargin)
   if(~ischar(parameters))
     numIndividuals=numel(this.F);
     numGraphs=numel(this.g);
-    this=putParameters(this,parameters);
+    putParameters(this,parameters);
     cost=zeros(numIndividuals,1);
     for graph=1:numGraphs
       [a,b]=findEdges(this.g{graph});
@@ -304,7 +302,7 @@ end
 % For each valid index in the GPS data domain, evaluate the reference
 %   trajectory and compare with the reported GPS position
 function testGPSaccuracy(gpsHandle,refTraj)
-  [ka,kb] = dataDomain(gpsHandle);
+  [ka,kb]=dataDomain(gpsHandle);
   K=1+kb-ka;
   gpsLonLatAlt=zeros(3,K);
   trueECEF=zeros(3,K);
@@ -315,7 +313,7 @@ function testGPSaccuracy(gpsHandle,refTraj)
   end
   trueLonLatAlt = ecef2lolah(trueECEF);
   errLonLatAlt = gpsLonLatAlt-trueLonLatAlt;
-  
+
   figure;
   hist(errLonLatAlt(1,:));
   title('GPS error (longitude)');
@@ -329,14 +327,41 @@ function testGPSaccuracy(gpsHandle,refTraj)
   title('GPS error (altitude)');
   
   figure;
-  earthRadius = 6378137;
-  plot3(earthRadius*errLonLatAlt(1,:),earthRadius*errLonLatAlt(2,:),errLonLatAlt(3,:),'b.');
+  gpsECEF=lolah2ecef(gpsLonLatAlt);
+  errECEF=gpsECEF-trueECEF;
+  Raxes=[0,0,-1;0,1,0;1,0,0];
+  R=Euler2Matrix([0;-trueLonLatAlt(2,1);trueLonLatAlt(1,1)])*Raxes;
+  errNED=R*errECEF;
+  plot3(errNED(1,:),errNED(2,:),errNED(3,:),'b.');
   title('GPS error (scatter plot)');
-  xlabel('east (meters)');
-  ylabel('north (meters)');
-  zlabel('altitude (meters)');
+  xlabel('north (meters)');
+  ylabel('east (meters)');
+  zlabel('down (meters)');
   axis('equal');
   drawnow;
+end
+
+% Converts rotation from Euler to matrix form
+function M=Euler2Matrix(Y)
+  Y1=Y(1);
+  Y2=Y(2);
+  Y3=Y(3);
+  c1=cos(Y1);
+  c2=cos(Y2);
+  c3=cos(Y3);
+  s1=sin(Y1);
+  s2=sin(Y2);
+  s3=sin(Y3);
+  M=zeros(3);
+  M(1,1)=c3.*c2;
+  M(1,2)=c3.*s2.*s1-s3.*c1;
+  M(1,3)=s3.*s1+c3.*s2.*c1;
+  M(2,1)=s3.*c2;
+  M(2,2)=c3.*c1+s3.*s2.*s1;
+  M(2,3)=s3.*s2.*c1-c3.*s1;
+  M(3,1)=-s2;
+  M(3,2)=c2.*s1;
+  M(3,3)=c2.*c1;
 end
 
 % Converts from LOLAH to ECEF
@@ -351,23 +376,23 @@ end
 % NOTES
 % http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
 %   Retrieved 11/30/2009
-% function ecef=lolah2ecef(lolah)
-%   lon = lolah(1,:);
-%   lat = lolah(2,:);
-%   alt = lolah(3,:);
-%   a = 6378137;
-%   finv = 298.257223563;
-%   b = a-a/finv;
-%   a2 = a.*a;
-%   b2 = b.*b;
-%   e = sqrt((a2-b2)./a2);
-%   slat = sin(lat);
-%   clat = cos(lat);
-%   N = a./sqrt(1-(e*e)*(slat.*slat));
-%   ecef = [(alt+N).*clat.*cos(lon);
-%           (alt+N).*clat.*sin(lon);
-%           ((b2./a2)*N+alt).*slat];
-% end
+function ecef=lolah2ecef(lolah)
+  lon = lolah(1,:);
+  lat = lolah(2,:);
+  alt = lolah(3,:);
+  a = 6378137;
+  finv = 298.257223563;
+  b = a-a/finv;
+  a2 = a.*a;
+  b2 = b.*b;
+  e = sqrt((a2-b2)./a2);
+  slat = sin(lat);
+  clat = cos(lat);
+  N = a./sqrt(1-(e*e)*(slat.*slat));
+  ecef = [(alt+N).*clat.*cos(lon);
+          (alt+N).*clat.*sin(lon);
+          ((b2./a2)*N+alt).*slat];
+end
 
 % Converts ECEF coordinates to longitude, latitude, height
 %
