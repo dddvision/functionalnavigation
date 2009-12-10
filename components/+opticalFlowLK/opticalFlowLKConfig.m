@@ -1,4 +1,4 @@
-classdef opticalFlowLKConfig
+classdef opticalFlowLKConfig  < handle
   properties (Constant=true)
     windowSize=3;
   end

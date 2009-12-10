@@ -26,8 +26,8 @@ classdef cameraSim < camera
       end
       this.rho=1;
       this.base=uint32(1);
-      this.ka=uint32(3);
-      this.kb=uint32(9);
+      this.ka=uint32(1);
+      this.kb=uint32(7);
       this.M=uint32(size(this.ring{1}.image,1));
       this.N=uint32(size(this.ring{1}.image,2)); 
       this.isLocked=false;

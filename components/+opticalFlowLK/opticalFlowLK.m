@@ -3,31 +3,53 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
   properties (SetAccess=private,GetAccess=private)
     sensor
     trajectory
+    diagonal
   end
   
   methods (Access=public)
-    function this=opticalFlowLK(u,x)
-      this=this@measure(u,x);
+    function this=opticalFlowLK(u)
+      this=this@measure(u);
       this.sensor=u;
-      this.trajectory=x;
+      this.diagonal=false;
       fprintf('\n');
       fprintf('\nopticalFlowLK::opticalFlowLK');
     end
     
+    function [ka,kb]=dataDomain(this)
+      [ka,kb]=dataDomain(this.sensor);
+    end
+    
+    function time=getTime(this,k)
+      time=getTime(this.sensor,k);
+    end
+    
+    function isLocked=lock(this)
+      isLocked=lock(this.sensor);
+    end
+    
+    function isUnlocked=unlock(this)
+      isUnlocked=unlock(this.sensor);
+    end
+    
     function this=setTrajectory(this,x)
+      assert(nargout==1);
       this.trajectory=x;
+    end
+    
+    function flag=isDiagonal(this)
+      flag=this.diagonal;
     end
     
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowLK::findEdges');
-      [aa,bb]=dataDomain(this.sensor);
-      if( aa==bb )
+      [ka,kb]=dataDomain(this.sensor);
+      if( ka==kb )
         a=[];
         b=[];
       else
-        a=aa;
-        b=bb;
+        a=ka;
+        b=kb;
       end
     end
     
@@ -35,8 +57,8 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       fprintf('\n');
       fprintf('\nopticalFlowLK::computeEdgeCost');
       
-      [aa,bb]=dataDomain(this.sensor);
-      assert((b>a)&&(a>=aa)&&(b<=bb));
+      [ka,kb]=dataDomain(this.sensor);
+      assert((b>a)&&(a>=ka)&&(b<=kb));
       
       ta=getTime(this.sensor,a);
       tb=getTime(this.sensor,b);

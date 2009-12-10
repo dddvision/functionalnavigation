@@ -3,31 +3,53 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
   properties (SetAccess=private,GetAccess=private)
     sensor
     trajectory
+    diagonal
   end
   
   methods (Access=public)
-    function this=opticalFlowPyramid(u,x)
-      this=this@measure(u,x);
+    function this=opticalFlowPyramid(u)
+      this=this@measure(u);
       this.sensor=u;
-      this.trajectory=x;
+      this.diagonal=false;
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::opticalFlowPyramid');
     end
     
+    function [ka,kb]=dataDomain(this)
+      [ka,kb]=dataDomain(this.sensor);
+    end
+    
+    function time=getTime(this,k)
+      time=getTime(this.sensor,k);
+    end
+    
+    function isLocked=lock(this)
+      isLocked=lock(this.sensor);
+    end
+    
+    function isUnlocked=unlock(this)
+      isUnlocked=unlock(this.sensor);
+    end
+    
     function this=setTrajectory(this,x)
+      assert(nargout==1);
       this.trajectory=x;
     end
     
+    function flag=isDiagonal(this)
+      flag=this.diagonal;
+    end
+        
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::findEdges');
-      [aa,bb]=dataDomain(this.sensor);
-      if( aa==bb )
+      [ka,kb]=dataDomain(this.sensor);
+      if( ka==kb )
         a=[];
         b=[];
       else
-        a=aa;
-        b=bb;
+        a=ka;
+        b=kb;
       end
     end
     
@@ -35,8 +57,8 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::computeEdgeCost');
       
-      [aa,bb]=dataDomain(this.sensor);
-      assert((b>a)&&(a>=aa)&&(b<=bb));
+      [ka,kb]=dataDomain(this.sensor);
+      assert((b>a)&&(a>=ka)&&(b<=kb));
       
       ta=getTime(this.sensor,a);
       tb=getTime(this.sensor,b);
@@ -94,12 +116,12 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       end
       % check image sizes and crop if not divisible
       if( rem(size(im1,1),2^(this.numLevels-1))~=0 )
-        warning('image will be cropped in height, size of output will be smaller than input!');
+        fprintf('\n\nwarning: image will be cropped in height, size of output will be smaller than input!');
         im1 = im1(1:(size(im1,1) - rem(size(im1,1), 2^(this.numLevels - 1))), :);
         im2 = im2(1:(size(im1,1) - rem(size(im1,1), 2^(this.numLevels - 1))), :);
       end
       if( rem(size(im1,2),2^(this.numLevels-1))~=0 )
-        warning('image will be cropped in width, size of output will be smaller than input!');
+        fprintf('\n\nwarning: image will be cropped in width, size of output will be smaller than input!');
         im1 = im1(:, 1:(size(im1,2) - rem(size(im1,2), 2^(this.numLevels - 1))));
         im2 = im2(:, 1:(size(im1,2) - rem(size(im1,2), 2^(this.numLevels - 1))));
       end
@@ -113,7 +135,7 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
         pyramid2(1:size(im2,1), 1:size(im2,2), i) = im2;
       end
       % base level computation
-      disp('Computing Level 1');
+      fprintf('\n\nComputing Level 1');
       baseIm1=pyramid1(1:(size(pyramid1,1)/(2^(this.numLevels-1))), 1:(size(pyramid1,2)/(2^(this.numLevels-1))), this.numLevels);
       baseIm2=pyramid2(1:(size(pyramid2,1)/(2^(this.numLevels-1))), 1:(size(pyramid2,2)/(2^(this.numLevels-1))), this.numLevels);
       [u,v]=lucasKanade(this,baseIm1,baseIm2);
@@ -122,7 +144,7 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       end
       %propagating flow 2 higher levels
       for i = 2:this.numLevels
-        disp(['Computing Level ', num2str(i)]);
+        fprintf('\n\nComputing Level %s', num2str(i));
         uEx=2 * imresize(u,size(u)*2);   % use appropriate expand function (gaussian, bilinear, cubic, etc).
         vEx=2 * imresize(v,size(v)*2);
         curIm1=pyramid1(1:(size(pyramid1,1)/(2^(this.numLevels - i))), 1:(size(pyramid1,2)/(2^(this.numLevels - i))), (this.numLevels - i)+1);

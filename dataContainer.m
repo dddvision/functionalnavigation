@@ -1,5 +1,5 @@
 % This class defines a uniform interface to sensor data and ground truth
-classdef dataContainer
+classdef dataContainer < handle
   
   properties (Constant=true,GetAccess=public)
     baseClass='dataContainer';

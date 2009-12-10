@@ -1,5 +1,4 @@
 general:
- * Clarify configuration file naming policy, especially for dataContainer.
  * Test mainDisplay to ensure inputs can be either row or column vectors.
  * Separate dataContainer stuff from the trajectory optimization manager.
  * Make class aliases for "time", "index", "real" and other simple classes?
@@ -8,8 +7,17 @@ general:
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Clarify time system by introducing t0 reference?
  * Implement measure/sensor compatibility checking.
- * Formally ask UCF to fix TODO statements in their code.
  * Write unit tests to check interfaces and exception handling.
+
+policy clarifications:
+ * Packages should not assume that they are in the components directory.
+ * Configuration file naming policy, especially for dataContainer.
+ * Components must pass mlint test or contain a comment at each line explaining why not.
+ * Publicise the programming guidelines set up for CMARS.
+ * Use fprintf instead of disp() or warning().
+ * Component bugs
+   * Should not be submitted to the functionalnavigation issue tracker.
+   * Should be noted with TODO statements within code.
 
 demonstration:
  *** Design tabletop hardware setup
@@ -17,6 +25,7 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
+ *** Objective inherits measure and dynamicModel?
  * Move most of tommas into the optimizer.
  * Move choice of tmin from tommasConfig to the optimizer?
  * Hide the creation of a plain "objective" behind the optimizer interface.

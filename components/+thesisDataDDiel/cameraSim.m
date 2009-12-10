@@ -18,18 +18,23 @@ classdef cameraSim < camera
       this.localCache=localCache;
       info=dir(fullfile(localCache,'/color*'));
       fnames=sortrows(cat(1,info(:).name));
-      this.ka=uint32(str2double(fnames(1,6:11)));
-      this.kb=uint32(str2double(fnames(end,6:11)));
-      S=load(fullfile(localCache,'workspace.mat'),'T_cam');
-      this.tk=S.T_cam;
-      this.isLocked=true;
-      this.imsize=size(getImage(this,this.ka));
-      this.isLocked=false;
-      S=load(fullfile(localCache,'workspace.mat'),'CAMERA_TYPE');
-      this.cameraType=S.CAMERA_TYPE;
-      this.layers='rgb';
-      this.frameDynamic=false;
-      this.projectionDynamic=false;
+      if(isempty(fnames))
+        this.ka=intmax('uint32');
+        this.kb=uint32(0);
+        this.isLocked=false;
+      else
+        this.ka=uint32(str2double(fnames(1,6:11)));
+        this.kb=uint32(str2double(fnames(end,6:11)));
+        S=load(fullfile(localCache,'workspace.mat'),'T_cam','CAMERA_TYPE');
+        this.tk=S.T_cam;
+        this.cameraType=S.CAMERA_TYPE;
+        this.layers='rgb';
+        this.frameDynamic=false;
+        this.projectionDynamic=false;
+        this.isLocked=true;
+        this.imsize=size(getImage(this,this.ka));
+        this.isLocked=false;
+      end
     end
       
     function [ka,kb]=dataDomain(this)

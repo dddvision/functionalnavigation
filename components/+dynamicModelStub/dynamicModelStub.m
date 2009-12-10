@@ -30,6 +30,7 @@ classdef dynamicModelStub < dynamicModel
     function this=putBits(this,bits,tmin)
       fprintf('\n');
       fprintf('\ndynamicModelStub::putBits');
+      assert(nargout==1);
       fprintf('\ntmin = %f',tmin);
       this.dynamicParameters(:)=bits(:);
       fprintf('\nbits = ');

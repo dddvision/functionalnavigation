@@ -53,7 +53,7 @@ classdef matlabGA1 < optimizer
       this.stepGAhandle = temp;
    end
     
-    function [this,initialCost]=defineProblem(this,objectiveFunction,initialParameters)
+    function initialCost=defineProblem(this,objectiveFunction,initialParameters)
       initialCost=feval(objectiveFunction,initialParameters);
       
       popsize=size(initialParameters,1);
@@ -65,7 +65,7 @@ classdef matlabGA1 < optimizer
     end
     
     % Requires a license for the Matlab GADS toolbox
-    function [this,parameters,cost]=step(this)
+    function [parameters,cost]=step(this)
       nvars=size(this.parameters,2);
       nullstate=struct('FunEval',0);
       %nullobjective=@(x) zeros(size(x,1),1);

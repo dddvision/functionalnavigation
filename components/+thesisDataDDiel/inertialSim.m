@@ -17,8 +17,14 @@ classdef inertialSim < inertialSixDOF
       this.qFrame=[1;0;0;0];
       [this.time,this.gyro,this.accel]=ReadIMUdat(localCache,'inertia.dat');
       this.isLocked=false;
-      this.ka=uint32(1);
-      this.kb=uint32(numel(this.time));
+      N=numel(this.time);
+      if(N>0)
+        this.ka = uint32(1);
+        this.kb = uint32(N);
+      else
+        this.ka=intmax('uint32');
+        this.kb=uint32(0);
+      end
     end
 
     function [ka,kb]=dataDomain(this)

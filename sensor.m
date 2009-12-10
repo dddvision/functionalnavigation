@@ -4,21 +4,17 @@
 % All sensors use SI units and radians unless otherwise stated
 classdef sensor < handle
   
-  properties (Constant=true,GetAccess=public)
-    baseClass='sensor';  
-  end
-  
   methods (Abstract=true)
     % Return first and last indices of a consecutive list of data elements
     %
     % OUTPUT
-    % a = first valid data index, uint32 scalar
-    % b = last valid data index, uint32 scalar
+    % ka = first valid data index, uint32 scalar
+    % kb = last valid data index, uint32 scalar
     %
     % NOTES
-    % Return values are empty when no data is available
+    % When no data is available a=intmax('uint32') and b=uint32(0)
     % Throws an exception if sensor is unlocked
-    [a,b]=dataDomain(this);
+    [ka,kb]=dataDomain(this);
     
     % Get time stamp
     %
