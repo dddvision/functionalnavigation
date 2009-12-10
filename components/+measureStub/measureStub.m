@@ -2,7 +2,6 @@ classdef measureStub < measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
-    trajectory
     diagonal
   end
   
@@ -30,12 +29,7 @@ classdef measureStub < measure
     function isUnlocked=unlock(this)
       isUnlocked=unlock(this.sensor);
     end
-    
-    function this=setTrajectory(this,x)
-      assert(nargout==1);
-      this.trajectory=x;
-    end
-    
+      
     function flag=isDiagonal(this)
       flag=this.diagonal;
     end
@@ -53,18 +47,18 @@ classdef measureStub < measure
       end
     end
         
-    function cost=computeEdgeCost(this,a,b)
+    function cost=computeEdgeCost(this,x,a,b)
       fprintf('\n');
       fprintf('\nmeasureStub::computeEdgeCost');
       
       ta=getTime(this.sensor,a);
       tb=getTime(this.sensor,b);
-      [pa,qa]=evaluate(this.trajectory,ta);
+      [pa,qa]=evaluate(x,ta);
       fprintf('\nx(%f) = < ',ta);
       fprintf('%f ',[pa;qa]);
       fprintf('>');
    
-      [pb,qb]=evaluate(this.trajectory,tb);      
+      [pb,qb]=evaluate(x,tb);      
       fprintf('\nx(%f) = < ',tb);
       fprintf('%f ',[pb;qb]);
       fprintf('>');

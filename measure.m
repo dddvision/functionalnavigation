@@ -21,19 +21,6 @@ classdef measure < sensor
   end
   
   methods (Abstract=true)
-    % Set the trajectory that will be used to compute costs
-    %
-    % INPUT
-    % x = trajectory instance
-    %
-    % NOTES
-    % This trajectory represents the motion of the body frame relative to a 
-    %   world frame. If the sensor frame is not coincident with the body 
-    %   frame, then the sensor frame offset may need to be kinematically 
-    %   composed with the body frame to locate the sensor.
-    % Does not modify sensor lock state
-    setTrajectory(this,x);
-    
     % Check whether the adjacency matrix of the graph is diagonal
     %
     % OUTPUT
@@ -58,6 +45,7 @@ classdef measure < sensor
     % Evaluate an edge
     %
     % INPUT
+    % x = trajectory instance
     % ka = lower node index, uint32 scalar
     % kb = upper node index, uint32 scalar
     %
@@ -65,9 +53,13 @@ classdef measure < sensor
     % cost = non-negative measure in the interval [0,1], double scalar
     %
     % NOTES
-    % For diagonal graphs the upper node index may be empty
+    % This trajectory represents the motion of the body frame relative to a 
+    %   world frame. If the sensor frame is not coincident with the body 
+    %   frame, then the sensor frame offset may need to be kinematically 
+    %   composed with the body frame to locate the sensor.
+    % For diagonal graphs the upper node index is ignored
     % Does not modify sensor lock state
-    cost=computeEdgeCost(this,ka,kb);
+    cost=computeEdgeCost(this,x,ka,kb);
   end
   
 end

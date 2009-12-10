@@ -2,7 +2,6 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
-    trajectory
     diagonal
   end
   
@@ -31,11 +30,6 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       isUnlocked=unlock(this.sensor);
     end
     
-    function this=setTrajectory(this,x)
-      assert(nargout==1);
-      this.trajectory=x;
-    end
-    
     function flag=isDiagonal(this)
       flag=this.diagonal;
     end
@@ -53,7 +47,7 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       end
     end
     
-    function cost=computeEdgeCost(this,a,b)
+    function cost=computeEdgeCost(this,x,a,b)
       fprintf('\n');
       fprintf('\nopticalFlowLK::computeEdgeCost');
       
@@ -62,11 +56,11 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       
       ta=getTime(this.sensor,a);
       tb=getTime(this.sensor,b);
-      [pa,qa]=evaluate(this.trajectory,ta);
+      [pa,qa]=evaluate(x,ta);
       fprintf('\nx(%f) = < ',ta);
       fprintf('%f ',[pa;qa]);
       fprintf('>');
-      [pb,qb]=evaluate(this.trajectory,tb);      
+      [pb,qb]=evaluate(x,tb);      
       fprintf('\nx(%f) = < ',tb);
       fprintf('%f ',[pb;qb]);
       fprintf('>');
