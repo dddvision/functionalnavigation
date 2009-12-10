@@ -2,7 +2,6 @@ classdef opticalFlowPDollar < measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
-    trajectory
     diagonal
   end
   
@@ -30,11 +29,6 @@ classdef opticalFlowPDollar < measure
     function isUnlocked=unlock(this)
       isUnlocked=unlock(this.sensor);
     end
-        
-    function this=setTrajectory(this,x)
-      assert(nargout==1);
-      this.trajectory=x;
-    end
     
     function flag=isDiagonal(this)
       flag=this.diagonal;
@@ -53,7 +47,7 @@ classdef opticalFlowPDollar < measure
       end
     end
     
-    function cost=computeEdgeCost(this,a,b)
+    function cost=computeEdgeCost(this,x,a,b)
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::computeEdgeCost');
       
@@ -68,8 +62,8 @@ classdef opticalFlowPDollar < measure
       tb=getTime(this.sensor,b);
 
       % evaluate sensor position and orientation
-      [pa,qa]=evaluate(this.trajectory,ta);
-      [pb,qb]=evaluate(this.trajectory,tb);
+      [pa,qa]=evaluate(x,ta);
+      [pb,qb]=evaluate(x,tb);
 
       % convert quaternions to Euler angles
       Ea=Quat2Euler(qa);

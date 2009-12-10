@@ -2,7 +2,6 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
   
   properties (SetAccess=private,GetAccess=private)
     sensor
-    trajectory
     diagonal
   end
   
@@ -31,11 +30,6 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       isUnlocked=unlock(this.sensor);
     end
     
-    function this=setTrajectory(this,x)
-      assert(nargout==1);
-      this.trajectory=x;
-    end
-    
     function flag=isDiagonal(this)
       flag=this.diagonal;
     end
@@ -62,11 +56,11 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       
       ta=getTime(this.sensor,a);
       tb=getTime(this.sensor,b);
-      [pa,qa]=evaluate(this.trajectory,ta);
+      [pa,qa]=evaluate(x,ta);
       fprintf('\nx(%f) = < ',ta);
       fprintf('%f ',[pa;qa]);
       fprintf('>');
-      [pb,qb]=evaluate(this.trajectory,tb);      
+      [pb,qb]=evaluate(x,tb);      
       fprintf('\nx(%f) = < ',tb);
       fprintf('%f ',[pb;qb]);
       fprintf('>');

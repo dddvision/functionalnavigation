@@ -134,9 +134,8 @@ function varargout=objective(varargin)
       numEdges=numel(a);
       for individual=1:numIndividuals
         if( ~isempty(a) )
-          this.g{graph}=setTrajectory(this.g{graph},this.F{individual});
           for edge=1:numEdges
-            cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},a(1),b(1));
+            cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},this.F{individual},a(1),b(1));
           end
         end
       end
