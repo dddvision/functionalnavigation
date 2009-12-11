@@ -44,17 +44,15 @@ classdef tommas < tommasConfig & handle
       % determine initial costs
       parameters=getParameters(this);
       objective('put',this);
-      lockSensors(this);
+      refreshSensors(this);
       this.cost=defineProblem(this.M,@objective,parameters);
-      unlockSensors(this);
     end
     
     % Execute one step to improve the tail portion of a set of trajectories
     function step(this)
       objective('put',this);
-      lockSensors(this);
+      refreshSensors(this);
       [parameters,this.cost]=step(this.M);
-      unlockSensors(this);
       putParameters(this,parameters);
     end
     
@@ -91,15 +89,9 @@ classdef tommas < tommasConfig & handle
   end
   
   methods (Access=private)
-    function lockSensors(this)
+    function refreshSensors(this)
       for s=1:numel(this.u)
-        lock(this.u{s});
-      end
-    end
-    
-    function unlockSensors(this)
-      for s=1:numel(this.u)
-        unlock(this.u{s});
+        refresh(this.u{s});
       end
     end
     
@@ -168,10 +160,8 @@ function testDataContainer(container)
   list=listSensors(container,'cameraArray');
   for k=1:numel(list)
     sensor=getSensor(container,list(k));
-    lock(sensor);
     testCameraArrayProjection(sensor);
     testCameraArrayProjectionRoundTrip(sensor);
-    unlock(sensor);
   end
   
   % Navigation performance tests
@@ -180,16 +170,17 @@ function testDataContainer(container)
     list = listSensors(container,'gps');
     for k = 1:numel(list)
       sensor = getSensor(container,list(k));
-      lock(sensor);
       testGPSaccuracy(sensor,refTraj);
-      unlock(sensor);
     end
   end
 end
 
 function testCameraArrayProjection(cam)
   % find out which images are available
-  [ka,kb]=dataDomain(cam);
+  if(~refresh(cam))
+    error('camera is not ready');
+  end
+  [ka,kb]=getNodeBounds(cam);
   assert(isa(ka,'uint32'));
 
   for view=1:numViews(cam);
@@ -248,7 +239,10 @@ end
 
 function testCameraArrayProjectionRoundTrip(cam)
   % find out which images are available
-  [ka,kb]=dataDomain(cam);
+  if(~refresh(cam))
+    error('camera is not ready');
+  end
+  [ka,kb]=getNodeBounds(cam);
   assert(isa(ka,'uint32'));
 
   for view=1:numViews(cam);
@@ -301,7 +295,10 @@ end
 % For each valid index in the GPS data domain, evaluate the reference
 %   trajectory and compare with the reported GPS position
 function testGPSaccuracy(gpsHandle,refTraj)
-  [ka,kb]=dataDomain(gpsHandle);
+  if(~refresh(gpsHandle))
+    error('gps is not ready');
+  end
+  [ka,kb]=getNodeBounds(gpsHandle);
   K=1+kb-ka;
   gpsLonLatAlt=zeros(3,K);
   trueECEF=zeros(3,K);

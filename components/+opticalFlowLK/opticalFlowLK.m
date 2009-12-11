@@ -14,20 +14,16 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       fprintf('\nopticalFlowLK::opticalFlowLK');
     end
     
-    function [ka,kb]=dataDomain(this)
-      [ka,kb]=dataDomain(this.sensor);
+    function [ka,kb]=getNodeBounds(this)
+      [ka,kb]=getNodeBounds(this.sensor);
     end
     
     function time=getTime(this,k)
       time=getTime(this.sensor,k);
     end
     
-    function isLocked=lock(this)
-      isLocked=lock(this.sensor);
-    end
-    
-    function isUnlocked=unlock(this)
-      isUnlocked=unlock(this.sensor);
+    function status=refresh(this)
+      status=refresh(this.sensor);
     end
     
     function flag=isDiagonal(this)
@@ -37,7 +33,7 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowLK::findEdges');
-      [ka,kb]=dataDomain(this.sensor);
+      [ka,kb]=getNodeBounds(this.sensor);
       if( ka==kb )
         a=[];
         b=[];
@@ -51,7 +47,7 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       fprintf('\n');
       fprintf('\nopticalFlowLK::computeEdgeCost');
       
-      [ka,kb]=dataDomain(this.sensor);
+      [ka,kb]=getNodeBounds(this.sensor);
       assert((b>a)&&(a>=ka)&&(b<=kb));
       
       ta=getTime(this.sensor,a);

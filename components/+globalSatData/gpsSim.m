@@ -11,12 +11,12 @@ classdef gpsSim < gps
     hDOP
     vDOP
     sigmaR
-    isLocked
     refTraj
     measurementTimes
     noise
     precisionFlag
     offset
+    ready
   end
   
   methods (Access=public)
@@ -32,21 +32,16 @@ classdef gpsSim < gps
       [ta,tb] = domain(this.refTraj);
       tdelta = tb-ta;
       this.noise = this.noise(:,this.noise(1,:)<tdelta);
-      this.isLocked = false;
       this.precisionFlag = true;
       this.offset = [0;0;0];
       N=size(this.noise,2);
-      if(N>0)
-        this.ka = uint32(1);
-        this.kb = uint32(N);
-      else
-        this.ka = intmax('uint32');
-        this.kb = uint32(0);
-      end
+      this.ka = uint32(1);
+      this.kb = uint32(N);
+      this.ready = logical(N>0);
     end
     
-    function [ka,kb]=dataDomain(this)
-      assert(this.isLocked);
+    function [ka,kb]=getNodeBounds(this)
+      assert(this.ready);
       ka=this.ka;
       kb=this.kb;
     end
@@ -58,14 +53,8 @@ classdef gpsSim < gps
       time=ta+this.noise(1,k);
     end
     
-    function isLocked=lock(this)
-      this.isLocked=true;
-      isLocked=this.isLocked;
-    end
-
-    function isUnlocked=unlock(this)
-      this.isLocked=false;
-      isUnlocked=~this.isLocked;
+    function status=refresh(this)
+      status=this.ready;
     end
     
     function [lon,lat,alt]=getGlobalPosition(this,k)

@@ -8,7 +8,7 @@ classdef inertialSim < inertialSixDOF
     kb
     gyro
     accel
-    isLocked
+    ready
   end
   
   methods (Access=public)
@@ -16,19 +16,14 @@ classdef inertialSim < inertialSixDOF
       this.pFrame=[0;0;0];
       this.qFrame=[1;0;0;0];
       [this.time,this.gyro,this.accel]=ReadIMUdat(localCache,'inertia.dat');
-      this.isLocked=false;
       N=numel(this.time);
-      if(N>0)
-        this.ka = uint32(1);
-        this.kb = uint32(N);
-      else
-        this.ka=intmax('uint32');
-        this.kb=uint32(0);
-      end
+      this.ka=uint32(1);
+      this.kb=uint32(N);
+      this.ready=logical(N>0);
     end
 
-    function [ka,kb]=dataDomain(this)
-      assert(this.isLocked);
+    function [ka,kb]=getNodeBounds(this)
+      assert(this.ready);
       ka=this.ka;
       kb=this.kb;
     end
@@ -39,14 +34,8 @@ classdef inertialSim < inertialSixDOF
       time=this.time(k);      
     end
     
-    function isLocked=lock(this)
-      this.isLocked=true;
-      isLocked=this.isLocked;
-    end
-
-    function isUnlocked=unlock(this)
-      this.isLocked=false;
-      isUnlocked=~this.isLocked;
+    function status=refresh(this)
+      status=this.ready;
     end
     
     function dt=getIntegrationTime(this)

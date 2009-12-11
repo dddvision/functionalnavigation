@@ -2,7 +2,6 @@ classdef cameraSim < camera
   
   properties (SetAccess=private,GetAccess=private)
     localCache
-    isLocked
     ka
     kb
     tk
@@ -11,6 +10,7 @@ classdef cameraSim < camera
     layers
     frameDynamic
     projectionDynamic
+    ready
   end
   
   methods (Access=public)
@@ -19,9 +19,7 @@ classdef cameraSim < camera
       info=dir(fullfile(localCache,'/color*'));
       fnames=sortrows(cat(1,info(:).name));
       if(isempty(fnames))
-        this.ka=intmax('uint32');
-        this.kb=uint32(0);
-        this.isLocked=false;
+        this.ready=false;
       else
         this.ka=uint32(str2double(fnames(1,6:11)));
         this.kb=uint32(str2double(fnames(end,6:11)));
@@ -31,34 +29,28 @@ classdef cameraSim < camera
         this.layers='rgb';
         this.frameDynamic=false;
         this.projectionDynamic=false;
-        this.isLocked=true;
         this.imsize=size(getImage(this,this.ka));
-        this.isLocked=false;
+        this.ready=true;
       end
     end
       
-    function [ka,kb]=dataDomain(this)
-      assert(this.isLocked);
+    function [ka,kb]=getNodeBounds(this)
+      assert(this.ready);
       ka=this.ka;
       kb=this.kb;
     end
     
     function time=getTime(this,k)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       time=this.tk(k);
     end
     
-    function isLocked=lock(this)
-      this.isLocked=true;
-      isLocked=this.isLocked;
+    function status=refresh(this)
+      status=this.ready;
     end
 
-    function isUnlocked=unlock(this)
-      this.isLocked=false;
-      isUnlocked=~this.isLocked;
-    end
-    
     function str=interpretLayers(this,varargin)
       str=this.layers;
     end

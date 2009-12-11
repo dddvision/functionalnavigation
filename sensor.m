@@ -5,18 +5,26 @@
 classdef sensor < handle
   
   methods (Abstract=true)
-    % Return first and last indices of a consecutive list of data elements
+    % Incorporate new data and allow old data to expire
+    %
+    % OUTPUT
+    % status = true if any data is available and false otherwise, logical scalar
+    %
+    % NOTES
+    % Does not wait for hardware events
+    status=refresh(this);
+    
+    % Return first and last indices of a consecutive list of data nodes
     %
     % OUTPUT
     % ka = first valid data index, uint32 scalar
     % kb = last valid data index, uint32 scalar
     %
     % NOTES
-    % When no data is available a=intmax('uint32') and b=uint32(0)
-    % Throws an exception if sensor is unlocked
-    [ka,kb]=dataDomain(this);
+    % Throws an exception if no data is available
+    [ka,kb]=getNodeBounds(this);
     
-    % Get time stamp
+    % Get time stamp at a node
     %
     % INPUT
     % k = data index, uint32 scalar
@@ -28,26 +36,6 @@ classdef sensor < handle
     % Time stamps must not decrease with increasing indices
     % Throws an exception if data index is invalid
     time=getTime(this,k);
-    
-    % Lock the data buffer so that other member functions will be deterministic
-    %
-    % OUTPUT
-    % isLocked = true if successful and false otherwise, logical scalar
-    %
-    % NOTES
-    % Returns false if data is unavailable
-    % Does not wait for hardware events
-    isLocked=lock(this);
-    
-    % Unlock the data buffer so that new data can be added and old data can expire
-    %
-    % OUTPUT
-    % isUnlocked = true if successful and false otherwise, logical scalar
-    %
-    % NOTES
-    % Returns true if data is unavailable
-    % Does not wait for hardware events
-    isUnlocked=unlock(this);
   end
   
 end

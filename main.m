@@ -17,8 +17,9 @@ function main
   fprintf('\npath added: %s',componentPath);
    
   % run diagnostic tests on a component
-  % tommas.testComponent('thesisDataDDiel');
-  % tommas.testComponent('globalSatData');
+%  tommas.testComponent('middleburyData');
+%  tommas.testComponent('thesisDataDDiel');
+%  tommas.testComponent('globalSatData');
   
   % create an instance of the trajectory optimization manager
   tom=tommas;
