@@ -10,10 +10,10 @@ classdef cameraSim < camera
     frame
     M
     N
-    isLocked
     layers
     frameDynamic
     projectionDynamic
+    ready
   end
   
   methods (Access=public)
@@ -30,15 +30,14 @@ classdef cameraSim < camera
       this.kb=uint32(7);
       this.M=uint32(size(this.ring{1}.image,1));
       this.N=uint32(size(this.ring{1}.image,2)); 
-      this.isLocked=false;
       this.layers='rgb';
       this.frameDynamic=false;
       this.projectionDynamic=false;
       this.frame=[0;0;0;1;0;0;0];
+      this.ready=true;
     end
     
-    function [ka,kb]=dataDomain(this)
-      assert(this.isLocked);
+    function [ka,kb]=getNodeBounds(this)
       ka=this.ka;
       kb=this.kb;
     end
@@ -49,14 +48,8 @@ classdef cameraSim < camera
       time=this.ring{ktor(this,k)}.time;
     end
     
-    function isLocked=lock(this)
-      this.isLocked=true;
-      isLocked=this.isLocked;
-    end
-
-    function isUnlocked=unlock(this)
-      this.isLocked=false;
-      isUnlocked=~this.isLocked;
+    function status=refresh(this)
+      status=this.ready;
     end
     
     function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)

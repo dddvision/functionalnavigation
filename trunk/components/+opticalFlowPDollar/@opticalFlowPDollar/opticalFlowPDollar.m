@@ -14,20 +14,16 @@ classdef opticalFlowPDollar < measure
       fprintf('\nopticalFlowPDollar::opticalFlowPDollar');
     end
     
-    function [ka,kb]=dataDomain(this)
-      [ka,kb]=dataDomain(this.sensor);
+    function [ka,kb]=getNodeBounds(this)
+      [ka,kb]=getNodeBounds(this.sensor);
     end
     
     function time=getTime(this,k)
       time=getTime(this.sensor,k);
     end
     
-    function isLocked=lock(this)
-      isLocked=lock(this.sensor);
-    end
-    
-    function isUnlocked=unlock(this)
-      isUnlocked=unlock(this.sensor);
+    function ready=refresh(this)
+      ready=refresh(this.sensor);
     end
     
     function flag=isDiagonal(this)
@@ -37,7 +33,7 @@ classdef opticalFlowPDollar < measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::findEdges');
-      [ka,kb]=dataDomain(this.sensor);
+      [ka,kb]=getNodeBounds(this.sensor);
       if( ka==kb )
         a=[];
         b=[];
@@ -51,7 +47,7 @@ classdef opticalFlowPDollar < measure
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::computeEdgeCost');
       
-      [ka,kb]=dataDomain(this.sensor);
+      [ka,kb]=getNodeBounds(this.sensor);
       assert((b>a)&&(a>=ka)&&(b<=kb));
       
       % get optical flow from cache
@@ -88,5 +84,5 @@ classdef opticalFlowPDollar < measure
       fprintf('\ncost = %f',cost);
     end
   end
-  
+
 end

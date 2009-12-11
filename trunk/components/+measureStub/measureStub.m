@@ -14,20 +14,16 @@ classdef measureStub < measure
       fprintf('\nmeasureStub::measureStub');
     end
     
-    function [ka,kb]=dataDomain(this)
-      [ka,kb]=dataDomain(this.sensor);
+    function [ka,kb]=getNodeBounds(this)
+      [ka,kb]=getNodeBounds(this.sensor);
     end
     
     function time=getTime(this,k)
       time=getTime(this.sensor,k);
     end
     
-    function isLocked=lock(this)
-      isLocked=lock(this.sensor);
-    end
-    
-    function isUnlocked=unlock(this)
-      isUnlocked=unlock(this.sensor);
+    function status=refresh(this)
+      status=refresh(this.sensor);
     end
       
     function flag=isDiagonal(this)
@@ -37,7 +33,7 @@ classdef measureStub < measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nmeasureStub::findEdges');
-      [ka,kb]=dataDomain(this.sensor);
+      [ka,kb]=getNodeBounds(this.sensor);
       if( ka==kb )
         a=[];
         b=[];
