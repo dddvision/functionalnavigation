@@ -1,12 +1,8 @@
 general:
- * Test mainDisplay to ensure inputs can be either row or column vectors.
- * Separate dataContainer stuff from the trajectory optimization manager.
  * Make class aliases for "time", "index", "real" and other simple classes?
  * Replace zero-based indices with non-zero-bases indices when possible.
  * Add mlint testing requirement in how to make a component wiki.
  * Add rangefinder class that could also represent bearing-only tracker output.
- * Clarify time system by introducing t0 reference?
- * Implement measure/sensor compatibility checking.
  * Write unit tests to check interfaces and exception handling.
 
 policy clarifications:
@@ -54,19 +50,21 @@ dynamicModel:
  * Specify evaluate outputs using string like 'pqrs'?
 
 measure:
- * Require [ta,tb] as inputs to the constructor?
- * Clarify throughout the documentation that all measures are two-point
- * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
- * Add accuracy tolerance input to computeEdgeCost?
- * Measure should advertise the type of sensor that it needs.
- * Make getEdges list nodes in a interval restricted by upper AND lower indices.
+ *** Measure should be responsible for getting sensor data.
+ * Implement measure/sensor compatibility checking in measure configuration.
  * Add SIFT or SURF visual measure.
  * Speed up optical flow.
- * Add an example of a GPS measure or fold into measureStub.
+ * Require [ta,tb] as inputs to the constructor?
+ * Clarify throughout the documentation that all measures are two-point.
+ * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
+ * Add accuracy tolerance (or computational budget) input to computeEdgeCost?
+ * Add an example of a GPS measure (maybe in measureStub).
   
 cameraArray:
- * Add function getImageSize().
  * Should masking be sepate from projection?
+
+main application:
+ * Test mainDisplay to ensure inputs can be either row or column vectors.
 
 research:
  * Olsen: Pose graphs
