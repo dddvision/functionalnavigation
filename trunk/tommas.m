@@ -159,20 +159,31 @@ function testDataContainer(container)
   % Unit tests
   list=listSensors(container,'cameraArray');
   for k=1:numel(list)
-    sensor=getSensor(container,list(k));
-    testCameraArrayProjection(sensor);
-    testCameraArrayProjectionRoundTrip(sensor);
+    u=getSensor(container,list(k));
+    testCameraArrayProjection(u);
+    testCameraArrayProjectionRoundTrip(u);
   end
   
   % Navigation performance tests
   if hasReferenceTrajectory(container)
-    refTraj = getReferenceTrajectory(container);
-    list = listSensors(container,'gps');
-    for k = 1:numel(list)
-      sensor = getSensor(container,list(k));
-      testGPSaccuracy(sensor,refTraj);
+    x=getReferenceTrajectory(container);
+    testReferenceTrajectory(x);
+    list=listSensors(container,'gps');
+    for k=1:numel(list)
+      u=getSensor(container,list(k));
+      testGPSaccuracy(u,x);
     end
   end
+end
+
+function testReferenceTrajectory(x)
+  [a,b]=domain(x);
+  t=a:b;
+  [p,q]=evaluate(x,t);
+  figure;
+  plot3(p(1,:),p(2,:),p(3,:),'b.');
+  figure;
+  plot3(q(2,:),q(3,:),q(4,:));
 end
 
 function testCameraArrayProjection(cam)
@@ -225,8 +236,11 @@ function testCameraArrayProjection(cam)
       pix=projection(cam,rays,kb,view);
 
       % grab pixels using bilinear interpolation
-      newPixels=interp2(gray,pix(1,:)+1,pix(2,:)+1,'*linear',NaN);
-      newImage=reshape(newPixels,[HEIGHT,WIDTH]);
+      bad=isnan(pix(1,:))|isnan(pix(2,:));
+      good=~bad;
+      newImage=zeros(HEIGHT,WIDTH);
+      newImage(bad)=NaN;
+      newImage(good)=interp2(gray,pix(1,good)+1,pix(2,good)+1,'*linear',NaN);
 
       % display the reprojected image
       figure(fig);

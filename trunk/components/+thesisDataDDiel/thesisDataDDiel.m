@@ -26,13 +26,8 @@ classdef thesisDataDDiel < dataContainer
         unzip(localZip,localDir);
         delete(localZip);
       end
-      S=load(fullfile(localCache,'workspace.mat'),'BodyPath');
-      if(isfield(S,'BodyPath'))
-        this.hasRef=true;
-      else
-        this.hasRef=false;
-      end
-      this.bodyRef=thesisDataDDiel.bodyReference(localCache);   
+      this.hasRef=true;
+      this.bodyRef=thesisDataDDiel.bodyReference(localCache,dataSetName);   
       this.sensors{1}=thesisDataDDiel.cameraSim(localCache);
       this.names{1}='CAMERA';
       this.sensors{2}=thesisDataDDiel.inertialSim(localCache);

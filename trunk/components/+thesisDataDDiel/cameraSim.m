@@ -9,6 +9,7 @@ classdef cameraSim < camera
     cameraType
     layers
     frameDynamic
+    frameOffset
     projectionDynamic
     ready
   end
@@ -21,13 +22,14 @@ classdef cameraSim < camera
       if(isempty(fnames))
         this.ready=false;
       else
+        S=load(fullfile(localCache,'workspace.mat'),'T_cam','CAMERA_TYPE','CAMERA_OFFSET');
         this.ka=uint32(str2double(fnames(1,6:11)));
         this.kb=uint32(str2double(fnames(end,6:11)));
-        S=load(fullfile(localCache,'workspace.mat'),'T_cam','CAMERA_TYPE');
         this.tk=S.T_cam;
         this.cameraType=S.CAMERA_TYPE;
         this.layers='rgb';
         this.frameDynamic=false;
+        this.frameOffset=[S.CAMERA_OFFSET;1;0;0;0];
         this.projectionDynamic=false;
         this.imsize=size(getImage(this,this.ka));
         this.ready=true;
@@ -76,8 +78,8 @@ classdef cameraSim < camera
     function [p,q]=getFrame(this,k,varargin)
       assert(k>=this.ka);
       assert(k<=this.kb);
-      p=[0;0;0];
-      q=[1;0;0;0];
+      p=this.frameOffset(1:3);
+      q=this.frameOffset(4:7);
     end
         
     function flag=isProjectionDynamic(this,varargin)
@@ -105,7 +107,23 @@ classdef cameraSim < camera
           pix=[(u2+1)*((n-1)/2);
                (u1+1)*((m-1)/2)];
         case 4
-          error('gantry camera not yet implemented');       
+          thmax=1.570796;
+          ic=254.5;
+          jc=317.0;
+          a1=153.170245942;
+          a2=-0.083878888;
+          b1=0.149954284;
+          b2=-0.06062850;
+          c1=-ray(3,:);
+          c2=ray(1,:);
+          c3=-ray(2,:);
+          c1(abs(1-c1)<eps)=eps;
+          c1(c1<cos(thmax))=NaN;
+          th=acos(c1);
+          th2=th.*th;
+          r=(a1*th+a2*th2)./(1+b1*th+b2*th2);
+          mag=sqrt(c2.*c2+c3.*c3);
+          pix=[jc+r.*c2./mag-1;ic+r.*c3./mag-1];
         otherwise
           error('unrecognized camera type');
       end   
@@ -140,7 +158,26 @@ classdef cameraSim < camera
           c3(a)=NaN;
           ray=cat(1,c1,c2,c3);
         case 4
-          error('gantry camera not yet implemented');     
+          thmax=1.570796;
+          ic=254.5;
+          jc=317.0;
+          a1=153.170245942;
+          a2=-0.083878888;
+          b1=0.149954284;
+          b2=-0.06062850;
+          i=pix(2,:)+1;
+          j=pix(1,:)+1;
+          j=j-jc;
+          i=i-ic;
+          r=sqrt(i.*i+j.*j);
+          rmax=(a1*thmax+a2*thmax^2)./(1+b1*thmax+b2*thmax^2);
+          r(r>rmax)=NaN;
+          th=(sqrt(a1^2-2*a1*b1*r+(4*a2+(b1^2-4*b2)*r).*r)-a1+b1*r)./(2*(a2-b2*r));
+          c1=cos(th);
+          r(r<eps)=1;
+          c2=sin(th).*j./r;
+          c3=sin(th).*i./r;
+          ray=cat(1,c2,-c3,-c1);
         otherwise
           error('unrecognized camera type');
       end      
