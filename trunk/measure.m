@@ -1,5 +1,5 @@
 % This class defines a graph of measures between sensor data and a trajectory
-classdef measure < sensor
+classdef measure
   
   properties (Constant=true,GetAccess=public)
     baseClass='measure';
@@ -21,6 +21,28 @@ classdef measure < sensor
   end
   
   methods (Abstract=true)
+    % Incorporate new data and allow old data to expire
+    %
+    % OUTPUT
+    % status = true if any data is available and false otherwise, logical scalar
+    %
+    % NOTES
+    % Does not wait for hardware events
+    status=refresh(this);
+    
+    % Get time stamp at a node
+    %
+    % INPUT
+    % k = data index, uint32 scalar
+    %
+    % OUTPUT
+    % time = time stamp, double scalar
+    %
+    % NOTES
+    % Time stamps must not decrease with increasing indices
+    % Throws an exception if data index is invalid
+    time=getTime(this,k);
+    
     % Check whether the adjacency matrix of the graph is diagonal
     %
     % OUTPUT

@@ -14,11 +14,11 @@ classdef sensor < handle
     % Does not wait for hardware events
     status=refresh(this);
     
-    % Return first and last indices of a consecutive list of data nodes
+    % Return the smallest and largest data indices
     %
     % OUTPUT
-    % ka = first valid data index, uint32 scalar
-    % kb = last valid data index, uint32 scalar
+    % ka = smallest index, uint32 scalar
+    % kb = largest index, uint32 scalar
     %
     % NOTES
     % Throws an exception if no data is available

@@ -14,10 +14,6 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
       fprintf('\nopticalFlowLK::opticalFlowLK');
     end
     
-    function [ka,kb]=getNodeBounds(this)
-      [ka,kb]=getNodeBounds(this.sensor);
-    end
-    
     function time=getTime(this,k)
       time=getTime(this.sensor,k);
     end

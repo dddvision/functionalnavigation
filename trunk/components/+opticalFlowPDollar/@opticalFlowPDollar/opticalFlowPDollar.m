@@ -14,10 +14,6 @@ classdef opticalFlowPDollar < measure
       fprintf('\nopticalFlowPDollar::opticalFlowPDollar');
     end
     
-    function [ka,kb]=getNodeBounds(this)
-      [ka,kb]=getNodeBounds(this.sensor);
-    end
-    
     function time=getTime(this,k)
       time=getTime(this.sensor,k);
     end
