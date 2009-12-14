@@ -1,4 +1,4 @@
-classdef cameraSim < camera
+classdef cameraSim < middleburyData.middleburyDataConfig & camera
   
   properties
     ring
@@ -22,7 +22,7 @@ classdef cameraSim < camera
       this.ringsz=uint32(7);
       for k=1:this.ringsz
         this.ring{k}.time=double(k)/fps;
-        this.ring{k}.image=getMiddleburyArt(k-1);
+        this.ring{k}.image=getMiddleburyArt(this,k-1);
       end
       this.rho=1;
       this.base=uint32(1);
@@ -107,17 +107,26 @@ classdef cameraSim < camera
     function r=ktor(this,k)
       r=mod(this.base+k-this.ka-uint32(1),this.ringsz)+uint32(1);
     end
+    
+    function rgb=getMiddleburyArt(this,num)
+      repository='http://vision.middlebury.edu/stereo/data/';
+      cache=[fileparts(mfilename('fullpath')),'/'];
+      subdir=[this.sceneYear,'/',this.fractionalSize,'/',this.scene,'/',...
+              this.illumination,'/',this.exposure,'/'];
+      view=['view',num2str(num,'%d'),'.png'];
+      fcache=fullfile(cache,subdir,view);
+      dircache=[cache,subdir];
+      if(~exist(dircache,'file'))
+        mkdir(dircache);
+      end
+      if(~exist(fcache,'file'))
+        url=[repository,subdir,view];
+        fprintf('\ncaching: %s',url);
+        urlwrite(url,fcache);
+      end
+      rgb=imread(fcache);
+    end
   end
   
 end
 
-function rgb=getMiddleburyArt(num)
-    fname=['view',num2str(num,'%d'),'.png'];
-    fcache=fullfile(fileparts(mfilename('fullpath')),fname);
-    if(~exist(fcache,'file'))
-      url=['http://vision.middlebury.edu/stereo/data/scenes2005/FullSize/Art/Illum2/Exp1/',fname];
-      fprintf('\ncaching: %s',url);
-      urlwrite(url,fcache);
-    end
-    rgb=imread(fcache);
-  end

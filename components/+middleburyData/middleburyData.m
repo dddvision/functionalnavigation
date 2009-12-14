@@ -3,7 +3,7 @@
 % H. Hirschmuller and D. Scharstein. Evaluation of cost functions for 
 % stereo matching. In IEEE Computer Society Conference on Computer Vision 
 % and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
-classdef middleburyData < dataContainer
+classdef middleburyData < middleburyData.middleburyDataConfig & dataContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensors

@@ -29,8 +29,6 @@ optimizer:
  * Have Rob create linkage-based GA crossover function.
 
 dataContainer:
- *** Support projection and inverseProjection for Gantry camera data.
- *** Expand middleburyData configuration to access other data than "Art".
  * listSensors() should return a list of strings identifying sensors?
  * Make stub that contains all sensors and type checks its inputs.
  * Find a way to distinguish between multiple sensors that derive from the same class.

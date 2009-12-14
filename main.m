@@ -18,7 +18,7 @@ function main
    
   % run diagnostic tests on a component
 %  tommas.testComponent('middleburyData');
-  tommas.testComponent('thesisDataDDiel');
+%  tommas.testComponent('thesisDataDDiel');
 %  tommas.testComponent('globalSatData');
   
   % create an instance of the trajectory optimization manager
