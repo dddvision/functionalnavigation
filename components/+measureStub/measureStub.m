@@ -29,7 +29,8 @@ classdef measureStub < measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nmeasureStub::findEdges');
-      [ka,kb]=getNodeBounds(this.sensor);
+      ka=first(this.sensor);
+      kb=last(this.sensor);
       if( ka==kb )
         a=[];
         b=[];

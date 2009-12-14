@@ -29,7 +29,8 @@ classdef opticalFlowPDollar < measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::findEdges');
-      [ka,kb]=getNodeBounds(this.sensor);
+      ka=first(this.sensor);
+      kb=last(this.sensor);
       if( ka==kb )
         a=[];
         b=[];
@@ -43,7 +44,8 @@ classdef opticalFlowPDollar < measure
       fprintf('\n');
       fprintf('\nopticalFlowPDollar::computeEdgeCost');
       
-      [ka,kb]=getNodeBounds(this.sensor);
+      ka=first(this.sensor);
+      kb=last(this.sensor);
       assert((b>a)&&(a>=ka)&&(b<=kb));
       
       % get optical flow from cache

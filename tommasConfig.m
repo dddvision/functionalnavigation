@@ -11,7 +11,7 @@ classdef tommasConfig < handle
     dataContainer = 'middleburyData';
     
     % match each measure to a specific sensor class, cell array of structs
-    measures = {struct('measure','measureStub','sensor','camera');...
+    measures = {struct('measure','measureStub','sensor','camera');
                 struct('measure','opticalFlowPDollar','sensor','camera')};
     
     % referenceDate = datestr(now,30);
