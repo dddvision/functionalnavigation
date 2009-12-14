@@ -191,9 +191,11 @@ function testCameraArrayProjection(cam)
   if(~refresh(cam))
     error('camera is not ready');
   end
-  [ka,kb]=getNodeBounds(cam);
+  ka=first(cam);
+  kb=last(cam);
   assert(isa(ka,'uint32'));
-
+  assert(isa(kb,'uint32'));
+  
   for view=1:numViews(cam);
 
     % get an image
@@ -256,8 +258,10 @@ function testCameraArrayProjectionRoundTrip(cam)
   if(~refresh(cam))
     error('camera is not ready');
   end
-  [ka,kb]=getNodeBounds(cam);
+  ka=first(cam);
+  kb=last(cam);
   assert(isa(ka,'uint32'));
+  assert(isa(kb,'uint32'));
 
   for view=1:numViews(cam);
 
@@ -312,7 +316,12 @@ function testGPSaccuracy(gpsHandle,refTraj)
   if(~refresh(gpsHandle))
     error('gps is not ready');
   end
-  [ka,kb]=getNodeBounds(gpsHandle);
+  
+  ka=first(gpsHandle);
+  kb=last(gpsHandle);
+  assert(isa(ka,'uint32'));
+  assert(isa(kb,'uint32'));
+  
   K=1+kb-ka;
   gpsLonLatAlt=zeros(3,K);
   trueECEF=zeros(3,K);

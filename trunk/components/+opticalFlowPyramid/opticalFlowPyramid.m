@@ -29,7 +29,8 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::findEdges');
-      [ka,kb]=getNodeBounds(this.sensor);
+      ka=first(this.sensor);
+      kb=last(this.sensor);
       if( ka==kb )
         a=[];
         b=[];
@@ -43,7 +44,8 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::computeEdgeCost');
       
-      [ka,kb]=getNodeBounds(this.sensor);
+      ka=first(this.sensor);
+      kb=last(this.sensor);
       assert((b>a)&&(a>=ka)&&(b<=kb));
       
       ta=getTime(this.sensor,a);

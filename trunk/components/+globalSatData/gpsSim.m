@@ -40,9 +40,13 @@ classdef gpsSim < gps
       this.ready = logical(N>0);
     end
     
-    function [ka,kb]=getNodeBounds(this)
+    function ka=first(this)
       assert(this.ready);
       ka=this.ka;
+    end
+
+    function kb=last(this)
+      assert(this.ready);
       kb=this.kb;
     end
     

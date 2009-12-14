@@ -36,9 +36,13 @@ classdef cameraSim < camera
       end
     end
       
-    function [ka,kb]=getNodeBounds(this)
+    function ka=first(this)
       assert(this.ready);
       ka=this.ka;
+    end
+
+    function kb=last(this)
+      assert(this.ready);
       kb=this.kb;
     end
     

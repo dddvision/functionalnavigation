@@ -1,5 +1,5 @@
 % This class defines a graph of measures between sensor data and a trajectory
-classdef measure
+classdef measure < handle
   
   properties (Constant=true,GetAccess=public)
     baseClass='measure';

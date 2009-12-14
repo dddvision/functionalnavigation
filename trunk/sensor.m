@@ -14,28 +14,36 @@ classdef sensor < handle
     % Does not wait for hardware events
     status=refresh(this);
     
-    % Return the smallest and largest data indices
-    %
-    % OUTPUT
-    % ka = smallest index, uint32 scalar
-    % kb = largest index, uint32 scalar
-    %
-    % NOTES
-    % Throws an exception if no data is available
-    [ka,kb]=getNodeBounds(this);
-    
     % Get time stamp at a node
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % k = index, uint32 scalar
     %
     % OUTPUT
     % time = time stamp, double scalar
     %
     % NOTES
     % Time stamps must not decrease with increasing indices
-    % Throws an exception if data index is invalid
+    % Throws an exception if data at the node is invalid
     time=getTime(this,k);
+    
+    % Return index to the first data node
+    %
+    % INPUT
+    % ka = index to first node, uint32 scalar
+    %
+    % NOTES
+    % Throws an exception if no data is available
+    ka=first(this);
+    
+    % Return index to the last data node
+    %
+    % INPUT
+    % ka = index to last node, uint32 scalar
+    %
+    % NOTES
+    % Throws an exception if no data is available
+    kb=last(this);
   end
   
 end
