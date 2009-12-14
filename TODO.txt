@@ -30,6 +30,7 @@ optimizer:
 
 dataContainer:
  * listSensors() should return a list of strings identifying sensors?
+ * Add SICK laser scanner interface for legacy purposes.
  * Make stub that contains all sensors and type checks its inputs.
  * Find a way to distinguish between multiple sensors that derive from the same class.
  * Coordinate with Jimmy Touma for AFRL data.
@@ -51,6 +52,7 @@ dynamicModel:
 
 measure:
  *** Measure should be responsible for getting sensor data.
+ *** Measure is allowed to access multiple sensors.
  * Implement measure/sensor compatibility checking in measure configuration.
  * Add SIFT or SURF visual measure.
  * Speed up optical flow.
