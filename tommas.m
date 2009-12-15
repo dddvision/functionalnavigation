@@ -2,7 +2,6 @@
 classdef tommas < tommasConfig & handle
   
   properties (GetAccess=private,SetAccess=private)
-    u
     M
     F
     g
@@ -18,40 +17,31 @@ classdef tommas < tommasConfig & handle
       warning('on','all');
       intwarning('off');
       reset(RandStream.getDefaultStream);
+
+      % initialize optimizer
+      this.M=unwrapComponent(this.optimizer);
       
       % initialize trajectories
       for k=1:this.popSizeDefault
         this.F{k}=unwrapComponent(this.dynamicModel);
       end
       
-      % initialize measures with sensors and trajectories
-      kvalid=1;
+      % initialize measures
       for k=1:numel(this.measures)
-        data=unwrapComponent(this.dataContainer);
-        list=listSensors(data,this.measures{k}.sensor);
-        if(isempty(list))
-          fprintf('\n\nWarning: sensor type was unavailable: %s',this.measures{k}.sensor);
-        else
-          this.u{kvalid}=getSensor(data,list(1));
-          this.g{kvalid}=unwrapComponent(this.measures{k}.measure,this.u{kvalid});
-          kvalid=kvalid+1;
-        end
+        this.g{k}=unwrapComponent(this.measures{k},this.dataURI);
       end
         
-      % initialize optimizer
-      this.M=unwrapComponent(this.optimizer);
-     
       % determine initial costs
       parameters=getParameters(this);
       objective('put',this);
-      refreshSensors(this);
+      refreshMeasures(this);
       this.cost=defineProblem(this.M,@objective,parameters);
     end
     
     % Execute one step to improve the tail portion of a set of trajectories
     function step(this)
       objective('put',this);
-      refreshSensors(this);
+      refreshMeasures(this);
       [parameters,this.cost]=step(this.M);
       putParameters(this,parameters);
     end
@@ -89,9 +79,9 @@ classdef tommas < tommasConfig & handle
   end
   
   methods (Access=private)
-    function refreshSensors(this)
-      for s=1:numel(this.u)
-        refresh(this.u{s});
+    function refreshMeasures(this)
+      for k=1:numel(this.g)
+        refresh(this.g{k});
       end
     end
     
