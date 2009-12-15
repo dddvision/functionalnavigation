@@ -1,6 +1,6 @@
 classdef tommasConfig < handle
 
-  properties (Constant=true)
+  properties (Constant=true,GetAccess=public)
     % select dynamic model
     dynamicModel = 'wobble1';
     
@@ -8,11 +8,10 @@ classdef tommasConfig < handle
     optimizer = 'optimizerStub';
   
     % select data container
-    dataContainer = 'middleburyData';
+    dataURI = 'matlab:middleburyData.middleburyData';
     
-    % match each measure to a specific sensor class, cell array of structs
-    measures = {struct('measure','measureStub','sensor','camera');
-                struct('measure','opticalFlowPDollar','sensor','camera')};
+    % select measures
+    measures = {'measureStub','opticalFlowLK'};
     
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test

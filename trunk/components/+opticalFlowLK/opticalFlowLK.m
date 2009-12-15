@@ -3,22 +3,35 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
   properties (SetAccess=private,GetAccess=private)
     sensor
     diagonal
+    ready
   end
   
   methods (Access=public)
-    function this=opticalFlowLK(u)
-      this=this@measure(u);
-      this.sensor=u;
-      this.diagonal=false;
+    function this=opticalFlowLK(uri)
+      this=this@measure(uri);
       fprintf('\n');
       fprintf('\nopticalFlowLK::opticalFlowLK');
+      this.ready=false;
+      [scheme,resource]=strtok(uri,':');
+      switch(scheme)
+      case 'matlab'
+        container=eval(resource(2:end));
+        list=listSensors(container,'camera');
+        if(~isempty(list))
+          this.sensor=getSensor(container,list(1));
+          this.diagonal=false;
+          this.ready=true;
+        end
+      end                  
     end
     
     function time=getTime(this,k)
+      assert(this.ready);
       time=getTime(this.sensor,k);
     end
     
     function status=refresh(this)
+      assert(this.ready);
       status=refresh(this.sensor);
     end
     
@@ -29,20 +42,22 @@ classdef opticalFlowLK < opticalFlowLK.opticalFlowLKConfig & measure
     function [a,b]=findEdges(this)
       fprintf('\n');
       fprintf('\nopticalFlowLK::findEdges');
-      ka=first(this.sensor);
-      kb=last(this.sensor);
-      if( ka==kb )
-        a=[];
-        b=[];
-      else
-        a=ka;
-        b=kb;
+      a=[];
+      b=[];      
+      if(this.ready)
+        ka=first(this.sensor);
+        kb=last(this.sensor);
+        if(kb>=ka)
+          a=ka;
+          b=kb;
+        end
       end
     end
     
     function cost=computeEdgeCost(this,x,a,b)
       fprintf('\n');
       fprintf('\nopticalFlowLK::computeEdgeCost');
+      assert(this.ready);
       
       ka=first(this.sensor);
       kb=last(this.sensor);
