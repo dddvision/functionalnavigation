@@ -1,0 +1,115 @@
+classdef pointBasedMeasure < measure
+  
+  properties (SetAccess=private,GetAccess=private)
+    sensor
+    diagonal
+    ready
+  end
+  
+  methods (Access=public)
+    function this=pointBasedMeasure(uri)
+      this=this@measure(uri);
+      fprintf('\n');
+      fprintf('\npointBasedMeasure::pointBasedMeasure');
+      
+      siftCode='siftDemoV4';
+      repository='http://people.cs.ubc.ca/~lowe/keypoints/';
+      localDir=fileparts(mfilename('fullpath'));
+      localDir=[localDir '\private'];
+      localCache=fullfile(localDir,siftCode);
+      
+      if(~exist(localCache,'dir'))
+        zipName=[siftCode,'.zip'];
+        localZip=[localDir,'\',zipName];
+        url=[repository,zipName];
+        fprintf('\ncaching: %s',url);
+        urlwrite(url,localZip);
+        fprintf('\nunzipping: %s',localZip);
+        unzip(localZip,localDir);
+        delete(localZip);  
+        localCacheContent=[localCache '\*'];      
+        movefile(localCacheContent, localDir);
+      end
+	                         
+      this.ready=false;
+      [scheme,resource]=strtok(uri,':');
+      switch(scheme)
+      case 'matlab'
+        container=eval(resource(2:end));
+        list=listSensors(container,'camera');
+        if(~isempty(list))
+          this.sensor=getSensor(container,list(1));
+          this.diagonal=false;
+          this.ready=true;
+        end
+      end                  
+    end
+    
+    function time=getTime(this,k)
+      assert(this.ready);
+      time=getTime(this.sensor,k);
+    end
+    
+    function status=refresh(this)
+      assert(this.ready);
+      status=refresh(this.sensor);
+    end
+    
+    function flag=isDiagonal(this)
+      flag=this.diagonal;
+    end
+    
+    function [a,b]=findEdges(this)
+      fprintf('\n');
+      fprintf('\npointBasedMeasure::findEdges');
+      a=[];
+      b=[];      
+      if(this.ready)
+        ka=first(this.sensor);
+        kb=last(this.sensor);
+        if(kb>=ka)
+          a=ka;
+          b=kb;
+        end
+      end
+    end
+    
+    function cost=computeEdgeCost(this,x,a,b)
+      fprintf('\n');
+      fprintf('\npointBasedMeasure::computeEdgeCost');
+      assert(this.ready);
+      
+      ka=first(this.sensor);
+      kb=last(this.sensor);
+      assert((b>a)&&(a>=ka)&&(b<=kb));
+      
+      ta=getTime(this.sensor,a);
+      tb=getTime(this.sensor,b);
+      [pa,qa]=evaluate(x,ta);
+      fprintf('\nx(%f) = < ',ta);
+      fprintf('%f ',[pa;qa]);
+      fprintf('>');
+      [pb,qb]=evaluate(x,tb);      
+      fprintf('\nx(%f) = < ',tb);
+      fprintf('%f ',[pb;qb]);
+      fprintf('>');
+      
+      im1=getImage(this.sensor,a); 
+      im2=getImage(this.sensor,b); 
+      if( strcmp(interpretLayers(this.sensor),'rgb') )
+        im1=rgb2gray(im1); 
+        im2=rgb2gray(im2); 
+      end
+            
+      Ea=Quat2Euler(qa);
+      Eb=Quat2Euler(qb);
+      
+      testTrajectory.Translation = [pb(1)-pa(1),pb(2)-pa(2),pb(3)-pa(3)];
+      testTrajectory.Rotation = [Eb(1)-Ea(1),Eb(2)-Ea(2),Eb(3)-Ea(3)];
+      
+      cost = EvaluateTrajectory_SFM(im1,im2,testTrajectory);
+      fprintf('\ncost = %f',cost);      
+    end
+  end
+
+end
