@@ -9,9 +9,9 @@ classdef tommasConfig < handle
   
     % select data container
     dataURI = 'matlab:middleburyData.middleburyData';
-    
+        
     % select measures
-    measures = {'measureStub','opticalFlowLK'};
+    measures = {'measureStub','pointBasedMeasure'};
     
     % referenceDate = datestr(now,30);
     popSizeDefault = 10; % (10) default number of trajectories to test
