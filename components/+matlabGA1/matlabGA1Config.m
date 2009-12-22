@@ -6,10 +6,7 @@ classdef matlabGA1Config < handle
       % start trajectories at this time
       referenceTime = 0;
     
-      % trajectory fidelity in bits per second
-      bitsPerSecond = 6*32;
-    
-      % HACK: use variable duration trajectories
+      % HACK: should adjust the trajectory domain based on data
       numBlocks = 5;
     end
   

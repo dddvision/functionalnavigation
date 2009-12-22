@@ -72,6 +72,7 @@ function h=mainDisplay(x,c)
   set(hfigure,'color',[1,1,1]);
   haxes=gca;
   axis('on');
+  hold('on');
   xlabel('ECEF_X');
   ylabel('ECEF_Y');
   zlabel('ECEF_Z');
@@ -100,70 +101,72 @@ function h=mainDisplayIndividual(x,alpha,color)
   h=[];
   
   [tmin,tmax]=domain(x);
+  tmax=min(tmax,tmin+10);
 
-  bigsteps=(1+floor(tmax))-tmin;
+  bigsteps=10;
   substeps=10;
 
   t=tmin:((tmax-tmin)/bigsteps/substeps):tmax;
 
   [p,q]=evaluate(x,t);
   
-  scale=0.002*norm(max(p(:,1:substeps:end),[],2)-min(p(:,1:substeps:end),[],2));
+  scale=0.001*norm(max(p(:,1:substeps:end),[],2)-min(p(:,1:substeps:end),[],2));
 
   h=[h,mainDisplayPlotFrame(p(:,1),q(:,1),alpha,scale,color)]; % plot first frame
+  h=[h,plot3(p(1,:),p(2,:),p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3))];
   for bs=1:bigsteps
     ksub=(bs-1)*substeps+(1:(substeps+1));
-    h=[h,mainDisplayPlotLine(p(1,ksub),p(2,ksub),p(3,ksub),alpha,scale,color)]; % plot line segments
+    %h=[h,mainDisplayPlotLine(p(1,ksub),p(2,ksub),p(3,ksub),alpha,scale,color)]; % plot line segments
     h=[h,mainDisplayPlotFrame(p(:,ksub(end)),q(:,ksub(end)),alpha,scale,color)]; % plot terminating frame
   end
 end
 
-function h=mainDisplayPlotLine(x,y,z,alpha,scale,color)
-persistent xo yo zo
-  if(isempty(xo))
-  %   xo=[0,0,0;1,1,1;1,1,1;0,0,0];
-  %   yo=[-1, 1, 0;-1, 1, 0; 1, 0,-1; 1, 0,-1]*sqrt(3)/2;
-  %   zo=[-1,-1, 2;-1,-1, 2;-1, 2,-1;-1, 2,-1]/2;
-    xo=[0,0,0,0;1,1,1,1;1,1,1,1;0,0,0,0];
-    yo=[-1, 1, 1,-1;-1, 1, 1,-1; 1, 1,-1,-1; 1, 1,-1,-1]/sqrt(2);
-    zo=[-1,-1, 1, 1;-1,-1, 1, 1;-1, 1, 1,-1;-1, 1, 1,-1]/sqrt(2);
-  end
-  ys=scale*yo;
-  zs=scale*zo;
-  
-  % halve alpha because two faces will be plotted to create each line
-  alpha=alpha/2;
-  
-  N=numel(x);
-  h=[];
-  if( N>1 )
-    a=[x(1);y(1);z(1)];
-    for n=2:N
-      b=[x(n);y(n);z(n)];
-      ab=b-a;
-      d=sqrt(dot(ab,ab));
-      if(d>eps)
-        ab=ab/d;
-        %M=Euler2Matrix([0;asin(-ab(3));atan2(ab(2),ab(1))]);
-        c1=sqrt(1-ab(3)*ab(3));
-        c2=sqrt(dot(ab(1:2),ab(1:2)));
-        if(c2<eps)
-          M=eye(3);
-        else
-          M=[[ab(1)*c1/c2,-ab(2)/c2,-ab(1)*ab(3)/c2]
-             [ab(2)*c1/c2, ab(1)/c2,-ab(2)*ab(3)/c2]
-             [      ab(3),        0,             c1]];
-        end
-        xs=d*xo;
-        xp=a(1)+M(1,1)*xs+M(1,2)*ys+M(1,3)*zs;
-        yp=a(2)+M(2,1)*xs+M(2,2)*ys+M(2,3)*zs;
-        zp=a(3)+M(3,1)*xs+M(3,3)*zs;
-        h=[h,patch(xp,yp,zp,color,'FaceAlpha',alpha,'LineStyle','none','Clipping','off')];
-      end
-      a=b;
-    end
-  end
-end
+% function h=mainDisplayPlotLine(x,y,z,alpha,scale,color)
+% persistent xo yo zo
+%   if(isempty(xo))
+%   %   xo=[0,0,0;1,1,1;1,1,1;0,0,0];
+%   %   yo=[-1, 1, 0;-1, 1, 0; 1, 0,-1; 1, 0,-1]*sqrt(3)/2;
+%   %   zo=[-1,-1, 2;-1,-1, 2;-1, 2,-1;-1, 2,-1]/2;
+%     xo=[0,0,0,0;1,1,1,1;1,1,1,1;0,0,0,0];
+%     yo=[-1, 1, 1,-1;-1, 1, 1,-1; 1, 1,-1,-1; 1, 1,-1,-1]/sqrt(2);
+%     zo=[-1,-1, 1, 1;-1,-1, 1, 1;-1, 1, 1,-1;-1, 1, 1,-1]/sqrt(2);
+%   end
+%   ys=scale*yo;
+%   zs=scale*zo;
+%   
+%   % halve alpha because two faces will be plotted to create each line
+%   alpha=alpha/2;
+%   
+%   N=numel(x);
+%   h=[];
+%   if( N>1 )
+%     a=[x(1);y(1);z(1)];
+%     for n=2:N
+%       b=[x(n);y(n);z(n)];
+%       ab=b-a;
+%       d=sqrt(dot(ab,ab));
+%       if(d>eps)
+%         ab=ab/d;
+%         %M=Euler2Matrix([0;asin(-ab(3));atan2(ab(2),ab(1))]);
+%         c1=sqrt(1-ab(3)*ab(3));
+%         c2=sqrt(dot(ab(1:2),ab(1:2)));
+%         if(c2<eps)
+%           M=eye(3);
+%         else
+%           M=[[ab(1)*c1/c2,-ab(2)/c2,-ab(1)*ab(3)/c2]
+%              [ab(2)*c1/c2, ab(1)/c2,-ab(2)*ab(3)/c2]
+%              [      ab(3),        0,             c1]];
+%         end
+%         xs=d*xo;
+%         xp=a(1)+M(1,1)*xs+M(1,2)*ys+M(1,3)*zs;
+%         yp=a(2)+M(2,1)*xs+M(2,2)*ys+M(2,3)*zs;
+%         zp=a(3)+M(3,1)*xs+M(3,3)*zs;
+%         h=[h,patch(xp,yp,zp,color,'FaceAlpha',alpha,'LineStyle','none','Clipping','off')];
+%       end
+%       a=b;
+%     end
+%   end
+% end
 
 % Plot a red triangle indicating the forward and up directions
 function h=mainDisplayPlotFrame(p,q,alpha,scale,color)

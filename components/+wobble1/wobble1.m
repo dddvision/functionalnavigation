@@ -2,26 +2,76 @@
 classdef wobble1 < wobble1.wobble1Config & dynamicModel
   
   properties (GetAccess=private,SetAccess=private)
+    ta
     data
-    parametersPerSecond
+    initialPosition
+    initialRotation
+    initialPositionRate
+    initialRotationRate
+  end
+  
+  methods (Static=true,Access=public)
+    function description=getBlockDescription
+      description=struct('numLogical',30,'numUint32',0);
+    end
+    
+    function blocksPerSecond=getUpdateRate
+      blocksPerSecond=0;
+    end
   end
   
   methods (Access=public)
-    function this=wobble1
+    function this=wobble1(initialTime)
+      this=this@dynamicModel(initialTime);
       fprintf('\n');
       fprintf('\nwobble1::wobble1');
-      this.parametersPerSecond=15;
-      this.data=logical(rand(1,30)>0.5);
+      this.ta=initialTime;
+      this.initialPosition = [0;0;0];
+      this.initialRotation = [1;0;0;0];
+      this.initialPositionRate = [0;0;0];
+      this.initialRotationRate = [0;0;0;0];
     end
     
-    function [a,b]=domain(this)
-      a=0;
-      b=numel(this.data)/this.parametersPerSecond;
+    function numBlocks=getNumBlocks(this)
+      numBlocks=double(~isempty(this.data));
+    end
+    
+    function setInitialState(this,position,rotation,positionRate,rotationRate)
+      fprintf('\n');
+      fprintf('\nwobble1::setInitialState');
+      this.initialPosition = position;
+      this.initialRotation = rotation;
+      this.initialpositionRate = positionRate;
+      this.initialRotationRate = rotationRate;
+    end
+    
+    function replaceBlocks(this,k,block)
+      fprintf('\n');
+      fprintf('\nwobble1::replaceBlocks');
+      if(k==0)
+        bits=block(1).logical;
+        this.data=reshape(bits,[1,numel(bits)]);
+      end
+    end
+    
+    function appendBlocks(this,blocks)
+      fprintf('\n');
+      fprintf('\nwobble1::appendBlocks');
+      bits=blocks(1).logical;
+      this.data=reshape(bits,[1,numel(bits)]);
+    end
+    
+    function [ta,tb]=domain(this)
+      ta=this.ta;
+      if(getNumBlocks(this)>0)
+        tb=inf;
+      else
+        tb=ta;
+      end
     end
     
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
-      ta=domain(this);
-      t(t<ta)=NaN;
+      t(t<this.ta)=NaN;
       vaxis=this.data((this.omegabits+1):(end-mod(numel(this.data),this.dim)));
       bpa=numel(vaxis)/this.dim;
       rate_bias=zeros(this.dim,1);
@@ -34,25 +84,40 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
       
       sint=sin(omega*t);
 
+      N=numel(t);
       pnoise=this.scalep*[rate_bias(1)*sint;rate_bias(2)*sint;rate_bias(3)*sint];
-      position=[0*t;t;0.*t]+pnoise;
+      position=repmat(this.initialPosition,[1,N])+[pnoise(1,:);t+pnoise(2,:);pnoise(3,:)];
       
       if( nargout>1 )
         qnoise=this.scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
-        rotation=AxisAngle2Quat(qnoise);
+        rotation=Quat2Homo(this.initialRotation)'*AxisAngle2Quat(qnoise);
         if( nargout>2 )
           omegacos=omega*cos(omega*t);
           pdnoise=this.scalep*[rate_bias(1)*omegacos;rate_bias(2)*omegacos;rate_bias(3)*omegacos];
-          positionRate=[0*t;1+0*t;0.*t]+pdnoise;
+          positionRate=repmat(this.initialPositionRate+[0;1;0],[1,N])+pdnoise;
           if( nargout>3 )      
             qdnoise=this.scaleq*[rate_bias(4)*omegacos;rate_bias(5)*omegacos;rate_bias(6)*omegacos];
-            rotationRate=[0*t;qdnoise/2]; % small angle approximation
+            rotationRate=zeros(4,N);
+            for n=1:N
+              rotationRate(:,n)=0.5*Quat2Homo(rotation(:,n))*[0;qdnoise(:,n)]; % small angle approximation
+            end
           end
         end
       end
     end
   end
   
+end
+
+function h=Quat2Homo(q)
+  q1=q(1);
+  q2=q(2);
+  q3=q(3);
+  q4=q(4);
+  h=[[q1,-q2,-q3,-q4]
+     [q2, q1,-q4, q3]
+     [q3, q4, q1,-q2]
+     [q4,-q3, q2, q1]];
 end
 
 % Converts orientation representation from Axis-Angle to Quaternion

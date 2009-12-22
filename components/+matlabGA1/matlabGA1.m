@@ -61,17 +61,16 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
    end
     
     function initialCost=defineProblem(this,dynamicModelName,measureNames,dataURI)
-      
       % initialize dynamic models
       description=eval([dynamicModelName,'.',dynamicModelName,'.getBlockDescription']);
       this.numLogical=description.numLogical;
       this.numUint32=description.numUint32;
       this.bitsPerBlock=this.numLogical+32*this.numUint32;
-      this.blocksPerSecond=this.bitsPerSecond/this.bitsPerBlock;
+      this.blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
       this.bits=logical(rand(this.popSizeDefault,this.bitsPerBlock*this.numBlocks)>0.5);
       blocks=bits2blocks(this,this.bits);
       for k=1:this.popSizeDefault
-        this.F{k}=unwrapComponent(dynamicModelName,this.referenceTime,this.blocksPerSecond);
+        this.F{k}=unwrapComponent(dynamicModelName,this.referenceTime);
         appendBlocks(this.F{k},blocks{k});
       end
       
@@ -90,8 +89,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
     function step(this)
       nvars=size(this.bits,2);
       nullstate=struct('FunEval',0);
-      %nullobjective=@(x) zeros(size(x,1),1);
-      [this.cost,this.bits]=feval(this.stepGAhandle,this.cost,this.bits,this.defaultOptions,nullstate,nvars,this.objective);
+      [this.cost,this.bits]=feval(this.stepGAhandle,this.cost,this.bits,this.defaultOptions,nullstate,nvars,@objective);
       putBits(this,this.bits);
     end
     

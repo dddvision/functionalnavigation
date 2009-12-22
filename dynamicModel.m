@@ -10,8 +10,6 @@ classdef dynamicModel < trajectory
     %
     % INPUT
     % initialTime = initial lower bound of the trajectory domain, double scalar
-    % blocksPerSecond = conversion between number of blocks and the time 
-    %                   span of the trajectory domain, double scalar
     %
     % NOTES
     % The default body state at the initial time is at the origin:
@@ -21,9 +19,8 @@ classdef dynamicModel < trajectory
     %   rotationRate = [0;0;0;0];
     % A subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@dynamicModel(initialTime,blocksPerSecond);
-    function this=dynamicModel(initialTime,blocksPerSecond)
+    function this=dynamicModel(initialTime)
       assert(isa(initialTime,'double'));
-      assert(isa(blocksPerSecond,'double'));
     end
   end
   
@@ -34,6 +31,12 @@ classdef dynamicModel < trajectory
     % description.numLogical = number of 1-bit logical parameters, uint32 scalar
     % description.numUint32 = number of 32-bit unsigned integer parameters, uint32 scalar
     description=getBlockDescription;
+    
+    % Get the dynamic model update rate
+    %
+    % OUTPUT
+    % blocksPerSecond = each block will extend the domain the reciprical of this rate, double scalar
+    blocksPerSecond=getUpdateRate;
   end
   
   methods (Abstract=true,Access=public)

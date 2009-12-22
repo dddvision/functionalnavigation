@@ -1,4 +1,4 @@
-classdef wobble1Config
+classdef wobble1Config < handle
   
   properties (Constant=true,GetAccess=protected)
     dim=6;
