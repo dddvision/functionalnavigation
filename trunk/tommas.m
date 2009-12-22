@@ -3,61 +3,30 @@ classdef tommas < tommasConfig & handle
   
   properties (GetAccess=private,SetAccess=private)
     M
-    F
-    g
-    cost
   end
   
   methods (Access=public)
     
-    % Constructor
     function this=tommas
       fprintf('\n');
       fprintf('\ntommas::tommas');
       warning('on','all');
       intwarning('off');
       reset(RandStream.getDefaultStream);
-
-      % initialize optimizer
       this.M=unwrapComponent(this.optimizer);
-      
-      % initialize trajectories
-      for k=1:this.popSizeDefault
-        this.F{k}=unwrapComponent(this.dynamicModel);
-      end
-      
-      % initialize measures
-      for k=1:numel(this.measures)
-        this.g{k}=unwrapComponent(this.measures{k},this.dataURI);
-      end
-        
-      % determine initial costs
-      parameters=getParameters(this);
-      objective('put',this);
-      refreshMeasures(this);
-      this.cost=defineProblem(this.M,@objective,parameters);
+      defineProblem(this.M,this.dynamicModel,this.measures,this.dataURI);
     end
     
-    % Execute one step to improve the tail portion of a set of trajectories
     function step(this)
-      objective('put',this);
-      refreshMeasures(this);
-      [parameters,this.cost]=step(this.M);
-      putParameters(this,parameters);
+      step(this.M);
     end
     
-    % Get the most recent trajectory and cost estimates
-    %
-    % OUTPUT
-    % xEst = trajectory instances, popSize-by-1
-    % cEst = non-negative cost associated with each trajectory instance, double popSize-by-1
     function [xEst,cEst]=getResults(this)
-      xEst=cat(1,this.F{:});
-      cEst=this.cost;
+      [xEst,cEst]=getResults(this.M);
     end    
   end
   
-  methods (Access=public,Static=true)
+  methods (Static=true,Access=public)
     % Test a TOMMAS component
     %
     % componentString = name of the package containing the component, string
@@ -78,71 +47,6 @@ classdef tommas < tommasConfig & handle
     end
   end
   
-  methods (Access=private)
-    function refreshMeasures(this)
-      for k=1:numel(this.g)
-        refresh(this.g{k});
-      end
-    end
-    
-    function parameters=getParameters(this)
-      K=numel(this.F);
-      parameters=repmat(getBits(this.F{1},this.tmin),[K,1]);
-      for k=2:K
-        parameters(k,:)=getBits(this.F{k},this.tmin);
-      end
-    end
-    
-    function putParameters(this,parameters)
-      for k=1:numel(this.F)
-        this.F{k}=putBits(this.F{k},parameters(k,:),this.tmin);
-      end
-    end
-  end
-  
-end
-
-% Configurable objective function
-function varargout=objective(varargin)
-  persistent this
-  parameters=varargin{1};
-  if(~ischar(parameters))
-    numIndividuals=numel(this.F);
-    numGraphs=numel(this.g);
-    putParameters(this,parameters);
-    cost=zeros(numIndividuals,1);
-    for graph=1:numGraphs
-      [a,b]=findEdges(this.g{graph});
-      numEdges=numel(a);
-      for individual=1:numIndividuals
-        if( ~isempty(a) )
-          for edge=1:numEdges
-            cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},this.F{individual},a(1),b(1));
-          end
-        end
-      end
-    end
-    varargout{1}=cost;
-  elseif(strcmp(parameters,'put'))
-    this=varargin{2};
-  else
-    error('incorrect argument list');
-  end
-end
-
-% Turn a package identifier into an object
-%
-% INPUT
-% pkg = package identifier (directory name without '+' prefix), string
-% varargin = arguments for the class constructor
-%
-% OUTPUT
-% obj = object instance, class determined by pkg
-%
-% NOTES
-% The package directory must be on the path
-function obj=unwrapComponent(pkg,varargin)
-  obj=feval([pkg,'.',pkg],varargin{:});
 end
 
 function testDataContainer(container)

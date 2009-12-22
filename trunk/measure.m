@@ -6,7 +6,7 @@ classdef measure < handle
   end
   
   methods (Access=protected)
-    % Construct a measure given a URI
+    % Construct a measure
     %
     % INPUT
     % uri = uniform resource identifier, string

@@ -20,15 +20,15 @@ classdef bodyReference < trajectory
       b=this.b;
     end
 
-    function [ecef,quaternion,ecefRate,quaternionRate]=evaluate(this,t)
+    function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
       t((t<this.a)|(t>this.b))=NaN;
       assert(isa(t,'double'));
       posquat=double(eval(this.bodyPath)); % depends on t
       posquatdot=double(eval(this.bodyPathDiff)); % depends on t
-      ecef=posquat(1:3,:);
-      quaternion=posquat(4:7,:);
-      ecefRate=posquatdot(1:3,:);
-      quaternionRate=posquatdot(4:7,:);
+      position=posquat(1:3,:);
+      rotation=posquat(4:7,:);
+      positionRate=posquatdot(1:3,:);
+      rotationRate=posquatdot(4:7,:);
     end
   end
   

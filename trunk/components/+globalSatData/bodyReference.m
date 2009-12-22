@@ -14,29 +14,29 @@ classdef bodyReference < trajectory
       maindir = pwd;
       currdir = [maindir '/components/+globalSatData'];
       full_fname = fullfile(currdir,config.referenceTrajectoryFile);
-      [this.gpsTime, lon, lat, alt, vDOP, hDOP] = textread(full_fname,'%f %f %f %f %f %f', 'delimiter',',');
-      [X, Y, Z] = globalSatData.lolah2ecef(lon, lat, alt);
-      this.pts = [X Y Z];
+      [this.gpsTime, lon, lat, alt, vDOP, hDOP] = textread(full_fname,'%f %f %f %f %f %f','delimiter',',');
+      [X,Y,Z] = globalSatData.lolah2ecef(lon,lat,alt);
+      this.pts = [X,Y,Z];
     end
     
     function [a,b] = domain(this)
-      a = this.gpsTime(1);
-      b = this.gpsTime(end);
+      a=this.gpsTime(1);
+      b=this.gpsTime(end);
     end
     
-    function [ecef,quat,ecefRate,quatRate] = evaluate(this,t)
-      [a,b] = domain(this);
-      [ecef,ecefRate] = cardinalSpline(this.gpsTime, this.pts, t, this.splineTension, 0);
-      ecef = ecef';
-      ecefRate = ecefRate';
+    function [position,rotation,positionRate,rotationRate] = evaluate(this,t)
+      [a,b]=domain(this);
+      [position,positionRate]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0);
+      position=position';
+      positionRate=positionRate';
       K=numel(t);
-      quat = [ones(1,K);zeros(3,K)];
-      quatRate = zeros(4,K);
+      rotation=[ones(1,K);zeros(3,K)];
+      rotationRate=zeros(4,K);
       bad=(t<a)|(t>b);
-      ecef(:,bad)=NaN;
-      quat(:,bad)=NaN;
-      ecefRate(:,bad)=NaN;
-      quatRate(:,bad)=NaN;
+      position(:,bad)=NaN;
+      rotation(:,bad)=NaN;
+      positionRate(:,bad)=NaN;
+      rotationRate(:,bad)=NaN;
     end
   end
   

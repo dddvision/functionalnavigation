@@ -3,8 +3,12 @@ general:
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
  * Write unit tests to check interfaces and exception handling.
+ * Use start time referenceDate = datestr(now,30)?
 
 policy clarifications:
+ * This is an ANSI C++/Matlab repository.
+   * ALLOWED: makefile, .c, .cpp, .h, .m, .txt
+   * NOT ALLOWED: anything else (.dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32)
  * Packages should not assume that they are in the components directory.
  * Configuration file naming policy, especially for dataContainer.
  * Components must pass mlint test or contain a comment at each line explaining why not.
@@ -22,16 +26,13 @@ demonstration:
 optimizer:
  *** Objective inherits measure and dynamicModel?
  * Move most of tommas into the optimizer.
- * Move choice of tmin from tommasConfig to the optimizer?
  * Hide the creation of a plain "objective" behind the optimizer interface.
  * Wrap the "objective" so that optimizer never sees trajectories directly?
  * Have Rob create linkage-based GA crossover function.
 
 dynamicModel:
- * Require [ta,tb] as inputs to the constructor?
+ * Create a type for the interval [-1,1] or [0,1].
  * Make dynamicModelStub a discrete LTI system defined by A,B,C,D.
- * Method to extend number of model parameters to cover a later time.
- * Dynamic model takes inputs pqa, deltat, and parameters?
  * Recompute trajectory only when parameters change.
  * Handle display of trajectories with infinite domain bounds.
  * Specify evaluate outputs using string like 'pqrs'?
