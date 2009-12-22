@@ -26,11 +26,11 @@ classdef optimizerStub < optimizerStub.optimizerStubConfig & optimizer
       this.numLogical=description.numLogical;
       this.numUint32=description.numUint32;
       this.bitsPerBlock=this.numLogical+32*this.numUint32;
-      this.blocksPerSecond=this.bitsPerSecond/this.bitsPerBlock;
+      this.blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
       this.bits=logical(rand(this.popSizeDefault,this.bitsPerBlock*this.numBlocks)>0.5);
       blocks=bits2blocks(this,this.bits);
       for k=1:this.popSizeDefault
-        this.F{k}=unwrapComponent(dynamicModelName,this.referenceTime,this.blocksPerSecond);
+        this.F{k}=unwrapComponent(dynamicModelName,this.referenceTime);
         appendBlocks(this.F{k},blocks{k});
       end
       

@@ -6,7 +6,6 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     firstNewBlock % one-based indexing
     chunkSize
     initialTime
-    blocksPerSecond
     block % one-based indexing
     numInputs
     state % body state starting at initial time
@@ -18,18 +17,21 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     function description=getBlockDescription
       description=struct('numLogical',0,'numUint32',size(dynamicModelStub.dynamicModelStubConfig.B,2));
     end
+    
+    function blocksPerSecond=getUpdateRate
+      blocksPerSecond=dynamicModelStub.dynamicModelStubConfig.blocksPerSecond;
+    end
   end
   
   methods (Access=public)
-    function this=dynamicModelStub(initialTime,blocksPerSecond)
-      this=this@dynamicModel(initialTime,blocksPerSecond);
+    function this=dynamicModelStub(initialTime)
+      this=this@dynamicModel(initialTime);
       fprintf('\n');
       fprintf('\ndynamicModelStub::dynamicModelStub');
       this.numStates = 12;
       this.firstNewBlock = 1;
       this.chunkSize = 256;
       this.initialTime = initialTime;
-      this.blocksPerSecond = blocksPerSecond;
       this.block = struct('logical',{},'uint32',{});
       this.numInputs = size(this.B,2);
       this.state = zeros(this.numStates,this.chunkSize);
@@ -45,7 +47,8 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     function setInitialState(this,position,rotation,positionRate,rotationRate)
       fprintf('\n');
       fprintf('\ndynamicModelStub::setInitialState');
-      this.state(:,1) = [position;Quat2AxisAngle(rotation);positionRate;rotationRate];
+      omega=2*Quat2Homo(rotation)'*rotationRate;
+      this.state(:,1) = [position;Quat2AxisAngle(rotation);positionRate;omega(1:3)];
       this.firstNewBlock = 1;
     end
     
@@ -62,6 +65,8 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     end
     
     function appendBlocks(this,blocks)
+      fprintf('\n');
+      fprintf('\ndynamicModelStub::appendBlocks');
       this.block=cat(2,this.block,blocks);
       if((numel(this.block)+1)>size(this.state,2))
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];
@@ -87,14 +92,14 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       position=NaN(3,N);
       rotation=NaN(4,N);
       positionRate=NaN(3,N);
-      rotationRate=NaN(3,N);
+      rotationRate=NaN(4,N);
       good=logical((t>=ta)&(t<=tb));
       for n=find(good)
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
         position(:,n)=substate(1:3);
         rotation(:,n)=AxisAngle2Quat(substate(4:6));
         positionRate(:,n)=substate(7:9);
-        rotationRate(:,n)=substate(10:12);
+        rotationRate(:,n)=0.5*Quat2Homo(rotation(:,n))*[0;substate(10:12)];
       end
     end
   end
@@ -125,6 +130,17 @@ end
 
 function force=block2unitforce(block)
   force=2*(double(reshape(block.uint32,[6,1]))/double(intmax('uint32')))-1;
+end
+
+function h=Quat2Homo(q)
+  q1=q(1);
+  q2=q(2);
+  q3=q(3);
+  q4=q(4);
+  h=[[q1,-q2,-q3,-q4]
+     [q2, q1,-q4, q3]
+     [q3, q4, q1,-q2]
+     [q4,-q3, q2, q1]];
 end
 
 function V=Quat2AxisAngle(Q)

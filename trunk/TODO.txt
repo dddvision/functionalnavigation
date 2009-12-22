@@ -4,6 +4,7 @@ general:
  * Add SICK laser scanner interface for legacy purposes.
  * Write unit tests to check interfaces and exception handling.
  * Use start time referenceDate = datestr(now,30)?
+ * Simplify display technique to handle large domains, including tb=inf.
 
 policy clarifications:
  * This is an ANSI C++/Matlab repository.
@@ -25,16 +26,11 @@ demonstration:
 
 optimizer:
  *** Objective inherits measure and dynamicModel?
- * Move most of tommas into the optimizer.
- * Hide the creation of a plain "objective" behind the optimizer interface.
  * Wrap the "objective" so that optimizer never sees trajectories directly?
  * Have Rob create linkage-based GA crossover function.
 
 dynamicModel:
- * Create a type for the interval [-1,1] or [0,1].
  * Make dynamicModelStub a discrete LTI system defined by A,B,C,D.
- * Recompute trajectory only when parameters change.
- * Handle display of trajectories with infinite domain bounds.
  * Specify evaluate outputs using string like 'pqrs'?
 
 measure:
