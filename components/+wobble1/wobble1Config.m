@@ -1,6 +1,6 @@
 classdef wobble1Config
   
-  properties (Constant=true)
+  properties (Constant=true,GetAccess=protected)
     dim=6;
     scalep=0.02;
     scaleq=0.1;

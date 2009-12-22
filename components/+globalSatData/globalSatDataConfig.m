@@ -1,6 +1,6 @@
 classdef globalSatDataConfig < handle
   
-  properties (Constant=true)
+  properties (Constant=true,GetAccess=protected)
     % File containing a list of points that define a reference trajectory
     % Must contain comma separated data in the following form:
     %   time, lon, lat, alt, hDOP, vDOP

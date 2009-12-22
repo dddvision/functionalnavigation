@@ -41,19 +41,19 @@ classdef bodyReference < trajectory
       b=this.T_imu(end);
     end
   
-    function [ecef,quat,ecefRate,quatRate]=evaluate(this,t)
+    function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
       [a,b]=domain(this);
       [pq,pqRate]=cardinalSpline(this.x_imu,this.T_imu,t);
-      ecef=pq(1:3,:);
-      quat=pq(4:7,:);
-      ecefRate=pqRate(1:3,:);
-      quatRate=pqRate(4:7,:);
-      quat=quatNorm(quat);
+      position=pq(1:3,:);
+      rotation=pq(4:7,:);
+      positionRate=pqRate(1:3,:);
+      rotationRate=pqRate(4:7,:);
+      rotation=quatNorm(rotation);
       bad=(t<a)|(t>b);
-      ecef(:,bad)=NaN;
-      quat(:,bad)=NaN;
-      ecefRate(:,bad)=NaN;
-      quatRate(:,bad)=NaN;
+      position(:,bad)=NaN;
+      rotation(:,bad)=NaN;
+      positionRate(:,bad)=NaN;
+      rotationRate(:,bad)=NaN;
     end
   end
   

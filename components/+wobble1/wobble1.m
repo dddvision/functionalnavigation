@@ -13,28 +13,13 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
       this.parametersPerSecond=15;
       this.data=logical(rand(1,30)>0.5);
     end
-
-    function bits=getBits(this,tmin)
-      assert(isa(tmin,'double'));
-      bits=this.data;
-    end
-
-    function this=putBits(this,bits,tmin)
-      fprintf('\n');
-      fprintf('\nwobble1::putBits');
-      assert(nargout==1);
-      fprintf('\ntmin = %f',tmin);
-      this.data(:)=bits(:);
-      fprintf('\nbits = ');
-      fprintf('%d',this.data);
-    end
     
     function [a,b]=domain(this)
       a=0;
       b=numel(this.data)/this.parametersPerSecond;
     end
     
-    function [ecef,quaternion,ecefRate,quaternionRate]=evaluate(this,t)
+    function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
       ta=domain(this);
       t(t<ta)=NaN;
       vaxis=this.data((this.omegabits+1):(end-mod(numel(this.data),this.dim)));
@@ -50,30 +35,23 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
       sint=sin(omega*t);
 
       pnoise=this.scalep*[rate_bias(1)*sint;rate_bias(2)*sint;rate_bias(3)*sint];
-      ecef=[0*t;t;0.*t]+pnoise;
+      position=[0*t;t;0.*t]+pnoise;
       
       if( nargout>1 )
         qnoise=this.scaleq*[rate_bias(4)*sint;rate_bias(5)*sint;rate_bias(6)*sint];
-        quaternion=AxisAngle2Quat(qnoise);
+        rotation=AxisAngle2Quat(qnoise);
         if( nargout>2 )
           omegacos=omega*cos(omega*t);
           pdnoise=this.scalep*[rate_bias(1)*omegacos;rate_bias(2)*omegacos;rate_bias(3)*omegacos];
-          ecefRate=[0*t;1+0*t;0.*t]+pdnoise;
+          positionRate=[0*t;1+0*t;0.*t]+pdnoise;
           if( nargout>3 )      
             qdnoise=this.scaleq*[rate_bias(4)*omegacos;rate_bias(5)*omegacos;rate_bias(6)*omegacos];
-            quaternionRate=[0*t;qdnoise/2]; % small angle approximation
+            rotationRate=[0*t;qdnoise/2]; % small angle approximation
           end
         end
       end
     end
   end
-  
-%   methods (Static=true)
-%     function cost=priorCost(bits,tmin)
-%       assert(isa(tmin,'double'));
-%       cost=zeros(size(bits,1),1);
-%     end
-%   end
   
 end
 
@@ -92,18 +70,13 @@ function q=AxisAngle2Quat(v)
   v2=v(2,:);
   v3=v(3,:);
   n=sqrt(v1.*v1+v2.*v2+v3.*v3);
-  if isnumeric(v)
-    ep=1E-12;
-    n(n<ep)=ep;
-  end
+  n(n<eps)=eps;
   a=v1./n;
   b=v2./n;
   c=v3./n;
-  if isnumeric(v)
-    zn=[zeros(size(n));n];
-    zn=unwrap(zn);
-    n=zn(2,:);
-  end
+  zn=[zeros(size(n));n];
+  zn=unwrap(zn);
+  n=zn(2,:);
   th2=n/2;
   s=sin(th2);
   q1=cos(th2);

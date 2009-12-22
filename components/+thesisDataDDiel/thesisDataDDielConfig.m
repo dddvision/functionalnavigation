@@ -1,5 +1,5 @@
 classdef thesisDataDDielConfig  < handle
-  properties (Constant=true)
+  properties (Constant=true,GetAccess=protected)
     % dataset name: 'Factory7', 'GantryB', 'GantryC', or 'GantryF'
     dataSetName='GantryB';
   

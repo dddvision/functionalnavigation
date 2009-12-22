@@ -64,8 +64,8 @@ function h=mainDisplay(x,c)
   gamma=4;
   
   K=numel(x);
-  px=((1-c)/max(1-c)).^gamma;
-  [alpha,color]=mainDisplayGetAllSettings(K,'alpha',px');
+  px=reshape(((1-c)/max(1-c)).^gamma,[K,1]);
+  [alpha,color]=mainDisplayGetAllSettings(K,'alpha',px);
   
   % graphical display
   hfigure=figure;
@@ -108,7 +108,7 @@ function h=mainDisplayIndividual(x,alpha,color)
 
   [p,q]=evaluate(x,t);
   
-  scale=0.001*norm(max(p(:,1:substeps:end),[],2)-min(p(:,1:substeps:end),[],2));
+  scale=0.002*norm(max(p(:,1:substeps:end),[],2)-min(p(:,1:substeps:end),[],2));
 
   h=[h,mainDisplayPlotFrame(p(:,1),q(:,1),alpha,scale,color)]; % plot first frame
   for bs=1:bigsteps

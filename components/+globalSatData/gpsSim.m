@@ -66,8 +66,8 @@ classdef gpsSim < gps
       assert(k<=this.kb);
       
       % Evaluate the reference trajectory at the measurement time
-      ecef = evaluate(this.refTraj,getTime(this,k));
-      [lon,lat,alt] = globalSatData.ecef2lolah(ecef(1,:),ecef(2,:),ecef(3,:));
+      position = evaluate(this.refTraj,getTime(this,k));
+      [lon,lat,alt] = globalSatData.ecef2lolah(position(1,:),position(2,:),position(3,:));
       
       % Add error based on real Global Sat gps data
       lon = lon+this.noise(2,k);
