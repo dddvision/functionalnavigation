@@ -118,6 +118,8 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
 	  y=cor_in(:,2);
       u=cor_in(:,1)-cor_out(:,1);
 	  v=cor_in(:,2)-cor_out(:,2);
+	  u=u';
+	  v=v';
       
 	  translation(1)=pb(1)-pa(1);
       translation(2)=pb(2)-pa(2);
@@ -125,13 +127,13 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       rotation(1)=Eb(1)-Ea(1);
       rotation(2)=Eb(2)-Ea(2);
       rotation(3)=Eb(3)-Ea(3);
-      [uvr,uvt]=generateFlow(this,translation,rotation,imsize);
+      [uvr,uvt]=generateFlowSparse(this,translation,rotation,cor_in);
       
       cost=computeCost(u,v,uvr,uvt);
       fprintf('\ncost = %f',cost);      
   end  
   
-  function [uvr,uvt]=generateFlow(this,translation,rotation,imsize)
+  function [uvr,uvt]=generateFlowSparse(this,translation,rotation,points)
       s1=sin(rotation(1));
       c1=cos(rotation(1));
       s2=sin(rotation(2));
@@ -139,28 +141,22 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       s3=sin(rotation(3));
       c3=cos(rotation(3));
       R=[c3*c2, c3*s2*s1-s3*c1, s3*s1+c3*s2*c1; s3*c2, c3*c1+s3*s2*s1, s3*s2*c1-c3*s1; -s2, c2*s1, c2*c1];
-      m=imsize(1);
-      n=imsize(2);
-      [ii,jj]=ndgrid((1:m)-1,(1:n)-1);
-      pix=[jj(:)';ii(:)'];
+      pix(1,:)=points(:,1);
+      pix(2,:)=points(:,2);
       ray=inverseProjection(this.sensor,pix);
       ray_new=transpose(R)*ray; 
       x_new=projection(this.sensor,ray_new);
-      fr(1,:)=pix(1,:)-x_new(1,:);
-      fr(2,:)=pix(2,:)-x_new(2,:);
+      uvr(1,:)=pix(1,:)-x_new(1,:);
+      uvr(2,:)=pix(2,:)-x_new(2,:);
       T_norm=(1E-8)*translation/sqrt(dot(translation,translation));
       ray_new(1,:)=ray(1,:)-T_norm(3);
       ray_new(2,:)=ray(2,:)-T_norm(1);
       ray_new(3,:)=ray(3,:)-T_norm(2);
       x_new=projection(this.sensor,ray_new);
-      ft(1,:)=pix(1,:)-x_new(1,:);
-      ft(2,:)=pix(2,:)-x_new(2,:);
-      uvr(1,:,:)=reshape(fr(1,:),m,n);
-      uvr(2,:,:)=reshape(fr(2,:),m,n);
-      uvt(1,:,:)=reshape(ft(1,:),m,n);
-      uvt(2,:,:)=reshape(ft(2,:),m,n);
-      uvr(isnan(uvr(:,:,:))) = 0;
-      uvt(isnan(uvt(:,:,:))) = 0;
+      uvt(1,:)=pix(1,:)-x_new(1,:);
+      uvt(2,:)=pix(2,:)-x_new(2,:);
+      uvr(isnan(uvr(:,:)))=0;
+      uvt(isnan(uvt(:,:)))=0;     
   end
   
 end
