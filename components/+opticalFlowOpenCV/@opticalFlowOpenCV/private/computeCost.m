@@ -1,10 +1,10 @@
  function cost=computeCost(Vx_OF,Vy_OF,uvr,uvt)
 	  [FIELD_Y,FIELD_X]=size(Vx_OF);
 	  upperBound=(FIELD_X.*FIELD_Y.*2);
-	  Vxr(:,:)=uvr(1,:,:);
-	  Vyr(:,:)=uvr(2,:,:);
-	  Vxt(:,:)=uvt(1,:,:);
-	  Vyt(:,:)=uvt(2,:,:);
+	  Vxr=uvr(1,:);
+	  Vyr=uvr(2,:);
+	  Vxt=uvt(1,:);
+	  Vyt=uvt(2,:);
 	  % Drop magnitude of translation
 	  mag=sqrt(Vxt.*Vxt + Vyt.*Vyt);
 	  mag(mag(:)==0)=1; 
@@ -26,4 +26,4 @@
 	  ErrorY=(Vy_OFTD - Vyt);
 	  ErrorMag=sqrt(ErrorX.*ErrorX + ErrorY.*ErrorY);
 	  cost=sum(ErrorMag(:))/upperBound; % TODO: check this calculation
-  end
+ end
