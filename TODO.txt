@@ -1,4 +1,10 @@
 general:
+ * Write Q2 report including Tony's dynamic model code and Avinash's GPS dataset
+ * Schedule meeting with AFRL.
+ * Coordinate with Prince to introduce caching to the SURF measure.
+ * Send commit emails to a google group, and invite UCF students to join.
+ * Create repository for UCF to place visual measures with license issues.
+ * Write unit tests to check interfaces and exception handling.
  * Make class aliases for "time", "index", "real" and other simple classes?
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
