@@ -30,14 +30,16 @@ function main
   % display trajectory and cost estimates
   mainDisplay(xEst,cEst);
 
-  % take an optimization step
-  step(tom);
+  for iter=1:5
+    % take an optimization step
+    step(tom);
+    
+    % get trajectory and cost estimates
+    [xEst,cEst]=getResults(tom);
 
-  % get trajectory and cost estimates
-  [xEst,cEst]=getResults(tom);
-
-  % display trajectory and cost estimates
-  mainDisplay(xEst,cEst);
+    % display trajectory and cost estimates
+    mainDisplay(xEst,cEst);
+  end
 
   % done
   fprintf('\n');

@@ -5,5 +5,6 @@ classdef middleburyDataConfig  < handle
     scene = 'Art'; % 'Art', 'Books', 'Aloe', ...}
     illumination = 'Illum2'; % 'Illum1', 'Illum2', 'Illum3'
     exposure = 'Exp1'; % 'Exp0', 'Exp1', 'Exp2'
+    fps = 3; % (3) frames per second
   end
 end
