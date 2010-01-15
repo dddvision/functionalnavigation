@@ -7,7 +7,7 @@ classdef matlabGA1Config < handle
       referenceTime = 0;
     
       % HACK: should adjust the trajectory domain based on data
-      numBlocks = 5;
+      numBlocks = 3;
     end
   
 end

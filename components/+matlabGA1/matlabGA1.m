@@ -149,12 +149,12 @@ function varargout=objective(varargin)
       for individual=1:numIndividuals
         if( ~isempty(a) )
           for edge=1:numEdges
-            cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},this.F{individual},a(1),b(1));
+            cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},this.F{individual},a(edge),b(edge));
           end
         end
       end
     end
-    varargout{1}=cost;
+    varargout{1}=cost/numEdges;
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else

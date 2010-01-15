@@ -5,7 +5,7 @@ classdef tommasConfig < handle
     dynamicModel = 'dynamicModelStub';
     
     % select optimizer
-    optimizer = 'optimizerStub';
+    optimizer = 'matlabGA1';
   
     % select data container
     dataURI = 'matlab:middleburyData.middleburyData';
