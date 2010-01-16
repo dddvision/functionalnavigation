@@ -1,29 +1,14 @@
 general:
  * Write Q2 report including Tony's dynamic model code and Avinash's GPS dataset
  * Schedule meeting with AFRL.
- * Coordinate with Prince to introduce caching to the SURF measure.
+ * Coordinate with Prince to introduce caching in visual measures.
  * Send commit emails to a google group, and invite UCF students to join.
  * Create repository for UCF to place visual measures with license issues.
  * Write unit tests to check interfaces and exception handling.
  * Make class aliases for "time", "index", "real" and other simple classes?
- * Add rangefinder class that could also represent bearing-only tracker output.
- * Add SICK laser scanner interface for legacy purposes.
  * Write unit tests to check interfaces and exception handling.
  * Use start time referenceDate = datestr(now,30)?
  * Simplify display technique to handle large domains, including tb=inf.
-
-policy clarifications:
- * This is an ANSI C++/Matlab repository.
-   * ALLOWED: makefile, .c, .cpp, .h, .m, .txt
-   * NOT ALLOWED: anything else (.dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32)
- * Packages should not assume that they are in the components directory.
- * Configuration file naming policy, especially for dataContainer.
- * Components must pass mlint test or contain a comment at each line explaining why not.
- * Publicise the programming guidelines set up for CMARS.
- * Use fprintf instead of disp() or warning().
- * Component bugs
-   * Should not be submitted to the functionalnavigation issue tracker.
-   * Should be noted with TODO statements within code.
 
 demonstration:
  *** Design tabletop hardware setup
@@ -31,7 +16,6 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
- *** Objective inherits measure and dynamicModel?
  * Wrap the "objective" so that optimizer never sees trajectories directly?
  * Have Rob create linkage-based GA crossover function.
 
@@ -41,21 +25,20 @@ dynamicModel:
 
 measure:
  * Implement measure/sensor compatibility checking in measure configuration.
- * Add SIFT or SURF visual measure.
- * Speed up optical flow.
+ * Use SURF instead of SIFT.
+ * Avoid platform specific binaries whenever possible.
  * Require [ta,tb] as inputs to the constructor?
  * Clarify throughout the documentation that all measures are two-point.
  * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
- * Add accuracy tolerance (or computational budget) input to computeEdgeCost?
  * Add an example of a GPS measure (maybe in measureStub).
 
 dataContainer:
+ * Add rangefinder class that could also represent bearing-only tracker output.
+ * Add SICK laser scanner interface for legacy purposes.
  * listSensors() should return a list of strings identifying sensors?
  * Make stub that contains all sensors and type checks its inputs.
  * Find a way to distinguish between multiple sensors that derive from the same class.
  * Coordinate with Jimmy Touma for AFRL data.
- * Remove dependence on Symbolic Toolbox.
-   * Convert thesis symbolic BodyPath and its derivative to char and talk to Seth Teller about saving/moving it.
  * VAMAV OpenSceneGraph simulator?
  * Packaging King Air flight?
  * Inertial sensor interface should specify its error characteristics?
