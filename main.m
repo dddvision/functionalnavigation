@@ -58,10 +58,15 @@ function h=mainDisplay(x,c)
   fprintf('\n%f',c);
 
   % nonlinearity of transparency display
-  gamma=4;
+  gamma=2;
   
   K=numel(x);
-  px=reshape(((1-c)/max(1-c)).^gamma,[K,1]);
+  fitness=max(c)-c;
+  if( any(fitness>eps) )
+    px=reshape((fitness/max(fitness)).^gamma,[K,1]);
+  else
+    px=zeros(K,1);
+  end
   [alpha,color]=mainDisplayGetAllSettings(K,'alpha',px);
   
   % graphical display
