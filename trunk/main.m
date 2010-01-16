@@ -15,11 +15,6 @@ function main
   componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
   addpath(componentPath);
   fprintf('\npath added: %s',componentPath);
-   
-  % run diagnostic tests on a component
-%  tommas.testComponent('middleburyData');
-%  tommas.testComponent('thesisDataDDiel');
-%  tommas.testComponent('globalSatData');
   
   % create an instance of the trajectory optimization manager
   tom=tommas;

@@ -11,7 +11,7 @@ classdef tommasConfig < handle
     dataURI = 'matlab:middleburyData.middleburyData';
         
     % select measures
-    measures = {'opticalFlowOpenCV'};
+    measures = {'pointBasedMeasure'};
   end
     
 end
