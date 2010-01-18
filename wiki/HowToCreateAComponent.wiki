@@ -7,7 +7,7 @@ This project provides a framework for testing navigation algorithms.  Do you wan
 
 There are an infinite number of ways to represent system dynamics, trajectory measures, and optimization methods.  Therefore, we intend to define clear interfaces and leave issues of information representation to the implementations of individual components.
 
-=== Interface Control Documents (ICDs) ===
+=== Interface Control Document ===
 
 Specific guidelines for each component:
   * [InterfaceDynamicModels Interface for Dynamic Models]
@@ -17,7 +17,7 @@ Specific guidelines for each component:
 General coding guidelines for this project:
   * RULE: Only upload plain text, C++, or Matlab files (makefile, .c, .cpp, .h, .m, .txt)
   * RULE: Do not upload binaries (.jpg, .png, .dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32)
-  * RULE: Packages should not assume that they are in the components directory.
+  * RULE: Packages should not assume that they are in the ./components directory.
   * RULE: Component configuration files have the same name as the component with “Config” appended.
   * RULE: Framework interface bugs should be submitted to the Google Code issue tracker.
   * RULE: Bugs in components should be noted using TODO statements within code or in a TODO.txt file that accompanies the component.
@@ -27,25 +27,13 @@ General coding guidelines for this project:
   * RULE: Use no more than 120 characters per line.
   * RULE: Place constants in configuration files or headers whenever possible.
   * RULE: Avoid using global variables.
-  * RULE (C++): Code must compile using "g++ -Wall -Werror -ansi –pedantic”
-  * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
+
   * RULE (Matlab): Components must pass the Matlab "mlint" test or contain a comment at each line explaining why not.
   * RULE (Matlab): Use fprintf() instead of disp() or warning().
-  * RULE: Name variables beginning with a lower-case letter, and capitalize the first letter of concatenated words.
-{{{
-myVariable
-isPrime
-computeSVD
-}}}
-  * RULE: No space between function identifier and the opening parenthesis.
-{{{
-myFunction(void);
-if( a==b )
-}}}
-  * RULE: Use whitespace consistently.
-{{{
-this =  is +bad;
-}}}
+
+  * RULE (C++): Code must compile using "g++ -Wall -Werror -ansi –pedantic”
+  * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
+
   * RULE: Place a description above each function that identifies INPUT, OUTPUT, RETURN VALUE, and NOTES when applicable.
 {{{
 // Description of C++ function
@@ -76,6 +64,22 @@ this =  is +bad;
 % NOTES
 % Here is extra information
 }}}
+  * RULE: Name variables beginning with a lower-case letter, and capitalize the first letter of concatenated words.
+{{{
+myVariable
+isPrime
+computeSVD
+}}}
+  * RULE: No space between function identifier and the opening parenthesis.
+{{{
+myFunction(void);
+if( a==b )
+}}}
+  * RULE: Use whitespace consistently.
+{{{
+this =  is +bad;
+}}}
+
   * RULE (C++): Use long descriptive variable names or very short ones coupled with detailed descriptions.
 {{{
 int triangleVertices = 3;
