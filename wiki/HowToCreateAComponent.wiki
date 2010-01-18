@@ -121,7 +121,7 @@ function2(int,int,int,int,int);
 {{{
 if(a)
 {
-  for( i=0 ; i<max ; i++ )
+  for( i=0 ; i<iMax ; i++ )
   {
     b[i]=c[i];
   }
