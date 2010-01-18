@@ -105,7 +105,7 @@ int k;
 {{{
 int a = 0;
 double **matrix = NULL;
-double point[DIM] = {0,0};
+double point[2] = {0,0};
 }}}
   * RULE (C++): Pointer stars should be grouped with variables.
 {{{
@@ -123,7 +123,7 @@ if(a)
 {
   for( i=0 ; i<max ; i++ )
   {
-    b=c;
+    b=c[i];
   }
 }
 }}}
