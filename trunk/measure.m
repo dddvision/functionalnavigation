@@ -52,7 +52,7 @@ classdef measure < handle
     % flag = true if no edges span more than one node and false otherwise, logical scalar
     flag=isDiagonal(this);
     
-    % Find all edges in the graph
+    % Find all edges in the graph and list the nodes that they connect
     %
     % OUTPUT
     % ka = lower node index for each edge, uint32 N-by-1
@@ -64,7 +64,7 @@ classdef measure < handle
     % If graph is diagonal, then a and b are identical
     [ka,kb]=findEdges(this);
     
-    % Evaluate an edge
+    % Evaluate the cost of edge
     %
     % INPUT
     % x = trajectory instance
