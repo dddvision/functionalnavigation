@@ -30,9 +30,12 @@ classdef dynamicModel < trajectory
     % OUTPUT
     % description.numLogical = number of 1-bit logical parameters, uint32 scalar
     % description.numUint32 = number of 32-bit unsigned integer parameters, uint32 scalar
+    %
+    % NOTES
+    % Unsigned integers may be treated as range-bounded doubles via static casting
     description=getBlockDescription;
     
-    % Get the dynamic model update rate
+    % Get the conversion between number of blocks and associated time domain extension
     %
     % OUTPUT
     % blocksPerSecond = each block will extend the domain the reciprical of this rate, double scalar
@@ -40,7 +43,7 @@ classdef dynamicModel < trajectory
   end
   
   methods (Abstract=true,Access=public)
-    % Get the total number of blocks
+    % Get the total number of parameter blocks
     %
     % OUTPUT
     % numBlocks = total number of blocks, uint32 scalar
