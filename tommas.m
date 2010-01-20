@@ -2,7 +2,7 @@
 classdef tommas < tommasConfig & handle
   
   properties (GetAccess=private,SetAccess=private)
-    optimizer
+    optimizerInstance
   end
   
   methods (Access=public)
@@ -13,16 +13,16 @@ classdef tommas < tommasConfig & handle
       warning('on','all');
       intwarning('off');
       reset(RandStream.getDefaultStream);
-      this.optimizer=unwrapComponent(this.optimizer);
-      defineProblem(this.optimizer,this.dynamicModel,this.measures,this.dataURI);
+      this.optimizerInstance=unwrapComponent(this.optimizer);
+      defineProblem(this.optimizerInstance,this.dynamicModel,this.measures,this.dataURI);
     end
     
     function step(this)
-      step(this.optimizer);
+      step(this.optimizerInstance);
     end
     
     function [xEst,cEst]=getResults(this)
-      [xEst,cEst]=getResults(this.optimizer);
+      [xEst,cEst]=getResults(this.optimizerInstance);
     end    
   end
   
