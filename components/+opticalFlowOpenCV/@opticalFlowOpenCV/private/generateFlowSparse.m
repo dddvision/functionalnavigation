@@ -5,15 +5,20 @@ function [uvr,uvt]=generateFlowSparse(this,translation,rotation,points)
   c2=cos(rotation(2));
   s3=sin(rotation(3));
   c3=cos(rotation(3));
-  R=[c3*c2, c3*s2*s1-s3*c1, s3*s1+c3*s2*c1; s3*c2, c3*c1+s3*s2*s1, s3*s2*c1-c3*s1; -s2, c2*s1, c2*c1];
+  invR=[c3*c2,s3*c2,-s2;c3*s2*s1-s3*c1,c3*c1+s3*s2*s1,c2*s1;s3*s1+c3*s2*c1,s3*s2*c1-c3*s1,c2*c1];
   pix(1,:)=points(:,1);
   pix(2,:)=points(:,2);
   ray=inverseProjection(this.sensor,pix);
-  ray_new=transpose(R)*ray; 
+  ray_new=invR*ray; 
   x_new=projection(this.sensor,ray_new);
   uvr(1,:)=pix(1,:)-x_new(1,:);
   uvr(2,:)=pix(2,:)-x_new(2,:);
-  T_norm=(1E-8)*translation/sqrt(dot(translation,translation));
+  T_mag=sqrt(dot(translation,translation));
+  if(T_mag<eps)
+    T_norm=zeros(1:3);
+  else
+    T_norm=(1E-8)*translation/T_mag;
+  end
   ray_new(1,:)=ray(1,:)-T_norm(3);
   ray_new(2,:)=ray(2,:)-T_norm(1);
   ray_new(3,:)=ray(3,:)-T_norm(2);
