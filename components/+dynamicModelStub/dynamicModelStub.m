@@ -36,8 +36,8 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       this.numInputs = size(this.B,2);
       this.state = zeros(this.numStates,this.chunkSize);
       ABd = expm([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]/this.blocksPerSecond);
-      this.Ad = ABd(1:this.numStates,1:this.numStates);
-      this.Bd = ABd(1:this.numStates,(this.numStates+1):end);
+      this.Ad = sparse(ABd(1:this.numStates,1:this.numStates));
+      this.Bd = sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
 
     function numBlocks=getNumBlocks(this)
