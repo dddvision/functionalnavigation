@@ -4,7 +4,11 @@ function main
   evalin('base','clear(''classes'')');
   close('all');
   drawnow;
-
+  
+  % options
+  displayIncremental=false; % option to display incremental results
+  numIterations=5;
+  
   % check matlab version before instantiating any objects
   matlab_version=version('-release');
   if(str2double(matlab_version(1:4))<2008)
@@ -15,26 +19,28 @@ function main
   componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
   addpath(componentPath);
   fprintf('\npath added: %s',componentPath);
-  
+
   % create an instance of the trajectory optimization manager
   tom=tommas;
 
-  % get initial trajectory and cost estimates
+  % optional iterations
+  for k=1:numIterations
+    
+    % optional display
+    if(displayIncremental)
+      [xEst,cEst]=getResults(tom);
+      mainDisplay(xEst,cEst);
+    end
+
+    % take an optimization step
+    step(tom);
+  end
+      
+  % get trajectory and cost estimates
   [xEst,cEst]=getResults(tom);
 
   % display trajectory and cost estimates
   mainDisplay(xEst,cEst);
-
-  for iter=1:5
-    % take an optimization step
-    step(tom);
-    
-    % get trajectory and cost estimates
-    [xEst,cEst]=getResults(tom);
-
-    % display trajectory and cost estimates
-    mainDisplay(xEst,cEst);
-  end
 
   % done
   fprintf('\n');
@@ -85,6 +91,7 @@ function h=mainDisplay(x,c)
 
   h=[];
   for k=1:K
+    % grows in loop because number of handles is hard to determine
     h=[h,mainDisplayIndividual(x(k),alpha(k),color(k,:))];
   end
   drawnow;  
@@ -118,7 +125,7 @@ function h=mainDisplayIndividual(x,alpha,color)
   h=[h,plot3(p(1,:),p(2,:),p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3))];
   for bs=1:bigsteps
     ksub=(bs-1)*substeps+(1:(substeps+1));
-    %h=[h,mainDisplayPlotLine(p(1,ksub),p(2,ksub),p(3,ksub),alpha,scale,color)]; % plot line segments
+    % grows in loop because number of handles is hard to determine
     h=[h,mainDisplayPlotFrame(p(:,ksub(end)),q(:,ksub(end)),alpha,scale,color)]; % plot terminating frame
   end
 end
