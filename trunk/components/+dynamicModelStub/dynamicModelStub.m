@@ -117,7 +117,7 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       if(dt<eps)
         substate = this.state(:,k+1);
       else
-        ABsub = expm([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]*dt);
+        ABsub = expmApprox([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]*dt);
         Asub = ABsub(1:this.numStates,1:this.numStates);
         Bsub = ABsub(1:this.numStates,(this.numStates+1):end);
         force = block2unitforce(this.block(k+1));
@@ -128,8 +128,13 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     
 end
 
+function expA=expmApprox(A)
+  expA=eye(size(A))+A+(A*A)/2;
+end
+
 function force=block2unitforce(block)
-  force=2*(double(reshape(block.uint32,[6,1]))/double(intmax('uint32')))-1;
+  imax=4294967295;
+  force=2*(double(reshape(block.uint32,[6,1]))/imax)-1;
 end
 
 function h=Quat2Homo(q)
@@ -169,9 +174,6 @@ function q=AxisAngle2Quat(v)
   a=v1./n;
   b=v2./n;
   c=v3./n;
-  zn=[zeros(size(n));n];
-  zn=unwrap(zn);
-  n=zn(2,:);
   th2=n/2;
   s=sin(th2);
   q1=cos(th2);
