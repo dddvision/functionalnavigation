@@ -1,4 +1,4 @@
-classdef thesisDataDDiel < dataContainer
+classdef thesisDataDDiel < thesisDataDDiel.thesisDataDDielConfig & dataContainer
 
   properties (GetAccess=private,SetAccess=private)
     hasRef

@@ -17,6 +17,19 @@ function data=computeIntermediateData(this,ka,kb)
   [pixA,pixB]=mexOpticalFlowOpenCV(double(ia),double(ib),double(this.isDense),this.windowSize,this.levels);
   data=struct('pixA',pixA,'pixB',pixB);
   
+  if(this.displayFlow)
+    pixA=pixA+1;
+    pixB=pixB+1;
+    figure;
+    colormap('gray');
+    imagesc(ia);
+    hold('on');
+    for ind = 1: size(pixA,1)
+      line([pixA(ind,1) pixB(ind,1)], [pixA(ind,2) pixB(ind,2)],'Color','c');
+    end
+    hold('off');
+  end
+  
 end
   
 % add 1 to indicies for matlab representation

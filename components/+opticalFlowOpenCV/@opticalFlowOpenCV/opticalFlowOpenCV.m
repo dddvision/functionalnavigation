@@ -83,6 +83,9 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
           a=ka:(kb-1);
           b=(ka+1):kb;
         end
+        % HACK: limit this measure to 25 graph edges
+        a=a(1:20);
+        b=b(1:20);
       end
     end
     
