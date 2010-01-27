@@ -1,38 +1,38 @@
 general:
- * Write Q2 report including Tony's dynamic model code and Avinash's GPS dataset
+ * Create powerpoint for quarterly review (internal and external).
  * Schedule meeting with AFRL.
- * Coordinate with Prince to introduce caching in visual measures.
- * Send commit emails to a google group, and invite UCF students to join.
- * Create repository for UCF to place visual measures with license issues.
  * Write unit tests to check interfaces and exception handling.
  * Make class aliases for "time", "index", "real" and other simple classes?
- * Write unit tests to check interfaces and exception handling.
  * Use start time referenceDate = datestr(now,30)?
- * Simplify display technique to handle large domains, including tb=inf.
+ * Simplify display technique for speed given large domains, including tb=inf.
 
 demonstration:
- *** Design tabletop hardware setup
- * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes
+ * Access camera and inertial sensor on a MacBook.
+ * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
  * Wrap the "objective" so that optimizer never sees trajectories directly?
  * Have Rob create linkage-based GA crossover function.
 
-dynamicModel:
- * Make dynamicModelStub a discrete LTI system defined by A,B,C,D.
+trajectory:
  * Specify evaluate outputs using string like 'pqrs'?
+ * Dodument that evaluations are in the "pose and tangent pose" space.
+
+dynamicModel:
+ * Add data URI input to constructor.
 
 measure:
- * Implement measure/sensor compatibility checking in measure configuration.
+ * Check rotation equation in opticalFlowOpenCV/generateFlowSparse
  * Use SURF instead of SIFT.
- * Avoid platform specific binaries whenever possible.
+ * Implement measure/sensor compatibility checking in measure configuration.
+ * Document that all measures are two-point functions.
  * Require [ta,tb] as inputs to the constructor?
- * Clarify throughout the documentation that all measures are two-point.
  * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Add an example of a GPS measure (maybe in measureStub).
 
 dataContainer:
+ * Needs to be a singleton class!
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
  * listSensors() should return a list of strings identifying sensors?
@@ -51,6 +51,9 @@ main application:
  * Test mainDisplay to ensure inputs can be either row or column vectors.
 
 research:
+ * Review standards:
+   * Sandia Modular Architecture for  Robotics and Teleoperation
+   * JAUGS modular architecture 
  * Olsen: Pose graphs
  * review other code in projects/1490/software
  * elements of statistical learning
