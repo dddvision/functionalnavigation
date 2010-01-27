@@ -31,7 +31,7 @@ General coding guidelines for this project:
   * RULE (Matlab): Components must pass the Matlab "mlint" test or contain a comment at each line explaining why not.
   * RULE (Matlab): Use fprintf() instead of disp() or warning().
 
-  * RULE (C++): Code must compile using "g++ -Wall -Werror -ansi –pedantic”
+  * RULE (C++): Code must compile using "g++ -Wall -Werror –pedantic”
   * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
 
   * RULE: Place a description above each function that identifies INPUT, OUTPUT, RETURN VALUE, and NOTES when applicable.
