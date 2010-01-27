@@ -54,7 +54,7 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       end
     end
     
-    function cost=computeEdgeCost(this,a,b)
+    function cost=computeEdgeCost(this,x,a,b)
       fprintf('\n');
       fprintf('\nopticalFlowPyramid::computeEdgeCost');
       assert(this.ready);
