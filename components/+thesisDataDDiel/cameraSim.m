@@ -72,7 +72,7 @@ classdef cameraSim < camera
     function im=getImage(this,k,varargin)
       assert(k>=this.ka);
       assert(k<=this.kb);
-      im=imread([this.localCache,'/color',num2str(k,'%06d'),'.png']);
+      im=imread([this.localCache,'/color',sprintf('%06d',k),'.png']);
     end
     
     function flag=isFrameDynamic(this,varargin)

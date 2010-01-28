@@ -117,7 +117,7 @@ classdef cameraSim < middleburyData.middleburyDataConfig & camera
       cache=[fileparts(mfilename('fullpath')),'/'];
       subdir=[this.sceneYear,'/',this.fractionalSize,'/',this.scene,'/',...
               this.illumination,'/',this.exposure,'/'];
-      view=['view',num2str(num,'%d'),'.png'];
+      view=sprintf('view%d.png',num);
       fcache=fullfile(cache,subdir,view);
       dircache=[cache,subdir];
       if(~exist(dircache,'file'))

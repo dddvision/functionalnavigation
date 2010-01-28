@@ -4,8 +4,8 @@ function data=computeIntermediateDataCache(this,ka,kb)
 
   persistent cache
 
-  kastr=['a',num2str(ka,'%d')];
-  kbstr=['b',num2str(kb,'%d')];
+  kastr=['a',sprintf('%d',ka)];
+  kbstr=['b',sprintf('%d',kb)];
 
   if( isfield(cache,kastr) && isfield(cache.(kastr),kbstr) )
     data=cache.(kastr).(kbstr);

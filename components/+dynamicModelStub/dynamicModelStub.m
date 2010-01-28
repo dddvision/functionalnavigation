@@ -5,7 +5,8 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     numStates
     firstNewBlock % one-based indexing
     chunkSize
-    initialTime
+    ta
+    tb
     block % one-based indexing
     numInputs
     state % body state starting at initial time
@@ -24,20 +25,21 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
   end
   
   methods (Access=public)
-    function this=dynamicModelStub(initialTime)
-      this=this@dynamicModel(initialTime);
+    function this=dynamicModelStub(ta)
+      this=this@dynamicModel(ta);
       fprintf('\n');
       fprintf('\ndynamicModelStub::dynamicModelStub');
-      this.numStates = 12;
-      this.firstNewBlock = 1;
-      this.chunkSize = 256;
-      this.initialTime = initialTime;
-      this.block = struct('logical',{},'uint32',{});
-      this.numInputs = size(this.B,2);
-      this.state = zeros(this.numStates,this.chunkSize);
-      ABd = expm([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]/this.blocksPerSecond);
-      this.Ad = sparse(ABd(1:this.numStates,1:this.numStates));
-      this.Bd = sparse(ABd(1:this.numStates,(this.numStates+1):end));
+      this.numStates=12;
+      this.firstNewBlock=1;
+      this.chunkSize=256;
+      this.ta=ta;
+      this.tb=ta;
+      this.block=struct('logical',{},'uint32',{});
+      this.numInputs=size(this.B,2);
+      this.state=zeros(this.numStates,this.chunkSize);
+      ABd=expm([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]/this.blocksPerSecond);
+      this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
+      this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
 
     function numBlocks=getNumBlocks(this)
@@ -48,8 +50,8 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       fprintf('\n');
       fprintf('\ndynamicModelStub::setInitialState');
       omega=2*Quat2Homo(rotation)'*rotationRate;
-      this.state(:,1) = [position;Quat2AxisAngle(rotation);positionRate;omega(1:3)];
-      this.firstNewBlock = 1;
+      this.state(:,1)=[position;Quat2AxisAngle(rotation);positionRate;omega(1:3)];
+      this.firstNewBlock=1;
     end
     
     function replaceBlocks(this,k,block)
@@ -59,7 +61,7 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
         return;
       end
       k=k+1; % convert to one-based index
-      assert(k(end)<=getNumBlocks(this));
+      assert(k(end)<=numel(this.block));
       this.block(k)=block;
       this.firstNewBlock=min(this.firstNewBlock,k(1));
     end
@@ -68,34 +70,36 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       fprintf('\n');
       fprintf('\ndynamicModelStub::appendBlocks');
       this.block=cat(2,this.block,blocks);
-      if((numel(this.block)+1)>size(this.state,2))
+      N=numel(this.block);
+      if((N+1)>size(this.state,2))
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];
       end
+      this.tb=this.ta+N/this.blocksPerSecond;
     end
      
     function [ta,tb]=domain(this)
-      ta=this.initialTime;
-      tb=max(ta+getNumBlocks(this)/this.blocksPerSecond,ta);
+      ta=this.ta;
+      tb=this.tb;
     end
    
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
       fprintf('\n');
       fprintf('\ndynamicModelStub::evaluate');
       N=numel(t);
-      [ta,tb]=domain(this);
-      dt=t-ta;
+      dt=t-this.ta;
       dk=dt*this.blocksPerSecond;
       dkFloor=floor(dk);
+      dkCeil=ceil(dk); % not the same as dkFloor+1 for integers
       dtFloor=dkFloor/this.blocksPerSecond;
       dtRemain=dt-dtFloor;
-      blockIntegrate(this,dkFloor(end));
+      blockIntegrate(this,dkCeil(end));
       position=NaN(3,N);
       rotation=NaN(4,N);
       positionRate=NaN(3,N);
       rotationRate=NaN(4,N);
-      good=logical((t>=ta)&(t<=tb));
+      good=logical((t>=this.ta)&(t<=this.tb));
       for n=find(good)
-        substate=subIntegrate(this,dkFloor(n),dtRemain(n));
+        substate=subIntegrate(this,dkFloor(n),dkCeil(n),dtRemain(n),dk(n));
         position(:,n)=substate(1:3);
         rotation(:,n)=AxisAngle2Quat(substate(4:6));
         positionRate(:,n)=substate(7:9);
@@ -110,18 +114,25 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
         force=block2unitforce(this.block(k));
         this.state(:,k+1)=this.Ad*this.state(:,k)+this.Bd*force;
       end
-      this.firstNewBlock = K+1;
+      this.firstNewBlock=K+1;
     end
     
-    function substate=subIntegrate(this,k,dt)
+    function substate=subIntegrate(this,kF,kC,dt,dk)
+      sF=kF+1;
+      sC=kC+1;
       if(dt<eps)
-        substate = this.state(:,k+1);
+        substate=this.state(:,sF);
       else
-        ABsub = expmApprox([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]*dt);
-        Asub = ABsub(1:this.numStates,1:this.numStates);
-        Bsub = ABsub(1:this.numStates,(this.numStates+1):end);
-        force = block2unitforce(this.block(k+1));
-        substate = Asub*this.state(:,k+1)+Bsub*force;
+        ABsub=expmApprox([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]*dt);
+        Asub=ABsub(1:this.numStates,1:this.numStates);
+        Bsub=ABsub(1:this.numStates,(this.numStates+1):end);
+        force=block2unitforce(this.block(sF));
+        substate=Asub*this.state(:,sF)+Bsub*force;
+%         pF=this.state(1:6,sF);
+%         vF=this.state(7:12,sF);
+%         pC=this.state(1:6,sC);
+%         vC=this.state(7:12,sC);
+%         substate=[pF+vF*dt+0.5*dt*dt*(vC-vF);(dk-1)*vF+dk*vC]; % TODO: check this equation
       end
     end
   end
@@ -129,7 +140,7 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
 end
 
 function expA=expmApprox(A)
-  expA=eye(size(A))+A+(A*A)/2;
+  expA=speye(size(A))+A+(A*A)/2;
 end
 
 function force=block2unitforce(block)
