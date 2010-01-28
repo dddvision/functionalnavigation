@@ -147,7 +147,7 @@ classdef opticalFlowPyramid < opticalFlowPyramid.opticalFlowPyramidConfig & meas
       end
       %propagating flow 2 higher levels
       for i = 2:this.numLevels
-        fprintf('\n\nComputing Level %s', num2str(i));
+        fprintf('\n\nComputing Level %d', i);
         uEx=2 * imresize(u,size(u)*2);   % use appropriate expand function (gaussian, bilinear, cubic, etc).
         vEx=2 * imresize(v,size(v)*2);
         curIm1=pyramid1(1:(size(pyramid1,1)/(2^(this.numLevels - i))), 1:(size(pyramid1,2)/(2^(this.numLevels - i))), (this.numLevels - i)+1);
