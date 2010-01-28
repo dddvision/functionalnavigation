@@ -14,6 +14,7 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       
       if(~exist('mexOpticalFlowOpenCV','file'))
         fprintf('\nCompiling mex wrapper for OpenCV...');
+        addpath(getenv('PATH'));
         savedir=cd;
         basedir=fileparts(mfilename('fullpath'));
         cd(fullfile(basedir,'private'));
@@ -21,16 +22,22 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
           if(ispc)
             libdir=fileparts(which('cv200.lib'));
             mex('mexOpticalFlowOpenCV.cpp',['-L"',libdir,'"'],'-lcv200','-lcxcore200');
+          elseif(ismac)
+            libdir=fileparts(which('libcv.dylib'));
+            mex('mexOpticalFlowOpenCV.cpp',['-L"',libdir,'"'],'-lcv','-lcxcore');
           else
-            mex('mexOpticalFlowOpenCV.cpp','-lcv','-lcxcore');
+            libdir=fileparts(which('libcv.so'));
+            mex('mexOpticalFlowOpenCV.cpp',['-L"',libdir,'"'],'-lcv','-lcxcore');
           end
         catch err
           details=err.message;
           details=[details,' Failed to compile against local OpenCV libraries.'];
           details=[details,' Please see the Readme file distributed with OpenCV.'];
-          details=[details,' The following files must be in the Matlab and System paths:'];
+          details=[details,' The following files must be in the system path:'];
           if(ispc)
             details=[details,' cv200.lib cv200.dll cxcore200.lib cxcore200.dll'];
+          elseif(ismac)
+            details=[details,' libcv.dylib libcxcore.dylib'];           
           else
             details=[details,' libcv.so libcxcore.so'];
           end
