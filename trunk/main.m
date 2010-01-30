@@ -35,8 +35,6 @@ function main
     % take an optimization step
     step(tom);
   end
-  
-  die
       
   % get trajectory and cost estimates
   [xEst,cEst]=getResults(tom);
