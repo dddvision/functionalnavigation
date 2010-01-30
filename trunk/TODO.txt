@@ -12,24 +12,22 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
- *** Must wrap "objective" so that all sensors are refreshed simultaneously.
+ *** Must wrap "objective" so that all measures are refreshed simultaneously.
  * Have Rob create linkage-based GA crossover function.
 
 trajectory:
  *** Specify evaluate outputs using string like 'pqrs'?
  * Dodument that evaluations are in the "pose and tangent pose" space.
 
-dynamicModel:
- * Add data URI input to constructor.
-
 measure:
  * Check rotation equation in opticalFlowOpenCV/generateFlowSparse
  * Use SURF instead of SIFT.
- * Implement measure/sensor compatibility checking in measure configuration.
+ * Add an example of a GPS measure (maybe in measureStub).
+ * Should findEdges be restricted to return up to a maximum number of edges?
+ * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Document that all measures are two-point functions.
  * Require [ta,tb] as inputs to the constructor?
- * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
- * Add an example of a GPS measure (maybe in measureStub).
+ * Implement measure/sensor compatibility checking in measure configuration.
 
 dataContainer:
  * Needs to be a singleton class!

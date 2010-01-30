@@ -9,19 +9,25 @@ classdef dynamicModel < trajectory
     % Construct a dynamic model
     %
     % INPUT
+    % uri = uniform resource identifier, string
     % initialTime = initial lower bound of the trajectory domain, double scalar
     %
     % NOTES
+    % The URI should identify a hardware resource or dataContainer
+    % URI examples:
+    %   'file://dev/camera0'
+    %   'matlab:middleburyData.middleburyData'    
     % The default body state at the initial time is at the origin:
     %   position = [0;0;0];
     %   rotation = [1;0;0;0];
     %   positionRate = [0;0;0];
     %   rotationRate = [0;0;0;0];
     % A subclass constructor must pass identical arguments to this 
-    %   constructor using the syntax this=this@dynamicModel(initialTime,blocksPerSecond);
-    function this=dynamicModel(initialTime)
+    %   constructor using the syntax this=this@dynamicModel(uri,initialTime);
+    function this=dynamicModel(uri,initialTime)
+      assert(isa(uri,'char'));
       assert(isa(initialTime,'double'));
-    end
+    end    
   end
   
   methods (Abstract=true,Static=true,Access=public)

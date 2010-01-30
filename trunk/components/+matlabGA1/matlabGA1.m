@@ -70,7 +70,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.bits=logical(rand(this.popSizeDefault,this.bitsPerBlock*this.numBlocks)>0.5);
       blocks=bits2blocks(this,this.bits);
       for k=1:this.popSizeDefault
-        this.F{k}=unwrapComponent(dynamicModelName,this.referenceTime);
+        this.F{k}=unwrapComponent(dynamicModelName,dataURI,this.referenceTime);
         appendBlocks(this.F{k},blocks{k});
       end
       

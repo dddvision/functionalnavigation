@@ -21,8 +21,8 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
   end
   
   methods (Access=public)
-    function this=wobble1(initialTime)
-      this=this@dynamicModel(initialTime);
+    function this=wobble1(uri,initialTime)
+      this=this@dynamicModel(uri,initialTime);
       fprintf('\n');
       fprintf('\nwobble1::wobble1');
       this.ta=initialTime;
