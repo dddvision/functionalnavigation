@@ -46,12 +46,6 @@ classdef measure < handle
     % Throws an exception if data index is invalid
     time=getTime(this,k);
     
-    % Check whether the adjacency matrix of the graph is diagonal
-    %
-    % OUTPUT
-    % flag = true if no edges span more than one node and false otherwise, logical scalar
-    flag=isDiagonal(this);
-    
     % Find all edges in the graph and list the nodes that they connect
     %
     % OUTPUT
