@@ -25,8 +25,8 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
   end
   
   methods (Access=public)
-    function this=dynamicModelStub(ta)
-      this=this@dynamicModel(ta);
+    function this=dynamicModelStub(uri,ta)
+      this=this@dynamicModel(uri,ta);
       fprintf('\n');
       fprintf('\ndynamicModelStub::dynamicModelStub');
       this.numStates=12;
