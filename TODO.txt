@@ -12,11 +12,11 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
- * Wrap the "objective" so that optimizer never sees trajectories directly?
+ *** Must wrap "objective" so that all sensors are refreshed simultaneously.
  * Have Rob create linkage-based GA crossover function.
 
 trajectory:
- * Specify evaluate outputs using string like 'pqrs'?
+ *** Specify evaluate outputs using string like 'pqrs'?
  * Dodument that evaluations are in the "pose and tangent pose" space.
 
 dynamicModel:

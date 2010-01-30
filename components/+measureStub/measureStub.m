@@ -2,7 +2,6 @@ classdef measureStub < measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
-    diagonal
     ready
   end
   
@@ -19,7 +18,6 @@ classdef measureStub < measure
         list=listSensors(container,'sensor');
         if(~isempty(list))
           this.sensor=getSensor(container,list(1));
-          this.diagonal=false;
           this.ready=true;
         end
       end          
@@ -33,10 +31,6 @@ classdef measureStub < measure
     function status=refresh(this)
       assert(this.ready);
       status=refresh(this.sensor);
-    end
-      
-    function flag=isDiagonal(this)
-      flag=this.diagonal;
     end
     
     function [a,b]=findEdges(this)

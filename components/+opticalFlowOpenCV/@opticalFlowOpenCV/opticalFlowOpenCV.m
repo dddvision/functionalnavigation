@@ -2,7 +2,6 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
-    diagonal
     ready
   end
   
@@ -65,7 +64,6 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
           list=listSensors(container,'camera');
           if(~isempty(list))
             this.sensor=getSensor(container,list(1));
-            this.diagonal=false;
             this.ready=true;
           end
         otherwise
@@ -81,10 +79,6 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
     function status=refresh(this)
       assert(this.ready);
       status=refresh(this.sensor);
-    end
-    
-    function flag=isDiagonal(this)
-      flag=this.diagonal;
     end
     
     function [a,b]=findEdges(this)
