@@ -14,19 +14,25 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       
       if(~exist('mexOpticalFlowOpenCV','file'))
         fprintf('\nCompiling mex wrapper for OpenCV...');
+        userPath=path;
         addpath(getenv('PATH'));
-        savedir=cd;
-        basedir=fileparts(mfilename('fullpath'));
-        cd(fullfile(basedir,'private'));
+        if(ispc)
+          libdir=fileparts(which('cv200.lib'));
+        elseif(ismac)
+          libdir=fileparts(which('libcv.dylib'));
+        else
+          libdir=fileparts(which('libcv.so'));
+        end
+        path(userPath);
+        
+        userDirectory=pwd;
+        cd(fullfile(fileparts(mfilename('fullpath')),'private'));
         try
           if(ispc)
-            libdir=fileparts(which('cv200.lib'));
             mex('mexOpticalFlowOpenCV.cpp',['-L"',libdir,'"'],'-lcv200','-lcxcore200');
           elseif(ismac)
-            libdir=fileparts(which('libcv.dylib'));
             mex('mexOpticalFlowOpenCV.cpp',['-L"',libdir,'"'],'-lcv','-lcxcore');
           else
-            libdir=fileparts(which('libcv.so'));
             mex('mexOpticalFlowOpenCV.cpp',['-L"',libdir,'"'],'-lcv','-lcxcore');
           end
         catch err
@@ -41,10 +47,10 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
           else
             details=[details,' libcv.so libcxcore.so'];
           end
-          cd(savedir);
+          cd(userDirectory);
           error(details);
         end
-        cd(savedir);
+        cd(userDirectory);
         fprintf('done');
       end
       	                     
