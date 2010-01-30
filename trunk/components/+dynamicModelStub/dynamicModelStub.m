@@ -12,6 +12,7 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     state % body state starting at initial time
     Ad % discrete version of state space A matrix
     Bd % discrete version of state space A matrix
+    ABZ % intermediate formulation of A and B matrices with zeros appended
   end
   
   methods (Static=true,Access=public)
@@ -37,7 +38,8 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       this.block=struct('logical',{},'uint32',{});
       this.numInputs=size(this.B,2);
       this.state=zeros(this.numStates,this.chunkSize);
-      ABd=expmApprox([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]/this.blocksPerSecond);
+      this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
+      ABd=expmApprox(this.ABZ/this.blocksPerSecond);
       this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
       this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
@@ -121,7 +123,7 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       if(dt<eps)
         substate=this.state(:,sF);
       else
-        ABsub=expmApprox([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]*dt);
+        ABsub=expmApprox(this.ABZ*dt);
         Asub=ABsub(1:this.numStates,1:this.numStates);
         Bsub=ABsub(1:this.numStates,(this.numStates+1):end);
         force=block2unitforce(this.block(sF));

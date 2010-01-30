@@ -27,6 +27,7 @@ measure:
  * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Document that all measures are two-point functions.
  * Require [ta,tb] as inputs to the constructor?
+ * In pointBasedMeasure, cache results of finding keypoints for each image.
  * Implement measure/sensor compatibility checking in measure configuration.
 
 dataContainer:
