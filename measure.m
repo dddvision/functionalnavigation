@@ -79,7 +79,7 @@ classdef measure < handle
     %   to a world frame. If the sensor frame is not coincident with the 
     %   body frame, then the sensor frame offset may need to be 
     %   kinematically composed with the body frame to locate the sensor
-    % Throws an exception if either node index is invalid
+    % Throws an exception if node indices do not correspond to an edge
     cost=computeEdgeCost(this,x,ka,kb);
   end
   
