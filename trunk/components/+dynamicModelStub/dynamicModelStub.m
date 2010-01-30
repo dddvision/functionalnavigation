@@ -37,7 +37,7 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       this.block=struct('logical',{},'uint32',{});
       this.numInputs=size(this.B,2);
       this.state=zeros(this.numStates,this.chunkSize);
-      ABd=expm([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]/this.blocksPerSecond);
+      ABd=expmApprox([this.A,this.B;zeros(this.numInputs,this.numStates+this.numInputs)]/this.blocksPerSecond);
       this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
       this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
@@ -89,17 +89,16 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       dt=t-this.ta;
       dk=dt*this.blocksPerSecond;
       dkFloor=floor(dk);
-      dkCeil=ceil(dk); % not the same as dkFloor+1 for integers
       dtFloor=dkFloor/this.blocksPerSecond;
       dtRemain=dt-dtFloor;
-      blockIntegrate(this,dkCeil(end));
+      blockIntegrate(this,ceil(dk(end))); % ceil is not floor+1 for integers
       position=NaN(3,N);
       rotation=NaN(4,N);
       positionRate=NaN(3,N);
       rotationRate=NaN(4,N);
       good=logical((t>=this.ta)&(t<=this.tb));
       for n=find(good)
-        substate=subIntegrate(this,dkFloor(n),dkCeil(n),dtRemain(n),dk(n));
+        substate=subIntegrate(this,dkFloor(n),dtRemain(n));
         position(:,n)=substate(1:3);
         rotation(:,n)=AxisAngle2Quat(substate(4:6));
         positionRate(:,n)=substate(7:9);
@@ -117,9 +116,8 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       this.firstNewBlock=K+1;
     end
     
-    function substate=subIntegrate(this,kF,kC,dt,dk)
+    function substate=subIntegrate(this,kF,dt)
       sF=kF+1;
-      sC=kC+1;
       if(dt<eps)
         substate=this.state(:,sF);
       else
@@ -128,11 +126,6 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
         Bsub=ABsub(1:this.numStates,(this.numStates+1):end);
         force=block2unitforce(this.block(sF));
         substate=Asub*this.state(:,sF)+Bsub*force;
-%         pF=this.state(1:6,sF);
-%         vF=this.state(7:12,sF);
-%         pC=this.state(1:6,sC);
-%         vC=this.state(7:12,sC);
-%         substate=[pF+vF*dt+0.5*dt*dt*(vC-vF);(dk-1)*vF+dk*vC]; % TODO: check this equation
       end
     end
   end
