@@ -14,6 +14,8 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       
       if(~exist('mexOpticalFlowOpenCV','file'))
         fprintf('\nCompiling mex wrapper for OpenCV...');
+        
+        % Locate openCV libraries
         userPath=path;
         addpath(getenv('PATH'));
         if(ispc)
@@ -25,6 +27,7 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
         end
         path(userPath);
         
+        % Compile and link against OpenCV libraries
         userDirectory=pwd;
         cd(fullfile(fileparts(mfilename('fullpath')),'private'));
         try
