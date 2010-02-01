@@ -71,6 +71,14 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       end                  
     end
     
+    function ka=first(this)
+      ka=first(this.sensor);
+    end
+    
+    function ka=last(this)
+      ka=last(this.sensor);
+    end
+    
     function time=getTime(this,k)
       assert(this.ready);
       time=getTime(this.sensor,k);
