@@ -2,7 +2,7 @@
 
 === Introduction ===
 
-As a camera moves, light rays from the environment slice through a theoretical unit sphere centered at the camera???s focus, resulting in patterns of light that appear to flow around the sphere.  Given the camera projection equations and a hypothetical body trajectory, one can predict the induced rotation field and the direction of the translation field.  This section describes how to compute the rotation field and the direction, but not the magnitude, of the translation field.
+As a camera moves, light rays from the environment slice through a theoretical unit sphere centered at the camera's focus, resulting in patterns of light that appear to flow around the sphere.  Given the camera projection equations and a hypothetical body trajectory, one can predict the induced rotation field and the direction of the translation field.  This section describes how to compute the rotation field and the direction, but not the magnitude, of the translation field.
 
 === Algorithm: Compute Camera Rays ===
 
@@ -25,7 +25,7 @@ x = [ 0 0 0 0 0 1 1 1 1 1 2 2 2 2 2 ... ]
   * Compute the rotation matrix `R` that represents the camera frame at time `tb` relative to the camera frame at time `ta`.
   * Rotate the ray vectors by pre-multiplying by the transpose of the rotation matrix (ie. `c_new=transpose(R)*c`).
   * Put the new rays `c_new` through the forward camera projection to get new pixel coordinates `x_new`.
-  * The rotational flow field is the pixel coordinate difference `u=x-x_new`.
+  * The rotational flow field is the pixel coordinate difference `u=x_new-x`.
 
 === Algorithm: Compute Translation Field ===
 
@@ -36,4 +36,4 @@ x = [ 0 0 0 0 0 1 1 1 1 1 2 2 2 2 2 ... ]
   * Normalize the translation vector to a length that is very small relative to a unit magnitude (ie. `T_norm=1E-8*T/sqrt(dot(T,T))`).
   * Translate the camera rays by the negative of the camera translation (ie. `c_new=c-T_norm`).
   * Put the new rays `c_new` through the forward camera projection to get new pixel coordinates `x_new`.
-  * The translational flow field is the pixel coordinate difference `u=x-x_new`, where each flow vector can be normalized to an arbitrary magnitude, taking care not to divide by zero.
+  * The translational flow field is the pixel coordinate difference `u=x_new-x`, where each flow vector can be normalized to an arbitrary magnitude, taking care not to divide by zero.
