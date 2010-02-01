@@ -7,7 +7,7 @@ function main
   
   % options
   displayIncremental=false; % option to display incremental results
-  numIterations=5;
+  numIterations=10;
   
   % check matlab version before instantiating any objects
   matlab_version=version('-release');

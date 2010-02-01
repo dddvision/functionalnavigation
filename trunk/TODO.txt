@@ -6,6 +6,23 @@ general:
  * Use start time referenceDate = datestr(now,30)?
  * Simplify display technique for speed given large domains, including tb=inf.
 
+research:
+ * Topics for publication:
+   * Measurement graphs as an alternative to pose graphs.
+ * Review standards:
+   * Sandia Modular Architecture for Robotics and Teleoperation
+   * JAUGS modular architecture 
+ * Olsen: Pose graphs
+ * review other code in projects/1490/software
+ * elements of statistical learning
+ * Cramer-Rao: cov(your estimator)>=inv(information)
+ * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
+ * Natalia Hernandez Gardiol @ CSAIL:
+ * Bar-Shalom: Multitarget Multisensor tracking
+ * Adam Klivans: learning decision trees over binary inputs
+ * Kalai: learning halfspaces
+ * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
+
 demonstration:
  * Access camera and inertial sensor on a MacBook.
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
@@ -49,17 +66,3 @@ cameraArray:
 main application:
  * Test mainDisplay to ensure inputs can be either row or column vectors.
 
-research:
- * Review standards:
-   * Sandia Modular Architecture for  Robotics and Teleoperation
-   * JAUGS modular architecture 
- * Olsen: Pose graphs
- * review other code in projects/1490/software
- * elements of statistical learning
- * Cramer-Rao: cov(your estimator)>=inv(information)
- * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
- * Natalia Hernandez Gardiol @ CSAIL:
- * Bar-Shalom: Multitarget Multisensor tracking
- * Adam Klivans: learning decision trees over binary inputs
- * Kalai: learning halfspaces
- * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
