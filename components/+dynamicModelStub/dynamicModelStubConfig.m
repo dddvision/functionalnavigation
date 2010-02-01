@@ -13,7 +13,7 @@ classdef dynamicModelStubConfig < handle
     B=sparse(0.1*[zeros(6);diag([1,1,0,0,0,0])]); % 2-DOF inputs
     
     % Model fidelity parameter given 32*numInputs bits per block
-    blocksPerSecond=0.5;
+    blocksPerSecond=2;
   end
   
 end

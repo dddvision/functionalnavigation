@@ -4,10 +4,10 @@ classdef matlabGA1Config < handle
       popSizeDefault = 20; % (20) default number of trajectories to test
     
       % start trajectories at this time
-      referenceTime = 0;
+      referenceTime = 1/3;
     
       % HACK: should adjust the trajectory domain based on data
-      numBlocks = 3;
+      numBlocks = 4;
     end
   
 end
