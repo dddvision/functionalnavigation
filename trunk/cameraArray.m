@@ -77,8 +77,7 @@ classdef cameraArray < sensor
     % q = orientation of sensor frame in the body frame as a quaternion, double 4-by-1
     %
     % NOTES
-    % Body frame axis order is forward-right-dowm
-    % Camera frame axis order is forward-right-down
+    % Camera frame axis order is forward-right-down relative to the body frame
     % Throws an exception when either input index is out of range
     [p,q]=getFrame(this,k,view);
         
