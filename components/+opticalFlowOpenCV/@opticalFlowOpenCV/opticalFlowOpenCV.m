@@ -2,7 +2,6 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
-    ready
   end
   
   methods (Access=public)
@@ -55,20 +54,22 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
         cd(userDirectory);
         fprintf('done');
       end
-      	                     
-      this.ready=false;
-      [scheme,resource]=strtok(uri,':');
-      switch(scheme)
-        case 'matlab'
-          container=eval(resource(2:end));
-          list=listSensors(container,'camera');
-          if(~isempty(list))
+      
+      try
+        [scheme,resource]=strtok(uri,':');
+        switch(scheme)
+          case 'matlab'
+            container=eval(resource(2:end));
+            list=listSensors(container,'camera');
             this.sensor=getSensor(container,list(1));
-            this.ready=true;
-          end
-        otherwise
-          error('failed to parse URI');
+        end
+      catch err
+        error('Failed to open data resource: %s',err.message);
       end                  
+    end
+    
+    function status=refresh(this)
+      status=refresh(this.sensor);
     end
     
     function ka=first(this)
@@ -80,52 +81,35 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
     end
     
     function time=getTime(this,k)
-      assert(this.ready);
       time=getTime(this.sensor,k);
     end
     
-    function status=refresh(this)
-      assert(this.ready);
-      status=refresh(this.sensor);
-    end
-    
-    function [a,b]=findEdges(this)
-      fprintf('\n');
-      fprintf('\nopticalFlowOpenCV::findEdges');
+    function [a,b]=findEdges(this,kbMin,dMax)
       a=[];
       b=[];      
-      if(this.ready)
-        ka=first(this.sensor);
+      if( dMax>0 )
+        ka=max(kbMin-1,first(this.sensor));
         kb=last(this.sensor);
-        if(kb>ka)
-          a=ka:(kb-1);
-          b=(ka+1):kb;
-        end
-        % HACK: limit this measure to 20 graph edges
-        a=a(1:min(end,20));
-        b=b(1:min(end,20));
+        a=ka:(kb-1);
+        b=(ka+1):kb;
       end
     end
     
     function cost=computeEdgeCost(this,x,a,b)
-      fprintf('\n');
-      fprintf('\nopticalFlowOpenCV::computeEdgeCost');
-      assert(this.ready);
-      
       ka=first(this.sensor);
       kb=last(this.sensor);
       assert((b>a)&&(a>=ka)&&(b<=kb));
-
-      data=computeIntermediateDataCache(this,a,b);
-      
-      u=transpose(data.pixA(:,1)-data.pixB(:,1));
-	    v=transpose(data.pixA(:,2)-data.pixB(:,2));
       
       ta=getTime(this.sensor,a);
       tb=getTime(this.sensor,b);
       
       [pa,qa]=evaluate(x,ta);
-      [pb,qb]=evaluate(x,tb);      
+      [pb,qb]=evaluate(x,tb);  
+
+      data=computeIntermediateDataCache(this,a,b);
+      
+      u=transpose(data.pixA(:,1)-data.pixB(:,1));
+	    v=transpose(data.pixA(:,2)-data.pixB(:,2));   
             
       Ea=Quat2Euler(qa);
       Eb=Quat2Euler(qb);

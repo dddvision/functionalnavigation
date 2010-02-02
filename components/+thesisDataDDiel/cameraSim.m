@@ -37,13 +37,19 @@ classdef cameraSim < camera
     end
       
     function ka=first(this)
-      assert(this.ready);
-      ka=this.ka;
+      if(this.ready)
+        ka=this.ka;
+      else
+        ka=[];
+      end
     end
 
     function kb=last(this)
-      assert(this.ready);
-      kb=this.kb;
+      if(this.ready)
+        kb=this.kb;
+      else
+        kb=[];
+      end
     end
     
     function time=getTime(this,k)

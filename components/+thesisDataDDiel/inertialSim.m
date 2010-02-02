@@ -22,24 +22,31 @@ classdef inertialSim < inertialSixDOF
       this.ready=logical(N>0);
     end
 
+    function status=refresh(this)
+      status=this.ready;
+    end
+    
     function ka=first(this)
-      assert(this.ready);
-      ka=this.ka;
+      if(this.ready)
+        ka=this.ka;
+      else
+        ka=[];
+      end
     end
 
     function kb=last(this)
-      assert(this.ready);
-      kb=this.kb;
+      if(this.ready)
+        kb=this.kb;
+      else
+        kb=[];
+      end
     end
     
     function time=getTime(this,k)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       time=this.time(k);      
-    end
-    
-    function status=refresh(this)
-      status=this.ready;
     end
     
     function dt=getIntegrationTime(this)
@@ -52,12 +59,14 @@ classdef inertialSim < inertialSixDOF
     end
 
     function specificForce=getSpecificForce(this,k,ax)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       specificForce=this.accel(ax+1,k);
     end
     
     function angularRate=getAngularRate(this,k,ax)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       angularRate=this.gyro(ax+1,k);

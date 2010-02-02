@@ -41,16 +41,23 @@ classdef gpsSim < gps
     end
     
     function ka=first(this)
-      assert(this.ready);
-      ka=this.ka;
+      if(this.ready)
+        ka=this.ka;
+      else
+        ka=[];
+      end
     end
 
     function kb=last(this)
-      assert(this.ready);
-      kb=this.kb;
+      if(this.ready)
+        kb=this.kb;
+      else
+        kb=[];
+      end
     end
     
     function time=getTime(this,k)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       ta=domain(this.refTraj);
@@ -62,6 +69,7 @@ classdef gpsSim < gps
     end
     
     function [lon,lat,alt]=getGlobalPosition(this,k)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       
@@ -81,6 +89,7 @@ classdef gpsSim < gps
     
     % Picks the closest vDOP and hDOP in the data to the requested index
     function [vDOP,hDOP,sigmaR] = getPrecision(this,k)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       
