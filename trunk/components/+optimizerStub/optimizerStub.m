@@ -104,7 +104,7 @@ function varargout=objective(varargin)
     putBits(this,bits);
     cost=zeros(numIndividuals,1);
     for graph=1:numGraphs
-      [a,b]=findEdges(this.g{graph});
+      [a,b]=findEdges(this.g{graph},last(this.g{graph})-this.dMax,this.dMax);
       numEdges=numel(a);
       for individual=1:numIndividuals
         if( ~isempty(a) )
@@ -114,7 +114,7 @@ function varargout=objective(varargin)
         end
       end
     end
-    varargout{1}=cost;
+    varargout{1}=cost/numEdges;
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else

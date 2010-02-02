@@ -36,27 +36,35 @@ classdef cameraSim < middleburyData.middleburyDataConfig & camera
       this.ready=true;
     end
     
+    function status=refresh(this)
+      status=this.ready;
+    end
+    
     function ka=first(this)
-      assert(this.ready);
-      ka=this.ka;
+      if(this.ready)
+        ka=this.ka;
+      else
+        ka=[];
+      end
     end
 
     function kb=last(this)
-      assert(this.ready);
-      kb=this.kb;
+      if(this.ready)
+        kb=this.kb;
+      else
+        kb=[];
+      end
     end
     
     function time=getTime(this,k)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       time=this.ring{ktor(this,k)}.time;
     end
     
-    function status=refresh(this)
-      status=this.ready;
-    end
-    
     function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       numStrides=this.N;
@@ -65,6 +73,7 @@ classdef cameraSim < middleburyData.middleburyDataConfig & camera
     end
     
     function im=getImage(this,k,varargin)
+      assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
       im=this.ring{ktor(this,k)}.image;

@@ -24,31 +24,36 @@ research:
  * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
 
 demonstration:
- * Access camera and inertial sensor on a MacBook.
+ *** Access camera and inertial sensor on a MacBook.
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
- *** Must wrap "objective" so that all measures are refreshed simultaneously.
+ *** Wrap "objective" so that all measures are refreshed simultaneously.
  * Have Rob create linkage-based GA crossover function.
 
 trajectory:
  *** Specify evaluate outputs using string like 'pqrs'?
- * Dodument that evaluations are in the "pose and tangent pose" space.
+ * Document that evaluations are in the "pose and tangent pose" space.
 
 measure:
- * Check rotation equation in opticalFlowOpenCV/generateFlowSparse
+ *** Check rotation equation in opticalFlowOpenCV/generateFlowSparse.
  * Use SURF instead of SIFT.
+ * Implement SURF as a feature-matching option in opticalFlowOpenCV.
+ * Compute measure characteristics:
+   * Value when given ground truth
+   * Granularity / dilution of precision
+   * Monotonicity
+   * Bias / distance to nearest local minimum
  * Add an example of a GPS measure (maybe in measureStub).
- * Should findEdges be restricted to return up to a maximum number of edges?
  * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Document that all measures are two-point functions.
- * Require [ta,tb] as inputs to the constructor?
  * In pointBasedMeasure, cache results of finding keypoints for each image.
- * Implement measure/sensor compatibility checking in measure configuration.
+ * In opticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
+ * Improve scheme for matching measures to sensor data when there are multiple sensors of same type.
 
 dataContainer:
- * Needs to be a singleton class!
+ *** Needs to be a singleton class!
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
  * listSensors() should return a list of strings identifying sensors?

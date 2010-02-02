@@ -33,7 +33,7 @@ classdef sensor < handle
     % ka = index to first node, uint32 scalar
     %
     % NOTES
-    % Throws an exception if no data is available
+    % Returns empty if no data is available
     ka=first(this);
     
     % Return index to the last data node
@@ -42,7 +42,7 @@ classdef sensor < handle
     % ka = index to last node, uint32 scalar
     %
     % NOTES
-    % Throws an exception if no data is available
+    % Returns empty if no data is available
     kb=last(this);
   end
   

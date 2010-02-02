@@ -24,19 +24,26 @@ classdef measure < sensor
   end
   
   methods (Abstract=true)   
-    % Find all edges in the graph and list the nodes that they connect
+    % Find a limited set of edges in the adjacency matrix of the cost graph
+    %
+    % INPUT
+    % kbMin = lower bound of upper node index, uint32 scalar
+    % dMax = upper bound of difference between indices, uint32 scalar
     %
     % OUTPUT
     % ka = lower node index for each edge, uint32 N-by-1
     % kb = upper node index for each edge, uint32 N-by-1
     %
     % NOTES
+    % The number of edges returned is bounded:
+    %   numel(ka) <= (dMax+1)*(last(this)-kbMin+1)
     % If there are no edges, then the outputs are empty
-    % Indices must be sorted in ascending order, first by ka then by kb
-    % If graph is diagonal, then a and b are identical
-    [ka,kb]=findEdges(this);
+    % Output indices are sorted in ascending order,
+    %   first by upper index kb, then by lower index ka
+    % If graph is diagonal, then ka and kb are identical
+    [ka,kb]=findEdges(this,kbMin,dMax);
     
-    % Evaluate the cost of edge
+    % Evaluate the cost of a single edge given a trajectory
     %
     % INPUT
     % x = trajectory instance
