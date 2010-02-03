@@ -40,17 +40,13 @@ classdef measureStub < measure
       time=getTime(this.sensor,k);
     end
     
-    function [a,b]=findEdges(this,kbMin,dMax)
+    function [a,b]=findEdges(this,kaMin,kbMin)
       fprintf('\n');
       fprintf('\nmeasureStub::findEdges');
-      a=[];
-      b=[];      
-      if( dMax>0 )
-        ka=max(kbMin-1,first(this.sensor));
-        kb=last(this.sensor);
-        a=ka:(kb-1);
-        b=(ka+1):kb;
-      end
+      kaMin=max([first(this.sensor),kaMin,kbMin-1]);
+      kaMax=last(this.sensor)-1;
+      a=kaMin:kaMax;
+      b=a+1;
     end
         
     function cost=computeEdgeCost(this,x,a,b)

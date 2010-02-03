@@ -104,7 +104,7 @@ function varargout=objective(varargin)
     putBits(this,bits);
     cost=zeros(numIndividuals,1);
     for graph=1:numGraphs
-      [a,b]=findEdges(this.g{graph},last(this.g{graph})-this.dMax,this.dMax);
+      [a,b]=findEdges(this.g{graph},uint32(0),last(this.g{graph})-this.dMax);
       numEdges=numel(a);
       for individual=1:numIndividuals
         if( ~isempty(a) )

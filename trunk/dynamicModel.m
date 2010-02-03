@@ -87,6 +87,7 @@ classdef dynamicModel < trajectory
     %
     % NOTES
     % Unsigned integers may be treated as range-bounded doubles via static casting
+    % The prior distribution on the values of the blocks is uniform
     % This function modifies the object instance
     appendBlocks(this,blocks);
   end
