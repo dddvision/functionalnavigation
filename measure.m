@@ -16,7 +16,7 @@ classdef measure < sensor
     % URI examples:
     %   'file://dev/camera0'
     %   'matlab:middleburyData.middleburyData'
-    % A subclass constructor must pass identical arguments to this 
+    % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@measure(uri);
     function this=measure(uri)
       assert(isa(uri,'char'));

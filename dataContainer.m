@@ -4,8 +4,30 @@ classdef dataContainer < handle
   properties (Constant=true,GetAccess=public)
     baseClass='dataContainer';
   end
+  
+  methods (Access=public)
+    % Construct a dataContainer
+    %
+    % NOTE
+    % Each derived class must construct a singleton object instance
+    % In Matlab, the singleton design pattern can be implemented by 
+    %   deriving from the handle class and using persistence as follows:
+    %
+    % function derivedClassConstructor
+    %   this=this@dataContainer;
+    %   persistent singleton
+    %   if( isempty(singleton) )
+    %     % initialize derived class properties here
+    %     singleton=this;
+    %   else
+    %     this=singleton;
+    %   end
+    % end
+    function this=dataContainer
+    end
+  end  
 
-  methods (Abstract=true)
+  methods (Abstract=true) 
     % List available sensors of a given class
     %
     % INPUT

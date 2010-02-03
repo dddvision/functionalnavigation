@@ -1,10 +1,9 @@
 general:
- * Create powerpoint for quarterly review (internal and external).
- * Schedule meeting with AFRL.
- * Write unit tests to check interfaces and exception handling.
+ * Create powerpoint for quarterly review (internal and external)
+ * Schedule meeting with AFRL
+ * Document distinction between testbed and optimizer
  * Make class aliases for "time", "index", "real" and other simple classes?
  * Use start time referenceDate = datestr(now,30)?
- * Simplify display technique for speed given large domains, including tb=inf.
 
 research:
  * Topics for publication:
@@ -23,6 +22,15 @@ research:
  * Kalai: learning halfspaces
  * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
 
+testComponent:
+ * Applies unit tests to all components to check interfaces and exception handling
+ * Characterizes measures
+   * Value when given ground truth
+   * Granularity / dilution of precision
+   * Monotonicity
+   * Bias / distance to nearest local minimum
+   * Sensativity to perturbation of initial tangent pose
+
 demonstration:
  *** Access camera and inertial sensor on a MacBook.
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
@@ -40,11 +48,6 @@ measure:
  *** Check rotation equation in opticalFlowOpenCV/generateFlowSparse.
  * Use SURF instead of SIFT.
  * Implement SURF as a feature-matching option in opticalFlowOpenCV.
- * Compute measure characteristics:
-   * Value when given ground truth
-   * Granularity / dilution of precision
-   * Monotonicity
-   * Bias / distance to nearest local minimum
  * Add an example of a GPS measure (maybe in measureStub).
  * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Document that all measures are two-point functions.
@@ -53,7 +56,6 @@ measure:
  * Improve scheme for matching measures to sensor data when there are multiple sensors of same type.
 
 dataContainer:
- *** Needs to be a singleton class!
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
  * listSensors() should return a list of strings identifying sensors?
@@ -68,6 +70,19 @@ dataContainer:
 cameraArray:
  * Should masking be sepate from projection?
 
-main application:
- * Test mainDisplay to ensure inputs can be either row or column vectors.
+mainDisplay:
+ * Simplify display technique for speed given large domains, including tb=inf
+ * Ensure inputs can be either row or column vectors
 
+glossary:
+ * dynamic model
+ * measure
+ * cost graph
+ * edge
+ * node
+ * optimization step
+ * sensativity
+ * granularity
+ * monotonicity
+ * forcing function
+ * metric

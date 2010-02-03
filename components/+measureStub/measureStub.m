@@ -16,6 +16,8 @@ classdef measureStub < measure
             container=eval(resource(2:end));
             list=listSensors(container,'sensor');
             this.sensor=getSensor(container,list(1));
+          otherwise
+            error('Unrecognized resource identifier in URI');
         end
       catch err
         error('Failed to open data resource: %s',err.message);
