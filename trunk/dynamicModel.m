@@ -22,7 +22,7 @@ classdef dynamicModel < trajectory
     %   rotation = [1;0;0;0];
     %   positionRate = [0;0;0];
     %   rotationRate = [0;0;0;0];
-    % A subclass constructor must pass identical arguments to this 
+    % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@dynamicModel(uri,initialTime);
     function this=dynamicModel(uri,initialTime)
       assert(isa(uri,'char'));

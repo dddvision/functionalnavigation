@@ -93,13 +93,15 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       dkFloor=floor(dk);
       dtFloor=dkFloor/this.blocksPerSecond;
       dtRemain=dt-dtFloor;
-      blockIntegrate(this,ceil(dk(end))); % ceil is not floor+1 for integers
       position=NaN(3,N);
       rotation=NaN(4,N);
       positionRate=NaN(3,N);
       rotationRate=NaN(4,N);
       good=logical((t>=this.ta)&(t<=this.tb));
-      for n=find(good)
+      firstGood=find(good,1,'first');
+      lastGood=find(good,1,'last');
+      blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers
+      for n=firstGood:lastGood
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
         position(:,n)=substate(1:3);
         rotation(:,n)=AxisAngle2Quat(substate(4:6));

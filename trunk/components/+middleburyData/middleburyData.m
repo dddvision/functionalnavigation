@@ -11,13 +11,20 @@ classdef middleburyData < middleburyData.middleburyDataConfig & dataContainer
     hasRef
     bodyRef
   end
-
+  
   methods (Access=public)
     function this=middleburyData
-      this.sensors{1}=middleburyData.cameraSim;
-      this.names{1}='CAMERA';
-      this.hasRef=true;
-      this.bodyRef=middleburyData.bodyReference;
+      this=this@dataContainer;
+      persistent singleton
+      if(isempty(singleton))
+        this.sensors{1}=middleburyData.cameraSim;
+        this.names{1}='CAMERA';
+        this.hasRef=true;
+        this.bodyRef=middleburyData.bodyReference;
+        singleton=this;
+      else
+        this=singleton;
+      end
     end
     
     function list=listSensors(this,type)
