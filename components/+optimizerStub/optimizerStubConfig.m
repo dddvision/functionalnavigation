@@ -7,7 +7,7 @@ classdef optimizerStubConfig < handle
       % Start all trajectories at this time
       referenceTime = 1/3;
       
-      % Look back no more than this far into the past
+      % Optimize over no more than this many nodes, uint32
       dMax = uint32(5);
     
       % Number of parameter blocks supplied to the dynamic model
