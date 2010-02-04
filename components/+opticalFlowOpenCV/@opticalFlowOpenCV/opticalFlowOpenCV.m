@@ -106,9 +106,9 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
 
       data=computeIntermediateDataCache(this,a,b);
       
-      u=transpose(data.pixA(:,1)-data.pixB(:,1));
-	    v=transpose(data.pixA(:,2)-data.pixB(:,2));   
-            
+      u=transpose(data.pixB(:,1)-data.pixA(:,1));
+	    v=transpose(data.pixB(:,2)-data.pixA(:,2));
+      
       Ea=Quat2Euler(qa);
       Eb=Quat2Euler(qb);
       
