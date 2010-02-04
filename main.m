@@ -135,9 +135,9 @@ function h=mainDisplayPlotFrame(p,q,alpha,scale,color)
   h=[];
   M=scale*Quat2Matrix(q);
 
-  xp=p(1)+[10*M(1,1);0;5*M(1,3)];
-  yp=p(2)+[10*M(2,1);0;5*M(2,3)];
-  zp=p(3)+[10*M(3,1);0;5*M(3,3)];
+  xp=p(1)+[10*M(1,1);0;-5*M(1,3)];
+  yp=p(2)+[10*M(2,1);0;-5*M(2,3)];
+  zp=p(3)+[10*M(3,1);0;-5*M(3,3)];
   h=[h,patch(xp,yp,zp,[1-color(1),color(2:3)],'FaceAlpha',alpha,'LineStyle','none','Clipping','off')];
 end
 
