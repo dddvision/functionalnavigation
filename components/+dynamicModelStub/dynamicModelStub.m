@@ -85,8 +85,6 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     end
    
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
-      fprintf('\n');
-      fprintf('\ndynamicModelStub::evaluate');
       N=numel(t);
       dt=t-this.ta;
       dk=dt*this.blocksPerSecond;
@@ -142,7 +140,7 @@ end
 
 function force=block2unitforce(block)
   imax=4294967295;
-  force=2*(double(reshape(block.uint32,[6,1]))/imax)-1;
+  force=2*(double(block.uint32)/imax)-1;
 end
 
 function h=Quat2Homo(q)

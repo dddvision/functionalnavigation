@@ -120,8 +120,7 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
                 Eb(3)-Ea(3)];
       [uvr,uvt]=generateFlowSparse(this,translation,rotation,transpose(data.pixA));
            
-      cost=computeCost(u,v,uvr,uvt);
-      fprintf('\ncost = %f',cost);      
+      cost=computeCost(u,v,uvr,uvt);     
     end  
   end
   
