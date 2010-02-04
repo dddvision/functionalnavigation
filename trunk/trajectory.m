@@ -22,10 +22,14 @@ classdef trajectory < handle
     % rotationRate = derivative of body orientation at each time, double 4-by-N
     %
     % NOTES
-    % Using an Earth Centered Earth Fixed (ECEF) frame convention:
-    %   Axis 1 goes through the equator at the prime meridian
-    %   Axis 2 completes the frame using the right-hand-rule
-    %   Axis 3 goes through the north pole
+    % Using an Earth Centered Earth Fixed (ECEF) convention for the world frame:
+    %   World Axis 1 goes through the equator at the prime meridian
+    %   World Axis 2 completes the frame using the right-hand-rule
+    %   World Axis 3 goes through the north pole
+    % Using a Forward-Right-Down (FRD) convention for the body frame:
+    %   Body Axis 1 points forward
+    %   Body Axis 2 points right
+    %   Body Axis 3 points down relative to the body (not gravity)
     % Quaternions are in scalar-first format
     % Evaluation outside of the domain returns NaN in corresponding columns
     [position,rotation,positionRate,rotationRate]=evaluate(this,t);
