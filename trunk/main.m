@@ -130,7 +130,7 @@ function h=mainDisplayIndividual(x,alpha,color)
   end
 end
 
-% Plot a red triangle indicating the forward and up directions
+% Plot a red triangle indicating body axes as in "the tail of an airplane"
 function h=mainDisplayPlotFrame(p,q,alpha,scale,color)
   h=[];
   M=scale*Quat2Matrix(q);
