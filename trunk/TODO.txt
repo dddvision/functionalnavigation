@@ -45,12 +45,12 @@ trajectory:
  * Document that evaluations are in the "pose and tangent pose" space.
 
 measure:
- *** Check rotation equation in opticalFlowOpenCV/generateFlowSparse.
  * Use SURF instead of SIFT.
  * Implement SURF as a feature-matching option in opticalFlowOpenCV.
  * Add an example of a GPS measure (maybe in measureStub).
  * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Document that all measures are two-point functions.
+ * Fix axis ordering bug in pointBasedMeasure
  * In pointBasedMeasure, cache results of finding keypoints for each image.
  * In opticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
  * Improve scheme for matching measures to sensor data when there are multiple sensors of same type.
@@ -68,6 +68,7 @@ dataContainer:
  * Interfacing with Paul Metzger's simulator?
   
 cameraArray:
+ * Check fisheye projection and inverseProjection equations at image center.
  * Should masking be sepate from projection?
 
 mainDisplay:

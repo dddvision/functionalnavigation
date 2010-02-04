@@ -33,7 +33,7 @@ x = [ 0 0 0 0 0 1 1 1 1 1 2 2 2 2 2 ... ]
 
   * Get hypothetical body poses at two time instants `ta` and `tb`.
   * Compute the translation vector `T` that represents the position of the camera frame origin at time `tb` relative to the camera frame origin at time `ta`.
-  * Normalize the translation vector to a length that is very small relative to a unit magnitude (ie. `T_norm=1E-8*T/sqrt(dot(T,T))`).
+  * Normalize the translation vector to a length that is very small relative to a unit magnitude (ie. `T_norm=1E-6*T/sqrt(dot(T,T))`).
   * Translate the camera rays by the negative of the camera translation (ie. `c_new=c-T_norm`).
   * Put the new rays `c_new` through the forward camera projection to get new pixel coordinates `x_new`.
   * The translational flow field is the pixel coordinate difference `u=x_new-x`, where each flow vector can be normalized to an arbitrary magnitude, taking care not to divide by zero.

@@ -112,13 +112,13 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       Ea=Quat2Euler(qa);
       Eb=Quat2Euler(qb);
       
- 	    translation(1)=pb(1)-pa(1);
-      translation(2)=pb(2)-pa(2);
-      translation(3)=pb(3)-pa(3);
-      rotation(1)=Eb(1)-Ea(1);
-      rotation(2)=Eb(2)-Ea(2);
-      rotation(3)=Eb(3)-Ea(3);
-      [uvr,uvt]=generateFlowSparse(this,translation,rotation,data.pixA);
+ 	    translation=[pb(1)-pa(1);
+                   pb(2)-pa(2);
+                   pb(3)-pa(3)];
+      rotation=[Eb(1)-Ea(1);
+                Eb(2)-Ea(2);
+                Eb(3)-Ea(3)];
+      [uvr,uvt]=generateFlowSparse(this,translation,rotation,transpose(data.pixA));
            
       cost=computeCost(u,v,uvr,uvt);
       fprintf('\ncost = %f',cost);      
