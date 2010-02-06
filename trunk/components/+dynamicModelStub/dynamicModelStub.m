@@ -13,6 +13,10 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     Ad % discrete version of state space A matrix
     Bd % discrete version of state space A matrix
     ABZ % intermediate formulation of A and B matrices with zeros appended
+    initialPosition
+    initialRotation
+    initialPositionRate
+    initialOmega
   end
   
   methods (Static=true,Access=public)
@@ -38,6 +42,10 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       this.block=struct('logical',{},'uint32',{});
       this.numInputs=size(this.B,2);
       this.state=zeros(this.numStates,this.chunkSize);
+      this.initialPosition=[0;0;0];
+      this.initialRotation=[1;0;0;0];
+      this.initialPositionRate=[0;0;0];
+      this.initialOmega=[0;0;0];
       this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
       ABd=expmApprox(this.ABZ/this.blocksPerSecond);
       this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
@@ -49,16 +57,19 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     end
     
     function setInitialState(this,position,rotation,positionRate,rotationRate)
-      fprintf('\n');
-      fprintf('\ndynamicModelStub::setInitialState');
-      omega=2*Quat2Homo(rotation)'*rotationRate;
-      this.state(:,1)=[position;Quat2AxisAngle(rotation);positionRate;omega(1:3)];
-      this.firstNewBlock=1;
+      this.initialPosition=position;
+      this.initialRotation=rotation;
+      this.initialPositionRate=positionRate;
+      qdot=2*Quat2Homo(rotation)*rotationRate;
+      if(abs(qdot(1))>eps)
+        fprintf('\n');
+        fprintf('\ndynamicModelStub::setInitialState');
+        fprintf('warning: initial rotation rate does not match initial orientation');
+      end
+      this.initialOmega=qdot(2:4);
     end
     
     function replaceBlocks(this,k,block)
-      fprintf('\n');
-      fprintf('\ndynamicModelStub::replaceBlocks');
       if(isempty(k))
         return;
       end
@@ -99,12 +110,19 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       firstGood=find(good,1,'first');
       lastGood=find(good,1,'last');
       blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers
+      % Apply initial state while processing outputs
       for n=firstGood:lastGood
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
-        position(:,n)=substate(1:3);
-        rotation(:,n)=AxisAngle2Quat(substate(4:6));
-        positionRate(:,n)=substate(7:9);
-        rotationRate(:,n)=0.5*Quat2Homo(rotation(:,n))*[0;substate(10:12)];
+        position(:,n)=substate(1:3)+this.initialPosition;
+        if(nargout>1)
+          rotation(:,n)=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
+          if(nargout>2)
+            positionRate(:,n)=substate(7:9)+this.initialPositionRate;
+            if(nargout>3)
+              rotationRate(:,n)=0.5*Quat2Homo(rotation(:,n))*([0;this.initialOmega+substate(10:12)]);
+            end
+          end
+        end
       end
     end
   end
@@ -152,23 +170,6 @@ function h=Quat2Homo(q)
      [q2, q1,-q4, q3]
      [q3, q4, q1,-q2]
      [q4,-q3, q2, q1]];
-end
-
-function V=Quat2AxisAngle(Q)
-  q1=Q(1,:);
-  q2=Q(2,:);
-  q3=Q(3,:);
-  q4=Q(4,:);
-  theta=2*acos(q1);
-  n=sqrt(q2.*q2+q3.*q3+q4.*q4);
-  n(n<eps)=eps;
-  a=q2./n;
-  b=q3./n;
-  c=q4./n;
-  v1=theta.*a;
-  v2=theta.*b;
-  v3=theta.*c;
-  V=[v1;v2;v3];
 end
 
 function q=AxisAngle2Quat(v)

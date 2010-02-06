@@ -23,16 +23,16 @@ fprintf('\npath added: %s',componentPath);
 % create an instance of TOMMAS
 tom=tommas;
 
-% create an instance of mainDisplay
-gui=mainDisplay;
+% create an instance of the GUI and access reference trajectory if available
+gui=mainDisplay(tom.dataURI);
 
 % optimize forever
 for index=1:inf
   % get the latest trajectory and cost estimates
-  [x,c]=getResults(tom);
+  [x,cost]=getResults(tom);
 
   % update graphical display
-  put(gui,x,c,index);
+  put(gui,x,cost,index);
 
   % take an optimization step
   step(tom);
