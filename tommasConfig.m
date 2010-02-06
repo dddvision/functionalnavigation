@@ -1,6 +1,6 @@
 classdef tommasConfig < handle
 
-  properties (Constant=true,GetAccess=protected)
+  properties (Constant=true,GetAccess=public)
     % select dynamic model
     dynamicModel = 'dynamicModelStub';
     

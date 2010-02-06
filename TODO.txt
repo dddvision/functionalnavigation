@@ -73,7 +73,6 @@ cameraArray:
 
 mainDisplay:
  * Simplify display technique for speed given large domains, including tb=inf
- * Ensure inputs can be either row or column vectors
 
 glossary:
  * dynamic model

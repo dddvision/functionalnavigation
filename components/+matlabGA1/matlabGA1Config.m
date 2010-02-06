@@ -5,7 +5,7 @@ classdef matlabGA1Config < handle
       popSizeDefault = 20;
     
       % Start all trajectories at this time
-      referenceTime = 1/3;
+      referenceTime = 0;
       
       % Optimize over no more than this many nodes, uint32
       dMax = uint32(5);

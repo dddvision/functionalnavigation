@@ -3,16 +3,16 @@ classdef mainDisplay < mainDisplayConfig
   properties (SetAccess=private,GetAccess=private)
     hfigure
     haxes
-    hdata
+    referenceTrajectory
   end
   
   methods (Access=public)
 
-    function this=mainDisplay
+    function this=mainDisplay(uri)
       this.hfigure=figure;
-      set(this.hfigure,'Color',[1,1,1]);
-      set(this.hfigure,'Position',[0,0,600,600]);
-      this.haxes=axes('Parent',this.hfigure);
+      set(this.hfigure,'Color',this.colorBackground);
+      set(this.hfigure,'Position',[0,0,this.width,this.height]);
+      this.haxes=axes('Parent',this.hfigure,'Clipping','off');
       xlabel(this.haxes,'ECEF_X');
       ylabel(this.haxes,'ECEF_Y');
       zlabel(this.haxes,'ECEF_Z');
@@ -26,14 +26,23 @@ classdef mainDisplay < mainDisplayConfig
       set(this.haxes,'ZLimMode','manual');
       set(this.haxes,'Visible','off');
       set(this.haxes,'NextPlot','add');
-      this.hdata=[];
+      this.referenceTrajectory=[];
+      if(nargin>0)
+        [scheme,resource]=strtok(uri,':');
+        if(strcmp(scheme,'matlab'))
+          container=eval(resource(2:end));
+          if(hasReferenceTrajectory(container))
+            this.referenceTrajectory=getReferenceTrajectory(container);
+          end
+        end
+      end
     end
     
     % Visualize a set of trajectories with optional transparency
     %
     % INPUT
-    % x = trajectory instances, 1-by-N or N-by-1
-    % c = costs, double 1-by-N or N-by-1
+    % x = trajectory instances, N-by-1
+    % c = costs, double N-by-1
     %
     % OUTPUT
     % h = handles to trajectory plot elements
@@ -41,7 +50,6 @@ classdef mainDisplay < mainDisplayConfig
 
       % find the minimum and maximum cost
       cMin=min(c);
-      cMax=max(c);
       
       % text display
       fprintf('\n');
@@ -49,40 +57,45 @@ classdef mainDisplay < mainDisplayConfig
       fprintf('\n%f',c);
       fprintf('\n');
       fprintf('\nminimum: %f',cMin);
-      
-      K=numel(x);
-      fitness=cMax-c;
-      if( any(fitness>eps) )
-        px=reshape((fitness/max(fitness)).^this.gamma,[K,1]);
-      else
-        px=zeros(K,1);
-      end
-      [alpha,color]=mainDisplayGetAllSettings(K,'alpha',px);
 
+      % clear the figure
       figure(this.hfigure);
       cla(this.haxes);
+      
+      % add ground truth if available
+      if(~isempty(this.referenceTrajectory))
+        mainDisplayIndividual(this,this.referenceTrajectory,1,this.colorReference);
+      end
+      
+      alpha=cost2alpha(this,c);
+      
+      K=numel(x);
       avgPos=zeros(3,1);
       avgSiz=0;
       for k=1:K
         % highlight minimum cost trajectories in a different color
         if(c(k)==cMin)
-          colork=[1,0,0];
+          pos=mainDisplayIndividual(this,x(k),alpha(k),this.colorHighlight);
         else
-          colork=color(k,:);
+          pos=mainDisplayIndividual(this,x(k),alpha(k),1-this.colorBackground);
         end
-        pos=mainDisplayIndividual(x(k),alpha(k),colork);
         
         % calculate statistics, being careful with large numbers
         siz=norm(max(pos,[],2)-min(pos,[],2));
         avgPos=avgPos+sum(pos/(size(pos,2)*K),2);
         avgSiz=avgSiz+siz/K;
       end
+      
+      % HACK
+      avgPos=[0;1;0];
+      avgSiz=2;
+      
       set(this.haxes,'CameraTarget',avgPos');
-      set(this.haxes,'CameraPosition',avgPos'+avgSiz*[1,1,-1]);
-      set(this.haxes,'XLim',avgPos(1)+avgSiz*[-0.5,0.5]);
-      set(this.haxes,'YLim',avgPos(2)+avgSiz*[-0.5,0.5]);
-      set(this.haxes,'ZLim',avgPos(3)+avgSiz*[-0.5,0.5]);
-      set(this.haxes,'Visible','on');
+      set(this.haxes,'CameraPosition',avgPos'+avgSiz*[cos(index/20),sin(index/20),0.5]);
+      set(this.haxes,'XLim',avgPos(1)+avgSiz*[-0.6,0.6]);
+      set(this.haxes,'YLim',avgPos(2)+avgSiz*[-0.6,0.6]);
+      set(this.haxes,'ZLim',avgPos(3)+avgSiz*[-0.6,0.6]);
+      
       drawnow;
 
       % save snapshot
@@ -90,73 +103,42 @@ classdef mainDisplay < mainDisplayConfig
         imwrite(fbuffer(this.hfigure),sprintf('%06d.png',index));
       end
     end
+  end
+  
+  methods (Access=private)
+    function alpha=cost2alpha(this,c)
+      cMax=max(c);
+      fitness=cMax-c;
+      alpha=(fitness/max([fitness;eps])).^this.gamma;
+    end
     
-  end
-  
-end
+    function p=mainDisplayIndividual(this,x,alpha,color)  
+      [tmin,tmax]=domain(x);
 
+      assert(~isinf(tmax)); % prevent memory overflow on the following line
+      t=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
 
-% varargin = (optional) accepts argument pairs 'alpha', 'scale', 'color'
-%   alpha = transparency per trajectory, scalar 1-by-N or N-by-1
-%   color = color of lines to draw, 1-by-3 or N-by-3
-%   scale = thickness of lines to draw, 1-by-N or N-by-1
-function [alpha,color]=mainDisplayGetAllSettings(K,varargin)
-  alpha=mainDisplayGetSettings('alpha',1/K,K,varargin{:});
-  color=mainDisplayGetSettings('color',[0,0,0],K,varargin{:});
-end
+      [p,q]=evaluate(x,t);
 
-
-function p=mainDisplayIndividual(x,alpha,color)  
-  [tmin,tmax]=domain(x);
-  tmax=min(tmax,tmin+10);
-
-  bigsteps=10;
-  substeps=10;
-
-  t=tmin:((tmax-tmin)/bigsteps/substeps):tmax;
-
-  [p,q]=evaluate(x,t);
-  
-  scale=0.001*norm(max(p(:,1:substeps:end),[],2)-min(p(:,1:substeps:end),[],2));
-
-  mainDisplayPlotFrame(p(:,1),q(:,1),alpha,scale,color); % plot first frame
-  plot3(p(1,:),p(2,:),p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3),'Clipping','off');
-  for bs=1:bigsteps
-    ksub=(bs-1)*substeps+(1:(substeps+1));
-    mainDisplayPlotFrame(p(:,ksub(end)),q(:,ksub(end)),alpha,scale,color); % plot terminating frame
-  end
-end
-
-
-% Plot a red triangle indicating body axes as in "the tail of an airplane"
-function mainDisplayPlotFrame(p,q,alpha,scale,color)
-  M=scale*Quat2Matrix(q);
-
-  xp=p(1)+[10*M(1,1);0;-5*M(1,3)];
-  yp=p(2)+[10*M(2,1);0;-5*M(2,3)];
-  zp=p(3)+[10*M(3,1);0;-5*M(3,3)];
-  patch(xp,yp,zp,[1-color(1),color(2:3)],'FaceAlpha',alpha,'LineStyle','none','Clipping','off');
-end
-
-function param=mainDisplayGetSettings(str,default,K,varargin)
-  param=repmat(default,[K,1]);
-  N=numel(varargin);
-  for n=1:N
-    if( strcmp(varargin{n},str) )
-      if( n==N )
-        error('optional inputs must be property/value pairs');
-      end
-      param=varargin{n+1};
-      if( ~isa(param,'double') )
-        error('values optional inputs be doubles, 1-by-2 or N-by-2');
-      end
-      if( size(param,1)~=K )
-        param=repmat(param(1,:),[K,1]);
+      mainDisplayPlotFrame(this,p(:,1),q(:,1),alpha); % plot first frame
+      plot3(p(1,:),p(2,:),p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3),'Clipping','off');
+      for bs=1:this.bigSteps
+        ksub=(bs-1)*this.subSteps+(1:(this.subSteps+1));
+        mainDisplayPlotFrame(this,p(:,ksub(end)),q(:,ksub(end)),alpha); % plot terminating frame
       end
     end
-  end
-end
 
+    % Plot a triangle indicating body axes as in "the tail of an airplane"
+    function mainDisplayPlotFrame(this,p,q,alpha)
+      M=this.scale*Quat2Matrix(q);
+      xp=p(1)+[M(1,1);0;-0.5*M(1,3)];
+      yp=p(2)+[M(2,1);0;-0.5*M(2,3)];
+      zp=p(3)+[M(3,1);0;-0.5*M(3,3)];
+      patch(xp,yp,zp,this.colorHighlight,'FaceAlpha',alpha,'LineStyle','none','Clipping','off');
+    end
+  end
+  
+end
 
 % Converts a quaternion to a rotation matrix
 %
@@ -195,7 +177,6 @@ function R=Quat2Matrix(Q)
   R(3,3) = q11 - q22 - q33 + q44;
 end
 
-
 % Captures a figure via an offscreen buffer
 %
 % INPUT
@@ -206,7 +187,7 @@ end
 function cdata = fbuffer(hfig)
   pos = get(hfig,'Position');
   
-  noanimate('save',hfig);
+  %noanimate('save',hfig);
   
   gldata = opengl('data');
   if( strcmp(gldata.Renderer,'None') )
@@ -223,7 +204,7 @@ function cdata = fbuffer(hfig)
    set(hfig,'PaperPosition',ppos);
   end
 
-  noanimate('restore',hfig);
+  %noanimate('restore',hfig);
 
   if( numel(cdata)>(pos(3)*pos(4)*3) )
    cdata=cdata(1:pos(4),1:pos(3),:);
