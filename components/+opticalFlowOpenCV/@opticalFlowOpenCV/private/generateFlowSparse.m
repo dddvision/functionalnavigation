@@ -11,8 +11,7 @@
 %
 % NOTES
 % Pixel coordinate interpretation:
-%   pix(1,:) = strides along the non-contiguous dimension (Matlab column minus one)
-%   pix(2,:) = steps along the contiguous dimension (Matlab row minus one)
+%   See cameraArray.projection
 % Algorithm is based on:
 %   http://code.google.com/p/functionalnavigation/wiki/MotionInducedOpticalFlow
 function [uvr,uvt]=generateFlowSparse(this,deltap,deltaEuler,pix)

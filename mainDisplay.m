@@ -180,7 +180,7 @@ end
 % Captures a figure via an offscreen buffer
 %
 % INPUT
-% hfig = handle to a matlab figure
+% hfig = handle to a MATLAB figure
 %
 % OUTPUT
 % cdata = color image in uint8, M-by-N-by-3

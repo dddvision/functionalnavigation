@@ -32,7 +32,7 @@ function data=computeIntermediateData(this,ka,kb)
   
 end
   
-% add 1 to indicies for matlab representation
+% add 1 to indicies for MATLAB representation
 % pixA = pixA+1;
 % pixB = pixB+1;
 % 

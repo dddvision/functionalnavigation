@@ -10,7 +10,7 @@ classdef dataContainer < handle
     %
     % NOTE
     % Each derived class must construct a singleton object instance
-    % In Matlab, the singleton design pattern can be implemented by 
+    % In MATLAB, the singleton design pattern can be implemented by 
     %   deriving from the handle class and using persistence as follows:
     %
     % function derivedClassConstructor
