@@ -3,16 +3,21 @@
 %   tommas object and a graphical display, and then alternately optimizes 
 %   and displays trajectories in an infinite loop. See tommasConfig for 
 %   configuration options.
+help('main');
 
 % clear the workspace and the screen
 close('all');
 clear('classes');
 drawnow;
 
-% check matlab version before instantiating any objects
-matlab_version=version('-release');
+% check MATLAB version before instantiating any objects
+try
+  matlab_version=version('-release');
+catch err
+  error('%s. See MATLAB Solution ID 1-5JUPSQ and restart MATLAB.',err.message);
+end
 if(str2double(matlab_version(1:4))<2008)
-  error('requires Matlab version 2008a or greater');
+  error('requires MATLAB version 2008a or greater');
 end
 
 % add component repository to the path

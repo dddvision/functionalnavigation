@@ -33,8 +33,8 @@ classdef cameraArray < sensor
     % view = zero-based view index, uint32 scalar
     %
     % OUTPUT
-    % numStrides = number of strides along the non-contiguous dimension (Matlab columns), uint32 scalar
-    % numSteps = number of steps along the contiguous dimension (Matlab rows), uint32 scalar
+    % numStrides = number of strides along the non-contiguous dimension (MATLAB columns), uint32 scalar
+    % numSteps = number of steps along the contiguous dimension (MATLAB rows), uint32 scalar
     % numLayers = number of color layers at each pixel location
     %
     % NOTES
@@ -105,8 +105,8 @@ classdef cameraArray < sensor
     %
     % NOTES
     % Pixel coordinate interpretation:
-    %   pix(1,:) = strides along the non-contiguous dimension (Matlab column minus one)
-    %   pix(2,:) = steps along the contiguous dimension (Matlab row minus one)
+    %   pix(1,:) = strides along the non-contiguous dimension (MATLAB column minus one)
+    %   pix(2,:) = steps along the contiguous dimension (MATLAB row minus one)
     % Points outside the valid image area return NaN-valued vectors
     % Region masking can be indicated through NaN-valued returns
     % Camera frame origin is coincident with focal point of the projection

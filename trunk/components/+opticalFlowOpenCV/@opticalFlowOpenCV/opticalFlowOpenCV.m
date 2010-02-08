@@ -15,7 +15,9 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
         
         % Locate openCV libraries
         userPath=path;
+        userWarnState=warning('off','all'); % see MATLAB Solution ID 1-5JUPSQ
         addpath(getenv('PATH'));
+        warning(userWarnState);
         if(ispc)
           libdir=fileparts(which('cv200.lib'));
         elseif(ismac)

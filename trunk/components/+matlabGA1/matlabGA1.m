@@ -18,7 +18,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       fprintf('\n');
       fprintf('\nmatlabGA1::matlabGA1');
       if( ~license('test','gads_toolbox') )
-        error('Matlab GADS toolbox is unavailable');
+        error('MATLAB GADS toolbox is unavailable');
       end
             
       this.defaultOptions = gaoptimset;
@@ -85,7 +85,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.cost=initialCost;
     end
     
-    % Requires a license for the Matlab GADS toolbox
+    % Requires a license for the MATLAB GADS toolbox
     function step(this)
       nvars=size(this.bits,2);
       nullstate=struct('FunEval',0);

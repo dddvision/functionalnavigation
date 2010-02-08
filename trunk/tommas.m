@@ -11,7 +11,7 @@ classdef tommas < tommasConfig & handle
       fprintf('\n');
       fprintf('\ntommas::tommas');
       warning('on','all');
-      intwarning('off');
+      warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
       reset(RandStream.getDefaultStream);
       this.optimizerInstance=unwrapComponent(this.optimizer);
       defineProblem(this.optimizerInstance,this.dynamicModel,this.measures,this.dataURI);
