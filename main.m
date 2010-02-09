@@ -29,10 +29,15 @@ fprintf('\npath added: %s',componentPath);
 tom=tommas;
 
 % create an instance of the GUI
-gui=mainDisplay;
+if(hasReferenceTrajectory(tom))
+  xRef=getReferenceTrajectory(tom);
+  gui=mainDisplay(xRef);
+else
+  gui=mainDisplay;
+end
 
 % optimize forever
-for index=1:inf
+for index=0:intmax('uint32')
   % get the latest trajectory and cost estimates
   [x,cost]=getResults(tom);
 

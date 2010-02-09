@@ -2,6 +2,7 @@
 classdef tommas < tommasConfig & handle
   
   properties (GetAccess=private,SetAccess=private)
+    dataContainerInstance
     optimizerInstance
   end
   
@@ -15,6 +16,24 @@ classdef tommas < tommasConfig & handle
       reset(RandStream.getDefaultStream);
       this.optimizerInstance=unwrapComponent(this.defaultOptimizer);
       defineProblem(this.optimizerInstance,this.defaultDynamicModel,this.defaultMeasures,this.defaultDataURI);
+      
+      this.dataContainerInstance=[];
+      [scheme,resource]=strtok(this.defaultDataURI,':');
+      if(strcmp(scheme,'matlab'))
+        this.dataContainerInstance=eval(resource(2:end));
+      end
+    end
+    
+    function xRef=getReferenceTrajectory(this)
+      xRef=getReferenceTrajectory(this.dataContainerInstance);
+    end
+
+    function flag=hasReferenceTrajectory(this)
+      if(isempty(this.dataContainerInstance))
+        flag=false;
+      else
+        flag=hasReferenceTrajectory(this.dataContainerInstance);
+      end
     end
     
     function step(this)

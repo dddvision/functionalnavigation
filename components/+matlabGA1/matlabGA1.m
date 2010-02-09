@@ -24,10 +24,10 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.defaultOptions = gaoptimset;
       this.defaultOptions.PopulationType = 'bitstring';
       this.defaultOptions.PopInitRange = [0;1];
-      this.defaultOptions.CrossoverFraction = 0.6;
+      this.defaultOptions.CrossoverFraction = this.crossoverFraction;
       this.defaultOptions.MigrationDirection = 'forward';
       this.defaultOptions.MigrationInterval = inf;
-      this.defaultOptions.MigrationFraction = 0.4;
+      this.defaultOptions.MigrationFraction = 0;
       this.defaultOptions.Generations = 1;
       this.defaultOptions.TimeLimit = inf;
       this.defaultOptions.FitnessLimit = -inf;
@@ -44,11 +44,11 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.defaultOptions.CrossoverFcn = @crossoversinglepoint;
       this.defaultOptions.CrossoverFcnArgs = {};
       this.defaultOptions.MutationFcn = @mutationuniform;
-      this.defaultOptions.MutationFcnArgs = {0.08};
+      this.defaultOptions.MutationFcnArgs = {this.mutationRatio};
       this.defaultOptions.Vectorized = 'on';
       this.defaultOptions.LinearConstr.type = 'unconstrained';
       this.defaultOptions.PopulationSize=this.popSizeDefault;
-      this.defaultOptions.EliteCount=1+floor(this.popSizeDefault/6);
+      this.defaultOptions.EliteCount=1+floor(this.popSizeDefault/12);
       
       % workaround to access stepGA from the gads toolbox
       pathtemp=pwd;
