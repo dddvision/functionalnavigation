@@ -3,20 +3,18 @@ classdef mainDisplay < mainDisplayConfig & handle
   properties (SetAccess=private,GetAccess=private)
     hfigure
     haxes
-    referenceTrajectory
-    sampleTimes
+    tRef
+    pRef
+    qRef
   end
   
   methods (Access=public)
 
-    function this=mainDisplay
+    function this=mainDisplay(xRef)
       this.hfigure=figure;
       set(this.hfigure,'Color',this.colorBackground);
       set(this.hfigure,'Position',[0,0,this.width,this.height]);
       this.haxes=axes('Parent',this.hfigure,'Clipping','off');
-%       xlabel(this.haxes,'ECEF_X');
-%       ylabel(this.haxes,'ECEF_Y');
-%       zlabel(this.haxes,'ECEF_Z');
       set(this.haxes,'Box','on');
       set(this.haxes,'Projection','Perspective');
       set(this.haxes,'Units','normalized');
@@ -30,15 +28,13 @@ classdef mainDisplay < mainDisplayConfig & handle
       set(this.haxes,'Visible','on');
       set(this.haxes,'NextPlot','add');
       
-      this.sampleTimes=[];
-      
-      this.referenceTrajectory=[];
-      [scheme,resource]=strtok(this.dataURI,':');
-      if(strcmp(scheme,'matlab'))
-        container=eval(resource(2:end));
-        if(hasReferenceTrajectory(container))
-          this.referenceTrajectory=getReferenceTrajectory(container);
-        end
+      if(nargin>0)
+        this.tRef=generateSampleTimes(this,xRef);
+        [this.pRef,this.qRef]=evaluate(xRef,this.tRef);
+      else
+        this.tRef=[];
+        this.pRef=[];
+        this.qRef=[];
       end
     end
     
@@ -54,69 +50,66 @@ classdef mainDisplay < mainDisplayConfig & handle
     function put(this,x,c,index)
 
       % compute minimium cost
-      costMin=min(c);
+      K=numel(x);
+      costBest=min(c);
+      kBest=find(c==costBest,1,'first');
+      alpha=cost2alpha(this,c);
       
       % text display
       fprintf('\n');
-      fprintf('\ncost:');
-      fprintf('\n%f',c);
-      fprintf('\n');
-      fprintf('\nminimum: %f',costMin);
+      fprintf('\nindex: %d',index);
+      fprintf('\ncost(%d): %0.6f',[1:numel(c);c']);
+      fprintf('\nbest(%d): %0.6f',kBest,costBest);
       
-      K=numel(x);
-      alpha=cost2alpha(this,c);
-      kBest=find(c==costMin,1,'first');
-      generateSampleTimes(this,x);
-      
+      % generate sample times assuming all trajectories have the same domain
+      if(isempty(this.tRef))
+        this.tRef=generateSampleTimes(this,x(1));
+      end
+        
       % clear the figure
       figure(this.hfigure);
       cla(this.haxes);
       
+      % plot trajectories and highlight the best one in a different color
       for k=1:K
         if(k==kBest)
-          % highlight best trajectory in a different color
-          [pBest,qBest]=evaluate(x(k),this.sampleTimes);
+          [pBest,qBest]=evaluate(x(k),this.tRef);
           plotIndividual(this,pBest,qBest,alpha(k),this.colorHighlight,'LineWidth',1.5);
-          
-          avgPos=sum(pBest/numel(this.sampleTimes),2); % be careful with large numbers
-          avgSiz=twoNorm(max(pBest,[],2)-min(pBest,[],2));
-          
-          % HACK: choose fixed position and size for smooth visual display
-          avgPos=[0;1;0];
-          avgSiz=2;
-          
         elseif(~this.bestOnly)
-          [pk,qk]=evaluate(x(k),this.sampleTimes);
+          [pk,qk]=evaluate(x(k),this.tRef);
           plotIndividual(this,pk,qk,alpha(k),1-this.colorBackground);
         end
       end
       
       % compare to ground truth if available
-      if(~isempty(this.referenceTrajectory))
-        [pRef,qRef]=evaluate(this.referenceTrajectory,this.sampleTimes);
-        plotIndividual(this,pRef,qRef,1,this.colorReference,'LineWidth',1.5);
-        
-        pDif=pBest-pRef; % position comparison
+      if(isempty(this.pRef))
+        pScene=pBest;
+        summaryText=sprintf('cost=%0.6f',costBest);
+      else
+        pScene=this.pRef;
+        plotIndividual(this,this.pRef,this.qRef,1,this.colorReference,'LineWidth',1.5);
+        pDif=pBest-this.pRef; % position comparison
         pDif=sqrt(sum(pDif.*pDif,1));
-        qDif=acos(sum(qBest.*qRef,1)); % quaternion comparison
+        qDif=acos(sum(qBest.*this.qRef,1)); % quaternion comparison
         pTwoNorm=twoNorm(pDif);
         pInfNorm=infNorm(pDif);
         qTwoNorm=twoNorm(qDif);
         qInfNorm=infNorm(qDif);
         
-        summaryText=sprintf('    cost=%0.6f\npTwoNorm=%0.6f\npInfNorm=%0.6f\nqTwoNorm=%0.6f\nqInfNorm=%0.6f',...
-          costMin,pTwoNorm,pInfNorm,qTwoNorm,qInfNorm);
-
-      else
-        summaryText=sprintf('cost=%0.6f',costMin);
+        summaryText=sprintf('costBest=%0.6f\npTwoNorm=%0.6f\npInfNorm=%0.6f\nqTwoNorm=%0.6f\nqInfNorm=%0.6f',...
+          costBest,pTwoNorm,pInfNorm,qTwoNorm,qInfNorm);
       end
       
-      text(avgPos(1),avgPos(2),avgPos(3)+0.6*avgSiz,summaryText,'FontName','Courier');
+      % set axes properties being careful with large numbers
+      avgPos=sum(pScene/numel(this.tRef),2);
+      avgSiz=twoNorm(max(pScene,[],2)-min(pScene,[],2));
+      text(avgPos(1),avgPos(2),avgPos(3)+avgSiz,summaryText,'FontName','Courier');
       set(this.haxes,'CameraTarget',avgPos');
-      set(this.haxes,'CameraPosition',avgPos'+avgSiz*[4*cos(index/30),4*sin(index/30),2]);
-      set(this.haxes,'XLim',avgPos(1)+avgSiz*[-0.6,0.6]);
-      set(this.haxes,'YLim',avgPos(2)+avgSiz*[-0.6,0.6]);
-      set(this.haxes,'ZLim',avgPos(3)+avgSiz*[-0.6,0.6]);
+      cameraPosition=avgPos'+avgSiz*[8*cos(double(index)/30),8*sin(double(index)/30),4];
+      set(this.haxes,'CameraPosition',cameraPosition);
+      set(this.haxes,'XLim',avgPos(1)+avgSiz*[-1,1]);
+      set(this.haxes,'YLim',avgPos(2)+avgSiz*[-1,1]);
+      set(this.haxes,'ZLim',avgPos(3)+avgSiz*[-1,1]);
       drawnow;
 
       % save snapshot
@@ -133,12 +126,11 @@ classdef mainDisplay < mainDisplayConfig & handle
       alpha=(fitness/max([fitness;eps])).^this.gamma;
     end
     
-    function generateSampleTimes(this,x)
-      if(isempty(this.sampleTimes))
-        [tmin,tmax]=domain(x(1)); % assume all trajectories have the same domain
-        assert(~isinf(tmax)); % prevent memory overflow on the following line
-        this.sampleTimes=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
-      end
+    function t=generateSampleTimes(this,x)
+      assert(numel(x)==1);
+      [tmin,tmax]=domain(x);
+      tmax(isinf(tmax))=this.infinity; % prevent NaN on the following line
+      t=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
     end
     
     function plotIndividual(this,p,q,alpha,color,varargin)

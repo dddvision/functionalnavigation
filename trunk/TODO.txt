@@ -3,7 +3,6 @@ general:
  * Schedule meeting with AFRL
  * Document distinction between testbed and optimizer
  * Make class aliases for "time", "index", "real" and other simple classes?
- * Use start time referenceDate = datestr(now,30)?
 
 research:
  * Topics for publication:
@@ -33,12 +32,14 @@ testComponent:
 
 demonstration:
  *** Access camera and inertial sensor on a MacBook.
+ * Use start time referenceDate = datestr(now,30)?
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
  *** Wrap "objective" so that all measures are refreshed simultaneously.
- * Have Rob create linkage-based GA crossover function.
+ *** Choose number of blocks dynamically based on data.
+ * Create linkage-based GA crossover function.
 
 trajectory:
  *** Specify evaluate outputs using string like 'pqrs'?
@@ -48,8 +49,8 @@ measure:
  * Use SURF instead of SIFT.
  * Implement SURF as a feature-matching option in opticalFlowOpenCV.
  * Add an example of a GPS measure (maybe in measureStub).
- * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Document that all measures are two-point functions.
+ * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Fix axis ordering bug in pointBasedMeasure
  * In pointBasedMeasure, cache results of finding keypoints for each image.
  * In opticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
@@ -70,9 +71,6 @@ dataContainer:
 cameraArray:
  * Check fisheye projection and inverseProjection equations at image center.
  * Should masking be sepate from projection?
-
-mainDisplay:
- * Simplify display technique for speed given large domains, including tb=inf
 
 glossary:
  * dynamic model

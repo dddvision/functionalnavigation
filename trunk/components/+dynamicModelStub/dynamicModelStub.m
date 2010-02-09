@@ -80,8 +80,6 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     end
     
     function appendBlocks(this,blocks)
-      fprintf('\n');
-      fprintf('\ndynamicModelStub::appendBlocks');
       this.block=cat(2,this.block,blocks);
       N=numel(this.block);
       if((N+1)>size(this.state,2))

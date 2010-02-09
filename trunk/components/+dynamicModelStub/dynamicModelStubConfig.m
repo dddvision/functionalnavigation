@@ -10,7 +10,7 @@ classdef dynamicModelStubConfig < handle
     A=sparse([zeros(6),eye(6);zeros(6),zeros(6)]); % 6-DOF state transition
 %    B=sparse([zeros(6);eye(6)]); % 6-DOF
 %    B=sparse([zeros(6);diag([1,1,0,0,0,1])]); % 3-DOF (X,Y,Theta)
-    B=sparse(2*[zeros(6);diag([1,1,1,0,0,0])]); % 3-DOF (X,Y,Z)
+    B=sparse([zeros(6);diag([1,1,1,0,0,0])]); % 3-DOF (X,Y,Z)
 %    B=sparse([zeros(6);diag([1,1,0,0,0,0])]); % 2-DOF (X,Y)
     
     % Model fidelity parameter given 32*numInputs bits per block
