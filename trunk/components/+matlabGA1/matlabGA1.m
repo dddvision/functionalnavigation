@@ -35,22 +35,20 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.defaultOptions.StallTimeLimit = inf;
       this.defaultOptions.TolFun = 0;
       this.defaultOptions.TolCon = 0;
-      this.defaultOptions.InitialPenalty = 10;
-      this.defaultOptions.PenaltyFactor = 100;
       this.defaultOptions.CreationFcn = @gacreationuniform;
       this.defaultOptions.CreationFcnArgs = {};
-      this.defaultOptions.FitnessScalingFcn = @fitscalingrank;
+      this.defaultOptions.FitnessScalingFcn = @fitscalingprop;
       this.defaultOptions.FitnessScalingFcnArgs = {};
-      this.defaultOptions.SelectionFcn = @selectionroulette;
+      this.defaultOptions.SelectionFcn = @selectionstochunif;
       this.defaultOptions.SelectionFcnArgs = {};
-      this.defaultOptions.CrossoverFcn = @crossovertwopoint;
+      this.defaultOptions.CrossoverFcn = @crossoversinglepoint;
       this.defaultOptions.CrossoverFcnArgs = {};
       this.defaultOptions.MutationFcn = @mutationuniform;
-      this.defaultOptions.MutationFcnArgs = {0.02};
+      this.defaultOptions.MutationFcnArgs = {0.08};
       this.defaultOptions.Vectorized = 'on';
       this.defaultOptions.LinearConstr.type = 'unconstrained';
       this.defaultOptions.PopulationSize=this.popSizeDefault;
-      this.defaultOptions.EliteCount=max(1,this.popSizeDefault/20);
+      this.defaultOptions.EliteCount=1+floor(this.popSizeDefault/6);
       
       % workaround to access stepGA from the gads toolbox
       pathtemp=pwd;
