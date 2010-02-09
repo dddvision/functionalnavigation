@@ -1,9 +1,10 @@
-classdef mainDisplay < mainDisplayConfig
+classdef mainDisplay < mainDisplayConfig & handle
   
   properties (SetAccess=private,GetAccess=private)
     hfigure
     haxes
     referenceTrajectory
+    sampleTimes
   end
   
   methods (Access=public)
@@ -13,9 +14,11 @@ classdef mainDisplay < mainDisplayConfig
       set(this.hfigure,'Color',this.colorBackground);
       set(this.hfigure,'Position',[0,0,this.width,this.height]);
       this.haxes=axes('Parent',this.hfigure,'Clipping','off');
-      xlabel(this.haxes,'ECEF_X');
-      ylabel(this.haxes,'ECEF_Y');
-      zlabel(this.haxes,'ECEF_Z');
+%       xlabel(this.haxes,'ECEF_X');
+%       ylabel(this.haxes,'ECEF_Y');
+%       zlabel(this.haxes,'ECEF_Z');
+      set(this.haxes,'Box','on');
+      set(this.haxes,'Projection','Perspective');
       set(this.haxes,'Units','normalized');
       set(this.haxes,'DataAspectRatio',[1,1,1]);
       set(this.haxes,'Position',[0,0,1,1]);
@@ -24,8 +27,11 @@ classdef mainDisplay < mainDisplayConfig
       set(this.haxes,'XLimMode','manual');
       set(this.haxes,'YLimMode','manual');
       set(this.haxes,'ZLimMode','manual');
-      set(this.haxes,'Visible','off');
+      set(this.haxes,'Visible','on');
       set(this.haxes,'NextPlot','add');
+      
+      this.sampleTimes=[];
+      
       this.referenceTrajectory=[];
       if(nargin>0)
         [scheme,resource]=strtok(uri,':');
@@ -43,59 +49,76 @@ classdef mainDisplay < mainDisplayConfig
     % INPUT
     % x = trajectory instances, N-by-1
     % c = costs, double N-by-1
+    % index = plot index, double scalar
     %
     % OUTPUT
     % h = handles to trajectory plot elements
     function put(this,x,c,index)
 
-      % find the minimum and maximum cost
-      cMin=min(c);
+      % compute minimium cost
+      costMin=min(c);
       
       % text display
       fprintf('\n');
       fprintf('\ncost:');
       fprintf('\n%f',c);
       fprintf('\n');
-      fprintf('\nminimum: %f',cMin);
-
+      fprintf('\nminimum: %f',costMin);
+      
+      K=numel(x);
+      alpha=cost2alpha(this,c);
+      kBest=find(c==costMin,1,'first');
+      generateSampleTimes(this,x);
+      
       % clear the figure
       figure(this.hfigure);
       cla(this.haxes);
       
-      % add ground truth if available
-      if(~isempty(this.referenceTrajectory))
-        mainDisplayIndividual(this,this.referenceTrajectory,1,this.colorReference);
-      end
-      
-      alpha=cost2alpha(this,c);
-      
-      K=numel(x);
-      avgPos=zeros(3,1);
-      avgSiz=0;
       for k=1:K
-        % highlight minimum cost trajectories in a different color
-        if(c(k)==cMin)
-          pos=mainDisplayIndividual(this,x(k),alpha(k),this.colorHighlight);
-        else
-          pos=mainDisplayIndividual(this,x(k),alpha(k),1-this.colorBackground);
+        if(k==kBest)
+          % highlight best trajectory in a different color
+          [pBest,qBest]=evaluate(x(k),this.sampleTimes);
+          plotIndividual(this,pBest,qBest,alpha(k),this.colorHighlight,'LineWidth',1.5);
+          
+          avgPos=sum(pBest/numel(this.sampleTimes),2); % be careful with large numbers
+          avgSiz=twoNorm(max(pBest,[],2)-min(pBest,[],2));
+          
+          % HACK: choose fixed position and size for smooth visual display
+          avgPos=[0;1;0];
+          avgSiz=2;
+          
+        elseif(~this.bestOnly)
+          [pk,qk]=evaluate(x(k),this.sampleTimes);
+          plotIndividual(this,pk,qk,alpha(k),1-this.colorBackground);
         end
-        
-        % calculate statistics, being careful with large numbers
-        siz=norm(max(pos,[],2)-min(pos,[],2));
-        avgPos=avgPos+sum(pos/(size(pos,2)*K),2);
-        avgSiz=avgSiz+siz/K;
       end
       
-      % HACK
-      avgPos=[0;1;0];
-      avgSiz=2;
+      % compare to ground truth if available
+      if(~isempty(this.referenceTrajectory))
+        [pRef,qRef]=evaluate(this.referenceTrajectory,this.sampleTimes);
+        plotIndividual(this,pRef,qRef,1,this.colorReference,'LineWidth',1.5);
+        
+        pDif=pBest-pRef; % position comparison
+        pDif=sqrt(sum(pDif.*pDif,1));
+        qDif=acos(sum(qBest.*qRef,1)); % quaternion comparison
+        pTwoNorm=twoNorm(pDif);
+        pInfNorm=infNorm(pDif);
+        qTwoNorm=twoNorm(qDif);
+        qInfNorm=infNorm(qDif);
+        
+        summaryText=sprintf('    cost=%0.6f\npTwoNorm=%0.6f\npInfNorm=%0.6f\nqTwoNorm=%0.6f\nqInfNorm=%0.6f',...
+          costMin,pTwoNorm,pInfNorm,qTwoNorm,qInfNorm);
+
+      else
+        summaryText=sprintf('cost=%0.6f',costMin);
+      end
       
+      text(avgPos(1),avgPos(2),avgPos(3)+0.6*avgSiz,summaryText,'FontName','Courier');
       set(this.haxes,'CameraTarget',avgPos');
-      set(this.haxes,'CameraPosition',avgPos'+avgSiz*[cos(index/20),sin(index/20),0.5]);
+      set(this.haxes,'CameraPosition',avgPos'+avgSiz*[4*cos(index/30),4*sin(index/30),2]);
       set(this.haxes,'XLim',avgPos(1)+avgSiz*[-0.6,0.6]);
       set(this.haxes,'YLim',avgPos(2)+avgSiz*[-0.6,0.6]);
       set(this.haxes,'ZLim',avgPos(3)+avgSiz*[-0.6,0.6]);
-      
       drawnow;
 
       % save snapshot
@@ -112,24 +135,25 @@ classdef mainDisplay < mainDisplayConfig
       alpha=(fitness/max([fitness;eps])).^this.gamma;
     end
     
-    function p=mainDisplayIndividual(this,x,alpha,color)  
-      [tmin,tmax]=domain(x);
-
-      assert(~isinf(tmax)); % prevent memory overflow on the following line
-      t=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
-
-      [p,q]=evaluate(x,t);
-
-      mainDisplayPlotFrame(this,p(:,1),q(:,1),alpha); % plot first frame
-      plot3(p(1,:),p(2,:),p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3),'Clipping','off');
+    function generateSampleTimes(this,x)
+      if(isempty(this.sampleTimes))
+        [tmin,tmax]=domain(x(1)); % assume all trajectories have the same domain
+        assert(~isinf(tmax)); % prevent memory overflow on the following line
+        this.sampleTimes=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
+      end
+    end
+    
+    function plotIndividual(this,p,q,alpha,color,varargin)
+      plot3(p(1,:),p(2,:),p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3),'Clipping','off',varargin{:});
+      plotFrame(this,p(:,1),q(:,1),alpha); % plot first frame
       for bs=1:this.bigSteps
         ksub=(bs-1)*this.subSteps+(1:(this.subSteps+1));
-        mainDisplayPlotFrame(this,p(:,ksub(end)),q(:,ksub(end)),alpha); % plot terminating frame
+        plotFrame(this,p(:,ksub(end)),q(:,ksub(end)),alpha);
       end
     end
 
     % Plot a triangle indicating body axes as in "the tail of an airplane"
-    function mainDisplayPlotFrame(this,p,q,alpha)
+    function plotFrame(this,p,q,alpha)
       M=this.scale*Quat2Matrix(q);
       xp=p(1)+[M(1,1);0;-0.5*M(1,3)];
       yp=p(2)+[M(2,1);0;-0.5*M(2,3)];
@@ -138,6 +162,14 @@ classdef mainDisplay < mainDisplayConfig
     end
   end
   
+end
+
+function y=twoNorm(x)
+  y=sqrt(sum(x.*x)/numel(x));
+end
+
+function y=infNorm(x)
+  y=max(abs(x));
 end
 
 % Converts a quaternion to a rotation matrix

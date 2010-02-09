@@ -1,9 +1,10 @@
-classdef mainDisplayConfig
+classdef mainDisplayConfig < handle
   properties (Constant=true,GetAccess=protected)
-    saveFigure=false; % (false) saves figure as an image
+    bestOnly=false; % (false) show only the best trajectory
+    saveFigure=true; % (false) saves figure as an image
     width=500; % (500) figure width in pixels
     height=500; % (500) figure height in pixels
-    gamma=4; % (4) nonlinearity of trajectory transparency
+    gamma=2; % (4) nonlinearity of trajectory transparency
     scale=0.01; % (0.01) scale of body frame
     bigSteps=10; % (10) number of body frames per trajectory
     subSteps=10; % (10) number of line segments between frames

@@ -2,7 +2,7 @@ classdef matlabGA1Config < handle
   
     properties (Constant=true,GetAccess=protected)
       % Default number of trajectories to test
-      popSizeDefault = 20;
+      popSizeDefault = 15;
     
       % Start all trajectories at this time
       referenceTime = 0;
