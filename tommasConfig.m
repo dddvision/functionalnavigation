@@ -1,17 +1,17 @@
 classdef tommasConfig < handle
 
   properties (Constant=true,GetAccess=public)
-    % select dynamic model
-    dynamicModel = 'dynamicModelStub';
-    
-    % select optimizer
-    optimizer = 'matlabGA1';
-  
     % select data container
-    dataURI = 'matlab:middleburyData.middleburyData';
+    defaultDataURI = 'matlab:middleburyData.middleburyData';
+    
+    % select default dynamic model
+    defaultDynamicModel = 'dynamicModelStub';
+    
+    % select default optimizer
+    defaultOptimizer = 'matlabGA1';
         
-    % select measures
-    measures = {'opticalFlowOpenCV'};
+    % select default measures
+    defaultMeasures = {'opticalFlowOpenCV'};
   end
     
 end

@@ -9,7 +9,7 @@ classdef mainDisplay < mainDisplayConfig & handle
   
   methods (Access=public)
 
-    function this=mainDisplay(uri)
+    function this=mainDisplay
       this.hfigure=figure;
       set(this.hfigure,'Color',this.colorBackground);
       set(this.hfigure,'Position',[0,0,this.width,this.height]);
@@ -33,13 +33,11 @@ classdef mainDisplay < mainDisplayConfig & handle
       this.sampleTimes=[];
       
       this.referenceTrajectory=[];
-      if(nargin>0)
-        [scheme,resource]=strtok(uri,':');
-        if(strcmp(scheme,'matlab'))
-          container=eval(resource(2:end));
-          if(hasReferenceTrajectory(container))
-            this.referenceTrajectory=getReferenceTrajectory(container);
-          end
+      [scheme,resource]=strtok(this.dataURI,':');
+      if(strcmp(scheme,'matlab'))
+        container=eval(resource(2:end));
+        if(hasReferenceTrajectory(container))
+          this.referenceTrajectory=getReferenceTrajectory(container);
         end
       end
     end

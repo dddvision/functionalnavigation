@@ -28,8 +28,8 @@ fprintf('\npath added: %s',componentPath);
 % create an instance of TOMMAS
 tom=tommas;
 
-% create an instance of the GUI and access reference trajectory if available
-gui=mainDisplay(tom.dataURI);
+% create an instance of the GUI
+gui=mainDisplay;
 
 % optimize forever
 for index=1:inf
