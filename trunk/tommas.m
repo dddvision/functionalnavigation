@@ -13,8 +13,8 @@ classdef tommas < tommasConfig & handle
       warning('on','all');
       warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
       reset(RandStream.getDefaultStream);
-      this.optimizerInstance=unwrapComponent(this.optimizer);
-      defineProblem(this.optimizerInstance,this.dynamicModel,this.measures,this.dataURI);
+      this.optimizerInstance=unwrapComponent(this.defaultOptimizer);
+      defineProblem(this.optimizerInstance,this.defaultDynamicModel,this.defaultMeasures,this.defaultDataURI);
     end
     
     function step(this)
