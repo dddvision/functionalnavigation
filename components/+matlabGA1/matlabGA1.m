@@ -53,9 +53,9 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       % workaround to access stepGA from the gads toolbox
       pathtemp=pwd;
       cd(fullfile(fileparts(which('ga')),'private'));
-      temp = @stepGA;
+      temp=@stepGA;
       cd(pathtemp);
-      this.stepGAhandle = temp;     
+      this.stepGAhandle=temp;     
    end
     
     function initialCost=defineProblem(this,dynamicModelName,measureNames,dataURI)
@@ -132,7 +132,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
   end
 end
 
-% Configurable objective function
+% Objective function that stores an objective object instance
 function varargout=objective(varargin)
   persistent this
   bits=varargin{1};
@@ -155,6 +155,8 @@ function varargout=objective(varargin)
     varargout{1}=cost/numEdges;
   elseif(strcmp(bits,'put'))
     this=varargin{2};
+  elseif(strcmp(bits,'get'))
+    varargout{1}=this;
   else
     error('incorrect argument list');
   end
