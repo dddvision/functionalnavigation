@@ -12,6 +12,7 @@ research:
    * JAUGS modular architecture 
  * Olsen: Pose graphs
  * review other code in projects/1490/software
+ * Follow up with Lobo about camera rotation concept
  * elements of statistical learning
  * Cramer-Rao: cov(your estimator)>=inv(information)
  * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
@@ -37,7 +38,7 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
- *** Wrap "objective" so that all measures are refreshed simultaneously.
+ *** Wrap "objective" so that all measures are refreshed simultaneously (make GA properties private again)
  *** Choose number of blocks dynamically based on data.
  * Create linkage-based GA crossover function.
 
