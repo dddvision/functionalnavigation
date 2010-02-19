@@ -1,6 +1,6 @@
 classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
   
-  properties (GetAccess=private,SetAccess=private)
+  properties (GetAccess=public,SetAccess=public)
     F
     g
     bits
