@@ -58,6 +58,7 @@ measure:
  * Improve scheme for matching measures to sensor data when there are multiple sensors of same type.
 
 dataContainer:
+ * Split globalSatData into a measure and a reference trajectory simulator?
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
  * listSensors() should return a list of strings identifying sensors?
