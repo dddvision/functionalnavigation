@@ -19,6 +19,12 @@ classdef linearKalmanDynamicModel < dynamicModel
     function blocksPerSecond=getUpdateRate
       blocksPerSecond=this.blocksPerSecond;
     end
+    
+    function cost=computeBlockCost(block)
+      halfIntMax=2147483647.5;
+      x=double(block.uint32)/halfIntMax-1;
+      cost=3*(x*x);
+    end
   end
   
   methods (Access=public)
@@ -65,15 +71,15 @@ classdef linearKalmanDynamicModel < dynamicModel
     end
    
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
-      N=numel(t);
-      
-      
-      
-      position=
-      positionRate=
-
-      rotation=repmat([1;0;0;0],[1,N]);
-      rotationRate=zeros(4,N);
+%       N=numel(t);
+%       
+%       
+%       
+%       position=
+%       positionRate=
+% 
+%       rotation=repmat([1;0;0;0],[1,N]);
+%       rotationRate=zeros(4,N);
     end
   end
   

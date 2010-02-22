@@ -1,4 +1,10 @@
 % This class augments a trajectory with defining parameters
+%
+% NOTE
+% This class depends on parameter blocks of the following form
+%   block.logical = logical parameters, logical numLogical-by-1
+%   block.uint32 = unsigned integer parameters, uint32 numUint32-by-1
+% The range of uint32 is [0,4294967295]
 classdef dynamicModel < trajectory
   
   properties (Constant=true,GetAccess=public)
@@ -46,6 +52,19 @@ classdef dynamicModel < trajectory
     % OUTPUT
     % blocksPerSecond = each block will extend the domain the reciprical of this rate, double scalar
     blocksPerSecond=getUpdateRate;
+    
+    % Compute the cost associated with a parameter block
+    %
+    % INPUT
+    % block = single parameter block, struct scalar
+    %
+    % OUTPUT
+    % cost = non-negative cost associated with the block, double scalar
+    %
+    % NOTE
+    % Output is analogous to mahalanobis distance
+    % Typical values are in the range [0,3]
+    cost=computeBlockCost(block);
   end
   
   methods (Abstract=true,Access=public)
@@ -68,9 +87,7 @@ classdef dynamicModel < trajectory
     %
     % INPUT
     % k = zero-based indices of block locations sorted in ascending order, uint32 N-by-1
-    % blocks = struct N-by-1
-    % blocks(k).logical = logical parameters, logical numLogical-by-1
-    % blocks(k).uint32 = unsigned integer parameters, uint32 numUint32-by-1
+    % blocks = parameter blocks, struct N-by-1
     %
     % NOTES
     % Unsigned integers may be treated as range-bounded doubles via static casting
@@ -81,13 +98,10 @@ classdef dynamicModel < trajectory
     % Extend the time domain by appending consecutive blocks of parameters
     %
     % INPUT
-    % blocks = struct M-by-1
-    % blocks(k).logical = logical parameters, logical numLogical-by-1
-    % blocks(k).uint32 = unsigned integer parameters, uint32 numUint32-by-1
+    % blocks = parameter blocks, struct M-by-1
     %
     % NOTES
     % Unsigned integers may be treated as range-bounded doubles via static casting
-    % The prior distribution on the values of the blocks is uniform
     % This function modifies the object instance
     appendBlocks(this,blocks);
   end

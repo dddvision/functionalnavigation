@@ -3,9 +3,9 @@
 %   tommas object and a graphical display, and then alternately optimizes 
 %   and displays trajectories in an infinite loop. See tommasConfig for 
 %   configuration options.
-help('main');
+help(mfilename);
 
-% clear the workspace and the screen
+% close figures and clear the workspace
 close('all');
 clear('classes');
 drawnow;
