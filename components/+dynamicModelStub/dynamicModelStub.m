@@ -27,6 +27,11 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     function blocksPerSecond=getUpdateRate
       blocksPerSecond=dynamicModelStub.dynamicModelStubConfig.blocksPerSecond;
     end
+    
+    function cost=computeBlockCost(block)
+      assert(isa(block,'struct'));
+      cost=0;
+    end
   end
   
   methods (Access=public)
@@ -155,8 +160,8 @@ function expA=expmApprox(A)
 end
 
 function force=block2unitforce(block)
-  imax=4294967295;
-  force=2*(double(block.uint32)/imax)-1;
+  halfIntMax=2147483647.5;
+  force=double(block.uint32)/halfIntMax-1;
 end
 
 function h=Quat2Homo(q)

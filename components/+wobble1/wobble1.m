@@ -18,6 +18,11 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
     function blocksPerSecond=getUpdateRate
       blocksPerSecond=0;
     end
+    
+    function cost=computeBlockCost(block)
+      assert(isa(block,'struct'));
+      cost=0;
+    end
   end
   
   methods (Access=public)

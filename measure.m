@@ -59,6 +59,8 @@ classdef measure < sensor
     %   body frame, then the sensor frame offset may need to be 
     %   kinematically composed with the body frame to locate the sensor
     % Throws an exception if node indices do not correspond to an edge
+    % Output is analogous to mahalanobis distance
+    % Typical values are in the range [0,3]
     cost=computeEdgeCost(this,x,ka,kb);
   end
   
