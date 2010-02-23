@@ -62,9 +62,7 @@ classdef mainDisplay < mainDisplayConfig & handle
       fprintf('\nbest(%d): %0.6f',kBest,costBest);
       
       % generate sample times assuming all trajectories have the same domain
-      if(isempty(this.tRef))
-        this.tRef=generateSampleTimes(this,x(1));
-      end
+      t=generateSampleTimes(this,x(1));
         
       % clear the figure
       figure(this.hfigure);
@@ -73,10 +71,10 @@ classdef mainDisplay < mainDisplayConfig & handle
       % plot trajectories and highlight the best one in a different color
       for k=1:K
         if(k==kBest)
-          [pBest,qBest]=evaluate(x(k),this.tRef);
+          [pBest,qBest]=evaluate(x(k),t);
           plotIndividual(this,pBest,qBest,alpha(k),this.colorHighlight,'LineWidth',1.5);
         elseif(~this.bestOnly)
-          [pk,qk]=evaluate(x(k),this.tRef);
+          [pk,qk]=evaluate(x(k),t);
           plotIndividual(this,pk,qk,alpha(k),1-this.colorBackground);
         end
       end
@@ -101,7 +99,7 @@ classdef mainDisplay < mainDisplayConfig & handle
       end
       
       % set axes properties being careful with large numbers
-      avgPos=sum(pScene/numel(this.tRef),2);
+      avgPos=sum(pScene/numel(t),2);
       avgSiz=twoNorm(max(pScene,[],2)-min(pScene,[],2));
       text(avgPos(1),avgPos(2),avgPos(3)+avgSiz,summaryText,'FontName','Courier');
       set(this.haxes,'CameraTarget',avgPos');

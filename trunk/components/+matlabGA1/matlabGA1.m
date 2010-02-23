@@ -89,11 +89,13 @@
         nvars=size(this.bits,2);
         nullstate=struct('FunEval',0);
         [this.cost,this.bits]=feval(this.stepGAhandle,this.cost,this.bits,this.defaultOptions,nullstate,nvars,@objective);
-        putBits(this,this.bits);
+        blocks=bits2blocks(this,this.bits);
+        putBlocks(this,blocks);
       else
         bad=find(this.cost>1.1*min(this.cost));
         this.bits(bad,:)=logical(rand(numel(bad),size(this.bits,2))>0.5);
-        putBits(this,this.bits);
+        blocks=bits2blocks(this,this.bits);
+        putBlocks(this,blocks);
       end
     end
     
@@ -104,8 +106,7 @@
   end
   
   methods (Access=private)
-    function putBits(this,bits)
-      blocks=bits2blocks(this,bits);
+    function putBlocks(this,blocks)
       for k=1:this.popSizeDefault
         replaceBlocks(this.F{k},0:(numel(blocks{k})-1),blocks{k});
       end
@@ -145,8 +146,16 @@ function varargout=objective(varargin)
   if(~ischar(bits))
     numIndividuals=numel(this.F);
     numGraphs=numel(this.g);
-    putBits(this,bits);
+    blocks=bits2blocks(this,bits);
+    putBlocks(this,blocks);
     cost=zeros(numIndividuals,1);
+    classF=class(this.F{1});
+    for individual=1:numIndividuals
+      iBlocks=blocks{individual};
+      for blk=1:numel(iBlocks)
+        cost(individual)=cost(individual)+eval([classF,'.computeBlockCost(iBlocks(blk))']);
+      end
+    end
     for graph=1:numGraphs
       [a,b]=findEdges(this.g{graph},uint32(0),last(this.g{graph})-this.dMax);
       numEdges=numel(a);

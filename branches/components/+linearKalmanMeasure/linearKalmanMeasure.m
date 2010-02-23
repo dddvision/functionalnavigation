@@ -10,7 +10,7 @@ classdef linearKalmanMeasure < measure
     dt
   end
   
-  methods (Access=protected)
+  methods (Access=public)
     function this=linearKalmanMeasure(uri)
       this=this@measure(uri);
       
@@ -19,8 +19,7 @@ classdef linearKalmanMeasure < measure
       this.dt=0.1; % ASSUMPTION: fixed known time step
       this.sigma=2; % ASSUMPTION: fixed known noise parameter
       
-      % ASSUMPTION: simple linear noise process
-      % noise[k+1]=noise[k]+sigma*randn[k]
+      % ASSUMPTION: noise consists of indipendent samples from a normal distribution
       try
         [scheme,resource]=strtok(uri,':');
         switch(scheme)
@@ -31,7 +30,7 @@ classdef linearKalmanMeasure < measure
               [ta,tb]=domain(xRef);
               this.t=ta:this.dt:tb;
               x=evaluate(xRef,this.t);
-              noise=cumsum(this.sigma*randn(1,numel(this.t)));
+              noise=this.sigma*randn(1,numel(this.t));
               this.yBar=x(1,:)+noise;
             else
               error('Simulator requires reference trajectory');
@@ -44,7 +43,7 @@ classdef linearKalmanMeasure < measure
       end
     end
 
-   function status=refresh(this)
+    function status=refresh(this)
       if(this.kb<numel(this.t))
         this.kb=this.kb+uint32(1);
       end
@@ -64,7 +63,7 @@ classdef linearKalmanMeasure < measure
     end
     
     function [ka,kb]=findEdges(this,kaMin,kbMin)
-      k=last(this.sensor);
+      k=this.kb;
       if((k<kaMin)||(k<kbMin))
         ka=[];
         kb=[];
@@ -76,13 +75,9 @@ classdef linearKalmanMeasure < measure
 
     function cost=computeEdgeCost(this,x,a,b)
       assert(a==b);
-      pos=evaluate(x,this.time(1:b));
-      yHat=pos(1,:);
-      yDif=this.yBar(1:b)-yHat;
-      
-      
-      
-      cost=0.5*(y-yHat)*(1/this.sigma)*(y-yHat);
+      pos=evaluate(x,this.t(b));
+      yDif=this.yBar(b)-pos(1);
+      cost=0.5*yDif*(1/this.sigma)*yDif;
     end
   end
   
