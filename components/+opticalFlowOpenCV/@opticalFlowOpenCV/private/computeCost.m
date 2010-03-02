@@ -4,6 +4,10 @@
   Vyr=uvr(2,:);
   Vxt=uvt(1,:);
   Vyt=uvt(2,:);
+
+  % Remove rotation effect
+  Vx_OFT=(Vx_OF-Vxr);
+  Vy_OFT=(Vy_OF-Vyr);
   
   % Drop magnitude of translation
   mag=sqrt(Vxt.*Vxt+Vyt.*Vyt);
@@ -11,11 +15,7 @@
   Vxt=Vxt./mag;
   Vyt=Vyt./mag;
   
-  % Remove rotation effect
-  Vx_OFT=(Vx_OF-Vxr);
-  Vy_OFT=(Vy_OF-Vyr);
-  
-  % Drop magnitude and keep direction only
+  % Drop magnitude of translation
   mag=sqrt(Vx_OFT.*Vx_OFT+Vy_OFT.*Vy_OFT);
   mag(mag(:)<eps)=1; 
   Vx_OFTD=Vx_OFT./mag;
@@ -25,14 +25,16 @@
   Vx_OFTD(isnan(Vx_OFTD))=0;
   Vy_OFTD(isnan(Vy_OFTD))=0;
   
-  % Calculate Error
+  % Euclidean distance
   ErrorX=(Vx_OFTD-Vxt);
   ErrorY=(Vy_OFTD-Vyt);
   ErrorMag=sqrt(ErrorX.*ErrorX+ErrorY.*ErrorY);
+  upperBound=2*numel(Vx_OF);
+
+  % Absolute angular distance
+%   ErrorMag=abs(acos(Vx_OFTD.*Vxt+Vy_OFTD.*Vyt));
+%   upperBound=pi*numel(Vx_OF);
   
-  % TODO: check this calculation 
-  [FIELD_Y,FIELD_X]=size(Vx_OF);
-  upperBound=(FIELD_X.*FIELD_Y.*2);
   cost=sum(ErrorMag(:))/upperBound;
  end
  

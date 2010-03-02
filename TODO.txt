@@ -1,30 +1,32 @@
 general:
- * Create powerpoint for quarterly review (internal and external)
- * Schedule meeting with AFRL
- * Document distinction between testbed and optimizer
+ * Document the omission of sensor process noise.
+ * Document that all measures are two-point functions.
+ * Document distinction between testbed and optimizer.
+ * Document that trajectory evaluations are in the "pose and tangent pose" space.
  * Make class aliases for "time", "index", "real" and other simple classes?
 
 research:
+ *** Complete work on linearKalman components.
  * Topics for publication:
    * Measurement graphs as an alternative to pose graphs.
- * Review standards:
-   * Sandia Modular Architecture for Robotics and Teleoperation
-   * JAUGS modular architecture 
+ * Review standards (ask Jimmy Touma first):
+   * STANAG 4586
+   * JAUS V3.3 (JAUGS?)
+   * SMART (Sandia Modular Architecture for Robotics and Teleoperation)
  * Olsen: Pose graphs
- * review other code in projects/1490/software
- * Follow up with Lobo about camera rotation concept
- * elements of statistical learning
+ * H. W. Sorenson. "Parameter Estimation". 1980.
+ * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007.
+ * Review other code in /projects/1490/software
  * Cramer-Rao: cov(your estimator)>=inv(information)
  * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
  * Natalia Hernandez Gardiol @ CSAIL:
- * Bar-Shalom: Multitarget Multisensor tracking
  * Adam Klivans: learning decision trees over binary inputs
  * Kalai: learning halfspaces
  * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
 
 testComponent:
- * Applies unit tests to all components to check interfaces and exception handling
- * Characterizes measures
+ * Apply unit tests to all components to check interfaces and exception handling
+ * Characterize measures
    * Value when given ground truth
    * Granularity / dilution of precision
    * Monotonicity
@@ -43,28 +45,27 @@ optimizer:
  * Create linkage-based GA crossover function.
 
 trajectory:
- *** Specify evaluate outputs using string like 'pqrs'?
- * Document that evaluations are in the "pose and tangent pose" space.
+ *** Specify outputs of evaluate() using string like 'pqrs'?
 
 measure:
- * Use SURF instead of SIFT.
+ *** Use SURF instead of SIFT.
  * Implement SURF as a feature-matching option in opticalFlowOpenCV.
+ * Does GPLv2 license for SBA code allow linking?
  * Add an example of a GPS measure (maybe in measureStub).
- * Document that all measures are two-point functions.
  * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Fix axis ordering bug in pointBasedMeasure
  * In pointBasedMeasure, cache results of finding keypoints for each image.
  * In opticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
- * Improve scheme for matching measures to sensor data when there are multiple sensors of same type.
 
 dataContainer:
+ *** Make interface compatible with AFRL ANTBED.
  * Split globalSatData into a measure and a reference trajectory simulator?
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
- * listSensors() should return a list of strings identifying sensors?
- * Make stub that contains all sensors and type checks its inputs.
+ * Make a container that has all sensors and type checks its inputs.
  * Find a way to distinguish between multiple sensors that derive from the same class.
- * Coordinate with Jimmy Touma for AFRL data.
+   * Improve scheme for matching measures to sensor data.
+   * listSensors() should return a list of strings identifying sensors?
  * VAMAV OpenSceneGraph simulator?
  * Packaging King Air flight?
  * Inertial sensor interface should specify its error characteristics?
