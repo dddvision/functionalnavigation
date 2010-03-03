@@ -1,7 +1,7 @@
 classdef mainDisplayConfig < handle
   properties (Constant=true,GetAccess=protected)
     bestOnly=false; % (true) show only the best trajectory
-    saveFigure=true; % (false) saves figure as an image
+    saveFigure=false; % (false) saves figure as an image
     width=640; % (640) figure width in pixels
     height=480; % (480) figure height in pixels
     gamma=2; % (2) nonlinearity of trajectory transparency

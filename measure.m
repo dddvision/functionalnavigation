@@ -1,4 +1,10 @@
 % This class defines a graph of measures between sensor data and a trajectory
+%
+% NOTES
+% A measure may depend on data from multiple sensors
+% Measures do not disclose their sources of information
+% Each edge is assumed to be independent, and this means that correlated
+%   sensor noise must be modeled and mitigated behind the measure interface
 classdef measure < sensor
   
   properties (Constant=true,GetAccess=public)
@@ -40,7 +46,7 @@ classdef measure < sensor
     % If there are no edges, then the outputs are empty
     % Output indices are sorted in ascending order,
     %   first by lower index ka, then by upper index kb
-    % If graph is diagonal, then ka and kb are identical
+    % If the graph is diagonal, then ka and kb are identical vectors
     [ka,kb]=findEdges(this,kaMin,kbMin);
     
     % Evaluate the cost of a single edge given a trajectory
