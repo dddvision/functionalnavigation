@@ -1,11 +1,11 @@
 general:
- * Document the omission of sensor process noise.
  * Document that all measures are two-point functions.
  * Document distinction between testbed and optimizer.
  * Document that trajectory evaluations are in the "pose and tangent pose" space.
  * Make class aliases for "time", "index", "real" and other simple classes?
 
 research:
+ *** Create leastSquares components that optimize initial state.
  *** Complete work on linearKalman components.
  * Topics for publication:
    * Measurement graphs as an alternative to pose graphs.
@@ -31,11 +31,11 @@ testComponent:
    * Granularity / dilution of precision
    * Monotonicity
    * Bias / distance to nearest local minimum
-   * Sensativity to perturbation of initial tangent pose
+   * Sensitivity to perturbation of initial tangent pose
 
 demonstration:
+ *** Use start time referenceDate = datestr(now,30)?
  *** Access camera and inertial sensor on a MacBook.
- * Use start time referenceDate = datestr(now,30)?
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
@@ -44,11 +44,12 @@ optimizer:
  *** Choose number of blocks dynamically based on data.
  * Create linkage-based GA crossover function.
 
-trajectory:
- *** Specify outputs of evaluate() using string like 'pqrs'?
+dynamicModel:
+ *** Add prior cost of initial pose and configure initial pose in each component
+ *** Specify outputs of evaluate() using string like 'pqrs'
 
 measure:
- *** Use SURF instead of SIFT.
+ * Use SURF instead of SIFT.
  * Implement SURF as a feature-matching option in opticalFlowOpenCV.
  * Does GPLv2 license for SBA code allow linking?
  * Add an example of a GPS measure (maybe in measureStub).
@@ -59,31 +60,32 @@ measure:
 
 dataContainer:
  *** Make interface compatible with AFRL ANTBED.
+ * Find a way to distinguish between multiple sensors that derive from the same class.
+   * Improve scheme for matching measures to sensor data.
+   * listSensors() should return a list of strings identifying sensors?
  * Split globalSatData into a measure and a reference trajectory simulator?
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
  * Make a container that has all sensors and type checks its inputs.
- * Find a way to distinguish between multiple sensors that derive from the same class.
-   * Improve scheme for matching measures to sensor data.
-   * listSensors() should return a list of strings identifying sensors?
  * VAMAV OpenSceneGraph simulator?
  * Packaging King Air flight?
  * Inertial sensor interface should specify its error characteristics?
  * Interfacing with Paul Metzger's simulator?
-  
+
 cameraArray:
  * Check fisheye projection and inverseProjection equations at image center.
- * Should masking be sepate from projection?
+ * Should masking be separate from projection?
 
 glossary:
- * dynamic model
- * measure
- * cost graph
- * edge
- * node
- * optimization step
- * sensativity
- * granularity
- * monotonicity
- * forcing function
- * metric
+ * Add a page to wiki for each term
+   * dynamic model
+   * measure
+   * cost graph
+   * edge
+   * node
+   * optimization step
+   * sensativity
+   * granularity
+   * monotonicity
+   * forcing function
+   * metric
