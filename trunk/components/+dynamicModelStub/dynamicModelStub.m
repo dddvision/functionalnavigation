@@ -13,84 +13,89 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     Ad % discrete version of state space A matrix
     Bd % discrete version of state space A matrix
     ABZ % intermediate formulation of A and B matrices with zeros appended
-    initialPosition
-    initialRotation
-    initialPositionRate
-    initialOmega
   end
   
   methods (Static=true,Access=public)
-    function description=getBlockDescription
-      description=struct('numLogical',0,'numUint32',size(dynamicModelStub.dynamicModelStubConfig.B,2));
+    function description=getInitialBlockDescription
+      description=struct('numLogical',uint32(0),'numUint32',uint32(0));      
+    end
+    
+    function description=getExtensionBlockDescription
+      description=struct('numLogical',uint32(0),'numUint32',uint32(size(dynamicModelStub.dynamicModelStubConfig.B,2)));
     end
     
     function blocksPerSecond=getUpdateRate
       blocksPerSecond=dynamicModelStub.dynamicModelStubConfig.blocksPerSecond;
     end
-    
-    function cost=computeBlockCost(block)
-      assert(isa(block,'struct'));
-      cost=0;
-    end
   end
   
   methods (Access=public)
-    function this=dynamicModelStub(uri,ta)
-      this=this@dynamicModel(uri,ta);
+    function this=dynamicModelStub(uri,initialTime,initialBlock)
+      this=this@dynamicModel(uri,initialTime,initialBlock);
       fprintf('\n');
       fprintf('\ndynamicModelStub::dynamicModelStub');
       this.numStates=12;
       this.firstNewBlock=1;
       this.chunkSize=256;
-      this.ta=ta;
-      this.tb=ta;
+      this.ta=initialTime;
+      this.tb=initialTime;
       this.block=struct('logical',{},'uint32',{});
       this.numInputs=size(this.B,2);
       this.state=zeros(this.numStates,this.chunkSize);
-      this.initialPosition=[0;0;0];
-      this.initialRotation=[1;0;0;0];
-      this.initialPositionRate=[0;0;0];
-      this.initialOmega=[0;0;0];
       this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
       ABd=expmApprox(this.ABZ/this.blocksPerSecond);
       this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
       this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
 
-    function numBlocks=getNumBlocks(this)
-      numBlocks=numel(this.block);
+    function replaceInitialBlock(this,initialBlock)
+      isa(this,'dynamicModel');
+      isa(initialBlock,'struct');
+%       this.initialPosition=position;
+%       this.initialRotation=rotation;
+%       this.initialPositionRate=positionRate;
+%       qdot=2*Quat2Homo(rotation)*rotationRate;
+%       if(abs(qdot(1))>eps)
+%         fprintf('\n');
+%         fprintf('\ndynamicModelStub::setInitialState');
+%         fprintf('warning: initial rotation rate does not match initial orientation');
+%       end
+%       this.initialOmega=qdot(2:4);
     end
     
-    function setInitialState(this,position,rotation,positionRate,rotationRate)
-      this.initialPosition=position;
-      this.initialRotation=rotation;
-      this.initialPositionRate=positionRate;
-      qdot=2*Quat2Homo(rotation)*rotationRate;
-      if(abs(qdot(1))>eps)
-        fprintf('\n');
-        fprintf('\ndynamicModelStub::setInitialState');
-        fprintf('warning: initial rotation rate does not match initial orientation');
-      end
-      this.initialOmega=qdot(2:4);
+    function cost=computeInitialBlockCost(this,initialBlock)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(initialBlock,'struct'));
+      cost=0;
+    end
+
+    function num=getNumExtensionBlocks(this)
+      num=numel(this.block);
     end
     
-    function replaceBlocks(this,k,block)
+    function replaceExtensionBlocks(this,k,blocks)
       if(isempty(k))
         return;
       end
       k=k+1; % convert to one-based index
       assert(k(end)<=numel(this.block));
-      this.block(k)=block;
+      this.block(k)=blocks;
       this.firstNewBlock=min(this.firstNewBlock,k(1));
     end
     
-    function appendBlocks(this,blocks)
+    function appendExtensionBlocks(this,blocks)
       this.block=cat(2,this.block,blocks);
       N=numel(this.block);
       if((N+1)>size(this.state,2))
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];
       end
       this.tb=this.ta+N/this.blocksPerSecond;
+    end
+    
+    function cost=computeExtensionBlockCost(this,block)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(block,'struct'));
+      cost=0;
     end
      
     function [ta,tb]=domain(this)
@@ -161,7 +166,7 @@ end
 
 function force=block2unitforce(block)
   halfIntMax=2147483647.5;
-  force=double(block.uint32)/halfIntMax-1;
+  force=double(block.uint32')/halfIntMax-1; % transpose
 end
 
 function h=Quat2Homo(q)

@@ -4,71 +4,68 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
   properties (GetAccess=private,SetAccess=private)
     ta
     data
-    initialPosition
-    initialRotation
-    initialPositionRate
-    initialRotationRate
   end
   
   methods (Static=true,Access=public)
-    function description=getBlockDescription
-      description=struct('numLogical',30,'numUint32',0);
+    function description=getInitialBlockDescription
+      description=struct('numLogical',uint32(0),'numUint32',uint32(0));      
+    end
+    
+    function description=getExtensionBlockDescription
+      description=struct('numLogical',uint32(30),'numUint32',uint32(0));
     end
     
     function blocksPerSecond=getUpdateRate
       blocksPerSecond=0;
     end
-    
-    function cost=computeBlockCost(block)
-      assert(isa(block,'struct'));
-      cost=0;
-    end
   end
   
   methods (Access=public)
-    function this=wobble1(uri,initialTime)
-      this=this@dynamicModel(uri,initialTime);
+    function this=wobble1(uri,initialTime,initialBlock)
+      this=this@dynamicModel(uri,initialTime,initialBlock);
       fprintf('\n');
       fprintf('\nwobble1::wobble1');
       this.ta=initialTime;
-      this.initialPosition = [0;0;0];
-      this.initialRotation = [1;0;0;0];
-      this.initialPositionRate = [0;0;0];
-      this.initialRotationRate = [0;0;0;0];
     end
     
-    function numBlocks=getNumBlocks(this)
-      numBlocks=double(~isempty(this.data));
+    function replaceInitialBlock(this,initialBlock)
+      isa(this,'dynamicModel');
+      isa(initialBlock,'struct');
     end
     
-    function setInitialState(this,position,rotation,positionRate,rotationRate)
-      fprintf('\n');
-      fprintf('\nwobble1::setInitialState');
-      this.initialPosition = position;
-      this.initialRotation = rotation;
-      this.initialpositionRate = positionRate;
-      this.initialRotationRate = rotationRate;
+    function cost=computeInitialBlockCost(this,initialBlock)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(initialBlock,'struct'));
+      cost=0;
     end
     
-    function replaceBlocks(this,k,block)
+    function num=getNumExtensionBlocks(this)
+      num=double(~isempty(this.data));
+    end
+    
+    function replaceExtensionBlocks(this,k,blocks)
       fprintf('\n');
       fprintf('\nwobble1::replaceBlocks');
       if(k==0)
-        bits=block(1).logical;
-        this.data=reshape(bits,[1,numel(bits)]);
+        this.data=blocks(1).logical;
       end
     end
     
-    function appendBlocks(this,blocks)
+    function appendExtensionBlocks(this,blocks)
       fprintf('\n');
       fprintf('\nwobble1::appendBlocks');
-      bits=blocks(1).logical;
-      this.data=reshape(bits,[1,numel(bits)]);
+      this.data=blocks(1).logical;
+    end
+    
+    function cost=computeExtensionBlockCost(this,block)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(block,'struct'));
+      cost=0;
     end
     
     function [ta,tb]=domain(this)
       ta=this.ta;
-      if(getNumBlocks(this)>0)
+      if(getNumExtensionBlocks(this)>0)
         tb=inf;
       else
         tb=ta;

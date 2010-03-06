@@ -1,14 +1,13 @@
- classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
+classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
   
   properties (GetAccess=private,SetAccess=private)
     F
     g
     bits
     cost
-    bitsPerBlock
+    initialBlockDescription
+    extensionBlockDescription
     blocksPerSecond
-    numLogical
-    numUint32
     defaultOptions
     stepGAhandle
   end
@@ -59,23 +58,38 @@
       end  
     end
     
-    function initialCost=defineProblem(this,dynamicModelName,measureNames,dataURI)
-      % initialize dynamic models
-      description=eval([dynamicModelName,'.',dynamicModelName,'.getBlockDescription']);
-      this.numLogical=description.numLogical;
-      this.numUint32=description.numUint32;
-      this.bitsPerBlock=this.numLogical+32*this.numUint32;
+    function initialCost=defineProblem(this,dynamicModelName,measureNames,dataURI)      
+      % process dynamic model input description
+      this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
+      this.extensionBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getExtensionBlockDescription']);
       this.blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
-      this.bits=logical(rand(this.popSizeDefault,this.bitsPerBlock*this.numBlocks)>0.5);
-      blocks=bits2blocks(this,this.bits);
-      for k=1:this.popSizeDefault
-        this.F{k}=unwrapComponent(dynamicModelName,dataURI,this.referenceTime);
-        appendBlocks(this.F{k},blocks{k});
-      end
-      
+
       % initialize measures
-      for k=1:numel(measureNames)
+      K=numel(measureNames);
+      lastMeasurementTime=this.referenceTime;
+      this.g=cell(K,1);
+      for k=1:K
         this.g{k}=unwrapComponent(measureNames{k},dataURI);
+        lastMeasurementTime=max(lastMeasurementTime,getTime(this.g{k},last(this.g{k})));
+      end
+      if(this.blocksPerSecond)
+        numExtensionBlocks=ceil((lastMeasurementTime-this.referenceTime)*this.blocksPerSecond);
+      else
+        numExtensionBlocks=1;
+      end
+      numBits=this.initialBlockDescription.numLogical + ...
+        32*this.initialBlockDescription.numUint32 + ...
+        numExtensionBlocks*(this.extensionBlockDescription.numLogical + ...
+        32*this.extensionBlockDescription.numUint32);
+      
+      % initialize dynamic models
+      K=this.popSizeDefault;
+      this.bits=logical(rand(K,numBits)>0.5);
+      this.F=cell(K,1);
+      for k=1:K
+        [initialBlock,extensionBlocks]=getBlocks(this,k);
+        this.F{k}=unwrapComponent(dynamicModelName,dataURI,this.referenceTime,initialBlock);
+        appendExtensionBlocks(this.F{k},extensionBlocks);
       end
       
       % determine initial costs
@@ -89,13 +103,11 @@
         nvars=size(this.bits,2);
         nullstate=struct('FunEval',0);
         [this.cost,this.bits]=feval(this.stepGAhandle,this.cost,this.bits,this.defaultOptions,nullstate,nvars,@objective);
-        blocks=bits2blocks(this,this.bits);
-        putBlocks(this,blocks);
+        putBits(this);
       else
         bad=find(this.cost>1.1*min(this.cost));
         this.bits(bad,:)=logical(rand(numel(bad),size(this.bits,2))>0.5);
-        blocks=bits2blocks(this,this.bits);
-        putBlocks(this,blocks);
+        putBits(this);
       end
     end
     
@@ -106,68 +118,105 @@
   end
   
   methods (Access=private)
-    function putBlocks(this,blocks)
-      for k=1:this.popSizeDefault
-        replaceBlocks(this.F{k},0:(numel(blocks{k})-1),blocks{k});
+    % bits are packed in the following order:
+    % initial logical
+    % initial uint32
+    % extension 1 logical
+    % extension 1 uint32
+    % extension 2 logical
+    % extension 2 uint32
+    % ...
+    function [initialBlock,extensionBlocks]=getBlocks(this,k)
+      b=this.bits(k,:);
+      n1=this.initialBlockDescription.numLogical;
+      n2=n1+32*this.initialBlockDescription.numUint32;
+      initialBlock=struct('logical',b(1:n1),'uint32',bits2uints(b((n1+1):n2)));
+      n3=this.extensionBlockDescription.numLogical;
+      n4=n3+32*this.extensionBlockDescription.numUint32;
+      numBlocks=(numel(b)-n2)/n4;
+      extensionBlocks=struct('logical',{},'uint32',{});
+      for blk=1:numBlocks
+        extensionBlocks(blk)=struct('logical',b((n2+uint32(1)):(n2+n3)),...
+          'uint32',bits2uints(b((n2+n3+uint32(1)):(n2+n4))));
+        n2=n2+n4;
       end
     end
     
-    function blocks=bits2blocks(this,bits)
-      blocks=cell(this.popSizeDefault,1);
-      for k=1:this.popSizeDefault
-        blocks{k}=processIndividual(this,bits(k,:));
+    function putBits(this)
+      for k=1:numel(this.F)
+        [initialBlock,extensionBlocks]=getBlocks(this,k);
+        replaceInitialBlock(this.F{k},initialBlock);
+        replaceExtensionBlocks(this.F{k},0:(numel(extensionBlocks)-1),extensionBlocks);
       end
-    end
-      
-    function blocks=processIndividual(this,bits)
-      blocks=struct('logical',{},'uint32',{});
-      for b=1:this.numBlocks
-        blocks(b)=processBlock(this,bits((b-1)*this.bitsPerBlock+(1:this.bitsPerBlock)));
-      end
-    end
-    
-    function block=processBlock(this,bits)
-      block=struct('logical',bits(1:this.numLogical),...
-                   'uint32',bits2ints(this,bits((this.numLogical+1):end)));
-    end
-    
-    function ints=bits2ints(this,bits)
-      bits=reshape(bits,[this.numUint32,32]);
-      pow=(2.^(31:-1:0))';
-      ints=uint32(sum(bits*pow,2));
     end
   end
 end
+
+% bits = logical, 1-by-N
+function uints=bits2uints(bits)
+  bits=reshape(bits,[32,numel(bits)/32]);
+  pow=pow2(31:-1:0);
+  uints=uint32(sum(pow*bits,1));
+end
+ 
+% uints = uint32 1-by-N
+% function bits=uints2bits(uints)
+%   bits=rem(floor(transpose(uints)*pow2(-31:0)),2);
+%   bits=bits(:);
+% end
 
 % Objective function that stores an objective object instance
 function varargout=objective(varargin)
   persistent this
   bits=varargin{1};
   if(~ischar(bits))
+    this.bits=bits;
+    putBits(this);
     numIndividuals=numel(this.F);
     numGraphs=numel(this.g);
-    blocks=bits2blocks(this,bits);
-    putBlocks(this,blocks);
-    cost=zeros(numIndividuals,1);
-    classF=class(this.F{1});
-    for individual=1:numIndividuals
-      iBlocks=blocks{individual};
-      for blk=1:numel(iBlocks)
-        cost(individual)=cost(individual)+eval([classF,'.computeBlockCost(iBlocks(blk))']);
+    allGraphs=cell(numIndividuals,numGraphs+1);
+    for ind=1:numIndividuals
+      indF=this.F{ind};
+
+      % build cost graph from dynamic model
+      numEB=getNumExtensionBlocks(indF);
+      cost=sparse([],[],[],numEB+1,numEB+1,numEB+1);
+      [initialBlock,extensionBlocks]=getBlocks(this,ind);
+      cost(1,1)=computeInitialBlockCost(indF,initialBlock);
+      for blk=1:numEB
+        cost(blk,blk+1)=computeExtensionBlockCost(indF,extensionBlocks(blk));
       end
-    end
-    for graph=1:numGraphs
-      [a,b]=findEdges(this.g{graph},uint32(0),last(this.g{graph})-this.dMax);
-      numEdges=numel(a);
-      for individual=1:numIndividuals
-        if( ~isempty(a) )
-          for edge=1:numEdges
-            cost(individual)=cost(individual)+computeEdgeCost(this.g{graph},this.F{individual},a(edge),b(edge));
+      allGraphs{ind,1}=cost;
+      
+      % build cost graphs from measures
+      for graph=1:numGraphs
+        graphG=this.g{graph};
+        if(ind==1)
+          [a,b]=findEdges(graphG,uint32(0),last(graphG)-this.dMax);
+          numEdges=numel(a);
+          if(numEdges)
+            span=double(b(end)-a(1)+1);
+          else
+            span=0;
           end
         end
+        cost=zeros(1,numEdges);
+        for edge=1:numEdges
+          cost(edge)=computeEdgeCost(graphG,indF,a(edge),b(edge))/numEdges;
+        end
+        allGraphs{ind,1+graph}=sparse(double(a),double(b),cost,span,span,numEdges);
       end
     end
-    varargout{1}=cost/numEdges;
+    
+    % sum costs across graphs for each individual
+    cost=zeros(numIndividuals,1);
+    for m=1:numIndividuals
+      for n=1:(numGraphs+1)
+        cost(m)=cost(m)+sum(allGraphs{m,n}(:));
+      end
+    end
+    varargout{1}=cost;
+    
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   elseif(strcmp(bits,'get'))

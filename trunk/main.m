@@ -1,8 +1,7 @@
-% This script is an example application of the Trajectory Optimization 
-%   Manager for Multiple Algorithms and Sensors (TOMMAS). It instantiates a
-%   tommas object and a graphical display, and then alternately optimizes 
-%   and displays trajectories in an infinite loop. See tommasConfig for 
-%   configuration options.
+% This is an example application of the Trajectory Optimization Manager for 
+%   Multiple Algorithms and Sensors (TOMMAS). It instantiates tommas object
+%   and a graphical display, and then alternately optimizes and displays 
+%   trajectories in an infinite loop. See tommasConfig for options.
 help(mfilename);
 
 % close figures and clear the workspace

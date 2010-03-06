@@ -12,8 +12,14 @@ classdef dynamicModelStubConfig < handle
 %    B=sparse([zeros(6);diag([1,1,0,0,0,1])]); % 3-DOF (X,Y,Theta)
     B=sparse([zeros(6);diag([1,1,1,0,0,0])]); % 3-DOF (X,Y,Z)
 %    B=sparse([zeros(6);diag([1,1,0,0,0,0])]); % 2-DOF (X,Y)
+
+    % Fixed initial state
+    initialPosition=[0;0;0];
+    initialRotation=[1;0;0;0];
+    initialPositionRate=[0;0;0];
+    initialOmega=[0;0;0];
     
-    % Model fidelity parameter given 32*numInputs bits per block
+    % Model fidelity parameter (there are 32*numInputs bits per block)
     blocksPerSecond=2;
   end
   
