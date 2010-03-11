@@ -1,37 +1,28 @@
-classdef linearKalmanMeasure < measure
+% This measure simulates a sensor that measures the body position
+%   and adds error sampled from a normal distribution
+classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & measure
 
   properties (SetAccess=private,GetAccess=private)
-    sensor
-    ka
-    kb
+    xRef
     t
     yBar
-    sigma
-    dt
+    ka
+    kb
   end
   
   methods (Access=public)
     function this=linearKalmanMeasure(uri)
       this=this@measure(uri);
-      
-      this.ka=uint32(1);
-      this.kb=uint32(1);
-      this.dt=0.1; % ASSUMPTION: fixed known time step
-      this.sigma=2; % ASSUMPTION: fixed known noise parameter
-      
-      % ASSUMPTION: noise consists of indipendent samples from a normal distribution
+           
       try
         [scheme,resource]=strtok(uri,':');
         switch(scheme)
           case 'matlab'
             container=eval(resource(2:end));
             if(hasReferenceTrajectory(container))
-              xRef=getReferenceTrajectory(container);
-              [ta,tb]=domain(xRef);
-              this.t=ta:this.dt:tb;
-              x=evaluate(xRef,this.t);
-              noise=this.sigma*randn(1,numel(this.t));
-              this.yBar=x(1,:)+noise;
+              this.xRef=getReferenceTrajectory(container);
+              this.t=domain(this.xRef);
+              this.yBar=evaluate(this.xRef,this.t)+this.sigma*randn;
             else
               error('Simulator requires reference trajectory');
             end
@@ -41,10 +32,16 @@ classdef linearKalmanMeasure < measure
       catch err
         error('Failed to open data resource: %s',err.message);
       end
+      this.ka=uint32(1);
+      this.kb=uint32(1);
     end
 
     function status=refresh(this)
-      if(this.kb<numel(this.t))
+      time=this.t(end)+this.dt;
+      truth=evaluate(this.xRef,time);
+      if(~isnan(truth))
+        this.t=[this.t,time];
+        this.yBar=[this.yBar,truth+this.sigma*randn];
         this.kb=this.kb+uint32(1);
       end
       status=true;
@@ -63,21 +60,15 @@ classdef linearKalmanMeasure < measure
     end
     
     function [ka,kb]=findEdges(this,kaMin,kbMin)
-      k=this.kb;
-      if((k<kaMin)||(k<kbMin))
-        ka=[];
-        kb=[];
-      else
-        ka=k;
-        kb=k;
-      end      
+      ka=max([this.ka,kaMin,kbMin]):this.kb;
+      kb=ka;
     end
 
     function cost=computeEdgeCost(this,x,a,b)
       assert(a==b);
       pos=evaluate(x,this.t(b));
-      yDif=this.yBar(b)-pos(1);
-      cost=0.5*yDif*(1/this.sigma)*yDif;
+      dnorm=(this.yBar(1,b)-pos(1))./this.sigma;
+      cost=0.5*dnorm.*dnorm;
     end
   end
   
