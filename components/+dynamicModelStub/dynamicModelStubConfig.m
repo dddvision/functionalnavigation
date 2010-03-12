@@ -7,11 +7,15 @@ classdef dynamicModelStubConfig < handle
     % u = forcing function, double numInputs-by-1
     % A = sparse double 12-by-12
     % B = sparse double 12-by-numInputs
-    A=sparse([zeros(6),eye(6);zeros(6),zeros(6)]); % 6-DOF state transition
-%    B=sparse([zeros(6);eye(6)]); % 6-DOF
-%    B=sparse([zeros(6);diag([1,1,0,0,0,1])]); % 3-DOF (X,Y,Theta)
+    
+    % state transition matrix
+    A=sparse([zeros(6),eye(6);zeros(6),zeros(6)]); 
+    
+    % forcing matrix
+%     B=sparse([zeros(6);eye(6)]); % 6-DOF
+%     B=sparse([zeros(6);diag([1,1,0,0,0,1])]); % 3-DOF (X,Y,Theta)
     B=sparse([zeros(6);diag([1,1,1,0,0,0])]); % 3-DOF (X,Y,Z)
-%    B=sparse([zeros(6);diag([1,1,0,0,0,0])]); % 2-DOF (X,Y)
+%     B=sparse([zeros(6);diag([1,1,0,0,0,0])]); % 2-DOF (X,Y)
 
     % Fixed initial state
     initialPosition=[0;0;0];
