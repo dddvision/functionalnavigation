@@ -1,14 +1,12 @@
 classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamicModelConfig & dynamicModel
   
   properties (GetAccess=private,SetAccess=private)
+    initialBlock
     block
     ta
     tb
-    priorPosition
-    priorRotation
-    priorPositionRate
-    priorRotationRate
-    noiseHypothesis
+    xRef
+    simulationNoise
   end
   
   methods (Static=true,Access=public)
@@ -22,7 +20,6 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     
     function blocksPerSecond=getUpdateRate
       blocksPerSecond=0;
-      % blocksPerSecond=linearKalmanDynamicModel.linearKalmanDynamicModelConfig.blocksPerSecond;
     end
   end
   
@@ -32,7 +29,8 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
       this.block=struct('logical',{},'uint32',{});
       this.ta=initialTime;
       this.tb=initialTime;
-      this.noiseHypothesis=initialBlock2noise(initialBlock);
+      this.initialBlock=initialBlock;
+      this.simulationNoise=randn(3,1).*this.priorSigma;
       
       try
         [scheme,resource]=strtok(uri,':');
@@ -40,15 +38,7 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
           case 'matlab'
             container=eval(resource(2:end));
             if(hasReferenceTrajectory(container))
-              xRef=getReferenceTrajectory(container);
-              this.priorPosition=evaluate(xRef,domain(xRef)); % get initial position
-              this.priorRotation=[1;0;0;0];
-              this.priorPositionRate=[0;0;0];
-              this.priorRotationRate=[0;0;0;0];
-%               this.t=this.ta:(1/this.blocksPerSecond):1000;
-%               x=evaluate(xRef,this.t);
-%               noise=cumsum(this.sigma*randn(1,numel(this.t)));
-%               this.xNoisy=x(1,:)+noise;
+              this.xRef=getReferenceTrajectory(container);
             else
               error('Simulator requires reference trajectory');
             end
@@ -61,13 +51,13 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     end
 
     function replaceInitialBlock(this,initialBlock)
-      this.noiseHypothesis=initialBlock2noise(initialBlock);
+      this.initialBlock=initialBlock;
     end
 
     function cost=computeInitialBlockCost(this,initialBlock)
+      assert(isa(this,'dynamicModel'));
       noise=initialBlock2noise(initialBlock);
-      dnorm=(this.priorPosition(1)-noise(1))./this.priorSigma(1);
-      cost=0.5*dnorm.*dnorm;
+      cost=0.5*dot(noise,noise);
     end
     
     function numBlocks=getNumExtensionBlocks(this)
@@ -101,34 +91,16 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     end
    
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
+      [position,rotation,positionRate,rotationRate]=evaluate(this.xRef,t);
       N=numel(t);
-      position=repmat(this.priorPosition-this.noiseHypothesis,[1,N]);
-      rotation=repmat(this.priorRotation,[1,N]);
-      positionRate=repmat(this.priorPositionRate,[1,N]);
-      rotationRate=repmat(this.priorRotationRate,[1,N]);
-% ASSUMPTION: discrete time
-% ASSUMPTION: derivatives are not used
-%       N=numel(t);
-%       dt=t-this.ta;
-%       dk=dt*this.blocksPerSecond;
-%       dkFloor=floor(dk);
-%       dkCeil=ceil(dk);
-%       dkPlus=dkFloor+1;
-%       noise=block2noise(this.block,dkCeil(end));
-%       position=this.xNoisy(dkPlus)-noise(dkPlus);
+      noise=initialBlock2noise(this.initialBlock);
+      position=position+repmat(this.simulationNoise-this.priorSigma.*noise,[1,N]);
     end
   end
+
+end
   
-end
-
-function noise=initialBlock2noise(initialBlock)
+function z=initialBlock2noise(initialBlock)
   sixthIntMax=715827883;
-  noise=[double(initialBlock.uint32)/sixthIntMax-3;0;0];
+  z=[double(initialBlock.uint32)/sixthIntMax-3;0;0];
 end
-
-%   if(k==0)
-%     noise=0;
-%   else
-%     halfIntMax=2147483647.5;
-%     noise=cumsum([0,double(blocks(1:k).uint32)]/halfIntMax-1);
-%   end

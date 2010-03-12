@@ -4,18 +4,19 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
     F
     g
     state
+    Pinv
     cost
   end
   
   methods (Access=public)
     function this=linearKalmanOptimizer
-      this.F=[];
-      this.g=[];
-      this.state=rand;
-      this.cost=[];
+      % do nothing
     end
     
     function initialCost=defineProblem(this,dynamicModelName,measureName,dataURI)      
+      % set random initial state
+      this.state=rand;
+      
       % initialize the measure (assuming a single measure)
       this.g=unwrapComponent(measureName{1},dataURI);
            
@@ -27,19 +28,43 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       extensionBlocks=struct('logical',[],'uint32',[]);
       appendExtensionBlocks(this.F,extensionBlocks);
       
-      % compute initial cost
-      node=last(this.g);
-      initialCost=computeInitialBlockCost(this.F,initialBlock)+computeEdgeCost(this.g,this.F,node,node);
-      this.cost=initialCost;
+      % compute initial cost and covariance
+      [this.cost,pJacobian,this.Pinv]=computePriorModel(this);
+      
+      % set output
+      initialCost=this.cost;
     end
     
     function step(this)
+      global Phistory statehistory
+      
       % update the sensor
       refresh(this.g);
       
-      % compute prior and measurement distribution models
-      [pCost,pJacobian,pHessian]=computePriorModel(this);
-      [mCost,mJacobian,mHessian]=computeMeasureModel(this);
+      % compute measurement distribution model
+      [mCost,mJacobian,Qinv]=computeMeasureModel(this);
+  
+      % update the state and covariance
+      residual=inv(Qinv)*mJacobian;
+      kalmanGain=inv(this.Pinv+Qinv)*Qinv;
+      this.state=this.state-kalmanGain*residual;
+      this.Pinv=inv((eye(1)-kalmanGain)*inv(this.Pinv));
+      
+      % clamp state within valid range
+      this.state(this.state<0)=0;
+      this.state(this.state>1)=1;
+
+      statehistory=[statehistory,this.state];
+      Phistory=[Phistory,inv(this.Pinv)];
+      figure(2);
+      plot(Phistory);
+      figure(3)
+      plot(statehistory);
+      
+      % compute current cost
+      node=last(this.g);
+      replaceInitialBlock(this.F,state2block(this.state));
+      this.cost=computeInitialBlockCost(this.F,state2block(this.state))+computeEdgeCost(this.g,this.F,node,node);
     end
     
     function [xEst,cEst]=getResults(this)
@@ -53,6 +78,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
     function [cost,jacobian,hessian]=computePriorModel(this)
       h=1e-2;
       xo=this.state;
+      xo((xo-h)<0)=h;
+      xo((xo+h)>1)=1-h;
       ym=computeInitialBlockCost(this.F,state2block(xo-h));
       cost=computeInitialBlockCost(this.F,state2block(xo));
       yp=computeInitialBlockCost(this.F,state2block(xo+h));
@@ -64,6 +91,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
     function [cost,jacobian,hessian]=computeMeasureModel(this)
       h=1e-2;
       xo=this.state;
+      xo((xo-h)<0)=h;
+      xo((xo+h)>1)=1-h;
       node=last(this.g);
       replaceInitialBlock(this.F,state2block(xo-h));
       ym=computeEdgeCost(this.g,this.F,node,node);

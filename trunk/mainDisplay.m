@@ -119,9 +119,13 @@ classdef mainDisplay < mainDisplayConfig & handle
   
   methods (Access=private)
     function alpha=cost2alpha(this,c)
-      cMax=max(c);
-      fitness=cMax-c;
-      alpha=(fitness/max([fitness;eps])).^this.gamma;
+      if(numel(c)==1)
+        alpha=1;
+      else
+        cMax=max(c);
+        fitness=cMax-c;
+        alpha=(fitness/max([fitness;eps])).^this.gamma;
+      end
     end
     
     function t=generateSampleTimes(this,x)
