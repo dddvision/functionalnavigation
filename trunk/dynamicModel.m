@@ -76,8 +76,9 @@ classdef dynamicModel < trajectory
     % cost = non-negative cost associated with the block, double scalar
     %
     % NOTE
-    % Output is analogous to mahalanobis distance
-    % Typical values are in the range [0,3]
+    % For a normal distribution
+    %   Cost is the negative log likelihood of the distribution
+    %   Typical costs are in the range [0,4.5]
     cost=computeInitialBlockCost(this,initialBlock);
     
     % Get the total number of extension blocks
@@ -116,8 +117,9 @@ classdef dynamicModel < trajectory
     % cost = non-negative cost associated with the block, double scalar
     %
     % NOTE
-    % Output is analogous to mahalanobis distance
-    % Typical values are in the range [0,3]
+    % For a normal distribution
+    %   Cost is the negative log likelihood of the distribution
+    %   Typical costs are in the range [0,4.5]
     cost=computeExtensionBlockCost(this,block);
   end
     

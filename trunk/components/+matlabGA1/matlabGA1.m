@@ -219,8 +219,6 @@ function varargout=objective(varargin)
     
   elseif(strcmp(bits,'put'))
     this=varargin{2};
-  elseif(strcmp(bits,'get'))
-    varargout{1}=this;
   else
     error('incorrect argument list');
   end

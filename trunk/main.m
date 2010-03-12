@@ -36,7 +36,8 @@ else
 end
 
 % optimize forever
-for index=0:intmax('uint32')
+index=0;
+while(true)
   % get the latest trajectory and cost estimates
   [x,cost]=getResults(tom);
 
@@ -45,4 +46,7 @@ for index=0:intmax('uint32')
 
   % take an optimization step
   step(tom);
+  
+  % increment the index
+  index=index+1;
 end
