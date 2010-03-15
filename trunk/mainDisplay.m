@@ -131,6 +131,10 @@ classdef mainDisplay < mainDisplayConfig & handle
     function t=generateSampleTimes(this,x)
       assert(numel(x)==1);
       [tmin,tmax]=domain(x);
+      if(~isempty(this.tRef))
+        tmin=max(tmin,this.tRef(1));
+        tmax=min(tmax,this.tRef(end));
+      end
       tmax(isinf(tmax))=this.infinity; % prevent NaN on the following line
       t=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
     end

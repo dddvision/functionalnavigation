@@ -8,6 +8,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
     yBar
     ka
     kb
+    status
   end
   
   methods (Access=public)
@@ -21,8 +22,6 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
             container=eval(resource(2:end));
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
-              this.t=domain(this.xRef);
-              this.yBar=evaluate(this.xRef,this.t)+this.sigma*randn;
             else
               error('Simulator requires reference trajectory');
             end
@@ -32,19 +31,32 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
       catch err
         error('Failed to open data resource: %s',err.message);
       end
-      this.ka=uint32(1);
-      this.kb=uint32(1);
+      this.t=[];
+      this.yBar=[];
+      this.ka=uint32([]);
+      this.kb=uint32([]);
+      this.status=false;
     end
 
     function status=refresh(this)
-      time=this.t(end)+this.dt;
+      if(this.status)
+        time=this.t(end)+this.dt;
+      else
+        time=domain(this.xRef);
+      end
       truth=evaluate(this.xRef,time);
       if(~isnan(truth))
         this.t=[this.t,time];
-        this.yBar=[this.yBar,truth+this.sigma*randn];
-        this.kb=this.kb+uint32(1);
+        this.yBar=[this.yBar,truth(1)+this.sigma*randn];
+        if(this.status)
+          this.kb=this.kb+uint32(1);
+        else
+          this.ka=uint32(1);
+          this.kb=uint32(1);
+          this.status=true;
+        end
       end
-      status=true;
+      status=this.status;
     end
     
     function time=getTime(this,k)
@@ -67,7 +79,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
     function cost=computeEdgeCost(this,x,a,b)
       assert(a==b);
       pos=evaluate(x,this.t(b));
-      dnorm=(this.yBar(1,b)-pos(1))./this.sigma;
+      dnorm=(this.yBar(b)-pos(1))./this.sigma;
       cost=0.5*dnorm.*dnorm;
     end
   end

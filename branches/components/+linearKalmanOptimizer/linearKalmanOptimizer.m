@@ -14,8 +14,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
     end
     
     function initialCost=defineProblem(this,dynamicModelName,measureName,dataURI)      
-      % set random initial state
-      this.state=rand;
+      % set initial state in the middle of its range
+      this.state=0.5;
       
       % initialize the measure (assuming a single measure)
       this.g=unwrapComponent(measureName{1},dataURI);
@@ -29,7 +29,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       appendExtensionBlocks(this.F,extensionBlocks);
       
       % compute initial cost and covariance
-      [this.cost,pJacobian,this.Pinv]=computePriorModel(this);
+      [this.cost,jacobian,this.Pinv]=computePriorModel(this);
       
       % set output
       initialCost=this.cost;
@@ -40,16 +40,16 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       refresh(this.g);
       
       % compute measurement distribution model
-      [mCost,mJacobian,Qinv]=computeMeasureModel(this);
+      [partialCost,jacobian,Qinv]=computeMeasureModel(this);
       
       % compute residual
-      residual=inv(Qinv)*mJacobian;
+      residual=inv(Qinv)*jacobian;
       
       if(this.plotDistributions)
         dim=1;
-        x=(-4:0.01:4)';
+        x=(0:0.001:1)';
         dx=x-this.state;
-        dxy=x-residual;
+        dxy=x-(this.state-residual);
         px=(2*pi)^(-dim/2)*sqrt(this.Pinv)*exp(-dx.*dx*this.Pinv);
         pxy=(2*pi)^(-dim/2)*sqrt(Qinv)*exp(-dxy.*dxy*Qinv);
         figure(2);
@@ -67,6 +67,13 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       this.state(this.state<0)=0;
       this.state(this.state>1)=1;
 
+      if(this.plotDistributions)
+        dx=x-this.state;
+        px=(2*pi)^(-dim/2)*sqrt(this.Pinv)*exp(-dx.*dx*this.Pinv);
+        plot(x,px,'g');
+        hold('off');
+      end
+      
 %       global Phistory statehistory
 %       statehistory=[statehistory,this.state];
 %       Phistory=[Phistory,inv(this.Pinv)];
@@ -75,10 +82,15 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
 %       figure(3)
 %       plot(statehistory);
       
-      % compute current cost
-      node=last(this.g);
+      % compute current trajectory and cost
+
       replaceInitialBlock(this.F,state2block(this.state));
-      this.cost=computeInitialBlockCost(this.F,state2block(this.state))+computeEdgeCost(this.g,this.F,node,node);
+      this.cost=computeInitialBlockCost(this.F,state2block(this.state));
+      nodelist=first(this.g):last(this.g);
+      for node=nodelist
+        this.cost=this.cost+computeEdgeCost(this.g,this.F,node,node);
+      end
+      this.cost=this.cost/(numel(nodelist)+1);
     end
     
     function [xEst,cEst]=getResults(this)
@@ -92,7 +104,6 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
     function [cost,jacobian,hessian]=computePriorModel(this)
       scale=4294967295; % double(intmax('uint32'))
       h=floor(sqrt(scale)); % carefully chosen integer for discrete derivative
-      sh=scale/h;
       xo=round(this.state*scale);
       xoMax=scale-h;
       xo(xo<h)=h;
@@ -100,7 +111,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       ym=computeInitialBlockCost(this.F,param2block(uint32(xo-h)));
       cost=computeInitialBlockCost(this.F,param2block(uint32(xo)));
       yp=computeInitialBlockCost(this.F,param2block(uint32(xo+h)));
-      jacobian=(yp-ym)*(sh+sh);
+      sh=scale/h;
+      jacobian=(yp-ym)*sh/2;
       hessian=(yp-2*cost+ym)*sh*sh;
     end
     
@@ -108,7 +120,6 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
     function [cost,jacobian,hessian]=computeMeasureModel(this)
       scale=4294967295; % double(intmax('uint32'))
       h=floor(sqrt(scale)); % carefully chosen integer for discrete derivative
-      sh=scale/h;
       xo=round(this.state*scale);
       xoMax=scale-h;
       xo(xo<h)=h;
@@ -120,7 +131,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       cost=computeEdgeCost(this.g,this.F,node,node);
       replaceInitialBlock(this.F,param2block(xo+h));
       yp=computeEdgeCost(this.g,this.F,node,node);
-      jacobian=(yp-ym)*(sh+sh);
+      sh=scale/h;
+      jacobian=(yp-ym)*sh/2;
       hessian=(yp-2*cost+ym)*sh*sh;
     end
   end

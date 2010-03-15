@@ -24,11 +24,13 @@ classdef bodyReference < middleburyData.middleburyDataConfig & trajectory
       t((t<this.a)|(t>this.b))=NaN;
       assert(isa(t,'double'));
       posquat=double(eval(this.bodyPath)); % depends on t
-      posquatdot=double(eval(this.bodyPathDiff)); % depends on t
       position=posquat(1:3,:);
       rotation=posquat(4:7,:);
-      positionRate=posquatdot(1:3,:);
-      rotationRate=posquatdot(4:7,:);
+      if(nargout>2)
+        posquatdot=double(eval(this.bodyPathDiff)); % depends on t
+        positionRate=posquatdot(1:3,:);
+        rotationRate=posquatdot(4:7,:);
+      end
     end
   end
   

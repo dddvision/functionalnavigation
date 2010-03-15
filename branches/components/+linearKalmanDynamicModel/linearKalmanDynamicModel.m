@@ -91,7 +91,18 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     end
    
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
-      [position,rotation,positionRate,rotationRate]=evaluate(this.xRef,t);
+      [a,b]=domain(this.xRef);
+      t(t>b)=b;
+      switch(nargout)
+        case 1
+          position=evaluate(this.xRef,t);
+        case 2
+          [position,rotation]=evaluate(this.xRef,t);
+        case 3
+          [position,rotation,positionRate]=evaluate(this.xRef,t);
+        otherwise
+          [position,rotation,positionRate,rotationRate]=evaluate(this.xRef,t);
+      end
       N=numel(t);
       noise=initialBlock2noise(this.initialBlock);
       position=position+repmat(this.simulationNoise-this.priorSigma.*noise,[1,N]);
