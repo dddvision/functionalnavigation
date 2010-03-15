@@ -10,5 +10,9 @@
 % NOTES
 % The package directory must be on the path
 function obj=unwrapComponent(pkg,varargin)
-  obj=feval([pkg,'.',pkg],varargin{:});
+  try
+    obj=feval([pkg,'.',pkg],varargin{:});
+  catch err
+    error('%s\n%s',err.message,'TOMMAS component was not found in the MATLAB path.');
+  end
 end
