@@ -202,7 +202,7 @@ function varargout=objective(varargin)
         end
         cost=zeros(1,numEdges);
         for edge=1:numEdges
-          cost(edge)=computeEdgeCost(graphG,indF,a(edge),b(edge))/numEdges;
+          cost(edge)=computeEdgeCost(graphG,indF,a(edge),b(edge));
         end
         allGraphs{ind,1+graph}=sparse(double(a),double(b),cost,span,span,numEdges);
       end
