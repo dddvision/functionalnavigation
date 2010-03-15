@@ -5,13 +5,13 @@ classdef tommasConfig < handle
     defaultDataURI = 'matlab:middleburyData.middleburyData';
     
     % select default dynamic model
-    defaultDynamicModel = 'dynamicModelStub';
+    defaultDynamicModel = 'linearKalmanDynamicModel';
     
     % select default optimizer
-    defaultOptimizer = 'matlabGA1';
+    defaultOptimizer = 'linearKalmanOptimizer';
         
     % select default measures
-    defaultMeasures = {'opticalFlowOpenCV'};
+    defaultMeasures = {'linearKalmanMeasure'};
   end
     
 end
