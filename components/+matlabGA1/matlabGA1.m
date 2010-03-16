@@ -8,6 +8,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
     initialBlockDescription
     extensionBlockDescription
     blocksPerSecond
+    numExtensionBlocks
     defaultOptions
     stepGAhandle
   end
@@ -70,16 +71,19 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.g=cell(K,1);
       for k=1:K
         this.g{k}=unwrapComponent(measureNames{k},dataURI);
-        lastMeasurementTime=max(lastMeasurementTime,getTime(this.g{k},last(this.g{k})));
+        node=last(this.g{k});
+        if(~isempty(node))
+          lastMeasurementTime=max(lastMeasurementTime,getTime(this.g{k},node));
+        end
       end
       if(this.blocksPerSecond)
-        numExtensionBlocks=ceil((lastMeasurementTime-this.referenceTime)*this.blocksPerSecond);
+        this.numExtensionBlocks=ceil((lastMeasurementTime-this.referenceTime)*this.blocksPerSecond);
       else
-        numExtensionBlocks=1;
+        this.numExtensionBlocks=1;
       end
       numBits=this.initialBlockDescription.numLogical + ...
         32*this.initialBlockDescription.numUint32 + ...
-        numExtensionBlocks*(this.extensionBlockDescription.numLogical + ...
+        this.numExtensionBlocks*(this.extensionBlockDescription.numLogical + ...
         32*this.extensionBlockDescription.numUint32);
       
       % initialize dynamic models
@@ -99,6 +103,9 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
     end
     
     function step(this)
+      for graph=1:numel(this.g)
+        refresh(this.g{graph});
+      end
       if(this.hasLicense)
         nvars=size(this.bits,2);
         nullstate=struct('FunEval',0);
@@ -133,9 +140,8 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       initialBlock=struct('logical',b(1:n1),'uint32',bits2uints(b((n1+1):n2)));
       n3=this.extensionBlockDescription.numLogical;
       n4=n3+32*this.extensionBlockDescription.numUint32;
-      numBlocks=(numel(b)-n2)/n4;
       extensionBlocks=struct('logical',{},'uint32',{});
-      for blk=1:numBlocks
+      for blk=1:this.numExtensionBlocks
         extensionBlocks(blk)=struct('logical',b((n2+uint32(1)):(n2+n3)),...
           'uint32',bits2uints(b((n2+n3+uint32(1)):(n2+n4))));
         n2=n2+n4;
@@ -194,17 +200,18 @@ function varargout=objective(varargin)
         if(ind==1)
           [a,b]=findEdges(graphG,uint32(0),last(graphG)-this.dMax);
           numEdges=numel(a);
-          if(numEdges)
-            span=double(b(end)-a(1)+1);
-          else
-            span=0;
+        end
+        if(numEdges>0)
+          cost=zeros(1,numEdges);
+          for edge=1:numEdges
+            cost(edge)=computeEdgeCost(graphG,indF,a(edge),b(edge));
           end
+          base=a(1);
+          span=double(b(end)-base+1);
+          allGraphs{ind,1+graph}=sparse(double(a-base+1),double(b-base+1),cost,span,span,numEdges);
+        else
+          allGraphs{ind,1+graph}=0;
         end
-        cost=zeros(1,numEdges);
-        for edge=1:numEdges
-          cost(edge)=computeEdgeCost(graphG,indF,a(edge),b(edge));
-        end
-        allGraphs{ind,1+graph}=sparse(double(a),double(b),cost,span,span,numEdges);
       end
     end
     
@@ -212,7 +219,8 @@ function varargout=objective(varargin)
     cost=zeros(numIndividuals,1);
     for m=1:numIndividuals
       for n=1:(numGraphs+1)
-        cost(m)=cost(m)+sum(allGraphs{m,n}(:));
+        costmn=allGraphs{m,n};
+        cost(m)=cost(m)+sum(costmn(:));
       end
     end
     varargout{1}=cost;

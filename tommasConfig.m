@@ -1,5 +1,4 @@
 classdef tommasConfig < handle
-
   properties (Constant=true,GetAccess=public)
     % select data container
     defaultDataURI = 'matlab:middleburyData.middleburyData';
@@ -12,6 +11,5 @@ classdef tommasConfig < handle
         
     % select default measures
     defaultMeasures = {'linearKalmanMeasure'};
-  end
-    
+  end 
 end
