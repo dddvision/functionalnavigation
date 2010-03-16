@@ -89,10 +89,15 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
     end
     
     function [a,b]=findEdges(this,kaMin,kbMin)
-      kaMin=max([first(this.sensor),kaMin,kbMin-1]);
+      kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
       kaMax=last(this.sensor)-1;
-      a=kaMin:kaMax;
-      b=a+1;
+      if(isempty(kaMin)||isempty(kaMax))
+        a=uint32([]);
+        b=uint32([]);
+      else
+        a=kaMin:kaMax;
+        b=a+uint32(1);
+      end
     end
     
     function cost=computeEdgeCost(this,x,a,b)

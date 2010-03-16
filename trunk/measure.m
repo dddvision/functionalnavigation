@@ -47,6 +47,8 @@ classdef measure < sensor
     % Output indices are sorted in ascending order,
     %   first by lower index ka, then by upper index kb
     % If the graph is diagonal, then ka and kb are identical vectors
+    % If kaMin is empty, then it is assumed to be uint32(0)
+    % If kbMin is empty, then it is assumed to be uint32(0)
     [ka,kb]=findEdges(this,kaMin,kbMin);
     
     % Evaluate the cost of a single edge given a trajectory

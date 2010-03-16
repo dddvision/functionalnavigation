@@ -4,9 +4,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
     F
     g
     state
-    Pinv
+    covariance
     cost
-    hfigure
     initialBlockDescription
     extensionBlockDescription
   end
@@ -46,11 +45,10 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       appendExtensionBlocks(this.F,extensionBlocks);
       
       % compute initial cost and covariance
-      [junk,jacobian,this.Pinv]=computePriorModel(this);
-      
-      % set output
-      initialCost=0.5/this.Pinv;
-      this.cost=initialCost;
+      [unused,jacobian,hessian]=computePriorModel(this);
+      this.covariance=hessian^(-1);
+      this.cost=0.5*trace(this.covariance);
+      initialCost=this.cost;
     end
     
     function step(this)      
@@ -58,44 +56,34 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       refresh(this.g);
       
       % compute measurement distribution model
-      [partialCost,jacobian,Qinv]=computeMeasureModel(this);
+      [unused,jacobian,hessian]=computeMeasureModel(this);
       
-      % compute residual
-      residual=Qinv\jacobian; % A\B=inv(A)*B
-      
-      % plot prior distributions
-      if(this.plotDistributions)
-        if(isempty(this.hfigure))
-          this.hfigure=figure;
-        end
-        figure(this.hfigure);
-        plotNormal(this.state,this.Pinv,'k--');
-        hold('on');
-        plotNormal(this.state-residual,Qinv,'m');
-      end
-  
-      % update the state and covariance
-      kalmanGain=(this.Pinv+Qinv)\Qinv; % A\B=inv(A)*B
-      this.state=this.state-kalmanGain*residual;
-      this.Pinv=inv((eye(numel(this.state))-kalmanGain)/this.Pinv);
+      % linear least squares update
+      priorState=this.state;
+      priorCovariance=this.covariance;
+      I=eye(numel(priorState));
+      partialGain=(priorCovariance^(-1)+hessian)^(-1);
+      kalmanGain=partialGain*hessian;
+      posteriorState=priorState-partialGain*jacobian;
+      posteriorCovariance=(I-kalmanGain)*priorCovariance;
       
       % clamp state within valid range
-      this.state(this.state<0)=0;
-      this.state(this.state>1)=1;
+      posteriorState(posteriorState<0)=0;
+      posteriorState(posteriorState>1)=1;
 
-      % plot posterior distribution
+      % set new state and covariance
+      this.state=posteriorState;
+      this.covariance=posteriorCovariance;
+
+      % plot distributions
       if(this.plotDistributions)
-        plotNormal(this.state,this.Pinv,'k');
-        legend({'prior','measurement','posterior'});
-        xlabel('parameter');
-        ylabel('likelihood');
-        hold('off');
+        plotNormalDistributions(priorState,priorCovariance,posteriorState,posteriorCovariance,hessian,jacobian);
       end
-         
+        
       % compute current trajectory and approximate cost
       initialBlock=state2initialBlock(this,this.state);
       replaceInitialBlock(this.F,initialBlock);
-      this.cost=0.5/this.Pinv;
+      this.cost=0.5*trace(this.covariance);
     end
     
     function [xEst,cEst]=getResults(this)
@@ -152,9 +140,32 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
   end
 end
 
-function plotNormal(mu,sigmaInverse,varargin)
-  x=(0:0.001:1)';
+function plotNormalDistributions(muPrior,sigmaPrior,muPosterior,sigmaPosterior,hessian,jacobian)
+  persistent hfigure x
+  if(numel(muPrior)==1)
+    if(isempty(hfigure))
+      hfigure=figure;
+      set(hfigure,'Color',[1,1,1]);
+      set(hfigure,'Position',[650,0,400,300]);
+      xlabel('parameter');
+      ylabel('likelihood');
+      hold('on');
+      x=(0:0.001:1)';
+    else
+      figure(hfigure);
+      cla;
+    end
+    muMeas=muPrior-hessian\jacobian;
+    sigmaMeas=hessian^(-1);
+    plotNormalDistribution(x,muPrior,sigmaPrior,'k--');
+    plotNormalDistribution(x,muMeas,sigmaMeas,'r');
+    plotNormalDistribution(x,muPosterior,sigmaPosterior,'k');
+    legend({'prior','measurement','posterior'});
+  end
+end
+
+function plotNormalDistribution(x,mu,sigma,varargin)
   dx=x-mu;
-  px=(2*pi)^(-numel(mu)/2)*sqrt(sigmaInverse)*exp(-dx.*dx*sigmaInverse);
+  px=1/((2*pi)^(numel(mu)/2)*sqrt(det(sigma)))*exp(-dx.*dx*sigma^(-1));
   plot(x,px,varargin{:});
 end

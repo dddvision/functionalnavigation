@@ -40,8 +40,8 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 optimizer:
+ *** Update number of extension blocks dynamically based on data.
  *** Wrap "objective" so that all measures are refreshed simultaneously (make GA properties private again)
- *** Choose number of blocks dynamically based on data.
  * Create linkage-based GA crossover function.
 
 dynamicModel:

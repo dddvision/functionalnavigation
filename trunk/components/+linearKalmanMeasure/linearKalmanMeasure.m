@@ -72,7 +72,17 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
     end
     
     function [ka,kb]=findEdges(this,kaMin,kbMin)
-      ka=max([this.ka,kaMin,kbMin]):this.kb;
+      if(isempty(this.ka)||isempty(this.kb))
+        ka=uint32([]);
+      else
+        if(isempty(kaMin))
+          kaMin=uint32(0);
+        end
+        if(isempty(kbMin))
+          kbMin=uint32(0);
+        end        
+        ka=max([this.ka,kaMin,kbMin]):this.kb;
+      end
       kb=ka;
     end
 

@@ -6,7 +6,6 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     ta
     tb
     xRef
-    simulationNoise
   end
   
   methods (Static=true,Access=public)
@@ -30,7 +29,6 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
       this.ta=initialTime;
       this.tb=initialTime;
       this.initialBlock=initialBlock;
-      this.simulationNoise=randn(3,1).*this.priorSigma;
       
       try
         [scheme,resource]=strtok(uri,':');
@@ -80,7 +78,7 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     end
     
     function cost=computeExtensionBlockCost(this,block)
-      assert(isa(this,'dynamicModle'));
+      assert(isa(this,'dynamicModel'));
       assert(isa(block,'struct'));
       cost=0;
     end
@@ -105,7 +103,7 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
       end
       N=numel(t);
       noise=initialBlock2noise(this.initialBlock);
-      position=position+repmat(this.simulationNoise-this.priorSigma.*noise,[1,N]);
+      position=position+repmat([this.simulatedInitialError;0;0]-sqrt(this.priorVariance)*noise,[1,N]);
     end
   end
 
