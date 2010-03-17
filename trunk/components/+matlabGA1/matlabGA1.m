@@ -14,9 +14,10 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
   end
   
   methods (Access=public)
-    function this=matlabGA1
-      fprintf('\n');
-      fprintf('\nmatlabGA1::matlabGA1');
+    function this=matlabGA1(dynamicModelName,measureNames,dataURI)  
+      this=this@optimizer(dynamicModelName,measureNames,dataURI);
+      fprintf('\n\n%s',class(this));
+      
       if(this.hasLicense)
         if(~license('test','gads_toolbox'))
           error('Requires license for GADS toolbox -- see matlabGA1 configuration options');
@@ -57,9 +58,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
         cd(userPath);
         this.stepGAhandle=temp;
       end  
-    end
-    
-    function initialCost=defineProblem(this,dynamicModelName,measureNames,dataURI)      
+
       % process dynamic model input description
       this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
       this.extensionBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getExtensionBlockDescription']);
@@ -71,16 +70,13 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.g=cell(K,1);
       for k=1:K
         this.g{k}=unwrapComponent(measureNames{k},dataURI);
+        refresh(this.g{k});
         node=last(this.g{k});
         if(~isempty(node))
           lastMeasurementTime=max(lastMeasurementTime,getTime(this.g{k},node));
         end
       end
-      if(this.blocksPerSecond)
-        this.numExtensionBlocks=ceil((lastMeasurementTime-this.referenceTime)*this.blocksPerSecond);
-      else
-        this.numExtensionBlocks=1;
-      end
+      this.numExtensionBlocks=ceil((lastMeasurementTime-this.referenceTime)*this.blocksPerSecond);
       numBits=this.initialBlockDescription.numLogical + ...
         32*this.initialBlockDescription.numUint32 + ...
         this.numExtensionBlocks*(this.extensionBlockDescription.numLogical + ...
@@ -93,13 +89,19 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       for k=1:K
         [initialBlock,extensionBlocks]=getBlocks(this,k);
         this.F{k}=unwrapComponent(dynamicModelName,dataURI,this.referenceTime,initialBlock);
-        appendExtensionBlocks(this.F{k},extensionBlocks);
+        if(~isempty(extensionBlocks))
+          appendExtensionBlocks(this.F{k},extensionBlocks);
+        end
       end
       
       % determine initial costs
       objective('put',this);
-      initialCost=feval(@objective,this.bits);
-      this.cost=initialCost;
+      this.cost=feval(@objective,this.bits);
+    end
+    
+    function [xEst,cEst]=getResults(this)
+      xEst=cat(1,this.F{:});
+      cEst=this.cost;
     end
     
     function step(this)
@@ -116,11 +118,6 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
         this.bits(bad,:)=logical(rand(numel(bad),size(this.bits,2))>0.5);
         putBits(this);
       end
-    end
-    
-    function [xEst,cEst]=getResults(this)
-      xEst=cat(1,this.F{:});
-      cEst=this.cost;
     end
   end
   
@@ -151,8 +148,10 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
     function putBits(this)
       for k=1:numel(this.F)
         [initialBlock,extensionBlocks]=getBlocks(this,k);
-        replaceInitialBlock(this.F{k},initialBlock);
-        replaceExtensionBlocks(this.F{k},0:(numel(extensionBlocks)-1),extensionBlocks);
+        setInitialBlock(this.F{k},initialBlock);
+        if(~isempty(extensionBlocks))
+          setExtensionBlocks(this.F{k},uint32(0:(numel(extensionBlocks)-1)),extensionBlocks);
+        end
       end
     end
   end
@@ -185,8 +184,9 @@ function varargout=objective(varargin)
       indF=this.F{ind};
 
       % build cost graph from dynamic model
-      numEB=getNumExtensionBlocks(indF);
-      cost=sparse([],[],[],numEB+1,numEB+1,numEB+1);
+      numEB=double(getNumExtensionBlocks(indF));
+      numEB1=numEB+1;
+      cost=sparse([],[],[],numEB1,numEB1,numEB1);
       [initialBlock,extensionBlocks]=getBlocks(this,ind);
       cost(1,1)=computeInitialBlockCost(indF,initialBlock);
       for blk=1:numEB

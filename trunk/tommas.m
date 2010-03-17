@@ -9,13 +9,11 @@ classdef tommas < tommasConfig & handle
   methods (Access=public)
     
     function this=tommas
-      fprintf('\n');
-      fprintf('\ntommas::tommas');
       warning('on','all');
       warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
       reset(RandStream.getDefaultStream);
-      this.optimizerInstance=unwrapComponent(this.defaultOptimizer);
-      defineProblem(this.optimizerInstance,this.defaultDynamicModel,this.defaultMeasures,this.defaultDataURI);
+      this.optimizerInstance=unwrapComponent(this.defaultOptimizer,...
+        this.defaultDynamicModel,this.defaultMeasures,this.defaultDataURI);
       
       this.dataContainerInstance=[];
       [scheme,resource]=strtok(this.defaultDataURI,':');
@@ -36,13 +34,13 @@ classdef tommas < tommasConfig & handle
       end
     end
     
-    function step(this)
-      step(this.optimizerInstance);
-    end
-    
     function [xEst,cEst]=getResults(this)
       [xEst,cEst]=getResults(this.optimizerInstance);
-    end    
+    end   
+    
+    function step(this)
+      step(this.optimizerInstance);
+    end 
   end
   
 end

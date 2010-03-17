@@ -7,8 +7,8 @@
 %   block.logical = logical parameters, logical 1-by-numLogical
 %   block.uint32 = unsigned integer parameters, uint32 1-by-numUint32
 % There are seperate block descriptions for initial and extension blocks
+% Each uint32 parameter may be treated as range-bounded double via static casting
 % The range of uint32 is [0,4294967295]
-% Parameters may be treated as range-bounded doubles via static casting
 classdef dynamicModel < trajectory
   
   properties (Constant=true,GetAccess=public)
@@ -58,15 +58,6 @@ classdef dynamicModel < trajectory
   end
   
   methods (Abstract=true,Access=public)
-    % Replace the initial block
-    %
-    % INPUT
-    % initialBlock = (see above), struct scalar
-    %
-    % NOTES
-    % This function modifies the object instance
-    replaceInitialBlock(this,initialBlock);
-    
     % Compute the cost associated with the initial block
     %
     % INPUT
@@ -81,32 +72,14 @@ classdef dynamicModel < trajectory
     %   Typical costs are in the range [0,4.5]
     cost=computeInitialBlockCost(this,initialBlock);
     
-    % Get the total number of extension blocks
-    %
-    % OUTPUT
-    % num = total number of extension blocks, uint32 scalar
-    num=getNumExtensionBlocks(this);
-    
-    % Replace multiple extension blocks
+    % Set the the initial block
     %
     % INPUT
-    % k = zero-based indices of block locations sorted in ascending order, uint32 N-by-1
-    % blocks = (see above), struct N-by-1
-    %
-    % NOTES
-    % Unsigned integers may be treated as range-bounded doubles via static casting
-    % This function modifies the object instance
-    % Throws an exception if any index is is invalid
-    replaceExtensionBlocks(this,k,blocks);
-
-    % Extend the time domain by appending consecutive extension blocks
-    %
-    % INPUT
-    % blocks = (see above), struct M-by-1
+    % initialBlock = (see above), struct scalar
     %
     % NOTES
     % This function modifies the object instance
-    appendExtensionBlocks(this,blocks);
+    setInitialBlock(this,initialBlock);
     
     % Compute the cost associated with an extension block
     %
@@ -121,6 +94,37 @@ classdef dynamicModel < trajectory
     %   Cost is the negative log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
     cost=computeExtensionBlockCost(this,block);
+    
+    % Get the total number of extension blocks
+    %
+    % OUTPUT
+    % numExtensionBlocks = total number of extension blocks, uint32 scalar
+    %
+    % NOTE
+    % The number of extension blocks is 0 if the update rate is 0 
+    numExtensionBlocks=getNumExtensionBlocks(this);
+    
+    % Set multiple extension blocks
+    %
+    % INPUT
+    % k = zero-based indices of block locations sorted in ascending order, uint32 N-by-1
+    % blocks = (see above), struct N-by-1
+    %
+    % NOTES
+    % Unsigned integers may be treated as range-bounded doubles via static casting
+    % This function modifies the object instance
+    % Throws an exception if any index is outside of the range [0,numExtensionBlocks-1]
+    setExtensionBlocks(this,k,blocks);
+
+    % Extend the time domain by appending consecutive extension blocks
+    %
+    % INPUT
+    % blocks = (see above), struct M-by-1
+    %
+    % NOTES
+    % This function increases the number of extension blocks in the object instance
+    % Throws an exception if the update rate is 0
+    appendExtensionBlocks(this,blocks);
   end
     
 end

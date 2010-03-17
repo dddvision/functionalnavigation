@@ -2,17 +2,17 @@
 classdef wobble1 < wobble1.wobble1Config & dynamicModel
   
   properties (GetAccess=private,SetAccess=private)
-    ta
-    data
+    initialTime
+    bits
   end
   
   methods (Static=true,Access=public)
     function description=getInitialBlockDescription
-      description=struct('numLogical',uint32(0),'numUint32',uint32(0));      
+      description=struct('numLogical',uint32(30),'numUint32',uint32(0));      
     end
     
     function description=getExtensionBlockDescription
-      description=struct('numLogical',uint32(30),'numUint32',uint32(0));
+      description=struct('numLogical',uint32(0),'numUint32',uint32(0));
     end
     
     function blocksPerSecond=getUpdateRate
@@ -23,14 +23,9 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
   methods (Access=public)
     function this=wobble1(uri,initialTime,initialBlock)
       this=this@dynamicModel(uri,initialTime,initialBlock);
-      fprintf('\n');
-      fprintf('\nwobble1::wobble1');
-      this.ta=initialTime;
-    end
-    
-    function replaceInitialBlock(this,initialBlock)
-      isa(this,'dynamicModel');
-      isa(initialBlock,'struct');
+      fprintf('\n\n%s',class(this));
+      this.initialTime=initialTime;
+      this.bits=initialBlock.logical;
     end
     
     function cost=computeInitialBlockCost(this,initialBlock)
@@ -39,50 +34,50 @@ classdef wobble1 < wobble1.wobble1Config & dynamicModel
       cost=0;
     end
     
-    function num=getNumExtensionBlocks(this)
-      num=double(~isempty(this.data));
+    function setInitialBlock(this,initialBlock)
+      this.bits=initialBlock.logical;
     end
-    
-    function replaceExtensionBlocks(this,k,blocks)
-      fprintf('\n');
-      fprintf('\nwobble1::replaceBlocks');
-      if(k==0)
-        this.data=blocks(1).logical;
-      end
-    end
-    
-    function appendExtensionBlocks(this,blocks)
-      fprintf('\n');
-      fprintf('\nwobble1::appendBlocks');
-      this.data=blocks(1).logical;
-    end
-    
+
     function cost=computeExtensionBlockCost(this,block)
       assert(isa(this,'dynamicModel'));
       assert(isa(block,'struct'));
       cost=0;
     end
     
+    function numExtensionBlocks=getNumExtensionBlocks(this)
+      assert(isa(this,'dynamicModel'));
+      numExtensionBlocks=uint32(0);
+    end
+    
+    function setExtensionBlocks(this,k,block)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(k,'uint32'));
+      assert(isa(block,'struct'));
+      error('This dynamic model accepts no extension blocks.');
+    end
+    
+    function appendExtensionBlocks(this,blocks)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(blocks,'struct'));
+      error('The time domain of this dynamic model cannot be extended.');
+    end
+     
     function [ta,tb]=domain(this)
-      ta=this.ta;
-      if(getNumExtensionBlocks(this)>0)
-        tb=inf;
-      else
-        tb=ta;
-      end
+      ta=this.initialTime;
+      tb=Inf;
     end
     
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
-      t(t<this.ta)=NaN;
-      vaxis=this.data((this.omegabits+1):(end-mod(numel(this.data),this.dim)));
+      t(t<this.initialTime)=NaN;
+      vaxis=this.bits((this.omegabits+1):(end-mod(numel(this.bits),this.dim)));
       bpa=numel(vaxis)/this.dim;
       rate_bias=zeros(this.dim,1);
       for d=1:this.dim
-        bits=vaxis((d-1)*bpa+(1:bpa))';
-        rate_bias(d)=(1-2*bitsplit(bits));
+        bd=vaxis((d-1)*bpa+(1:bpa))';
+        rate_bias(d)=(1-2*bitsplit(bd));
       end
-      bits=this.data(1:this.omegabits)';
-      omega=this.scaleomega*(1-2*bitsplit(bits));
+      bd=this.bits(1:this.omegabits)';
+      omega=this.scaleomega*(1-2*bitsplit(bd));
       
       sint=sin(omega*t);
 

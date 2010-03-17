@@ -1,10 +1,8 @@
 classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamicModelConfig & dynamicModel
   
   properties (GetAccess=private,SetAccess=private)
+    initialTime
     initialBlock
-    block
-    ta
-    tb
     xRef
   end
   
@@ -25,11 +23,10 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
   methods (Access=public)
     function this=linearKalmanDynamicModel(uri,initialTime,initialBlock)
       this=this@dynamicModel(uri,initialTime,initialBlock);
-      this.block=struct('logical',{},'uint32',{});
-      this.ta=initialTime;
-      this.tb=initialTime;
+      fprintf('\n\n%s',class(this));
+      this.initialTime=initialTime;
       this.initialBlock=initialBlock;
-      
+
       try
         [scheme,resource]=strtok(uri,':');
         switch(scheme)
@@ -48,44 +45,43 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
       end
     end
 
-    function replaceInitialBlock(this,initialBlock)
-      this.initialBlock=initialBlock;
-    end
-
     function cost=computeInitialBlockCost(this,initialBlock)
       assert(isa(this,'dynamicModel'));
       noise=initialBlock2noise(initialBlock);
       cost=0.5*dot(noise,noise);
     end
     
-    function numBlocks=getNumExtensionBlocks(this)
-      numBlocks=numel(this.block);
+    function setInitialBlock(this,initialBlock)
+      this.initialBlock=initialBlock;
     end
-    
-    function replaceExtensionBlocks(this,k,block)
-      if(isempty(k))
-        return;
-      end
-      k=k+1; % convert to one-based index
-      assert(k(end)<=numel(this.block));
-      this.block(k)=block;
-    end
-    
-    function appendExtensionBlocks(this,blocks)
-      assert(numel(blocks)==1);
-      this.block=blocks;
-      this.tb=inf;
-    end
-    
+
     function cost=computeExtensionBlockCost(this,block)
       assert(isa(this,'dynamicModel'));
       assert(isa(block,'struct'));
       cost=0;
     end
+    
+    function numExtensionBlocks=getNumExtensionBlocks(this)
+      assert(isa(this,'dynamicModel'));
+      numExtensionBlocks=uint32(0);
+    end
+    
+    function setExtensionBlocks(this,k,block)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(k,'uint32'));
+      assert(isa(block,'struct'));
+      error('This dynamic model accepts no extension blocks.');
+    end
+    
+    function appendExtensionBlocks(this,blocks)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(blocks,'struct'));
+      error('The time domain of this dynamic model cannot be extended.');
+    end
      
     function [ta,tb]=domain(this)
-      ta=this.ta;
-      tb=this.tb;
+      ta=this.initialTime;
+      tb=Inf;
     end
    
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)

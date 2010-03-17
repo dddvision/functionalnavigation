@@ -7,27 +7,24 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
     covariance
     cost
     initialBlockDescription
-    extensionBlockDescription
   end
   
   methods (Access=public)
-    function this=linearKalmanOptimizer
-      % do nothing
-    end
-    
-    function initialCost=defineProblem(this,dynamicModelName,measureName,dataURI)
+    function this=linearKalmanOptimizer(dynamicModelName,measureName,dataURI)
+      this=this@optimizer(dynamicModelName,measureName,dataURI);
+      fprintf('\n\n%s',class(this));
+      
       % process dynamic model input description
       this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
-      this.extensionBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getExtensionBlockDescription']);
       blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
       
       % warnings and error cases
-      fprintf('\nWarning: The linear Kalman optimizer optimizes over the final on-diagonal measure only.');
-      if((this.initialBlockDescription.numLogical>0)||(this.extensionBlockDescription.numLogical>0))
-        fprintf('\nWarning: The linear Kalman optimizer sets all logical parameters to false.');
+      fprintf('\nWarning: This optimizer updates itself using only the last on-diagonal measure.');
+      if(this.initialBlockDescription.numLogical>0)
+        fprintf('\nWarning: This optimizer sets all logical parameters to false.');
       end
       if(blocksPerSecond~=0)
-        error('The linear Kalman optimizer does not yet handle dynamic models with nonzero update rates.');
+        error('This optimizer does not yet handle dynamic models with nonzero update rates.');
       end
       
       % set initial state
@@ -39,16 +36,19 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       % initialize the dynamic model
       initialBlock=state2initialBlock(this,this.state);
       this.F=unwrapComponent(dynamicModelName,dataURI,this.referenceTime,initialBlock);
-
-      % extend dynamic model domain
-      extensionBlocks=struct('logical',[],'uint32',[]);
-      appendExtensionBlocks(this.F,extensionBlocks);
       
       % compute initial cost and covariance
       [unused,jacobian,hessian]=computePriorModel(this);
       this.covariance=hessian^(-1);
       this.cost=0.5*trace(this.covariance);
-      initialCost=this.cost;
+      
+      % incorporate first measurement (includes refresh)
+      step(this);
+    end
+    
+    function [xEst,cEst]=getResults(this)
+      xEst=this.F;
+      cEst=this.cost;
     end
     
     function step(this)      
@@ -82,13 +82,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
         
       % compute current trajectory and approximate cost
       initialBlock=state2initialBlock(this,this.state);
-      replaceInitialBlock(this.F,initialBlock);
+      setInitialBlock(this.F,initialBlock);
       this.cost=0.5*trace(this.covariance);
-    end
-    
-    function [xEst,cEst]=getResults(this)
-      xEst=this.F;
-      cEst=this.cost;
     end
   end
   
@@ -118,11 +113,11 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       xo(xo<h)=h;
       xo(xo>xoMax)=xoMax; 
       node=last(this.g);
-      replaceInitialBlock(this.F,param2initialBlock(this,xo-h));
+      setInitialBlock(this.F,param2initialBlock(this,xo-h));
       ym=computeEdgeCost(this.g,this.F,node,node);
-      replaceInitialBlock(this.F,param2initialBlock(this,xo));
+      setInitialBlock(this.F,param2initialBlock(this,xo));
       cost=computeEdgeCost(this.g,this.F,node,node);
-      replaceInitialBlock(this.F,param2initialBlock(this,xo+h));
+      setInitialBlock(this.F,param2initialBlock(this,xo+h));
       yp=computeEdgeCost(this.g,this.F,node,node);
       sh=scale/h;
       jacobian=(yp-ym)*sh/2;
