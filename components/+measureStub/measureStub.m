@@ -7,8 +7,7 @@ classdef measureStub < measure
   methods (Access=public)
     function this=measureStub(uri)
       this=this@measure(uri);
-      fprintf('\n');
-      fprintf('\nmeasureStub::measureStub');
+      fprintf('\n\n%s',class(this));
       try
         [scheme,resource]=strtok(uri,':');
         switch(scheme)
@@ -41,8 +40,6 @@ classdef measureStub < measure
     end
     
     function [a,b]=findEdges(this,kaMin,kbMin)
-      fprintf('\n');
-      fprintf('\nmeasureStub::findEdges');
       kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
       kaMax=last(this.sensor)-1;
       if(isempty(kaMin)||isempty(kaMax))
@@ -55,9 +52,6 @@ classdef measureStub < measure
     end
         
     function cost=computeEdgeCost(this,x,a,b)
-      fprintf('\n');
-      fprintf('\nmeasureStub::computeEdgeCost');
-      
       ka=first(this.sensor);
       kb=last(this.sensor);
       assert((b>a)&&(a>=ka)&&(b<=kb));

@@ -15,7 +15,7 @@ classdef measure < sensor
     % Construct a measure
     %
     % INPUT
-    % uri = uniform resource identifier, string
+    % dataURI = uniform resource identifier, string
     %
     % NOTES
     % The URI should identify a hardware resource or dataContainer
@@ -24,8 +24,8 @@ classdef measure < sensor
     %   'matlab:middleburyData.middleburyData'
     % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@measure(uri);
-    function this=measure(uri)
-      assert(isa(uri,'char'));
+    function this=measure(dataURI)
+      assert(isa(dataURI,'char'));
     end
   end
   

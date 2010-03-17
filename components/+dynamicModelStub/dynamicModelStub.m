@@ -32,8 +32,7 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
   methods (Access=public)
     function this=dynamicModelStub(uri,initialTime,initialBlock)
       this=this@dynamicModel(uri,initialTime,initialBlock);
-      fprintf('\n');
-      fprintf('\ndynamicModelStub::dynamicModelStub');
+      fprintf('\n\n%s',class(this));
       this.numStates=12;
       this.firstNewBlock=1;
       this.chunkSize=256;
@@ -48,7 +47,7 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
 
-    function replaceInitialBlock(this,initialBlock)
+    function setInitialBlock(this,initialBlock)
       isa(this,'dynamicModel');
       isa(initialBlock,'struct');
 %       this.initialPosition=position;
@@ -56,11 +55,15 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
 %       this.initialPositionRate=positionRate;
 %       qdot=2*Quat2Homo(rotation)*rotationRate;
 %       if(abs(qdot(1))>eps)
-%         fprintf('\n');
-%         fprintf('\ndynamicModelStub::setInitialState');
 %         fprintf('warning: initial rotation rate does not match initial orientation');
 %       end
 %       this.initialOmega=qdot(2:4);
+    end
+    
+    function cost=computeExtensionBlockCost(this,block)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(block,'struct'));
+      cost=0;
     end
     
     function cost=computeInitialBlockCost(this,initialBlock)
@@ -68,12 +71,12 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       assert(isa(initialBlock,'struct'));
       cost=0;
     end
-
-    function num=getNumExtensionBlocks(this)
-      num=numel(this.block);
+    
+    function numExtensionBlocks=getNumExtensionBlocks(this)
+      numExtensionBlocks=numel(this.block);
     end
     
-    function replaceExtensionBlocks(this,k,blocks)
+    function setExtensionBlocks(this,k,blocks)
       if(isempty(k))
         return;
       end
@@ -90,12 +93,6 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];
       end
       this.tb=this.ta+N/this.blocksPerSecond;
-    end
-    
-    function cost=computeExtensionBlockCost(this,block)
-      assert(isa(this,'dynamicModel'));
-      assert(isa(block,'struct'));
-      cost=0;
     end
      
     function [ta,tb]=domain(this)
