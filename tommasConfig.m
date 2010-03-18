@@ -1,15 +1,15 @@
 classdef tommasConfig < handle
   properties (Constant=true,GetAccess=public)
-    % select data container
-    defaultDataURI = 'matlab:middleburyData.middleburyData';
+    % select hardware resource or data container
+    defaultURI = 'matlab:middleburyData.middleburyData';
     
     % select default dynamic model
     defaultDynamicModel = 'linearKalmanDynamicModel';
     
     % select default optimizer
-    defaultOptimizer = 'linearKalmanOptimizer';
+    defaultOptimizer = 'matlabGA1';
         
     % select default measures
-    defaultMeasures = {'linearKalmanMeasure'};
+    defaultMeasures = {'opticalFlowOpenCV'};
   end 
 end

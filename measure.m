@@ -47,14 +47,13 @@ classdef measure < sensor
     % Output indices are sorted in ascending order,
     %   first by lower index ka, then by upper index kb
     % If the graph is diagonal, then ka and kb are identical vectors
-    % If kaMin is empty, then it is assumed to be uint32(0)
-    % If kbMin is empty, then it is assumed to be uint32(0)
+    % Throws an exception if any input is of the wrong class or size
     [ka,kb]=findEdges(this,kaMin,kbMin);
     
     % Evaluate the cost of a single edge given a trajectory
     %
     % INPUT
-    % x = trajectory instance
+    % x = trajectory instance, scalar
     % ka = lower node index, uint32 scalar
     % kb = upper node index, uint32 scalar
     %
@@ -66,10 +65,11 @@ classdef measure < sensor
     %   to a world frame. If the sensor frame is not coincident with the 
     %   body frame, then the sensor frame offset may need to be 
     %   kinematically composed with the body frame to locate the sensor
-    % Throws an exception if node indices do not correspond to an edge
     % For a normal distribution
     %   Cost is the negative log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
+    % Throws an exception if any input is of the wrong class or size
+    % Throws an exception if node indices do not correspond to an edge
     cost=computeEdgeCost(this,x,ka,kb);
   end
   

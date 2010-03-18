@@ -40,18 +40,23 @@ classdef measureStub < measure
     end
     
     function [a,b]=findEdges(this,kaMin,kbMin)
+      assert(isa(kaMin,'uint32'));
+      assert(isa(kbMin,'uint32'));
+      assert(numel(kaMin)==1);
+      assert(numel(kbMin)==1);
       kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
-      kaMax=last(this.sensor)-1;
-      if(isempty(kaMin)||isempty(kaMax))
-        a=uint32([]);
-        b=uint32([]);
-      else
-        a=kaMin:kaMax;
-        b=a+uint32(1);
-      end
+      kaMax=last(this.sensor)-uint32(1);
+      a=kaMin:kaMax;
+      b=a+uint32(1);
     end
         
     function cost=computeEdgeCost(this,x,a,b)
+      assert(isa(x,'trajectory'));
+      assert(isa(a,'uint32'));
+      assert(isa(b,'uint32'));
+      assert(numel(x)==1);
+      assert(numel(a)==1);
+      assert(numel(b)==1);
       ka=first(this.sensor);
       kb=last(this.sensor);
       assert((b>a)&&(a>=ka)&&(b<=kb));

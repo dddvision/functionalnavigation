@@ -54,14 +54,14 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     
     function setInitialBlock(this,initialBlock)
       assert(isa(initialBlock,'struct'));
-      assert(~isempty(initialBlock));
+      assert(numel(initialBlock)==1);
       this.initialBlock=initialBlock;
     end
 
     function cost=computeExtensionBlockCost(this,block)
       assert(isa(this,'dynamicModel'));
       assert(isa(block,'struct'));
-      assert(~isempty(block));
+      assert(numel(block)==1);
       cost=0;
     end
     
