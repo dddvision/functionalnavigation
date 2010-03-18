@@ -72,8 +72,12 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       end                  
     end
     
-    function status=refresh(this)
-      status=refresh(this.sensor);
+    function refresh(this)
+      refresh(this.sensor);
+    end
+    
+    function flag=hasData(this)
+      flag=hasData(this.sensor);
     end
     
     function ka=first(this)
@@ -93,10 +97,15 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       assert(isa(kbMin,'uint32'));
       assert(numel(kaMin)==1);
       assert(numel(kbMin)==1);
-      kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
-      kaMax=last(this.sensor)-uint32(1);
-      a=kaMin:kaMax;
-      b=a+uint32(1);
+      if(hasData(this.sensor))
+        kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
+        kaMax=last(this.sensor)-uint32(1);
+        a=kaMin:kaMax;
+        b=a+uint32(1);
+      else
+        a=uint32([]);
+        b=uint32([]);
+      end
     end
     
     function cost=computeEdgeCost(this,x,a,b)
@@ -106,6 +115,7 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       assert(numel(x)==1);
       assert(numel(a)==1);
       assert(numel(b)==1);
+      assert(hasData(this.sensor));
       ka=first(this.sensor);
       kb=last(this.sensor);
       assert((b>a)&&(a>=ka)&&(b<=kb));

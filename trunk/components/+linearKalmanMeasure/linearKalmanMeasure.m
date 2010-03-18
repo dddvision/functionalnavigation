@@ -38,7 +38,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
       this.status=false;
     end
 
-    function status=refresh(this)
+    function refresh(this)
       if(this.status)
         time=this.t(end)+this.dt;
       else
@@ -56,19 +56,24 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
           this.status=true;
         end
       end
-      status=this.status;
+    end
+
+    function flag=hasData(this)
+      flag=this.status;
+    end
+
+    function ka=first(this)
+      assert(this.status)
+      ka=this.ka;
     end
     
+    function kb=last(this)
+      assert(this.status)
+      kb=this.kb;
+    end
+
     function time=getTime(this,k)
       time=this.t(k);
-    end
-    
-    function a=first(this)
-      a=this.ka;
-    end
-    
-    function b=last(this)
-      b=this.kb;
     end
     
     function [ka,kb]=findEdges(this,kaMin,kbMin)
@@ -76,8 +81,13 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
       assert(isa(kbMin,'uint32'));
       assert(numel(kaMin)==1);
       assert(numel(kbMin)==1);
-      ka=max([this.ka,kaMin,kbMin]):this.kb;
-      kb=ka;
+      if(this.status)
+        ka=max([this.ka,kaMin,kbMin]):this.kb;
+        kb=ka;
+      else
+        ka=uint32([]);
+        kb=uint32([]);
+      end
     end
 
     function cost=computeEdgeCost(this,x,a,b)
@@ -87,6 +97,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
       assert(numel(x)==1);
       assert(numel(a)==1);
       assert(numel(b)==1);
+      assert(this.status);
       assert(a==b);
       pos=evaluate(x,this.t(b));
       dnorm=(this.yBar(b)-pos(1))./this.sigma;

@@ -55,6 +55,11 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       % update the sensor
       refresh(this.g);
       
+      % return if no data is available
+      if(~hasData(this.g))
+        return;
+      end
+      
       % compute measurement distribution model
       [unused,jacobian,hessian]=computeMeasureModel(this);
       

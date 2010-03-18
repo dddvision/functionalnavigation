@@ -22,24 +22,22 @@ classdef inertialSim < inertialSixDOF
       this.ready=logical(N>0);
     end
 
-    function status=refresh(this)
-      status=this.ready;
+    function refresh(this)
+      assert(isa(this,'inertialSixDOF'));
+    end
+    
+    function flag=hasData(this)
+      flag=this.ready;
     end
     
     function ka=first(this)
-      if(this.ready)
-        ka=this.ka;
-      else
-        ka=[];
-      end
+      assert(this.ready)
+      ka=this.ka;
     end
 
     function kb=last(this)
-      if(this.ready)
-        kb=this.kb;
-      else
-        kb=[];
-      end
+      assert(this.ready)
+      kb=this.kb;
     end
     
     function time=getTime(this,k)

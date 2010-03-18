@@ -7,13 +7,34 @@ classdef sensor < handle
   methods (Abstract=true)
     % Incorporate new data and allow old data to expire
     %
+    % NOTES
+    % Does not block or wait for hardware events
+    refresh(this);
+    
+    % Check whether data is available
+    %
     % OUTPUT
-    % status = true if any data is available and false otherwise, logical scalar
+    % flag = true if any data is available and false otherwise, logical scalar
+    flag=hasData(this);
+
+    % Return index to the first data node
+    %
+    % INPUT
+    % ka = index to first node, uint32 scalar
     %
     % NOTES
-    % Does not wait for hardware events
-    status=refresh(this);
+    % Throws an exception if no data is available
+    ka=first(this);
     
+    % Return index to the last data node
+    %
+    % INPUT
+    % ka = index to last node, uint32 scalar
+    %
+    % NOTES
+    % Throws an exception if no data is available
+    kb=last(this);
+
     % Get time stamp at a node
     %
     % INPUT
@@ -25,25 +46,8 @@ classdef sensor < handle
     % NOTES
     % Time stamps must not decrease with increasing indices
     % Throws an exception if data at the node is invalid
+    % Throws an exception if input is of the wrong class or size
     time=getTime(this,k);
-    
-    % Return index to the first data node
-    %
-    % INPUT
-    % ka = index to first node, uint32 scalar
-    %
-    % NOTES
-    % Returns empty if no data is available
-    ka=first(this);
-    
-    % Return index to the last data node
-    %
-    % INPUT
-    % ka = index to last node, uint32 scalar
-    %
-    % NOTES
-    % Returns empty if no data is available
-    kb=last(this);
   end
   
 end
