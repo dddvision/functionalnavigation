@@ -8,7 +8,6 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
     initialBlockDescription
     extensionBlockDescription
     blocksPerSecond
-    numExtensionBlocks
     defaultOptions
     stepGAhandle
   end
@@ -64,35 +63,22 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.extensionBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getExtensionBlockDescription']);
       this.blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
 
+      % initialize dynamic models
+      K=this.popSizeDefault;
+      this.bits=logical(rand(K,numInitialBits(this))>0.5);
+      this.F=cell(K,1);
+      for k=1:K
+        initialBlock=getBlocks(this,k);
+        this.F{k}=unwrapComponent(dynamicModelName,dataURI,this.referenceTime,initialBlock);
+      end
+      
       % initialize measures
       K=numel(measureNames);
-      lastMeasurementTime=this.referenceTime;
       this.g=cell(K,1);
       for k=1:K
         this.g{k}=unwrapComponent(measureNames{k},dataURI);
-        refresh(this.g{k});
-        node=last(this.g{k});
-        if(~isempty(node))
-          lastMeasurementTime=max(lastMeasurementTime,getTime(this.g{k},node));
-        end
       end
-      this.numExtensionBlocks=ceil((lastMeasurementTime-this.referenceTime)*this.blocksPerSecond);
-      numBits=this.initialBlockDescription.numLogical + ...
-        32*this.initialBlockDescription.numUint32 + ...
-        this.numExtensionBlocks*(this.extensionBlockDescription.numLogical + ...
-        32*this.extensionBlockDescription.numUint32);
-      
-      % initialize dynamic models
-      K=this.popSizeDefault;
-      this.bits=logical(rand(K,numBits)>0.5);
-      this.F=cell(K,1);
-      for k=1:K
-        [initialBlock,extensionBlocks]=getBlocks(this,k);
-        this.F{k}=unwrapComponent(dynamicModelName,dataURI,this.referenceTime,initialBlock);
-        if(~isempty(extensionBlocks))
-          appendExtensionBlocks(this.F{k},extensionBlocks);
-        end
-      end
+      refreshAll(this);
       
       % determine initial costs
       objective('put',this);
@@ -105,9 +91,8 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
     end
     
     function step(this)
-      for graph=1:numel(this.g)
-        refresh(this.g{graph});
-      end
+      refreshAll(this);
+      
       if(this.hasLicense)
         nvars=size(this.bits,2);
         nullstate=struct('FunEval',0);
@@ -138,11 +123,46 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       n3=this.extensionBlockDescription.numLogical;
       n4=n3+32*this.extensionBlockDescription.numUint32;
       extensionBlocks=struct('logical',{},'uint32',{});
-      for blk=1:this.numExtensionBlocks
-        extensionBlocks(blk)=struct('logical',b((n2+uint32(1)):(n2+n3)),...
-          'uint32',bits2uints(b((n2+n3+uint32(1)):(n2+n4))));
-        n2=n2+n4;
+      numLeftover=size(this.bits,2)-n2;
+      if(numLeftover)
+        for blk=1:(numExtensionBits(this)/numLeftover)
+          extensionBlocks(blk)=struct('logical',b((n2+uint32(1)):(n2+n3)),...
+            'uint32',bits2uints(b((n2+n3+uint32(1)):(n2+n4))));
+          n2=n2+n4;
+        end
       end
+    end
+
+    % refresh measures and extend dynamic models
+    function refreshAll(this)
+      lastTime=this.referenceTime;
+      for k=1:numel(this.g)
+        refresh(this.g{k});
+        lastNode=last(this.g{k});
+        if(~isempty(lastNode))
+          lastTime=max(lastTime,getTime(this.g{k},lastNode));
+        end
+      end
+      [ta,tb]=domain(this.F{1});
+      numNewBlocks=ceil((lastTime-tb)*this.blocksPerSecond);
+      numNewBits=numNewBlocks*numExtensionBits(this);
+      K=numel(this.F);
+      this.bits=[this.bits,logical(rand(K,numNewBits)>0.5)];
+      numOldBlocks=getNumExtensionBlocks(this.F{k});
+      for k=1:K
+        [initialBlock,extensionBlocks]=getBlocks(this,k);
+        if(numNewBlocks>numOldBlocks)
+          appendExtensionBlocks(this.F{k},extensionBlocks((numOldBlocks+1):end));
+        end
+      end
+    end
+   
+    function b=numInitialBits(this)
+      b=this.initialBlockDescription.numLogical+32*this.initialBlockDescription.numUint32;
+    end
+
+    function b=numExtensionBits(this)
+      b=this.extensionBlockDescription.numLogical+32*this.extensionBlockDescription.numUint32;
     end
     
     function putBits(this)
