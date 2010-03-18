@@ -13,6 +13,6 @@ function obj=unwrapComponent(pkg,varargin)
   try
     obj=feval([pkg,'.',pkg],varargin{:});
   catch err
-    error('%s\n%s',err.message,'TOMMAS component was not found in the MATLAB path.');
+    error('%s\n%s',err.message,'TOMMAS component could not be instantiated or was not found in the MATLAB path.');
   end
 end
