@@ -138,9 +138,8 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       lastTime=this.referenceTime;
       for k=1:numel(this.g)
         refresh(this.g{k});
-        lastNode=last(this.g{k});
-        if(~isempty(lastNode))
-          lastTime=max(lastTime,getTime(this.g{k},lastNode));
+        if(hasData(this.g{k}))
+          lastTime=max(lastTime,getTime(this.g{k},last(this.g{k})));
         end
       end
       [ta,tb]=domain(this.F{1});

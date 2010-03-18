@@ -35,21 +35,23 @@ classdef cameraSim < camera
         this.ready=true;
       end
     end
-      
+
+    function refresh(this)
+      assert(isa(this,'camera'));
+    end
+    
+    function flag=hasData(this)      
+      flag=this.ready;
+    end
+    
     function ka=first(this)
-      if(this.ready)
-        ka=this.ka;
-      else
-        ka=[];
-      end
+      assert(this.ready)
+      ka=this.ka;
     end
 
     function kb=last(this)
-      if(this.ready)
-        kb=this.kb;
-      else
-        kb=[];
-      end
+      assert(this.ready)
+      kb=this.kb;
     end
     
     function time=getTime(this,k)
@@ -57,10 +59,6 @@ classdef cameraSim < camera
       assert(k>=this.ka);
       assert(k<=this.kb);
       time=this.tk(k);
-    end
-    
-    function status=refresh(this)
-      status=this.ready;
     end
 
     function str=interpretLayers(this,varargin)

@@ -30,13 +30,13 @@ classdef dynamicModel < trajectory
     %   'matlab:middleburyData.middleburyData'
     % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@dynamicModel(uri,initialTime,initialBlock);
-    % Throws an exception if any scalar argument is empty
+    % Throws an exception if any input is of the wrong class or size
     function this=dynamicModel(uri,initialTime,initialBlock)
       assert(isa(uri,'char'));
       assert(isa(initialTime,'double'));
       assert(isa(initialBlock,'struct'));
-      assert(~isempty(initialTime));
-      assert(~isempty(initialBlock));
+      assert(numel(initialTime)==1);
+      assert(numel(initialBlock)==1);
     end    
   end
   

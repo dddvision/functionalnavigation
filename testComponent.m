@@ -51,7 +51,8 @@ end
 
 function testCameraArrayProjection(cam)
   % find out which images are available
-  if(~refresh(cam))
+  refresh(cam);
+  if(~hasData(cam))
     error('camera is not ready');
   end
   ka=first(cam);
@@ -118,7 +119,8 @@ end
 
 function testCameraArrayProjectionRoundTrip(cam)
   % find out which images are available
-  if(~refresh(cam))
+  refresh(cam);
+  if(~hasData(cam))
     error('camera is not ready');
   end
   ka=first(cam);
@@ -176,7 +178,8 @@ end
 % For each valid index in the GPS data domain, evaluate the reference
 %   trajectory and compare with the reported GPS position
 function testGPSaccuracy(gpsHandle,refTraj)
-  if(~refresh(gpsHandle))
+  refresh(gpsHandle);
+  if(~hasData(gpsHandle))
     error('gps is not ready');
   end
   
