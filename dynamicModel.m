@@ -30,10 +30,13 @@ classdef dynamicModel < trajectory
     %   'matlab:middleburyData.middleburyData'
     % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@dynamicModel(uri,initialTime,initialBlock);
+    % Throws an exception if any scalar argument is empty
     function this=dynamicModel(uri,initialTime,initialBlock)
       assert(isa(uri,'char'));
       assert(isa(initialTime,'double'));
       assert(isa(initialBlock,'struct'));
+      assert(~isempty(initialTime));
+      assert(~isempty(initialBlock));
     end    
   end
   
@@ -70,6 +73,7 @@ classdef dynamicModel < trajectory
     % For a normal distribution
     %   Cost is the negative log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
+    % Throws an exception if given block is not a struct scalar
     cost=computeInitialBlockCost(this,initialBlock);
     
     % Set the the initial block
@@ -78,7 +82,7 @@ classdef dynamicModel < trajectory
     % initialBlock = (see above), struct scalar
     %
     % NOTES
-    % This function modifies the object instance
+    % Throws an exception if given block is not a struct scalar
     setInitialBlock(this,initialBlock);
     
     % Compute the cost associated with an extension block
@@ -93,6 +97,7 @@ classdef dynamicModel < trajectory
     % For a normal distribution
     %   Cost is the negative log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
+    % Throws an exception if given block is not a struct scalar
     cost=computeExtensionBlockCost(this,block);
     
     % Get the total number of extension blocks
@@ -111,9 +116,9 @@ classdef dynamicModel < trajectory
     % blocks = (see above), struct N-by-1
     %
     % NOTES
-    % Unsigned integers may be treated as range-bounded doubles via static casting
-    % This function modifies the object instance
+    % Vector arguments may be empty without consequence (no blocks will be set)
     % Throws an exception if any index is outside of the range [0,numExtensionBlocks-1]
+    % Throws an exception if the number of indices does not match the number of blocks
     setExtensionBlocks(this,k,blocks);
 
     % Extend the time domain by appending consecutive extension blocks
@@ -122,7 +127,7 @@ classdef dynamicModel < trajectory
     % blocks = (see above), struct M-by-1
     %
     % NOTES
-    % This function increases the number of extension blocks in the object instance
+    % Vector of blocks may be empty without consequence (no blocks will be appended)
     % Throws an exception if the update rate is 0
     appendExtensionBlocks(this,blocks);
   end

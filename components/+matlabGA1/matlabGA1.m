@@ -13,8 +13,8 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
   end
   
   methods (Access=public)
-    function this=matlabGA1(dynamicModelName,measureNames,dataURI)  
-      this=this@optimizer(dynamicModelName,measureNames,dataURI);
+    function this=matlabGA1(dynamicModelName,measureNames,uri)  
+      this=this@optimizer(dynamicModelName,measureNames,uri);
       fprintf('\n\n%s',class(this));
       
       if(this.hasLicense)
@@ -69,14 +69,14 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.F=cell(K,1);
       for k=1:K
         initialBlock=getBlocks(this,k);
-        this.F{k}=unwrapComponent(dynamicModelName,dataURI,this.referenceTime,initialBlock);
+        this.F{k}=unwrapComponent(dynamicModelName,uri,this.referenceTime,initialBlock);
       end
       
       % initialize measures
       K=numel(measureNames);
       this.g=cell(K,1);
       for k=1:K
-        this.g{k}=unwrapComponent(measureNames{k},dataURI);
+        this.g{k}=unwrapComponent(measureNames{k},uri);
       end
       refreshAll(this);
       

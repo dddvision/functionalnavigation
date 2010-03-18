@@ -11,15 +11,15 @@ classdef optimizer < handle
     % INPUT
     % dynamicModelName = name of a dynamicModel object, string
     % measureNames = list of names of measure objects, cell array of strings
-    % dataURI = see measure class constructor
+    % uri = see measure class constructor
     % 
     % NOTES
     % Each subclass constructor must pass identical arguments to this 
-    %   constructor using the syntax this=this@optimizer(dynamicModelName,measureNames,dataURI);
-    function this=optimizer(dynamicModelName,measureNames,dataURI)
+    %   constructor using the syntax this=this@optimizer(dynamicModelName,measureNames,uri);
+    function this=optimizer(dynamicModelName,measureNames,uri)
       assert(isa(dynamicModelName,'char'));
       assert(isa(measureNames,'cell'));      
-      assert(isa(dataURI,'char'));
+      assert(isa(uri,'char'));
     end
   end
   

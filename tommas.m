@@ -13,10 +13,10 @@ classdef tommas < tommasConfig & handle
       warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
       reset(RandStream.getDefaultStream);
       this.optimizerInstance=unwrapComponent(this.defaultOptimizer,...
-        this.defaultDynamicModel,this.defaultMeasures,this.defaultDataURI);
+        this.defaultDynamicModel,this.defaultMeasures,this.defaultURI);
       
       this.dataContainerInstance=[];
-      [scheme,resource]=strtok(this.defaultDataURI,':');
+      [scheme,resource]=strtok(this.defaultURI,':');
       if(strcmp(scheme,'matlab'))
         this.dataContainerInstance=eval(resource(2:end));
       end

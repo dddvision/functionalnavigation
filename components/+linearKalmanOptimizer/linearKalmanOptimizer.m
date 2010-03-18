@@ -10,8 +10,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
   end
   
   methods (Access=public)
-    function this=linearKalmanOptimizer(dynamicModelName,measureName,dataURI)
-      this=this@optimizer(dynamicModelName,measureName,dataURI);
+    function this=linearKalmanOptimizer(dynamicModelName,measureName,uri)
+      this=this@optimizer(dynamicModelName,measureName,uri);
       fprintf('\n\n%s',class(this));
       
       % process dynamic model input description
@@ -31,11 +31,11 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       this.state=this.initialState;
       
       % initialize the measure (assuming a single measure)
-      this.g=unwrapComponent(measureName{1},dataURI);
+      this.g=unwrapComponent(measureName{1},uri);
            
       % initialize the dynamic model
       initialBlock=state2initialBlock(this,this.state);
-      this.F=unwrapComponent(dynamicModelName,dataURI,this.referenceTime,initialBlock);
+      this.F=unwrapComponent(dynamicModelName,uri,this.referenceTime,initialBlock);
       
       % compute initial cost and covariance
       [unused,jacobian,hessian]=computePriorModel(this);

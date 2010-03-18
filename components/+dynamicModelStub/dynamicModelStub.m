@@ -47,28 +47,23 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
       this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
 
+    function cost=computeInitialBlockCost(this,initialBlock)
+      assert(isa(this,'dynamicModel'));
+      assert(isa(initialBlock,'struct'));
+      assert(~isempty(initialBlock));
+      cost=0;
+    end
+    
     function setInitialBlock(this,initialBlock)
-      isa(this,'dynamicModel');
-      isa(initialBlock,'struct');
-%       this.initialPosition=position;
-%       this.initialRotation=rotation;
-%       this.initialPositionRate=positionRate;
-%       qdot=2*Quat2Homo(rotation)*rotationRate;
-%       if(abs(qdot(1))>eps)
-%         fprintf('warning: initial rotation rate does not match initial orientation');
-%       end
-%       this.initialOmega=qdot(2:4);
+      assert(isa(this,'dynamicModel'));
+      assert(isa(initialBlock,'struct'));
+      assert(~isempty(initialBlock));
     end
     
     function cost=computeExtensionBlockCost(this,block)
       assert(isa(this,'dynamicModel'));
       assert(isa(block,'struct'));
-      cost=0;
-    end
-    
-    function cost=computeInitialBlockCost(this,initialBlock)
-      assert(isa(this,'dynamicModel'));
-      assert(isa(initialBlock,'struct'));
+      assert(~isempty(block));
       cost=0;
     end
     
@@ -77,16 +72,20 @@ classdef dynamicModelStub < dynamicModelStub.dynamicModelStubConfig & dynamicMod
     end
     
     function setExtensionBlocks(this,k,blocks)
-      if(isempty(k))
+      assert(numel(k)==numel(blocks));
+      if(isempty(blocks))
         return;
       end
+      assert((k(end)+1)<=numel(this.block));
       k=k+1; % convert to one-based index
-      assert(k(end)<=numel(this.block));
       this.block(k)=blocks;
       this.firstNewBlock=min(this.firstNewBlock,k(1));
     end
     
     function appendExtensionBlocks(this,blocks)
+      if(isempty(blocks))
+        return;
+      end
       this.block=cat(2,this.block,blocks);
       N=numel(this.block);
       if((N+1)>size(this.state,2))
