@@ -72,21 +72,21 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
     end
     
     function [ka,kb]=findEdges(this,kaMin,kbMin)
-      if(isempty(this.ka)||isempty(this.kb))
-        ka=uint32([]);
-      else
-        if(isempty(kaMin))
-          kaMin=uint32(0);
-        end
-        if(isempty(kbMin))
-          kbMin=uint32(0);
-        end        
-        ka=max([this.ka,kaMin,kbMin]):this.kb;
-      end
+      assert(isa(kaMin,'uint32'));
+      assert(isa(kbMin,'uint32'));
+      assert(numel(kaMin)==1);
+      assert(numel(kbMin)==1);
+      ka=max([this.ka,kaMin,kbMin]):this.kb;
       kb=ka;
     end
 
     function cost=computeEdgeCost(this,x,a,b)
+      assert(isa(x,'trajectory'));
+      assert(isa(a,'uint32'));
+      assert(isa(b,'uint32'));
+      assert(numel(x)==1);
+      assert(numel(a)==1);
+      assert(numel(b)==1);
       assert(a==b);
       pos=evaluate(x,this.t(b));
       dnorm=(this.yBar(b)-pos(1))./this.sigma;
