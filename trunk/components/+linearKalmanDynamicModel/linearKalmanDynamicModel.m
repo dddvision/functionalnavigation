@@ -47,17 +47,21 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
 
     function cost=computeInitialBlockCost(this,initialBlock)
       assert(isa(this,'dynamicModel'));
+      assert(isa(initialBlock,'struct'));
       noise=initialBlock2noise(initialBlock);
       cost=0.5*dot(noise,noise);
     end
     
     function setInitialBlock(this,initialBlock)
+      assert(isa(initialBlock,'struct'));
+      assert(~isempty(initialBlock));
       this.initialBlock=initialBlock;
     end
 
     function cost=computeExtensionBlockCost(this,block)
       assert(isa(this,'dynamicModel'));
       assert(isa(block,'struct'));
+      assert(~isempty(block));
       cost=0;
     end
     
@@ -70,12 +74,19 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
       assert(isa(this,'dynamicModel'));
       assert(isa(k,'uint32'));
       assert(isa(block,'struct'));
+      assert(numel(k)==numel(blocks));
+      if(isempty(blocks))
+        return;
+      end
       error('This dynamic model accepts no extension blocks.');
     end
     
     function appendExtensionBlocks(this,blocks)
       assert(isa(this,'dynamicModel'));
       assert(isa(blocks,'struct'));
+      if(isempty(blocks))
+        return;
+      end
       error('The time domain of this dynamic model cannot be extended.');
     end
      
