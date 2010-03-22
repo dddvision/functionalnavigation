@@ -14,31 +14,33 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       this=this@optimizer(dynamicModelName,measureName,uri);
       fprintf('\n\n%s',class(this));
       
-      % process dynamic model input description
-      this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
-      blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
-      
-      % warnings and error cases
+      % display warning
       fprintf('\nWarning: This optimizer updates itself using only the last on-diagonal measure.');
-      if(this.initialBlockDescription.numLogical>0)
-        fprintf('\nWarning: This optimizer sets all logical parameters to false.');
-      end
+      
+      % handle dynamic model update rate
+      blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']); 
       if(blocksPerSecond~=0)
         error('This optimizer does not yet handle dynamic models with nonzero update rates.');
       end
       
-      % set initial state
-      this.state=this.initialState;
+      % handle dynamic model initial block description
+      this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
+      if(this.initialBlockDescription.numLogical>0)
+        fprintf('\nWarning: This optimizer sets all logical parameters to false.');
+      end
+      
+      % set initial state (assuming its range is the interval [0,1])
+      this.state=repmat(0.5,[this.initialBlockDescription.numUint32,1]);
       
       % initialize the measure (assuming a single measure)
       this.g=unwrapComponent(measureName{1},uri);
            
-      % initialize the dynamic model
+      % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
       this.F=unwrapComponent(dynamicModelName,uri,this.referenceTime,initialBlock);
       
       % compute initial cost and covariance
-      [unused,jacobian,hessian]=computePriorModel(this);
+      [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');
       this.covariance=hessian^(-1);
       this.cost=0.5*trace(this.covariance);
       
@@ -61,11 +63,13 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       end
       
       % compute measurement distribution model
-      [unused,jacobian,hessian]=computeMeasureModel(this);
-      
-      % linear least squares update
+      [jacobian,hessian]=computeSecondOrderModel(this,'measurementCost');
+
+      % get the prior state and covariance
       priorState=this.state;
       priorCovariance=this.covariance;
+      
+      % linear least squares update
       I=eye(numel(priorState));
       partialGain=(priorCovariance^(-1)+hessian)^(-1);
       kalmanGain=partialGain*hessian;
@@ -76,63 +80,83 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       posteriorState(posteriorState<0)=0;
       posteriorState(posteriorState>1)=1;
 
-      % set new state and covariance
+      % set the posterior state and covariance
       this.state=posteriorState;
       this.covariance=posteriorCovariance;
 
-      % plot distributions
+      % compute current trajectory and approximate cost
+      setInitialBlock(this.F,state2initialBlock(this,this.state));
+      this.cost=0.5*trace(this.covariance);
+      
+      % optionally plot distributions
       if(this.plotDistributions)
         plotNormalDistributions(priorState,priorCovariance,posteriorState,posteriorCovariance,hessian,jacobian);
       end
-        
-      % compute current trajectory and approximate cost
-      initialBlock=state2initialBlock(this,this.state);
-      setInitialBlock(this.F,initialBlock);
-      this.cost=0.5*trace(this.covariance);
     end
   end
   
   methods (Access=private)
     % compute second order model of prior distribution
-    function [cost,jacobian,hessian]=computePriorModel(this)
+    function [jacobian,hessian]=computeSecondOrderModel(this,func)
       scale=4294967295; % double(intmax('uint32'))
       h=floor(sqrt(scale)); % carefully chosen integer for discrete derivative
+      sh=scale/h;
       xo=round(this.state*scale);
       xoMax=scale-h;
       xo(xo<h)=h;
       xo(xo>xoMax)=xoMax;
-      ym=computeInitialBlockCost(this.F,param2initialBlock(this,uint32(xo-h)));
-      cost=computeInitialBlockCost(this.F,param2initialBlock(this,uint32(xo)));
-      yp=computeInitialBlockCost(this.F,param2initialBlock(this,uint32(xo+h)));
-      sh=scale/h;
-      jacobian=(yp-ym)*sh/2;
-      hessian=(yp-2*cost+ym)*sh*sh;
+      D=numel(xo);
+      jacobian=zeros(D,1);
+      hessian=zeros(D,D);
+      yo=feval(func,this,xo);
+      for d=1:D
+        xm=xo;
+        xp=xo;
+        xm(d)=xm(d)-h;
+        xp(d)=xp(d)+h;
+        ym=feval(func,this,xm);
+        yp=feval(func,this,xp);
+        jacobian(d)=yp-ym;
+        hessian(d,d)=yp-2*yo+ym;
+        for dd=(d+1):D
+          xmm=xm;
+          xmp=xm;
+          xpm=xp;
+          xpp=xp;
+          xmm(dd)=xmm(dd)-h;
+          xmp(dd)=xmp(dd)+h;
+          xpm(dd)=xpm(dd)-h;
+          xpp(dd)=xpp(dd)+h;
+          ymm=feval(func,this,xmm);
+          ymp=feval(func,this,xmp);
+          ypm=feval(func,this,xpm);
+          ypp=feval(func,this,xpp);
+          hessian(d,dd)=ypp-ypm-ymp+ymm;
+          hessian(dd,d)=hessian(d,dd);
+        end
+      end
+      jacobian=jacobian*(sh/2);
+      hessian=hessian*(sh*sh);
     end
     
-    % compute second order model of measurement distribution
-    function [cost,jacobian,hessian]=computeMeasureModel(this)
-      scale=4294967295; % double(intmax('uint32'))
-      h=floor(sqrt(scale)); % carefully chosen integer for discrete derivative
-      xo=round(this.state*scale);
-      xoMax=scale-h;
-      xo(xo<h)=h;
-      xo(xo>xoMax)=xoMax; 
+    function y=priorCost(this,x)
+      y=computeInitialBlockCost(this.F,param2initialBlock(this,uint32(x)));
+    end
+    
+    function y=measurementCost(this,x)
       node=last(this.g);
-      setInitialBlock(this.F,param2initialBlock(this,xo-h));
-      ym=computeEdgeCost(this.g,this.F,node,node);
-      setInitialBlock(this.F,param2initialBlock(this,xo));
-      cost=computeEdgeCost(this.g,this.F,node,node);
-      setInitialBlock(this.F,param2initialBlock(this,xo+h));
-      yp=computeEdgeCost(this.g,this.F,node,node);
-      sh=scale/h;
-      jacobian=(yp-ym)*sh/2;
-      hessian=(yp-2*cost+ym)*sh*sh;
+      setInitialBlock(this.F,param2initialBlock(this,x));
+      y=computeEdgeCost(this.g,this.F,node,node);
     end
-    
+      
+    % INPUT
+    % param = uint32 numUint32-by-1
     function block=param2initialBlock(this,param)
-      block=struct('logical',false(1,this.initialBlockDescription.numLogical),'uint32',param);
+      block=struct('logical',false(1,this.initialBlockDescription.numLogical),'uint32',param');
     end
 
+    % INPUT
+    % state = double numUint32-by-1
     function block=state2initialBlock(this,state)
       scale=4294967295; % double(intmax('uint32'))
       block=param2initialBlock(this,uint32(round(state*scale)));
