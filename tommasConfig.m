@@ -7,9 +7,9 @@ classdef tommasConfig < handle
     defaultDynamicModel = 'linearKalmanDynamicModel';
     
     % select default optimizer
-    defaultOptimizer = 'matlabGA1';
+    defaultOptimizer = 'linearKalmanOptimizer';
         
     % select default measures
-    defaultMeasures = {'opticalFlowOpenCV'};
+    defaultMeasures = {'linearKalmanMeasure'};
   end 
 end

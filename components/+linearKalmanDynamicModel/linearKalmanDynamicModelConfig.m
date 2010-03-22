@@ -1,6 +1,8 @@
 classdef linearKalmanDynamicModelConfig < handle
   properties (Constant=true)
-    simulatedInitialError=-1.2; % simulated initial error in first position coordinate
-    priorVariance=2; % variance of initial position distribution
+    positionOffset=-1.2; % simulated offset in first position coordinate
+    positionRateOffset=0.8; % simulated offset in first position rate coordinate
+    positionDeviation=2; % standard deviation of initial position distribution
+    positionRateDeviation=2; % standard deviation of initial position rate distribution
   end
 end

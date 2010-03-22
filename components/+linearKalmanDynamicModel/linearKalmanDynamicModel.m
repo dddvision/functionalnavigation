@@ -48,8 +48,8 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     function cost=computeInitialBlockCost(this,initialBlock)
       assert(isa(this,'dynamicModel'));
       assert(isa(initialBlock,'struct'));
-      noise=initialBlock2noise(initialBlock);
-      cost=0.5*dot(noise,noise);
+      z=initialBlock2deviation(initialBlock);
+      cost=0.5*dot(z,z);
     end
     
     function setInitialBlock(this,initialBlock)
@@ -98,6 +98,8 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
       [a,b]=domain(this.xRef);
       t(t>b)=b;
+
+      % simulate trajectory with position and velocity offsets
       switch(nargout)
         case 1
           position=evaluate(this.xRef,t);
@@ -108,15 +110,24 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
         otherwise
           [position,rotation,positionRate,rotationRate]=evaluate(this.xRef,t);
       end
-      N=numel(t);
-      noise=initialBlock2noise(this.initialBlock);
-      position=position+repmat([this.simulatedInitialError;0;0]-sqrt(this.priorVariance)*noise,[1,N]);
+      position(1,:)=position(1,:)+this.positionOffset;
+%       position(1,:)=position(1,:)+this.positionOffset+this.positionRateOffset*(t-this.initialTime);
+%       if(nargout>2)
+%         positionRate(1,:)=positionRate(1,:)+repmat(this.positionRateOffset,[1,numel(t)]);
+%       end
+        
+      % compute correction based on given initial parameters
+      z=initialBlock2deviation(this.initialBlock);
+      position(1,:)=position(1,:)-this.positionDeviation*z(1);
+%       position(1,:)=position(1,:)-this.positionDeviation*z(1)-this.positionRateDeviation*z(2)*(t-this.initialTime);
+%       if(nargout>2)
+%         positionRate(1,:)=positionRate(1,:)-repmat(this.positionRateDeviation*z(2),[1,numel(t)]);
+%       end
     end
   end
-
 end
   
-function z=initialBlock2noise(initialBlock)
+function z=initialBlock2deviation(initialBlock)
   sixthIntMax=715827883;
-  z=[double(initialBlock.uint32)/sixthIntMax-3;0;0];
+  z=double(initialBlock.uint32)/sixthIntMax-3;
 end
