@@ -106,9 +106,9 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       xo(xo<h)=h;
       xo(xo>xoMax)=xoMax;
       D=numel(xo);
+      yo=feval(func,this,xo);
       jacobian=zeros(D,1);
       hessian=zeros(D,D);
-      yo=feval(func,this,xo);
       for d=1:D
         xm=xo;
         xp=xo;
@@ -131,12 +131,13 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
           ymp=feval(func,this,xmp);
           ypm=feval(func,this,xpm);
           ypp=feval(func,this,xpp);
-          hessian(d,dd)=ypp-ypm-ymp+ymm;
+          hessian(d,dd)=(ypp-ypm-ymp+ymm)/4;
           hessian(dd,d)=hessian(d,dd);
         end
       end
       jacobian=jacobian*(sh/2);
       hessian=hessian*(sh*sh);
+      hessian=real(hessian^(1/2))^2; % improves numerical stability
     end
     
     function y=priorCost(this,x)

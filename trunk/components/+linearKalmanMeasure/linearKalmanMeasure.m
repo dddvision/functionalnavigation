@@ -55,6 +55,11 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
           this.kb=uint32(1);
           this.status=true;
         end
+      else
+        fprintf('Warning: Simulation has run out of data.');
+        this.ka=uint32([]);
+        this.kb=uint32([]);
+        this.status=false;
       end
     end
 
