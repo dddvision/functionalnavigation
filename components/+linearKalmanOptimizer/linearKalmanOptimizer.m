@@ -42,7 +42,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       % compute initial cost and covariance
       [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');
       this.covariance=hessian^(-1);
-      this.cost=0.5*trace(this.covariance);
+      this.cost=sqrt(trace(this.covariance));
       
       % incorporate first measurement (includes refresh)
       step(this);
@@ -64,7 +64,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       
       % compute measurement distribution model
       [jacobian,hessian]=computeSecondOrderModel(this,'measurementCost');
-
+      
       % get the prior state and covariance
       priorState=this.state;
       priorCovariance=this.covariance;
@@ -86,7 +86,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
 
       % compute current trajectory and approximate cost
       setInitialBlock(this.F,state2initialBlock(this,this.state));
-      this.cost=0.5*trace(this.covariance);
+      this.cost=sqrt(trace(this.covariance));
       
       % optionally plot distributions
       if(this.plotDistributions)
@@ -137,7 +137,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       end
       jacobian=jacobian*(sh/2);
       hessian=hessian*(sh*sh);
-      hessian=real(hessian^(1/2))^2; % improves numerical stability
+      hessian=real(hessian^(0.5))^2; % improves numerical stability
     end
     
     function y=priorCost(this,x)
@@ -167,30 +167,28 @@ end
 
 function plotNormalDistributions(muPrior,sigmaPrior,muPosterior,sigmaPosterior,hessian,jacobian)
   persistent hfigure x
-  if(numel(muPrior)==1)
-    if(isempty(hfigure))
-      hfigure=figure;
-      set(hfigure,'Color',[1,1,1]);
-      set(hfigure,'Position',[650,0,400,300]);
-      xlabel('parameter');
-      ylabel('likelihood');
-      hold('on');
-      x=(0:0.001:1)';
-    else
-      figure(hfigure);
-      cla;
-    end
-    muMeas=muPrior-hessian\jacobian;
-    sigmaMeas=hessian^(-1);
-    plotNormalDistribution(x,muPrior,sigmaPrior,'k--');
-    plotNormalDistribution(x,muMeas,sigmaMeas,'r');
-    plotNormalDistribution(x,muPosterior,sigmaPosterior,'k');
-    legend({'prior','measurement','posterior'});
+  if(isempty(hfigure))
+    hfigure=figure;
+    set(hfigure,'Color',[1,1,1]);
+    set(hfigure,'Position',[650,0,400,300]);
+    xlabel('parameter');
+    ylabel('likelihood');
+    hold('on');
+    x=(0:0.001:1)';
+  else
+    figure(hfigure);
+    cla;
   end
+  muMeas=muPrior-hessian\jacobian;
+  sigmaMeas=hessian^(-1);
+  plotNormalDistribution(x,muPrior(1),sigmaPrior(1,1),'k--');
+  plotNormalDistribution(x,muMeas(1),sigmaMeas(1,1),'r');
+  plotNormalDistribution(x,muPosterior(1),sigmaPosterior(1,1),'k');
+  legend({'prior','measurement','posterior'});
 end
 
 function plotNormalDistribution(x,mu,sigma,varargin)
   dx=x-mu;
-  px=1/((2*pi)^(numel(mu)/2)*sqrt(det(sigma)))*exp(-dx.*dx*sigma^(-1));
+  px=1/((2*pi)^(numel(mu)/2)*sqrt(det(sigma)))*exp(-0.5*dx.*dx*sigma^(-1));
   plot(x,px,varargin{:});
 end

@@ -47,7 +47,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
       truth=evaluate(this.xRef,time);
       if(~isnan(truth))
         this.t=[this.t,time];
-        this.yBar=[this.yBar,truth(1)+this.sigma*randn];
+        this.yBar=[this.yBar,truth(1)+this.deviation*randn];
         if(this.status)
           this.kb=this.kb+uint32(1);
         else
@@ -56,10 +56,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
           this.status=true;
         end
       else
-        fprintf('Warning: Simulation has run out of data.');
-        this.ka=uint32([]);
-        this.kb=uint32([]);
-        this.status=false;
+        fprintf('\nWarning: Simulation has run out of reference data.');
       end
     end
 
@@ -105,7 +102,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
       assert(this.status);
       assert(a==b);
       pos=evaluate(x,this.t(b));
-      dnorm=(this.yBar(b)-pos(1))./this.sigma;
+      dnorm=(this.yBar(b)-pos(1))./this.deviation;
       cost=0.5*dnorm.*dnorm;
     end
   end
