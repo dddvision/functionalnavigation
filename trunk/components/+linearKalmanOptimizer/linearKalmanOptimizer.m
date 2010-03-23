@@ -39,7 +39,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       initialBlock=state2initialBlock(this,this.state);
       this.F=unwrapComponent(dynamicModelName,uri,this.referenceTime,initialBlock);
       
-      % compute initial cost and covariance
+      % compute prior distribution model (assuming non-zero prior uncertainty)
       [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');
       this.covariance=hessian^(-1);
       this.cost=sqrt(trace(this.covariance));
@@ -137,7 +137,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       end
       jacobian=jacobian*(sh/2);
       hessian=hessian*(sh*sh);
-      hessian=real(hessian^(0.5))^2; % improves numerical stability
+      hessian=real((hessian*hessian)^0.5); % improves numerical stability
     end
     
     function y=priorCost(this,x)
