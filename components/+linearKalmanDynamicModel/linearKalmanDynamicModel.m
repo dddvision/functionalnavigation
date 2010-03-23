@@ -8,7 +8,7 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
   
   methods (Static=true,Access=public)
     function description=getInitialBlockDescription
-      description=struct('numLogical',uint32(0),'numUint32',uint32(1));
+      description=struct('numLogical',uint32(0),'numUint32',uint32(2));
     end
   
     function description=getExtensionBlockDescription
@@ -110,19 +110,17 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
         otherwise
           [position,rotation,positionRate,rotationRate]=evaluate(this.xRef,t);
       end
-      position(1,:)=position(1,:)+this.positionOffset;
-%       position(1,:)=position(1,:)+this.positionOffset+this.positionRateOffset*(t-this.initialTime);
-%       if(nargout>2)
-%         positionRate(1,:)=positionRate(1,:)+repmat(this.positionRateOffset,[1,numel(t)]);
-%       end
+      position(1,:)=position(1,:)+this.positionOffset+this.positionRateOffset*(t-this.initialTime);
+      if(nargout>2)
+        positionRate(1,:)=positionRate(1,:)+repmat(this.positionRateOffset,[1,numel(t)]);
+      end
         
       % compute correction based on given initial parameters
       z=initialBlock2deviation(this.initialBlock);
-      position(1,:)=position(1,:)-this.positionDeviation*z(1);
-%       position(1,:)=position(1,:)-this.positionDeviation*z(1)-this.positionRateDeviation*z(2)*(t-this.initialTime);
-%       if(nargout>2)
-%         positionRate(1,:)=positionRate(1,:)-repmat(this.positionRateDeviation*z(2),[1,numel(t)]);
-%       end
+      position(1,:)=position(1,:)-this.positionDeviation*z(1)-this.positionRateDeviation*z(2)*(t-this.initialTime);
+      if(nargout>2)
+        positionRate(1,:)=positionRate(1,:)-repmat(this.positionRateDeviation*z(2),[1,numel(t)]);
+      end
     end
   end
 end
