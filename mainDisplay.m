@@ -12,10 +12,8 @@ classdef mainDisplay < mainDisplayConfig & handle
 
     function this=mainDisplay(xRef)
       this.hfigure=figure;
-      if(this.usePainters)
-        set(this.hfigure,'Renderer','painters');
-      end
       set(this.hfigure,'Color',this.colorBackground);
+      set(this.hfigure,'Units','pixels');
       set(this.hfigure,'Position',[0,0,this.width,this.height]);
       this.haxes=axes('Parent',this.hfigure,'Clipping','off');
       set(this.haxes,'Box','on');
@@ -71,14 +69,21 @@ classdef mainDisplay < mainDisplayConfig & handle
       figure(this.hfigure);
       cla(this.haxes);
       
+      % compute scene origin
+      if(isempty(this.pRef))
+        origin=evaluate(x(kBest),domain(x(kBest)));
+      else
+        origin=this.pRef(:,1);
+      end
+        
       % plot trajectories and highlight the best one in a different color
       for k=1:K
         if(k==kBest)
           [pBest,qBest]=evaluate(x(k),t);
-          plotIndividual(this,pBest,qBest,alpha(k),this.colorHighlight,'LineWidth',1.5);
+          plotIndividual(this,origin,pBest,qBest,alpha(k),this.colorHighlight,'LineWidth',1.5);
         elseif(~this.bestOnly)
           [pk,qk]=evaluate(x(k),t);
-          plotIndividual(this,pk,qk,alpha(k),1-this.colorBackground);
+          plotIndividual(this,origin,pk,qk,alpha(k),1-this.colorBackground);
         end
       end
       
@@ -88,7 +93,7 @@ classdef mainDisplay < mainDisplayConfig & handle
         summaryText=sprintf('cost=%0.6f',costBest);
       else
         pScene=this.pRef;
-        plotIndividual(this,this.pRef,this.qRef,1,this.colorReference,'LineWidth',1.5);
+        plotIndividual(this,origin,this.pRef,this.qRef,1,this.colorReference,'LineWidth',1.5);
         pDif=pBest-this.pRef; % position comparison
         pDif=sqrt(sum(pDif.*pDif,1));
         qDif=acos(sum(qBest.*this.qRef,1)); % quaternion comparison
@@ -97,14 +102,16 @@ classdef mainDisplay < mainDisplayConfig & handle
         qTwoNorm=twoNorm(qDif);
         qInfNorm=infNorm(qDif);
         
-        summaryText=sprintf('costBest=%0.6f\npTwoNorm=%0.6f\npInfNorm=%0.6f\nqTwoNorm=%0.6f\nqInfNorm=%0.6f',...
-          costBest,pTwoNorm,pInfNorm,qTwoNorm,qInfNorm);
+        summaryText=sprintf(['       costBest = %0.6f\npositionTwoNorm = %0.6f\npositionInfNorm = %0.6f',...
+          '\nrotationTwoNorm = %0.6f\nrotationInfNorm = %0.6f',...
+          '\n        originX = %0.2f\n        originY = %0.2f\n        originZ = %0.2f'],...
+          costBest,pTwoNorm,pInfNorm,qTwoNorm,qInfNorm,origin(1),origin(2),origin(3));
       end
       
       % set axes properties being careful with large numbers
-      avgPos=sum(pScene/numel(t),2);
+      avgPos=sum(pScene/numel(t),2)-origin;
       avgSiz=twoNorm(max(pScene,[],2)-min(pScene,[],2));
-      text(avgPos(1),avgPos(2),avgPos(3)+avgSiz,summaryText,'FontName','Courier');
+      text(avgPos(1),avgPos(2),avgPos(3)+avgSiz,summaryText,'FontName','Courier','FontSize',9);
       set(this.haxes,'CameraTarget',avgPos');
       cameraPosition=avgPos'+avgSiz*[8*cos(double(index)/30),8*sin(double(index)/30),4];
       set(this.haxes,'CameraPosition',cameraPosition);
@@ -142,7 +149,8 @@ classdef mainDisplay < mainDisplayConfig & handle
       t=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
     end
     
-    function plotIndividual(this,p,q,alpha,color,varargin)
+    function plotIndividual(this,origin,p,q,alpha,color,varargin)
+      p=p-repmat(origin,[1,size(p,2)]);
       plot3(p(1,:),p(2,:),p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3),'Clipping','off',varargin{:});
       plotFrame(this,p(:,1),q(:,1),alpha); % plot first frame
       for bs=1:this.bigSteps

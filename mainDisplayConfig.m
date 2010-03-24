@@ -1,8 +1,7 @@
 classdef mainDisplayConfig < handle
   properties (Constant=true,GetAccess=protected)
-    bestOnly=false; % (true) show only the best trajectory
+    bestOnly=true; % (true) show only the best trajectory
     saveFigure=false; % (false) saves figure as an image
-    usePainters=true; % (true) forces use of the painters renderer (needed for double precision display)
     width=640; % (640) figure width in pixels
     height=480; % (480) figure height in pixels
     gamma=2; % (2) nonlinearity of trajectory transparency
