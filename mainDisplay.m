@@ -12,6 +12,9 @@ classdef mainDisplay < mainDisplayConfig & handle
 
     function this=mainDisplay(xRef)
       this.hfigure=figure;
+      if(this.usePainters)
+        set(this.hfigure,'Renderer','painters');
+      end
       set(this.hfigure,'Color',this.colorBackground);
       set(this.hfigure,'Position',[0,0,this.width,this.height]);
       this.haxes=axes('Parent',this.hfigure,'Clipping','off');
