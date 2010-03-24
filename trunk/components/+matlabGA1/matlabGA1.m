@@ -135,23 +135,27 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
 
     % refresh measures and extend dynamic models
     function refreshAll(this)
-      lastTime=this.referenceTime;
       for k=1:numel(this.g)
         refresh(this.g{k});
-        if(hasData(this.g{k}))
-          lastTime=max(lastTime,getTime(this.g{k},last(this.g{k})));
+      end 
+      if(this.blocksPerSecond)
+        lastTime=this.referenceTime;
+        for k=1:numel(this.g)
+          if(hasData(this.g{k}))
+            lastTime=max(lastTime,getTime(this.g{k},last(this.g{k})));
+          end
         end
-      end
-      [ta,tb]=domain(this.F{1});
-      numNewBlocks=ceil((lastTime-tb)*this.blocksPerSecond);
-      numNewBits=numNewBlocks*numExtensionBits(this);
-      K=numel(this.F);
-      this.bits=[this.bits,logical(rand(K,numNewBits)>0.5)];
-      numOldBlocks=getNumExtensionBlocks(this.F{k});
-      for k=1:K
-        [initialBlock,extensionBlocks]=getBlocks(this,k);
-        if(numNewBlocks>numOldBlocks)
-          appendExtensionBlocks(this.F{k},extensionBlocks((numOldBlocks+1):end));
+        [ta,tb]=domain(this.F{1});
+        numNewBlocks=ceil((lastTime-tb)*this.blocksPerSecond);
+        numNewBits=numNewBlocks*numExtensionBits(this);
+        K=numel(this.F);
+        this.bits=[this.bits,logical(rand(K,numNewBits)>0.5)];
+        numOldBlocks=getNumExtensionBlocks(this.F{k});
+        for k=1:K
+          [initialBlock,extensionBlocks]=getBlocks(this,k);
+          if(numNewBlocks>numOldBlocks)
+            appendExtensionBlocks(this.F{k},extensionBlocks((numOldBlocks+1):end));
+          end
         end
       end
     end
@@ -197,49 +201,49 @@ function varargout=objective(varargin)
     this.bits=bits;
     putBits(this);
     numIndividuals=numel(this.F);
-    numGraphs=numel(this.g);
-    allGraphs=cell(numIndividuals,numGraphs+1);
-    for ind=1:numIndividuals
-      indF=this.F{ind};
+    numMeasures=numel(this.g);
+    allGraphs=cell(numIndividuals,numMeasures+1);
+    for k=1:numIndividuals
+      Fk=this.F{k};
 
       % build cost graph from dynamic model
-      numEB=double(getNumExtensionBlocks(indF));
+      numEB=double(getNumExtensionBlocks(Fk));
       numEB1=numEB+1;
       cost=sparse([],[],[],numEB1,numEB1,numEB1);
-      [initialBlock,extensionBlocks]=getBlocks(this,ind);
-      cost(1,1)=computeInitialBlockCost(indF,initialBlock);
+      [initialBlock,extensionBlocks]=getBlocks(this,k);
+      cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
       for blk=1:numEB
-        cost(blk,blk+1)=computeExtensionBlockCost(indF,extensionBlocks(blk));
+        cost(blk,blk+1)=computeExtensionBlockCost(Fk,extensionBlocks(blk));
       end
-      allGraphs{ind,1}=cost;
+      allGraphs{k,1}=cost;
       
       % build cost graphs from measures
-      for graph=1:numGraphs
-        graphG=this.g{graph};
-        if(ind==1)
-          [a,b]=findEdges(graphG,uint32(0),last(graphG)-this.dMax);
+      for m=1:numMeasures
+        gm=this.g{m};
+        if(k==1)
+          [a,b]=findEdges(gm,uint32(0),last(gm)-this.dMax);
           numEdges=numel(a);
         end
         if(numEdges>0)
           cost=zeros(1,numEdges);
           for edge=1:numEdges
-            cost(edge)=computeEdgeCost(graphG,indF,a(edge),b(edge));
+            cost(edge)=computeEdgeCost(gm,Fk,a(edge),b(edge));
           end
           base=a(1);
           span=double(b(end)-base+1);
-          allGraphs{ind,1+graph}=sparse(double(a-base+1),double(b-base+1),cost,span,span,numEdges);
+          allGraphs{k,1+m}=sparse(double(a-base+1),double(b-base+1),cost,span,span,numEdges);
         else
-          allGraphs{ind,1+graph}=0;
+          allGraphs{k,1+m}=0;
         end
       end
     end
     
     % sum costs across graphs for each individual
     cost=zeros(numIndividuals,1);
-    for m=1:numIndividuals
-      for n=1:(numGraphs+1)
-        costmn=allGraphs{m,n};
-        cost(m)=cost(m)+sum(costmn(:));
+    for k=1:numIndividuals
+      for m=1:(numMeasures+1)
+        costkm=allGraphs{k,m};
+        cost(k)=cost(k)+sum(costkm(:));
       end
     end
     varargout{1}=cost;
