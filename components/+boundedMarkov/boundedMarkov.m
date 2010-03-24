@@ -1,14 +1,21 @@
 % This class represents the integration of linear Markov motion model with a bounded forcing function
 classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
   
+  properties (Constant=true,GetAccess=private)
+    halfIntMax=2147483647.5;
+    initialBlockCost=0;
+    extensionBlockCost=0;
+    chunkSize=256;
+    numStates=12;
+  end
+  
   properties (GetAccess=private,SetAccess=private)
-    numStates
-    firstNewBlock % one-based indexing
-    chunkSize
     ta
     tb
-    block % one-based indexing
     numInputs
+    initialBlock
+    firstNewBlock % one-based indexing
+    block % one-based indexing
     state % body state starting at initial time
     Ad % discrete version of state space A matrix
     Bd % discrete version of state space A matrix
@@ -24,8 +31,8 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
       description=struct('numLogical',uint32(0),'numUint32',uint32(size(boundedMarkov.boundedMarkovConfig.B,2)));
     end
     
-    function blocksPerSecond=getUpdateRate
-      blocksPerSecond=boundedMarkov.boundedMarkovConfig.blocksPerSecond;
+    function updateRate=getUpdateRate
+      updateRate=boundedMarkov.boundedMarkovConfig.updateRate;
     end
   end
   
@@ -33,38 +40,40 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
     function this=boundedMarkov(uri,initialTime,initialBlock)
       this=this@dynamicModel(uri,initialTime,initialBlock);
       fprintf('\n\n%s',class(this));
-      this.numStates=12;
+      assert(numel(initialBlock)==1);
+      this.initialBlock=initialBlock;
       this.firstNewBlock=1;
-      this.chunkSize=256;
       this.ta=initialTime;
       this.tb=initialTime;
       this.block=struct('logical',{},'uint32',{});
       this.numInputs=size(this.B,2);
       this.state=zeros(this.numStates,this.chunkSize);
       this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
-      ABd=expmApprox(this.ABZ/this.blocksPerSecond);
+      ABd=expmApprox(this.ABZ/this.updateRate);
       this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
       this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
 
     function cost=computeInitialBlockCost(this,initialBlock)
-      assert(isa(this,'dynamicModel'));
       assert(isa(initialBlock,'struct'));
       assert(numel(initialBlock)==1);
-      cost=0;
+      cost=this.initialBlockCost;
     end
     
     function setInitialBlock(this,initialBlock)
-      assert(isa(this,'dynamicModel'));
       assert(isa(initialBlock,'struct'));
       assert(numel(initialBlock)==1);
+      this.initialBlock=initialBlock;
+    end
+    
+    function initialBlock=getInitialBlock(this)
+      initialBlock=this.initialBlock;
     end
     
     function cost=computeExtensionBlockCost(this,block)
-      assert(isa(this,'dynamicModel'));
       assert(isa(block,'struct'));
       assert(numel(block)==1);
-      cost=0;
+      cost=this.extensionBlockCost;
     end
     
     function numExtensionBlocks=getNumExtensionBlocks(this)
@@ -72,6 +81,8 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
     end
     
     function setExtensionBlocks(this,k,blocks)
+      assert(isa(k,'uint32'));
+      assert(isa(blocks,'struct'));
       assert(numel(k)==numel(blocks));
       if(isempty(blocks))
         return;
@@ -80,6 +91,14 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
       k=k+1; % convert to one-based index
       this.block(k)=blocks;
       this.firstNewBlock=min(this.firstNewBlock,k(1));
+    end
+    
+    function blocks=getExtensionBlocks(this,k)
+      assert(isa(k,'uint32'));
+      blocks=struct('logical',{},'uint32',{});
+      for kk=1:numel(k)
+        blocks(kk)=this.block(k+1);
+      end
     end
     
     function appendExtensionBlocks(this,blocks)
@@ -91,7 +110,7 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
       if((N+1)>size(this.state,2))
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];
       end
-      this.tb=this.ta+N/this.blocksPerSecond;
+      this.tb=this.ta+N/this.updateRate;
     end
      
     function [ta,tb]=domain(this)
@@ -102,9 +121,9 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
       N=numel(t);
       dt=t-this.ta;
-      dk=dt*this.blocksPerSecond;
+      dk=dt*this.updateRate;
       dkFloor=floor(dk);
-      dtFloor=dkFloor/this.blocksPerSecond;
+      dtFloor=dkFloor/this.updateRate;
       dtRemain=dt-dtFloor;
       position=NaN(3,N);
       rotation=NaN(4,N);
@@ -114,7 +133,6 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
       firstGood=find(good,1,'first');
       lastGood=find(good,1,'last');
       blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers
-      % Apply initial state while processing outputs
       for n=firstGood:lastGood
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
         position(:,n)=substate(1:3)+this.initialPosition;
@@ -134,7 +152,7 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
   methods (Access=private)
     function blockIntegrate(this,K)
       for k=this.firstNewBlock:K
-        force=block2unitforce(this.block(k));
+        force=block2unitforce(this,this.block(k));
         this.state(:,k+1)=this.Ad*this.state(:,k)+this.Bd*force;
       end
       this.firstNewBlock=K+1;
@@ -148,9 +166,13 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
         ABsub=expmApprox(this.ABZ*dt);
         Asub=ABsub(1:this.numStates,1:this.numStates);
         Bsub=ABsub(1:this.numStates,(this.numStates+1):end);
-        force=block2unitforce(this.block(sF));
+        force=block2unitforce(this,this.block(sF));
         substate=Asub*this.state(:,sF)+Bsub*force;
       end
+    end
+    
+    function force=block2unitforce(this,block)
+      force=double(block.uint32')/this.halfIntMax-1; % transpose
     end
   end
     
@@ -158,11 +180,6 @@ end
 
 function expA=expmApprox(A)
   expA=speye(size(A))+A+(A*A)/2;
-end
-
-function force=block2unitforce(block)
-  halfIntMax=2147483647.5;
-  force=double(block.uint32')/halfIntMax-1; % transpose
 end
 
 function h=Quat2Homo(q)
