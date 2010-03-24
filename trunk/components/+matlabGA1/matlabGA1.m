@@ -124,8 +124,9 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       n4=n3+32*this.extensionBlockDescription.numUint32;
       extensionBlocks=struct('logical',{},'uint32',{});
       numLeftover=size(this.bits,2)-n2;
-      if(numLeftover)
-        for blk=1:(numExtensionBits(this)/numLeftover)
+      numEBits=n3+n4;
+      if(numEBits)
+        for blk=1:(numLeftover/numEBits)
           extensionBlocks(blk)=struct('logical',b((n2+uint32(1)):(n2+n3)),...
             'uint32',bits2uints(b((n2+n3+uint32(1)):(n2+n4))));
           n2=n2+n4;
@@ -203,12 +204,12 @@ function varargout=objective(varargin)
     numIndividuals=numel(this.F);
     numMeasures=numel(this.g);
     allGraphs=cell(numIndividuals,numMeasures+1);
+    numEB=double(getNumExtensionBlocks(this.F{1}));
+    numEB1=numEB+1;
+    numEdges=zeros(1,numMeasures);
     for k=1:numIndividuals
-      Fk=this.F{k};
-
       % build cost graph from dynamic model
-      numEB=double(getNumExtensionBlocks(Fk));
-      numEB1=numEB+1;
+      Fk=this.F{k};
       cost=sparse([],[],[],numEB1,numEB1,numEB1);
       [initialBlock,extensionBlocks]=getBlocks(this,k);
       cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
@@ -222,16 +223,16 @@ function varargout=objective(varargin)
         gm=this.g{m};
         if(k==1)
           [a,b]=findEdges(gm,uint32(0),last(gm)-this.dMax);
-          numEdges=numel(a);
+          numEdges(m)=numel(a);
         end
-        if(numEdges>0)
-          cost=zeros(1,numEdges);
-          for edge=1:numEdges
+        if(numEdges(m))
+          cost=zeros(1,numEdges(m));
+          for edge=1:numEdges(m)
             cost(edge)=computeEdgeCost(gm,Fk,a(edge),b(edge));
           end
           base=a(1);
           span=double(b(end)-base+1);
-          allGraphs{k,1+m}=sparse(double(a-base+1),double(b-base+1),cost,span,span,numEdges);
+          allGraphs{k,1+m}=sparse(double(a-base+1),double(b-base+1),cost,span,span,numEdges(m));
         else
           allGraphs{k,1+m}=0;
         end
@@ -246,6 +247,11 @@ function varargout=objective(varargin)
         cost(k)=cost(k)+sum(costkm(:));
       end
     end
+    
+    % normalize costs by total number of blocks and edges
+    cost=cost/(1+numEB+sum(numEdges));
+    
+    % set output argument
     varargout{1}=cost;
     
   elseif(strcmp(bits,'put'))

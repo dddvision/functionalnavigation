@@ -21,11 +21,11 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
     end
     
     function description=getExtensionBlockDescription
-      description=struct('numLogical',uint32(0),'numUint32',uint32(size(dynamicModelStub.dynamicModelStubConfig.B,2)));
+      description=struct('numLogical',uint32(0),'numUint32',uint32(size(boundedMarkov.boundedMarkovConfig.B,2)));
     end
     
     function blocksPerSecond=getUpdateRate
-      blocksPerSecond=dynamicModelStub.dynamicModelStubConfig.blocksPerSecond;
+      blocksPerSecond=boundedMarkov.boundedMarkovConfig.blocksPerSecond;
     end
   end
   
