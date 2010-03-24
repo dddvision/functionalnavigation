@@ -1,5 +1,12 @@
 classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamicModelConfig & dynamicModel
   
+  properties (Constant=true,GetAccess=private)
+    sixthIntMax=715827883;
+    extensionBlockCost=0;
+    numExtension=uint32(0);
+    extensionErrorText='This dynamic model has no extension blocks.';
+  end
+  
   properties (GetAccess=private,SetAccess=private)
     initialTime
     initialBlock
@@ -15,8 +22,8 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
       description=struct('numLogical',uint32(0),'numUint32',uint32(0));
     end
     
-    function blocksPerSecond=getUpdateRate
-      blocksPerSecond=0;
+    function updateRate=getUpdateRate
+      updateRate=0;
     end
   end
   
@@ -46,9 +53,8 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
     end
 
     function cost=computeInitialBlockCost(this,initialBlock)
-      assert(isa(this,'dynamicModel'));
       assert(isa(initialBlock,'struct'));
-      z=initialBlock2deviation(initialBlock);
+      z=initialBlock2deviation(this,initialBlock);
       cost=0.5*dot(z,z);
     end
     
@@ -57,37 +63,44 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
       assert(numel(initialBlock)==1);
       this.initialBlock=initialBlock;
     end
-
+    
+    function initialBlock=getInitialBlock(this)
+      initialBlock=this.initialBlock;
+    end
+      
     function cost=computeExtensionBlockCost(this,block)
-      assert(isa(this,'dynamicModel'));
       assert(isa(block,'struct'));
       assert(numel(block)==1);
-      cost=0;
+      cost=this.extensionBlockCost;
     end
     
     function numExtensionBlocks=getNumExtensionBlocks(this)
-      assert(isa(this,'dynamicModel'));
-      numExtensionBlocks=uint32(0);
+      numExtensionBlocks=this.numExtension;
     end
     
-    function setExtensionBlocks(this,k,block)
-      assert(isa(this,'dynamicModel'));
+    function setExtensionBlocks(this,k,blocks)
       assert(isa(k,'uint32'));
-      assert(isa(block,'struct'));
+      assert(isa(blocks,'struct'));
       assert(numel(k)==numel(blocks));
-      if(isempty(blocks))
-        return;
+      if(~isempty(k))
+        error(this.extensionErrorText);
       end
-      error('This dynamic model accepts no extension blocks.');
+    end
+    
+    function blocks=getExtensionBlocks(this,k)
+      assert(isa(k,'uint32'));
+      if(isempty(k))
+        blocks=struct('logical',{},'uint32',{});
+      else
+        error(this.extensionErrorText);
+      end
     end
     
     function appendExtensionBlocks(this,blocks)
-      assert(isa(this,'dynamicModel'));
       assert(isa(blocks,'struct'));
-      if(isempty(blocks))
-        return;
+      if(~isempty(blocks))
+        error(this.extensionErrorText);
       end
-      error('The time domain of this dynamic model cannot be extended.');
     end
      
     function [ta,tb]=domain(this)
@@ -116,16 +129,17 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
       end
         
       % compute correction based on given initial parameters
-      z=initialBlock2deviation(this.initialBlock);
+      z=initialBlock2deviation(this,this.initialBlock);
       position(1,:)=position(1,:)-this.positionDeviation*z(1)-this.positionRateDeviation*z(2)*(t-this.initialTime);
       if(nargout>2)
         positionRate(1,:)=positionRate(1,:)-repmat(this.positionRateDeviation*z(2),[1,numel(t)]);
       end
     end
   end
-end
   
-function z=initialBlock2deviation(initialBlock)
-  sixthIntMax=715827883;
-  z=double(initialBlock.uint32)/sixthIntMax-3;
+  methods (Access=private)
+    function z=initialBlock2deviation(this,initialBlock)
+      z=double(initialBlock.uint32)/this.sixthIntMax-3;
+    end
+  end
 end

@@ -7,7 +7,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
     cost
     initialBlockDescription
     extensionBlockDescription
-    blocksPerSecond
+    updateRate
     defaultOptions
     stepGAhandle
   end
@@ -61,7 +61,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       % process dynamic model input description
       this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
       this.extensionBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getExtensionBlockDescription']);
-      this.blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
+      this.updateRate=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
 
       % initialize dynamic models
       K=this.popSizeDefault;
@@ -139,7 +139,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       for k=1:numel(this.g)
         refresh(this.g{k});
       end 
-      if(this.blocksPerSecond)
+      if(this.updateRate)
         lastTime=this.referenceTime;
         for k=1:numel(this.g)
           if(hasData(this.g{k}))
@@ -147,7 +147,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
           end
         end
         [ta,tb]=domain(this.F{1});
-        numNewBlocks=ceil((lastTime-tb)*this.blocksPerSecond);
+        numNewBlocks=ceil((lastTime-tb)*this.updateRate);
         numNewBits=numNewBlocks*numExtensionBits(this);
         K=numel(this.F);
         this.bits=[this.bits,logical(rand(K,numNewBits)>0.5)];

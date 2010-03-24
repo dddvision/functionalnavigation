@@ -18,8 +18,8 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       fprintf('\nWarning: This optimizer updates itself using only the last on-diagonal measure.');
       
       % handle dynamic model update rate
-      blocksPerSecond=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']); 
-      if(blocksPerSecond~=0)
+      updateRate=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']); 
+      if(updateRate)
         error('This optimizer does not yet handle dynamic models with nonzero update rates.');
       end
       

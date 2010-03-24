@@ -56,8 +56,12 @@ classdef dynamicModel < trajectory
     % Get the conversion between number of extension blocks and associated time domain extension
     %
     % OUTPUT
-    % blocksPerSecond = each block will extend the domain the reciprical of this rate, double scalar
-    blocksPerSecond=getUpdateRate;
+    % updateRate = each block will extend the domain the reciprical of this rate, double scalar
+    %
+    % NOTES
+    % The units for update rate are blocks per second
+    % If the dynamic model takes no extension blocks then the update rate is 0
+    updateRate=getUpdateRate;
   end
   
   methods (Abstract=true,Access=public)
@@ -76,14 +80,15 @@ classdef dynamicModel < trajectory
     % Throws an exception if given block is not a struct scalar
     cost=computeInitialBlockCost(this,initialBlock);
     
-    % Set the the initial block
+    % Set/Get the the initial block
     %
-    % INPUT
+    % INPUT/OUTPUT
     % initialBlock = (see above), struct scalar
     %
     % NOTES
-    % Throws an exception if given block is not a struct scalar
+    % The set function throws an exception if the given block is not a struct scalar
     setInitialBlock(this,initialBlock);
+    initialBlock=getInitialBlock(this);
     
     % Compute the cost associated with an extension block
     %
@@ -104,22 +109,23 @@ classdef dynamicModel < trajectory
     %
     % OUTPUT
     % numExtensionBlocks = total number of extension blocks, uint32 scalar
-    %
-    % NOTE
-    % The number of extension blocks is 0 if the update rate is 0 
     numExtensionBlocks=getNumExtensionBlocks(this);
     
-    % Set multiple extension blocks
+    % Set/Get multiple extension blocks
     %
     % INPUT
     % k = zero-based indices of block locations sorted in ascending order, uint32 N-by-1
+    %
+    % INPUT/OUTPUT
     % blocks = (see above), struct N-by-1
     %
     % NOTES
-    % Vector arguments may be empty without consequence (no blocks will be set)
+    % Vector arguments may be empty without consequence (no blocks will be set/returned)
     % Throws an exception if any index is outside of the range [0,numExtensionBlocks-1]
-    % Throws an exception if the number of indices does not match the number of blocks
+    % Unsorted indices may cause unexpected behaviour
+    % The set function throws an exception if the number of indices does not match the number of blocks
     setExtensionBlocks(this,k,blocks);
+    blocks=getExtensionBlocks(this,k);
 
     % Extend the time domain by appending consecutive extension blocks
     %
