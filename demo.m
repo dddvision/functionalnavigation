@@ -30,9 +30,9 @@ tom=tommas;
 % create an instance of the GUI
 if(hasReferenceTrajectory(tom))
   xRef=getReferenceTrajectory(tom);
-  gui=mainDisplay(xRef);
+  gui=demoDisplay(xRef);
 else
-  gui=mainDisplay;
+  gui=demoDisplay;
 end
 
 % optimize forever

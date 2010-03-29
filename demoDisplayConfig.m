@@ -1,4 +1,4 @@
-classdef mainDisplayConfig < handle
+classdef demoDisplayConfig < handle
   properties (Constant=true,GetAccess=protected)
     bestOnly=true; % (true) show only the best trajectory
     saveFigure=false; % (false) saves figure as an image
