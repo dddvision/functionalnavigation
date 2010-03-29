@@ -1,4 +1,4 @@
-classdef mainDisplay < mainDisplayConfig & handle
+classdef demoDisplay < demoDisplayConfig & handle
   
   properties (SetAccess=private,GetAccess=private)
     hfigure
@@ -10,7 +10,7 @@ classdef mainDisplay < mainDisplayConfig & handle
   
   methods (Access=public)
 
-    function this=mainDisplay(xRef)
+    function this=demoDisplay(xRef)
       this.hfigure=figure;
       set(this.hfigure,'Color',this.colorBackground);
       set(this.hfigure,'Units','pixels');

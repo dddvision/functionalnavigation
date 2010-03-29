@@ -1,7 +1,7 @@
 #summary Read this first!
 #labels Featured,Phase-Deploy
 
-Download the source code and run the script main.m.
+Download the source code and run the script demo.m.
 
 You will need {{{Matlab R2008a}}} or later, and in order to make full use of the current version, you will also need the {{{Image Processing Toolbox}}} and the {{{Genetic Algorithm and Direct Search (GADS) Toolbox}}}.  
 
