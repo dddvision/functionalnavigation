@@ -17,9 +17,10 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
            
       try
         [scheme,resource]=strtok(uri,':');
+        resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=eval(resource(2:end));
+            container=unwrapComponent(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else

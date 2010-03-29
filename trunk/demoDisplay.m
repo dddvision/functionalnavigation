@@ -10,7 +10,7 @@ classdef demoDisplay < demoDisplayConfig & handle
   
   methods (Access=public)
 
-    function this=demoDisplay(xRef)
+    function this=demoDisplay(uri)
       this.hfigure=figure;
       set(this.hfigure,'Color',this.colorBackground);
       set(this.hfigure,'Units','pixels');
@@ -29,13 +29,21 @@ classdef demoDisplay < demoDisplayConfig & handle
       set(this.haxes,'Visible','on');
       set(this.haxes,'NextPlot','add');
       
+      this.tRef=[];
+      this.pRef=[];
+      this.qRef=[];
+
       if(nargin>0)
-        this.tRef=generateSampleTimes(this,xRef);
-        [this.pRef,this.qRef]=evaluate(xRef,this.tRef);
-      else
-        this.tRef=[];
-        this.pRef=[];
-        this.qRef=[];
+        [scheme,resource]=strtok(uri,':');
+        resource=resource(2:end);
+        if(strcmp(scheme,'matlab'))
+          container=unwrapComponent(resource);
+          if(hasReferenceTrajectory(container))
+            xRef=getReferenceTrajectory(container);
+            this.tRef=generateSampleTimes(this,xRef);
+            [this.pRef,this.qRef]=evaluate(xRef,this.tRef);
+          end
+        end
       end
     end
     

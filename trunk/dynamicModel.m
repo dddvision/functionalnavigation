@@ -27,7 +27,7 @@ classdef dynamicModel < trajectory
     % The URI should identify a hardware resource or dataContainer
     % URI examples:
     %   'file://dev/camera0'
-    %   'matlab:middleburyData.middleburyData'
+    %   'matlab:middleburyData'
     % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@dynamicModel(uri,initialTime,initialBlock);
     % Throws an exception if any input is of the wrong class or size

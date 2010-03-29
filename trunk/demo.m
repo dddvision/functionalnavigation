@@ -9,7 +9,7 @@ close('all');
 clear('classes');
 drawnow;
 
-% check MATLAB version before instantiating any objects
+% check MATLAB version
 try
   matlab_version=version('-release');
 catch err
@@ -19,21 +19,23 @@ if(str2double(matlab_version(1:4))<2008)
   error('requires MATLAB version 2008a or greater');
 end
 
+% set the warning state
+warning('on','all');
+warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
+
 % add component repository to the path
 componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
 addpath(componentPath);
 fprintf('\npath added: %s',componentPath);
 
-% create an instance of TOMMAS
-tom=tommas;
+% reset the random stream state
+reset(RandStream.getDefaultStream);
+
+% instantiate a trajectory optimization manager
+tom=unwrapComponent(demoConfig.optimizer,demoConfig.dynamicModel,demoConfig.measures,demoConfig.uri);
 
 % create an instance of the GUI
-if(hasReferenceTrajectory(tom))
-  xRef=getReferenceTrajectory(tom);
-  gui=demoDisplay(xRef);
-else
-  gui=demoDisplay;
-end
+gui=demoDisplay(demoConfig.uri);
 
 % optimize forever
 index=0;

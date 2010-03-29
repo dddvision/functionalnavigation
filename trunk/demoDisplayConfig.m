@@ -1,5 +1,5 @@
 classdef demoDisplayConfig < handle
-  properties (Constant=true,GetAccess=protected)
+  properties (Constant=true,GetAccess=public)
     bestOnly=true; % (true) show only the best trajectory
     saveFigure=false; % (false) saves figure as an image
     width=640; % (640) figure width in pixels
