@@ -81,8 +81,8 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       refreshAll(this);
       
       % determine initial costs
-      objective('put',this);
-      this.cost=feval(@objective,this.bits);
+      objectiveContainer('put',this);
+      this.cost=feval(@objectiveContainer,this.bits);
     end
     
     function [xEst,cEst]=getResults(this)
@@ -96,7 +96,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       if(this.hasLicense)
         nvars=size(this.bits,2);
         nullstate=struct('FunEval',0);
-        [this.cost,this.bits]=feval(this.stepGAhandle,this.cost,this.bits,this.defaultOptions,nullstate,nvars,@objective);
+        [this.cost,this.bits]=feval(this.stepGAhandle,this.cost,this.bits,this.defaultOptions,nullstate,nvars,@objectiveContainer);
         putBits(this);
       else
         bad=find(this.cost>1.1*min(this.cost));
@@ -107,6 +107,70 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
   end
   
   methods (Access=private)
+    % Vectorized objective function
+    %
+    % INPUT
+    % F = dynamic models, cell N-by-1
+    % g = measures, cell N-by-1
+    % dMax = 
+    %
+    % OUTPUT
+    % cost = costs associated with the dynamic models and measures, double N-by-1
+    function cost=objective(this,bits)
+      this.bits=bits;
+      putBits(this);
+      numIndividuals=numel(this.F);
+      numMeasures=numel(this.g);
+      allGraphs=cell(numIndividuals,numMeasures+1);
+      numEB=double(getNumExtensionBlocks(this.F{1}));
+      numEB1=numEB+1;
+      numEdges=zeros(1,numMeasures);
+      for k=1:numIndividuals
+        % build cost graph from dynamic model
+        Fk=this.F{k};
+        cost=sparse([],[],[],numEB1,numEB1,numEB1);
+        initialBlock=getInitialBlock(Fk);
+        cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
+        extensionBlocks=getExtensionBlocks(Fk,uint32(0:(numEB-1)));
+        for blk=1:numEB
+          cost(blk,blk+1)=computeExtensionBlockCost(Fk,extensionBlocks(blk));
+        end
+        allGraphs{k,1}=cost;
+
+        % build cost graphs from measures
+        for m=1:numMeasures
+          gm=this.g{m};
+          if(k==1)
+            [a,b]=findEdges(gm,uint32(0),last(gm)-this.dMax);
+            numEdges(m)=numel(a);
+          end
+          if(numEdges(m))
+            cost=zeros(1,numEdges(m));
+            for edge=1:numEdges(m)
+              cost(edge)=computeEdgeCost(gm,Fk,a(edge),b(edge));
+            end
+            base=a(1);
+            span=double(b(end)-base+1);
+            allGraphs{k,1+m}=sparse(double(a-base+1),double(b-base+1),cost,span,span,numEdges(m));
+          else
+            allGraphs{k,1+m}=0;
+          end
+        end
+      end
+
+      % sum costs across graphs for each individual
+      cost=zeros(numIndividuals,1);
+      for k=1:numIndividuals
+        for m=1:(numMeasures+1)
+          costkm=allGraphs{k,m};
+          cost(k)=cost(k)+sum(costkm(:));
+        end
+      end
+
+      % normalize costs by total number of blocks and edges
+      cost=cost/(1+numEB+sum(numEdges));
+    end
+    
     % bits are packed in the following order:
     % initial logical
     % initial uint32
@@ -194,66 +258,11 @@ end
 %   bits=bits(:);
 % end
 
-% Objective function that stores an objective object instance
-function varargout=objective(varargin)
+function varargout=objectiveContainer(varargin)
   persistent this
   bits=varargin{1};
   if(~ischar(bits))
-    this.bits=bits;
-    putBits(this);
-    numIndividuals=numel(this.F);
-    numMeasures=numel(this.g);
-    allGraphs=cell(numIndividuals,numMeasures+1);
-    numEB=double(getNumExtensionBlocks(this.F{1}));
-    numEB1=numEB+1;
-    numEdges=zeros(1,numMeasures);
-    for k=1:numIndividuals
-      % build cost graph from dynamic model
-      Fk=this.F{k};
-      cost=sparse([],[],[],numEB1,numEB1,numEB1);
-      [initialBlock,extensionBlocks]=getBlocks(this,k);
-      cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
-      for blk=1:numEB
-        cost(blk,blk+1)=computeExtensionBlockCost(Fk,extensionBlocks(blk));
-      end
-      allGraphs{k,1}=cost;
-      
-      % build cost graphs from measures
-      for m=1:numMeasures
-        gm=this.g{m};
-        if(k==1)
-          [a,b]=findEdges(gm,uint32(0),last(gm)-this.dMax);
-          numEdges(m)=numel(a);
-        end
-        if(numEdges(m))
-          cost=zeros(1,numEdges(m));
-          for edge=1:numEdges(m)
-            cost(edge)=computeEdgeCost(gm,Fk,a(edge),b(edge));
-          end
-          base=a(1);
-          span=double(b(end)-base+1);
-          allGraphs{k,1+m}=sparse(double(a-base+1),double(b-base+1),cost,span,span,numEdges(m));
-        else
-          allGraphs{k,1+m}=0;
-        end
-      end
-    end
-    
-    % sum costs across graphs for each individual
-    cost=zeros(numIndividuals,1);
-    for k=1:numIndividuals
-      for m=1:(numMeasures+1)
-        costkm=allGraphs{k,m};
-        cost(k)=cost(k)+sum(costkm(:));
-      end
-    end
-    
-    % normalize costs by total number of blocks and edges
-    cost=cost/(1+numEB+sum(numEdges));
-    
-    % set output argument
-    varargout{1}=cost;
-    
+    varargout{1}=objective(this,bits);
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else
