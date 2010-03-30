@@ -59,9 +59,10 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
       
       try
         [scheme,resource]=strtok(uri,':');
+        resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=eval(resource(2:end));
+            container=unwrapComponent(resource);
             list=listSensors(container,'camera');
             this.sensor=getSensor(container,list(1));
           otherwise

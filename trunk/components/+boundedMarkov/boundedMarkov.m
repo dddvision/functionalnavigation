@@ -97,7 +97,7 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
       assert(isa(k,'uint32'));
       blocks=struct('logical',{},'uint32',{});
       for kk=1:numel(k)
-        blocks(kk)=this.block(k+1);
+        blocks(kk)=this.block(k(kk)+1);
       end
     end
     
