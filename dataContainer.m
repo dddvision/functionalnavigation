@@ -37,8 +37,8 @@ classdef dataContainer < handle
     % list = list of unique sensor identifiers, uint32 N-by-1
     %
     % NOTES
-    % Sensors that inherit from the given class will also be included in
-    %   the output list
+    % Sensors that inherit from the given class will also be included in the output list
+    % To list all sensors, use type='sensor'
     list=listSensors(this,type);
     
     % Get sensor name

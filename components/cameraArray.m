@@ -114,5 +114,5 @@ classdef cameraArray < sensor
     pix=projection(this,ray,k,view);
     ray=inverseProjection(this,pix,k,view);
   end
- 
+
 end
