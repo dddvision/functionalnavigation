@@ -3,7 +3,7 @@
 % H. Hirschmuller and D. Scharstein. Evaluation of cost functions for 
 % stereo matching. In IEEE Computer Society Conference on Computer Vision 
 % and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
-classdef middleburyData < middleburyData.middleburyDataConfig & dataContainer
+classdef middleburyData < middleburyData.middleburyDataConfig & DataContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensors
@@ -14,17 +14,11 @@ classdef middleburyData < middleburyData.middleburyDataConfig & dataContainer
   
   methods (Access=public)
     function this=middleburyData
-      this=this@dataContainer;
-      persistent singleton
-      if(isempty(singleton))
-        this.sensors{1}=middleburyData.cameraSim;
-        this.names{1}='CAMERA';
-        this.hasRef=true;
-        this.bodyRef=middleburyData.bodyReference;
-        singleton=this;
-      else
-        this=singleton;
-      end
+      this=this@DataContainer;
+      this.sensors{1}=middleburyData.cameraSim;
+      this.names{1}='CAMERA';
+      this.hasRef=true;
+      this.bodyRef=middleburyData.bodyReference;
     end
     
     function list=listSensors(this,type)

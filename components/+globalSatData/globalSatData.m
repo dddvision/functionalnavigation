@@ -1,5 +1,5 @@
 % Simulated measurements from the global sat bu-1** gps sensor
-classdef globalSatData < globalSatData.globalSatDataConfig & dataContainer
+classdef globalSatData < globalSatData.globalSatDataConfig & DataContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensors

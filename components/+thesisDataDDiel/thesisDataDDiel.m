@@ -1,4 +1,4 @@
-classdef thesisDataDDiel < thesisDataDDiel.thesisDataDDielConfig & dataContainer
+classdef thesisDataDDiel < thesisDataDDiel.thesisDataDDielConfig & DataContainer
 
   properties (GetAccess=private,SetAccess=private)
     hasRef
@@ -9,34 +9,28 @@ classdef thesisDataDDiel < thesisDataDDiel.thesisDataDDielConfig & dataContainer
   
   methods (Access=public)
     function this=thesisDataDDiel
-      this=this@dataContainer;
-      persistent singleton
-      if( isempty(singleton) )
-        dataSetName=this.dataSetName;
-        repository=this.repository;
-        localDir=fileparts(mfilename('fullpath'));
-        localCache=fullfile(localDir,dataSetName);
+      this=this@DataContainer;
+      dataSetName=this.dataSetName;
+      repository=this.repository;
+      localDir=fileparts(mfilename('fullpath'));
+      localCache=fullfile(localDir,dataSetName);
 
-        if(~exist(localCache,'dir'))
-          zipName=[dataSetName,'.zip'];
-          localZip=[localDir,'/',zipName];
-          url=[repository,zipName];
-          fprintf('\ncaching: %s',url);
-          urlwrite(url,localZip);
-          fprintf('\nunzipping: %s',localZip);
-          unzip(localZip,localDir);
-          delete(localZip);
-        end
-        this.hasRef=true;
-        this.bodyRef=thesisDataDDiel.bodyReference(localCache,dataSetName);   
-        this.sensors{1}=thesisDataDDiel.cameraSim(localCache);
-        this.names{1}='CAMERA';
-        this.sensors{2}=thesisDataDDiel.inertialSim(localCache);
-        this.names{2}='IMU';
-        singleton=this;
-      else
-        this=singleton;
+      if(~exist(localCache,'dir'))
+        zipName=[dataSetName,'.zip'];
+        localZip=[localDir,'/',zipName];
+        url=[repository,zipName];
+        fprintf('\ncaching: %s',url);
+        urlwrite(url,localZip);
+        fprintf('\nunzipping: %s',localZip);
+        unzip(localZip,localDir);
+        delete(localZip);
       end
+      this.hasRef=true;
+      this.bodyRef=thesisDataDDiel.bodyReference(localCache,dataSetName);   
+      this.sensors{1}=thesisDataDDiel.cameraSim(localCache);
+      this.names{1}='CAMERA';
+      this.sensors{2}=thesisDataDDiel.inertialSim(localCache);
+      this.names{2}='IMU';
     end
       
     function list=listSensors(this,type)

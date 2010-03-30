@@ -1,4 +1,4 @@
-classdef bodyReference < middleburyData.middleburyDataConfig & trajectory
+classdef bodyReference < middleburyData.middleburyDataConfig & Trajectory
   
   properties (SetAccess=private,GetAccess=private)
     bodyPath

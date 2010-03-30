@@ -1,4 +1,4 @@
-classdef bodyReference < trajectory
+classdef bodyReference < Trajectory
     
   properties (SetAccess=private, GetAccess=private)
     pts

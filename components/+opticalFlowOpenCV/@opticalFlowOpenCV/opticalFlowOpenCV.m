@@ -1,4 +1,4 @@
-classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
+classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & Measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
@@ -6,7 +6,7 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
   
   methods (Access=public)
     function this=opticalFlowOpenCV(uri)
-      this=this@measure(uri);
+      this=this@Measure(uri);
       fprintf('\n');
       fprintf('\nopticalFlowOpenCV::opticalFlowOpenCV');
       
@@ -62,7 +62,7 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=dataContainerFactory(resource);
+            container=DataContainer.factory(resource);
             list=listSensors(container,'camera');
             this.sensor=getSensor(container,list(1));
           otherwise
@@ -110,7 +110,7 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & measure
     end
     
     function cost=computeEdgeCost(this,x,a,b)
-      assert(isa(x,'trajectory'));
+      assert(isa(x,'Trajectory'));
       assert(isa(a,'uint32'));
       assert(isa(b,'uint32'));
       assert(numel(x)==1);

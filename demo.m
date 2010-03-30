@@ -11,11 +11,11 @@ drawnow;
 
 % check MATLAB version
 try
-  matlab_version=version('-release');
+  matlabVersion=version('-release');
 catch err
   error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB.',err.message);
 end
-if(str2double(matlab_version(1:4))<2008)
+if(str2double(matlabVersion(1:4))<2008)
   error('requires MATLAB version 2008a or greater');
 end
 
@@ -32,10 +32,10 @@ fprintf('\npath added: %s',componentPath);
 reset(RandStream.getDefaultStream);
 
 % instantiate a trajectory optimization manager
-tom=optimizerFactory(demoConfig.optimizer,demoConfig.dynamicModel,demoConfig.measures,demoConfig.uri);
+tom=Optimizer.factory(DemoConfig.optimizer,DemoConfig.dynamicModel,DemoConfig.measures,DemoConfig.uri);
 
 % create an instance of the GUI
-gui=demoDisplay(demoConfig.uri);
+gui=DemoDisplay(DemoConfig.uri);
 
 % optimize forever
 index=0;

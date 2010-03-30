@@ -1,4 +1,4 @@
-classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConfig & optimizer
+classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConfig & Optimizer
   
  properties (GetAccess=private,SetAccess=private)
     F
@@ -11,7 +11,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
   
   methods (Access=public)
     function this=linearKalmanOptimizer(dynamicModelName,measureName,uri)
-      this=this@optimizer(dynamicModelName,measureName,uri);
+      this=this@Optimizer(dynamicModelName,measureName,uri);
       fprintf('\n\n%s',class(this));
       
       % display warning
@@ -33,11 +33,11 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       this.state=repmat(0.5,[this.initialBlockDescription.numUint32,1]);
       
       % initialize the measure (assuming a single measure)
-      this.g=measureFactory(measureName{1},uri);
+      this.g=Measure.factory(measureName{1},uri);
            
       % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
-      this.F=dynamicModelFactory(dynamicModelName,uri,this.referenceTime,initialBlock);
+      this.F=DynamicModel.factory(dynamicModelName,this.referenceTime,initialBlock,uri);
       
       % compute prior distribution model (assuming non-zero prior uncertainty)
       [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');

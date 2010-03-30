@@ -1,5 +1,5 @@
 % This class represents the integration of linear Markov motion model with a bounded forcing function
-classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
+classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
     halfIntMax=2147483647.5;
@@ -37,8 +37,8 @@ classdef boundedMarkov < boundedMarkov.boundedMarkovConfig & dynamicModel
   end
   
   methods (Access=public)
-    function this=boundedMarkov(uri,initialTime,initialBlock)
-      this=this@dynamicModel(uri,initialTime,initialBlock);
+    function this=boundedMarkov(initialTime,initialBlock,uri)
+      this=this@DynamicModel(initialTime,initialBlock,uri);
       fprintf('\n\n%s',class(this));
       assert(numel(initialBlock)==1);
       this.initialBlock=initialBlock;
