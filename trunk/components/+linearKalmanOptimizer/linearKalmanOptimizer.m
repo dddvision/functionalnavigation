@@ -33,11 +33,11 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
       this.state=repmat(0.5,[this.initialBlockDescription.numUint32,1]);
       
       % initialize the measure (assuming a single measure)
-      this.g=unwrapComponent(measureName{1},uri);
+      this.g=measureFactory(measureName{1},uri);
            
       % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
-      this.F=unwrapComponent(dynamicModelName,uri,this.referenceTime,initialBlock);
+      this.F=dynamicModelFactory(dynamicModelName,uri,this.referenceTime,initialBlock);
       
       % compute prior distribution model (assuming non-zero prior uncertainty)
       [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');

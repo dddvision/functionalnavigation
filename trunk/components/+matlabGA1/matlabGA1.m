@@ -69,14 +69,14 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.F=cell(K,1);
       for k=1:K
         initialBlock=getBlocks(this,k);
-        this.F{k}=unwrapComponent(dynamicModelName,uri,this.referenceTime,initialBlock);
+        this.F{k}=dynamicModelFactory(dynamicModelName,uri,this.referenceTime,initialBlock);
       end
       
       % initialize measures
       K=numel(measureNames);
       this.g=cell(K,1);
       for k=1:K
-        this.g{k}=unwrapComponent(measureNames{k},uri);
+        this.g{k}=measureFactory(measureNames{k},uri);
       end
       refreshAll(this);
       
