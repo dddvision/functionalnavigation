@@ -1,5 +1,5 @@
 % This class defines a single global positioning sensor 
-classdef gps < sensor
+classdef gps < Sensor
     
   methods (Abstract=true)
     % Get antenna offset relative to the body frame

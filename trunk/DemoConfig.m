@@ -1,4 +1,4 @@
-classdef demoConfig < handle
+classdef DemoConfig < handle
   properties (Constant=true,GetAccess=public)
     % select hardware resource or data container
     uri = 'matlab:middleburyData';

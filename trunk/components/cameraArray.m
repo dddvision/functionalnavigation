@@ -1,6 +1,6 @@
 % This class defines a synchronously time-stamped array of cameras
 %   rigidly attached to a body with different positions and orientations
-classdef cameraArray < sensor
+classdef cameraArray < Sensor
   
   methods (Abstract=true)
     % Get number of cameras in the array

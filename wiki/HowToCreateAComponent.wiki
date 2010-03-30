@@ -15,10 +15,10 @@ Specific guidelines for each component:
   * [InterfaceOptimizationMethods Interface for Optimization Methods]
 
 General coding guidelines for this project:
-  * RULE: Only upload plain text, C++, or Matlab files (makefile, .c, .cpp, .h, .m, .txt)
+  * RULE: Only upload plain text, C++, or MATLAB files (makefile, .c, .cpp, .h, .m, .txt)
   * RULE: Do not upload binaries (.jpg, .png, .dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32)
   * RULE: Packages should not assume that they are in the ./components directory.
-  * RULE: Component configuration files have the same name as the component with “Config” appended.
+  * RULE: Component configuration files have the same name as the component with ???Config??? appended.
   * RULE: Framework interface bugs should be submitted to the Google Code issue tracker.
   * RULE: Bugs in components should be noted using TODO statements within code or in a TODO.txt file that accompanies the component.
   * RULE: Use two spaces for each indentation level.
@@ -28,10 +28,10 @@ General coding guidelines for this project:
   * RULE: Place constants in configuration files or headers whenever possible.
   * RULE: Avoid using global variables.
 
-  * RULE (Matlab): Components must pass the Matlab "mlint" test or contain a comment at each line explaining why not.
-  * RULE (Matlab): Use fprintf() instead of disp() or warning().
+  * RULE (MATLAB): Components must pass the "mlint" test or contain a comment at each line explaining why not.
+  * RULE (MATLAB): Use fprintf() instead of disp() or warning().
 
-  * RULE (C++): Code must compile using "g++ -Wall -Werror –pedantic”
+  * RULE (C++): Code must compile using "g++ -Wall -Werror ???pedantic???
   * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
 
   * RULE: Place a description above each function that identifies INPUT, OUTPUT, RETURN VALUE, and NOTES when applicable.
@@ -52,7 +52,7 @@ General coding guidelines for this project:
 // Here is extra information
 }}}
 {{{
-% Description of Matlab function
+% Description of MATLAB function
 %
 % INPUT
 % a = awesome number
@@ -129,13 +129,13 @@ if(a)
 }}}
 
 External references for good coding practices and tips:
-  * [http://www.datatool.com/downloads/matlab_style_guidelines.pdf Matlab style guidelines].
+  * [http://www.datatool.com/downloads/matlab_style_guidelines.pdf MATLAB design guidelines].
   * [http://www-personal.acfr.usyd.edu.au/tbailey/seminars/design.pdf C++ design guidelines].
 
 Information on how to wrap code written in different languages:
   * [http://docs.python.org/extending/extending.html How to call C++ from Python]
   * [http://docs.python.org/extending/embedding.html How to call Python from C++]
-  * [http://www.mathworks.com/support/tech-notes/1600/1605.html How to call C++ from Matlab]
+  * [http://www.mathworks.com/support/tech-notes/1600/1605.html How to call C++ from MATLAB]
 
 === Class Diagram ===
 

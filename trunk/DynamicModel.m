@@ -1,4 +1,4 @@
-% This class augments a trajectory with defining parameters
+% This class augments a Trajectory with defining parameters
 %
 % NOTES
 % This class depends on parameter blocks of the following form
@@ -9,32 +9,47 @@
 % There are seperate block descriptions for initial and extension blocks
 % Each uint32 parameter may be treated as range-bounded double via static casting
 % The range of uint32 is [0,4294967295]
-classdef dynamicModel < trajectory
+classdef DynamicModel < Trajectory
   
   properties (Constant=true,GetAccess=public)
-    baseClass='dynamicModel';
+    baseClass='DynamicModel';
+  end
+  
+  methods (Static=true,Access=public)
+    % Instantiate a subclass by name
+    %
+    % INPUT
+    % pkg = package identifier, string
+    % (see constructor argument list)
+    %
+    % OUTPUT
+    % obj = object instance, DynamicModel scalar
+    %
+    % NOTES
+    % The package directory must in the environment path
+    % (MATLAB) Omit the '+' prefix when identifying package names
+    function obj=factory(pkg,initialTime,initialBlock,uri)
+      obj=feval([pkg,'.',pkg],initialTime,initialBlock,uri);
+      assert(isa(obj,'DynamicModel'));
+    end
   end
   
   methods (Access=protected)
     % Construct a dynamic model
     %
     % INPUT
-    % uri = uniform resource identifier, string
     % initialTime = initial lower bound of the trajectory domain, double scalar
     % initialBlock = (see above), struct scalar
+    % uri = (see Measure class constructor)
     %
     % NOTES
-    % The URI should identify a hardware resource or dataContainer
-    % URI examples:
-    %   'file://dev/camera0'
-    %   'matlab:middleburyData'
     % Each subclass constructor must pass identical arguments to this 
-    %   constructor using the syntax this=this@dynamicModel(uri,initialTime,initialBlock);
-    % Throws an exception if any input is of the wrong class or size
-    function this=dynamicModel(uri,initialTime,initialBlock)
-      assert(isa(uri,'char'));
+    %   constructor using the syntax this=this@DynamicModel(initialTime,initialBlock,uri);
+    % Throws an exception if any input is of the wrong size
+    function this=DynamicModel(initialTime,initialBlock,uri)
       assert(isa(initialTime,'double'));
       assert(isa(initialBlock,'struct'));
+      assert(isa(uri,'char'));
       assert(numel(initialTime)==1);
       assert(numel(initialBlock)==1);
     end    

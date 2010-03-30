@@ -1,6 +1,6 @@
 % This measure simulates a sensor that measures the body position
 %   and adds error sampled from a normal distribution
-classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & measure
+classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & Measure
 
   properties (SetAccess=private,GetAccess=private)
     xRef
@@ -13,14 +13,14 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
   
   methods (Access=public)
     function this=linearKalmanMeasure(uri)
-      this=this@measure(uri);
+      this=this@Measure(uri);
            
       try
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=dataContainerFactory(resource);
+            container=DataContainer.factory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
@@ -94,7 +94,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & m
     end
 
     function cost=computeEdgeCost(this,x,a,b)
-      assert(isa(x,'trajectory'));
+      assert(isa(x,'Trajectory'));
       assert(isa(a,'uint32'));
       assert(isa(b,'uint32'));
       assert(numel(x)==1);

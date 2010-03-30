@@ -1,29 +1,43 @@
 % This class defines a uniform interface to sensor data and ground truth
-classdef dataContainer < handle
+classdef DataContainer < handle
   
   properties (Constant=true,GetAccess=public)
-    baseClass='dataContainer';
+    baseClass='DataContainer';
   end
   
-  methods (Access=public)
-    % Construct a dataContainer
+  methods (Static=true,Access=public)
+    % Instantiate a singleton subclass by name
     %
-    % NOTE
-    % Each derived class must construct a singleton object instance
-    % In MATLAB, the singleton design pattern can be implemented by 
-    %   deriving from the handle class and using persistence as follows:
+    % INPUT
+    % pkg = package identifier, string
     %
-    % function derivedClassConstructor
-    %   this=this@dataContainer;
-    %   persistent singleton
-    %   if( isempty(singleton) )
-    %     % initialize derived class properties here
-    %     singleton=this;
-    %   else
-    %     this=singleton;
-    %   end
-    % end
-    function this=dataContainer
+    % OUTPUT
+    % this = object instance, DataContainer scalar
+    %
+    % NOTES
+    % The package directory must in the environment path
+    % (MATLAB) Omit the '+' prefix when identifying package names
+    % (MATLAB) The singleton design pattern is implemented by deriving from
+    %   the handle class and using persistence to keep a unique instance
+    function this=factory(pkg)
+      persistent singleton
+      if(isempty(singleton))
+        this=feval([pkg,'.',pkg]);
+        assert(isa(this,'DataContainer'));
+        singleton=this;
+      else
+        this=singleton;
+      end
+    end
+  end
+  
+  methods (Access=protected)
+    % Construct a DataContainer
+    %
+    % NOTES
+    % Each subclass constructor must explicitly call this constructor 
+    %   using the syntax this=this@DataContainer;
+    function this=DataContainer
     end
   end  
 
@@ -55,13 +69,13 @@ classdef dataContainer < handle
     % Throws an exception if input index is out of range
     name=getSensorName(this,id);
 
-    % Get instance of a sensor
+    % Get instance of a Sensor
     %
     % INPUT
     % id = zero-based index, uint32 scalar
     %
     % OUTPUT
-    % obj = sensor instance
+    % obj = object instance, Sensor scalar
     %
     % NOTES
     % The specific subclass of the output depends on the given identifier
@@ -77,7 +91,7 @@ classdef dataContainer < handle
     % Get reference trajectory
     %
     % OUTPUT
-    % x = trajectory instance
+    % x = object instance, Trajectory scalar
     %
     % NOTES
     % The body follows this trajectory while recording sensor data

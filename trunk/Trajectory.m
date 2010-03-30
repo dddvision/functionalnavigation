@@ -1,6 +1,6 @@
 % This class defines a 6-DOF body trajectory in the vicinity of Earth
 % Using SI units (seconds, meters, radians)
-classdef trajectory < handle
+classdef Trajectory < handle
   
   methods (Abstract=true)
     % Return the upper and lower bounds of the time domain of a trajectory

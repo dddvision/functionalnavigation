@@ -1,4 +1,4 @@
-classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamicModelConfig & dynamicModel
+classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamicModelConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
     sixthIntMax=715827883;
@@ -28,8 +28,8 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
   end
   
   methods (Access=public)
-    function this=linearKalmanDynamicModel(uri,initialTime,initialBlock)
-      this=this@dynamicModel(uri,initialTime,initialBlock);
+    function this=linearKalmanDynamicModel(initialTime,initialBlock,uri)
+      this=this@DynamicModel(initialTime,initialBlock,uri);
       fprintf('\n\n%s',class(this));
       this.initialTime=initialTime;
       this.initialBlock=initialBlock;
@@ -39,7 +39,7 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=dataContainerFactory(resource);
+            container=DataContainer.factory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else

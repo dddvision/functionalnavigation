@@ -1,4 +1,4 @@
-classdef demoDisplay < demoDisplayConfig & handle
+classdef DemoDisplay < DemoDisplayConfig & handle
   
   properties (SetAccess=private,GetAccess=private)
     hfigure
@@ -10,7 +10,7 @@ classdef demoDisplay < demoDisplayConfig & handle
   
   methods (Access=public)
 
-    function this=demoDisplay(uri)
+    function this=DemoDisplay(uri)
       this.hfigure=figure;
       set(this.hfigure,'Color',this.colorBackground);
       set(this.hfigure,'Units','pixels');
@@ -37,7 +37,7 @@ classdef demoDisplay < demoDisplayConfig & handle
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         if(strcmp(scheme,'matlab'))
-          container=dataContainerFactory(resource);
+          container=DataContainer.factory(resource);
           if(hasReferenceTrajectory(container))
             xRef=getReferenceTrajectory(container);
             this.tRef=generateSampleTimes(this,xRef);
@@ -50,12 +50,9 @@ classdef demoDisplay < demoDisplayConfig & handle
     % Visualize a set of trajectories with optional transparency
     %
     % INPUT
-    % x = trajectory instances, N-by-1
+    % x = trajectory instances, Trajectory N-by-1
     % c = costs, double N-by-1
     % index = plot index, double scalar
-    %
-    % OUTPUT
-    % h = handles to trajectory plot elements
     function put(this,x,c,index)
 
       % compute minimium cost

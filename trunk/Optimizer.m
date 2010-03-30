@@ -1,22 +1,41 @@
 % This class defines the interface to an optimization engine
-classdef optimizer < handle
+classdef Optimizer < handle
   
   properties (Constant=true,GetAccess=public)
-    baseClass='optimizer';  
+    baseClass='Optimizer';  
   end
 
+  methods (Static=true,Access=public)
+    % Instantiate a subclass by name
+    %
+    % INPUT
+    % pkg = package identifier, string
+    % (see constructor argument list)
+    %
+    % OUTPUT
+    % obj = object instance, Optimizer scalar
+    %
+    % NOTES
+    % The package directory must in the environment path
+    % (MATLAB) Omit the '+' prefix when identifying package names
+    function obj=factory(pkg,dynamicModelName,measureNames,uri)
+      obj=feval([pkg,'.',pkg],dynamicModelName,measureNames,uri);
+      assert(isa(obj,'Optimizer'));
+    end
+  end
+  
   methods (Access=protected)
     % Construct an optimizer that varies dynamic model parameters to minimize costs
     %
     % INPUT
-    % dynamicModelName = name of a dynamicModel object, string
-    % measureNames = list of names of measure objects, cell array of strings
-    % uri = see measure class constructor
+    % dynamicModelName = name of a DynamicModel subclass, string
+    % measureNames = list of names of Measure subclasses, cell array of strings
+    % uri = (see Measure class constructor)
     % 
     % NOTES
     % Each subclass constructor must pass identical arguments to this 
-    %   constructor using the syntax this=this@optimizer(dynamicModelName,measureNames,uri);
-    function this=optimizer(dynamicModelName,measureNames,uri)
+    %   constructor using the syntax this=this@Optimizer(dynamicModelName,measureNames,uri);
+    function this=Optimizer(dynamicModelName,measureNames,uri)
       assert(isa(dynamicModelName,'char'));
       assert(isa(measureNames,'cell'));      
       assert(isa(uri,'char'));

@@ -5,26 +5,45 @@
 % Measures do not disclose their sources of information
 % Each edge is assumed to be independent, and this means that correlated
 %   sensor noise must be modeled and mitigated behind the measure interface
-classdef measure < sensor
+classdef Measure < Sensor
   
   properties (Constant=true,GetAccess=public)
-    baseClass='measure';
+    baseClass='Measure';
+  end
+
+  methods (Static=true,Access=public)
+    % Instantiate a subclass by name
+    %
+    % INPUT
+    % pkg = package identifier, string
+    % (see constructor argument list)
+    %
+    % OUTPUT
+    % obj = object instance, Measure scalar
+    %
+    % NOTES
+    % The package directory must in the environment path
+    % (MATLAB) Omit the '+' prefix when identifying package names
+    function obj=factory(pkg,uri)
+      obj=feval([pkg,'.',pkg],uri);
+      assert(isa(obj,'Measure'));
+    end
   end
   
   methods (Access=protected)
-    % Construct a measure
+    % Construct a Measure
     %
     % INPUT
     % uri = uniform resource identifier, string
     %
     % NOTES
-    % The URI should identify a hardware resource or dataContainer
+    % The URI should identify a hardware resource or DataContainer
     % URI examples:
     %   'file://dev/camera0'
     %   'matlab:middleburyData'
     % Each subclass constructor must pass identical arguments to this 
-    %   constructor using the syntax this=this@measure(uri);
-    function this=measure(uri)
+    %   constructor using the syntax this=this@Measure(uri);
+    function this=Measure(uri)
       assert(isa(uri,'char'));
     end
   end
@@ -47,13 +66,13 @@ classdef measure < sensor
     % Output indices are sorted in ascending order,
     %   first by lower index ka, then by upper index kb
     % If the graph is diagonal, then ka and kb are identical vectors
-    % Throws an exception if any input is of the wrong class or size
+    % Throws an exception if any input is of the wrong size
     [ka,kb]=findEdges(this,kaMin,kbMin);
     
     % Evaluate the cost of a single edge given a trajectory
     %
     % INPUT
-    % x = trajectory instance, scalar
+    % x = trajectory to evaluate, Trajectory scalar
     % ka = lower node index, uint32 scalar
     % kb = upper node index, uint32 scalar
     %
@@ -68,7 +87,7 @@ classdef measure < sensor
     % For a normal distribution
     %   Cost is the negative log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
-    % Throws an exception if any input is of the wrong class or size
+    % Throws an exception if any input is of the wrong size
     % Throws an exception if node indices do not correspond to an edge
     cost=computeEdgeCost(this,x,ka,kb);
   end

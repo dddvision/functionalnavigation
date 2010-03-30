@@ -39,26 +39,26 @@ demonstration:
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
-optimizer:
+Optimizer:
  *** Update number of extension blocks dynamically based on data.
  *** Wrap "objective" so that all measures are refreshed simultaneously (make GA properties private again)
  * Create linkage-based GA crossover function.
 
-dynamicModel:
+DynamicModel:
  *** Add prior cost of initial pose and configure initial pose in each component
  *** Specify outputs of evaluate() using string like 'pqrs'
 
-measure:
+Measure:
  * Use SURF instead of SIFT.
  * Implement SURF as a feature-matching option in opticalFlowOpenCV.
  * Does GPLv2 license for SBA code allow linking?
- * Add an example of a GPS measure (maybe in measureStub).
+ * Convert GPS Sensor to a Measure simulator.
  * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
  * Fix axis ordering bug in pointBasedMeasure
  * In pointBasedMeasure, cache results of finding keypoints for each image.
  * In opticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
 
-dataContainer:
+DataContainer:
  *** Make interface compatible with AFRL ANTBED.
  * Find a way to distinguish between multiple sensors that derive from the same class.
    * Improve scheme for matching measures to sensor data.
@@ -72,7 +72,7 @@ dataContainer:
  * Inertial sensor interface should specify its error characteristics?
  * Interfacing with Paul Metzger's simulator?
 
-cameraArray:
+CameraArray:
  * Check fisheye projection and inverseProjection equations at image center.
  * Should masking be separate from projection?
 

@@ -2,7 +2,7 @@
 % Using GPS time referenced to zero at 1980-00-06T00:00:00 GMT
 %   GPS time is a few seconds ahead of UTC
 % All sensors use SI units and radians unless otherwise stated
-classdef sensor < handle
+classdef Sensor < handle
   
   methods (Abstract=true)
     % Incorporate new data and allow old data to expire
@@ -46,7 +46,7 @@ classdef sensor < handle
     % NOTES
     % Time stamps must not decrease with increasing indices
     % Throws an exception if data at the node is invalid
-    % Throws an exception if input is of the wrong class or size
+    % Throws an exception if input is of the wrong size
     time=getTime(this,k);
   end
   

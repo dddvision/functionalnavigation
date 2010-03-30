@@ -1,4 +1,4 @@
-classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
+classdef matlabGA1 < matlabGA1.matlabGA1Config & Optimizer
   
   properties (GetAccess=private,SetAccess=private)
     F
@@ -14,7 +14,7 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
   
   methods (Access=public)
     function this=matlabGA1(dynamicModelName,measureNames,uri)  
-      this=this@optimizer(dynamicModelName,measureNames,uri);
+      this=this@Optimizer(dynamicModelName,measureNames,uri);
       fprintf('\n\n%s',class(this));
       
       if(this.hasLicense)
@@ -69,14 +69,14 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
       this.F=cell(K,1);
       for k=1:K
         initialBlock=getBlocks(this,k);
-        this.F{k}=dynamicModelFactory(dynamicModelName,uri,this.referenceTime,initialBlock);
+        this.F{k}=DynamicModel.factory(dynamicModelName,this.referenceTime,initialBlock,uri);
       end
       
       % initialize measures
       K=numel(measureNames);
       this.g=cell(K,1);
       for k=1:K
-        this.g{k}=measureFactory(measureNames{k},uri);
+        this.g{k}=Measure.factory(measureNames{k},uri);
       end
       refreshAll(this);
       
@@ -108,14 +108,6 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & optimizer
   
   methods (Access=private)
     % Vectorized objective function
-    %
-    % INPUT
-    % F = dynamic models, cell N-by-1
-    % g = measures, cell N-by-1
-    % dMax = 
-    %
-    % OUTPUT
-    % cost = costs associated with the dynamic models and measures, double N-by-1
     function cost=objective(this,bits)
       this.bits=bits;
       putBits(this);
@@ -260,10 +252,10 @@ end
 
 function varargout=objectiveContainer(varargin)
   persistent this
-  bits=varargin{1};
-  if(~ischar(bits))
-    varargout{1}=objective(this,bits);
-  elseif(strcmp(bits,'put'))
+  arg1=varargin{1};
+  if(~ischar(arg1))
+    varargout{1}=objective(this,arg1);
+  elseif(strcmp(arg1,'put'))
     this=varargin{2};
   else
     error('incorrect argument list');
