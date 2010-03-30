@@ -5,11 +5,12 @@
 % varargin = arguments for the class constructor
 %
 % OUTPUT
-% obj = object instance, class determined by pkg
+% obj = measure instance
 %
 % NOTES
 % The package directory must in the environment path
 % (MATLAB) Omit the '+' prefix when identifying package names
-function obj=unwrapComponent(pkg,varargin)
+function obj=measureFactory(pkg,varargin)
   obj=feval([pkg,'.',pkg],varargin{:});
+  assert(isa(obj,'measure'));
 end

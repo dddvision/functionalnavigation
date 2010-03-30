@@ -32,7 +32,7 @@ fprintf('\npath added: %s',componentPath);
 reset(RandStream.getDefaultStream);
 
 % instantiate a trajectory optimization manager
-tom=unwrapComponent(demoConfig.optimizer,demoConfig.dynamicModel,demoConfig.measures,demoConfig.uri);
+tom=optimizerFactory(demoConfig.optimizer,demoConfig.dynamicModel,demoConfig.measures,demoConfig.uri);
 
 % create an instance of the GUI
 gui=demoDisplay(demoConfig.uri);

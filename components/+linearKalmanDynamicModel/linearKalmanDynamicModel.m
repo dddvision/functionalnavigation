@@ -39,7 +39,7 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=unwrapComponent(resource);
+            container=dataContainerFactory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
