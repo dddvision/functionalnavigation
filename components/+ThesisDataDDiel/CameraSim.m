@@ -1,4 +1,4 @@
-classdef cameraSim < Camera
+classdef CameraSim < Camera
   
   properties (SetAccess=private,GetAccess=private)
     localCache
@@ -15,7 +15,7 @@ classdef cameraSim < Camera
   end
   
   methods (Access=public)
-    function this=cameraSim(localCache)
+    function this=CameraSim(localCache)
       this.localCache=localCache;
       info=dir(fullfile(localCache,'/color*'));
       fnames=sortrows(cat(1,info(:).name));

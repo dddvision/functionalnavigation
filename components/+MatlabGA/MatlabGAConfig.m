@@ -1,4 +1,4 @@
-classdef matlabGA1Config < handle
+classdef MatlabGAConfig < handle
   properties (Constant=true,GetAccess=protected)
     hasLicense = true; % (true) uses alternative non-GADS algorithm when set to false
     referenceTime = 0; % (0) start all trajectories at this time

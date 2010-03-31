@@ -1,5 +1,9 @@
-% Simulated measurements from the global sat bu-1** gps sensor
-classdef globalSatData < globalSatData.globalSatDataConfig & DataContainer
+% REFERENCE
+% Middlebury College "Art" dataset
+% H. Hirschmuller and D. Scharstein. Evaluation of cost functions for 
+% stereo matching. In IEEE Computer Society Conference on Computer Vision 
+% and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
+classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & DataContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensors
@@ -7,13 +11,14 @@ classdef globalSatData < globalSatData.globalSatDataConfig & DataContainer
     hasRef
     bodyRef
   end
-
+  
   methods (Access=public)
-    function this=globalSatData
-      this.sensors{1}=globalSatData.gpsSim;
-      this.names{1}='GPS';
+    function this=MiddleburyData
+      this=this@DataContainer;
+      this.sensors{1}=MiddleburyData.CameraSim;
+      this.names{1}='CAMERA';
       this.hasRef=true;
-      this.bodyRef=globalSatData.bodyReference;
+      this.bodyRef=MiddleburyData.BodyReference;
     end
     
     function list=listSensors(this,type)

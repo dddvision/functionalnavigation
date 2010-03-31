@@ -1,4 +1,4 @@
-classdef globalSatDataConfig < handle
+classdef GlobalSatDataConfig < handle
   
   properties (Constant=true,GetAccess=protected)
     % File containing a list of points that define a reference trajectory

@@ -1,14 +1,14 @@
-classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & Measure
+classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
   end
   
   methods (Access=public)
-    function this=opticalFlowOpenCV(uri)
+    function this=OpticalFlowOpenCV(uri)
       this=this@Measure(uri);
       fprintf('\n');
-      fprintf('\nopticalFlowOpenCV::opticalFlowOpenCV');
+      fprintf('\nOpticalFlowOpenCV::OpticalFlowOpenCV');
       
       if(~exist('mexOpticalFlowOpenCV','file'))
         fprintf('\nCompiling mex wrapper for OpenCV...');

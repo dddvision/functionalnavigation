@@ -1,10 +1,10 @@
 % For each valid index in the GPS data domain, evaluate the reference
 %   trajectory and compare with the reported GPS position
 function gpsTest(gpsHandle,refTraj)
-  assert(isa(gpsHandle,'Gps'));
+  assert(isa(gpsHandle,'GPSReceiver'));
   refresh(gpsHandle);
   if(~hasData(gpsHandle))
-    error('gps is not ready');
+    error('GPS is not ready');
   end
   
   ka=first(gpsHandle);

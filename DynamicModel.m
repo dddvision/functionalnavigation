@@ -12,7 +12,7 @@
 classdef DynamicModel < Trajectory
   
   properties (Constant=true,GetAccess=public)
-    baseClass='DynamicModel';
+    frameworkClass='DynamicModel';
   end
   
   methods (Static=true,Access=public)

@@ -2,7 +2,7 @@
 classdef DataContainer < handle
   
   properties (Constant=true,GetAccess=public)
-    baseClass='DataContainer';
+    frameworkClass='DataContainer';
   end
   
   methods (Static=true,Access=public)
@@ -21,12 +21,15 @@ classdef DataContainer < handle
     %   the handle class and using persistence to keep a unique instance
     function this=factory(pkg)
       persistent singleton
+      subclass=[pkg,'.',pkg];
       if(isempty(singleton))
-        this=feval([pkg,'.',pkg]);
+        this=feval(subclass);
         assert(isa(this,'DataContainer'));
         singleton=this;
-      else
+      elseif(isa(singleton,subclass))
         this=singleton;
+      else
+        error('Cannot switch subclass of singleton data container after instantiation.');
       end
     end
   end

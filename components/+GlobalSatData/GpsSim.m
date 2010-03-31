@@ -1,4 +1,4 @@
-classdef gpsSim < globalSatData.globalSatDataConfig & Gps
+classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
   
   properties
     refData
@@ -19,13 +19,13 @@ classdef gpsSim < globalSatData.globalSatDataConfig & Gps
   end
   
   methods (Access=public)
-    function this=gpsSim
+    function this=GpsSim
       % Read the configuration file
       this.refData = readGPSdataFile(this.referenceTrajectoryFile);
       
       % Read the noise errors from real Global Sat gps data file
       this.noise = readNoiseData('gtGPSdata.txt'); % Error samples (easting, northing, altitude)
-      this.refTraj = globalSatData.bodyReference;
+      this.refTraj = GlobalSatData.BodyReference;
       [ta,tb] = domain(this.refTraj);
       tdelta = tb-ta;
       this.noise = this.noise(:,this.noise(1,:)<tdelta);
@@ -38,7 +38,7 @@ classdef gpsSim < globalSatData.globalSatDataConfig & Gps
     end
     
     function refresh(this)
-      isa(this,'Gps');
+      isa(this,'GPSReceiver');
     end
     
     function flag=hasData(this)

@@ -1,4 +1,4 @@
-classdef bodyReference < globalSatData.globalSatDataConfig & Trajectory
+classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
     
   properties (SetAccess=private, GetAccess=private)
     pts
@@ -7,12 +7,12 @@ classdef bodyReference < globalSatData.globalSatDataConfig & Trajectory
   end
   
   methods (Access=public)
-    function this = bodyReference
+    function this = BodyReference
       maindir = pwd;
       currdir = [maindir '/components/+globalSatData'];
       full_fname = fullfile(currdir,this.referenceTrajectoryFile);
       [this.gpsTime, lon, lat, alt, vDOP, hDOP] = textread(full_fname,'%f %f %f %f %f %f','delimiter',',');
-      [X,Y,Z] = globalSatData.lolah2ecef(lon,lat,alt);
+      [X,Y,Z] = GlobalSatData.lolah2ecef(lon,lat,alt);
       this.pts = [X,Y,Z];
     end
     

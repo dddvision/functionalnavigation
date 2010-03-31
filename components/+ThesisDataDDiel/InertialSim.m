@@ -1,4 +1,4 @@
-classdef inertialSim < InertialSixDof
+classdef InertialSim < InertialSixDoF
   
   properties (SetAccess=private,GetAccess=private)
     pFrame
@@ -12,7 +12,7 @@ classdef inertialSim < InertialSixDof
   end
   
   methods (Access=public)
-    function this=inertialSim(localCache)
+    function this=InertialSim(localCache)
       this.pFrame=[0;0;0];
       this.qFrame=[1;0;0;0];
       [this.time,this.gyro,this.accel]=ReadIMUdat(localCache,'inertia.dat');
@@ -23,7 +23,7 @@ classdef inertialSim < InertialSixDof
     end
 
     function refresh(this)
-      assert(isa(this,'InertialSixDof'));
+      assert(isa(this,'InertialSixDoF'));
     end
     
     function flag=hasData(this)
