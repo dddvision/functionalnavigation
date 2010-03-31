@@ -1,15 +1,12 @@
 general:
  * Document that all measures are two-point functions.
- * Document distinction between testbed and optimizer.
  * Document that trajectory evaluations are in the "pose and tangent pose" space.
- * Make class aliases for "time", "index", "real" and other simple classes?
+ * Making class aliases for "Time", "NodeIndex", and other simple classes.
 
 research:
- *** Create leastSquares components that optimize initial state.
- *** Complete work on linearKalman components.
  * Topics for publication:
-   * Measurement graphs as an alternative to pose graphs.
- * Review standards (ask Jimmy Touma first):
+   * Measurement graphs are an alternative to pose graphs.
+ * Review standards (briefly):
    * STANAG 4586
    * JAUS V3.3 (JAUGS?)
    * SMART (Sandia Modular Architecture for Robotics and Teleoperation)
@@ -24,46 +21,47 @@ research:
  * Kalai: learning halfspaces
  * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
 
-testComponent:
- * Apply unit tests to all components to check interfaces and exception handling
- * Characterize measures
-   * Value when given ground truth
+testbed:
+ *** Document distinction between testbed and Optimizer.
+ * Create unit tests for all framework classes to check interfaces and exception handling.
+ * Create advanced unit tests to characterize measures
+   * Cost when given ground truth
    * Granularity / dilution of precision
    * Monotonicity
    * Bias / distance to nearest local minimum
    * Sensitivity to perturbation of initial tangent pose
 
 demonstration:
- *** Use start time referenceDate = datestr(now,30)?
- *** Access camera and inertial sensor on a MacBook.
+ *** Create inertial/visual DataContainer for MacBook demo.
+ *** Write code for low level access to iSight camera.
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 Optimizer:
- *** Update number of extension blocks dynamically based on data.
- *** Wrap "objective" so that all measures are refreshed simultaneously (make GA properties private again)
+ *** Wrap "objective" so that all measures are refreshed simultaneously.
+ * Use getInitialBlock and getExtensionBlocks to simplify MatlabGA optimizer.
  * Create linkage-based GA crossover function.
 
 DynamicModel:
- *** Add prior cost of initial pose and configure initial pose in each component
+ *** Store initial and extension blocks even if they do not affect the trajectory?
  *** Specify outputs of evaluate() using string like 'pqrs'
 
 Measure:
+ *** Convert GlobalSatData to a Measure simulator.
+ *** Review UCF's latest PointBasedMeasure submission.
  * Use SURF instead of SIFT.
- * Implement SURF as a feature-matching option in opticalFlowOpenCV.
- * Does GPLv2 license for SBA code allow linking?
- * Convert GPS Sensor to a Measure simulator.
- * Should cost be provided in two parts related to Shannon information? (inconsistent information bits, total information bits)
- * Fix axis ordering bug in pointBasedMeasure
- * In pointBasedMeasure, cache results of finding keypoints for each image.
- * In opticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
+ * Implement SURF as a feature-matching option in OpticalFlowOpenCV.
+ * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
+ * Fix axis ordering bug in PointBasedMeasure
+ * In PointBasedMeasure, cache results of finding keypoints for each image.
+ * In OpticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
 
 DataContainer:
- *** Make interface compatible with AFRL ANTBED.
- * Find a way to distinguish between multiple sensors that derive from the same class.
+ *** Develop stateless API compatible with AFRL ANTBED.
+ * Find a way to distinguish between multiple sensors in a DataContainer that derive from the same class.
    * Improve scheme for matching measures to sensor data.
    * listSensors() should return a list of strings identifying sensors?
- * Split globalSatData into a measure and a reference trajectory simulator?
+ * Split GlobalSatData into a measure and a reference trajectory simulator?
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
  * Make a container that has all sensors and type checks its inputs.

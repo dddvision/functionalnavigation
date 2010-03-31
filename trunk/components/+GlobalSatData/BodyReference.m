@@ -8,8 +8,7 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
   
   methods (Access=public)
     function this = BodyReference
-      maindir = pwd;
-      currdir = [maindir '/components/+globalSatData'];
+      currdir = fileparts(mfilename('fullpath'));
       full_fname = fullfile(currdir,this.referenceTrajectoryFile);
       [this.gpsTime, lon, lat, alt, vDOP, hDOP] = textread(full_fname,'%f %f %f %f %f %f','delimiter',',');
       [X,Y,Z] = GlobalSatData.lolah2ecef(lon,lat,alt);

@@ -35,10 +35,10 @@ reset(RandStream.getDefaultStream);
 config=DemoConfig;
 
 % instantiate a trajectory optimization manager
-tom=Optimizer.factory(config.optimizerName,config.dynamicModelName,config.measureNames,config.dataUri);
+tom=Optimizer.factory(config.optimizerName,config.dynamicModelName,config.measureNames,config.dataURI);
 
 % create an instance of the GUI
-gui=DemoDisplay(config.dataUri);
+gui=DemoDisplay(config.dataURI);
 
 % optimize forever
 index=0;
