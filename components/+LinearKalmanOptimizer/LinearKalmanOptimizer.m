@@ -17,6 +17,10 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       % display warning
       fprintf('\nWarning: This optimizer updates itself using only the last on-diagonal measure.');
       
+      % initialize the measure (assuming a single measure)
+      this.g=Measure.factory(measureName{1},uri);
+      initialTime=waitForData(this);  
+      
       % handle dynamic model update rate
       updateRate=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']); 
       if(updateRate)
@@ -32,12 +36,9 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       % set initial state (assuming its range is the interval [0,1])
       this.state=repmat(0.5,[this.initialBlockDescription.numUint32,1]);
       
-      % initialize the measure (assuming a single measure)
-      this.g=Measure.factory(measureName{1},uri);
-           
       % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
-      this.F=DynamicModel.factory(dynamicModelName,this.referenceTime,initialBlock,uri);
+      this.F=DynamicModel.factory(dynamicModelName,initialTime,initialBlock,uri);
       
       % compute prior distribution model (assuming non-zero prior uncertainty)
       [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');
@@ -161,8 +162,21 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     function block=state2initialBlock(this,state)
       scale=4294967295; % double(intmax('uint32'))
       block=param2initialBlock(this,uint32(round(state*scale)));
-    end  
+    end
+    
+    function initialTime=waitForData(this)
+      initialTime=Inf;
+      fprintf('\nWaiting for data...');
+      while(isinf(initialTime))
+        refresh(this.g);
+        if(hasData(this.g))
+          initialTime=min(initialTime,getTime(this.g,first(this.g)));
+        end
+      end
+      fprintf('done');
+    end
   end
+  
 end
 
 function plotNormalDistributions(muPrior,sigmaPrior,muPosterior,sigmaPosterior,hessian,jacobian)

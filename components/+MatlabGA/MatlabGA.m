@@ -16,7 +16,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     function this=MatlabGA(dynamicModelName,measureNames,uri)  
       this=this@Optimizer(dynamicModelName,measureNames,uri);
       fprintf('\n\n%s',class(this));
-      
+            
       if(this.hasLicense)
         if(~license('test','gads_toolbox'))
           error('Requires license for GADS toolbox -- see MatlabGA configuration options');
@@ -56,7 +56,15 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
         temp=@stepGA;
         cd(userPath);
         this.stepGAhandle=temp;
-      end  
+      end
+     
+      % initialize measures
+      K=numel(measureNames);
+      this.g=cell(K,1);
+      for k=1:K
+        this.g{k}=Measure.factory(measureNames{k},uri);
+      end
+      initialTime=waitForData(this);      
 
       % process dynamic model input description
       this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
@@ -69,16 +77,9 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       this.F=cell(K,1);
       for k=1:K
         initialBlock=getBlocks(this,k);
-        this.F{k}=DynamicModel.factory(dynamicModelName,this.referenceTime,initialBlock,uri);
+        this.F{k}=DynamicModel.factory(dynamicModelName,initialTime,initialBlock,uri);
       end
-      
-      % initialize measures
-      K=numel(measureNames);
-      this.g=cell(K,1);
-      for k=1:K
-        this.g{k}=Measure.factory(measureNames{k},uri);
-      end
-      refreshAll(this);
+      extendAll(this);
       
       % determine initial costs
       objectiveContainer('put',this);
@@ -92,6 +93,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     
     function step(this)
       refreshAll(this);
+      extendAll(this);
       
       if(this.hasLicense)
         nvars=size(this.bits,2);
@@ -190,19 +192,36 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       end
     end
 
-    % refresh measures and extend dynamic models
+    % refresh all measures
     function refreshAll(this)
       for k=1:numel(this.g)
         refresh(this.g{k});
-      end 
+      end
+    end
+    
+    function initialTime=waitForData(this)
+      initialTime=Inf;
+      fprintf('\nWaiting for data...');
+      while(isinf(initialTime))
+        refreshAll(this);
+        for k=1:numel(this.g)
+          if(hasData(this.g{k}))
+            initialTime=min(initialTime,getTime(this.g{k},first(this.g{k})));
+          end
+        end
+      end
+      fprintf('done');
+    end
+    
+    % extend all dynamic models
+    function extendAll(this)
       if(this.updateRate)
-        lastTime=this.referenceTime;
+        [lastTime,tb]=domain(this.F{1});
         for k=1:numel(this.g)
           if(hasData(this.g{k}))
             lastTime=max(lastTime,getTime(this.g{k},last(this.g{k})));
           end
         end
-        [ta,tb]=domain(this.F{1});
         numNewBlocks=ceil((lastTime-tb)*this.updateRate);
         numNewBits=numNewBlocks*numExtensionBits(this);
         K=numel(this.F);

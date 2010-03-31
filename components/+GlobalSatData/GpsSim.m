@@ -111,8 +111,7 @@ end
 % hDop --> Horizontal dilution of precision (double)
 % vDop --> Vertical dilution of precision (double)
 function refData=readGPSdataFile(fname)
-  maindir = pwd;
-  currdir = [maindir '/components/+globalSatData'];
+  currdir = fileparts(mfilename('fullpath'));
   full_fname = fullfile(currdir, fname);
 
   csvdata = csvread(full_fname);

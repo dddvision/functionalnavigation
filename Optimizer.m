@@ -37,7 +37,9 @@ classdef Optimizer < handle
     %   constructor using the syntax this=this@Optimizer(dynamicModelName,measureNames,uri);
     function this=Optimizer(dynamicModelName,measureNames,uri)
       assert(isa(dynamicModelName,'char'));
-      assert(isa(measureNames,'cell'));      
+      assert(isa(measureNames,'cell'));
+      assert(numel(measureNames)>0);
+      assert(isa(measureNames{1},'char'))
       assert(isa(uri,'char'));
     end
   end
