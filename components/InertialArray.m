@@ -1,6 +1,6 @@
 % This class defines a synchronously time-stamped array of inertial sensors
 %   rigidly attached to a body with different positions and orientations
-classdef inertialArray < Sensor
+classdef InertialArray < Sensor
 
   methods (Abstract)
     % Get inertial integration time

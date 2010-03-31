@@ -3,7 +3,7 @@
 %   one accelerometer and one gyroscope on each axis
 %   shared time stamps
 %   shared origin
-classdef inertialSixDOF < accelerometerArray & gyroscopeArray
+classdef InertialSixDof < AccelerometerArray & GyroscopeArray
 
   methods (Abstract=true)
     % Get sensor frame position and orientation relative to the body frame
@@ -20,7 +20,7 @@ classdef inertialSixDOF < accelerometerArray & gyroscopeArray
   methods (Access=public)
     % This subclass provides exactly three axes
     function num=numAxes(this)
-      assert(isa(this,'inertialSixDOF'));
+      assert(isa(this,'InertialSixDof'));
       num=uint32(3);
     end
     

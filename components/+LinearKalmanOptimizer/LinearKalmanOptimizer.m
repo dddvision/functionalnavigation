@@ -1,4 +1,4 @@
-classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConfig & Optimizer
+classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConfig & Optimizer
   
  properties (GetAccess=private,SetAccess=private)
     F
@@ -10,7 +10,7 @@ classdef linearKalmanOptimizer < linearKalmanOptimizer.linearKalmanOptimizerConf
   end
   
   methods (Access=public)
-    function this=linearKalmanOptimizer(dynamicModelName,measureName,uri)
+    function this=LinearKalmanOptimizer(dynamicModelName,measureName,uri)
       this=this@Optimizer(dynamicModelName,measureName,uri);
       fprintf('\n\n%s',class(this));
       

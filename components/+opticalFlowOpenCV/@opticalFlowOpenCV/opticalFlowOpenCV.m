@@ -63,7 +63,7 @@ classdef opticalFlowOpenCV < opticalFlowOpenCV.opticalFlowOpenCVConfig & Measure
         switch(scheme)
           case 'matlab'
             container=DataContainer.factory(resource);
-            list=listSensors(container,'camera');
+            list=listSensors(container,'Camera');
             this.sensor=getSensor(container,list(1));
           otherwise
             error('Unrecognized resource identifier in URI');

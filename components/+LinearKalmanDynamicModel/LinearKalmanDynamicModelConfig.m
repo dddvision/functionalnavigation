@@ -1,4 +1,4 @@
-classdef linearKalmanDynamicModelConfig < handle
+classdef LinearKalmanDynamicModelConfig < handle
   properties (Constant=true)
     positionOffset=-1.2; % simulated offset in first position coordinate
     positionRateOffset=0.2; % simulated offset in first position rate coordinate

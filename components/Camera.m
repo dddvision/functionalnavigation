@@ -1,10 +1,10 @@
 % This class defines a single camera as a special case of a camera array
-classdef camera < cameraArray
+classdef Camera < CameraArray
   
   methods (Access=public)
-    % Limits the cameraArray to providing exactly one view
+    % Limits the camera array to providing exactly one view
     function num=numViews(this)
-      assert(isa(this,'camera'));
+      assert(isa(this,'Camera'));
       num=uint32(1);
     end
   end

@@ -11,7 +11,7 @@
 %
 % NOTES
 % Pixel coordinate interpretation:
-%   See cameraArray.projection
+%   See CameraArray.projection
 % Algorithm is based on:
 %   http://code.google.com/p/functionalnavigation/wiki/MotionInducedOpticalFlow
 function [uvr,uvt]=generateFlowSparse(this,deltap,deltaEuler,pix)
