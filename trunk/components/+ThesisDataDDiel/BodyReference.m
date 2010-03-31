@@ -1,4 +1,4 @@
-classdef bodyReference < Trajectory
+classdef BodyReference < Trajectory
   
   properties (SetAccess=private,GetAccess=private)
     T_imu
@@ -6,7 +6,7 @@ classdef bodyReference < Trajectory
   end  
   
   methods (Access=public)
-    function this=bodyReference(localCache,dataSetName)
+    function this=BodyReference(localCache,dataSetName)
       if(strcmp(dataSetName(1:6),'Gantry'))
         S=load(fullfile(localCache,'workspace.mat'),'INITIAL_BODY_STATE');
         [this.T_imu,this.x_imu]=ReadGantry(fullfile(localCache,'gantry_raw.dat'));

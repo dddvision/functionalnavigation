@@ -8,7 +8,7 @@
 classdef Measure < Sensor
   
   properties (Constant=true,GetAccess=public)
-    baseClass='Measure';
+    frameworkClass='Measure';
   end
 
   methods (Static=true,Access=public)

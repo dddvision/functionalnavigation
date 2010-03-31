@@ -1,4 +1,4 @@
-classdef opticalFlowOpenCVConfig < handle
+classdef OpticalFlowOpenCVConfig < handle
   properties (Constant=true,GetAccess=protected)
     displayFlow = false; % (false) display flow results
     isDense = false; % (false) compute flow over all pixels

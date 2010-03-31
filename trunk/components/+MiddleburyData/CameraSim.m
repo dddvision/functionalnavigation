@@ -1,4 +1,4 @@
-classdef cameraSim < middleburyData.middleburyDataConfig & Camera
+classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
   
   properties
     ring
@@ -17,7 +17,7 @@ classdef cameraSim < middleburyData.middleburyDataConfig & Camera
   end
   
   methods (Access=public)
-    function this=cameraSim
+    function this=CameraSim
       this.ringsz=uint32(this.numImages);
       for k=1:this.ringsz
         this.ring{k}.time=double(k-1)/this.fps;

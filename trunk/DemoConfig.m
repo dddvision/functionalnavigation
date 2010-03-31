@@ -1,7 +1,7 @@
 classdef DemoConfig < handle
   properties (Constant=true,GetAccess=public)
     % select hardware resource or data container
-    dataUri = 'matlab:middleburyData';
+    dataUri = 'matlab:MiddleburyData';
     
     % select default dynamic model
     dynamicModelName = 'LinearKalmanDynamicModel';

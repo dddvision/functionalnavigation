@@ -1,4 +1,4 @@
-classdef bodyReference < middleburyData.middleburyDataConfig & Trajectory
+classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
   
   properties (SetAccess=private,GetAccess=private)
     bodyPath
@@ -8,7 +8,7 @@ classdef bodyReference < middleburyData.middleburyDataConfig & Trajectory
   end  
   
   methods (Access=public)
-    function this=bodyReference
+    function this=BodyReference
       this.bodyPath='[0*t;t;0*t;1+0*t;0*t;0*t;0*t]';
       this.bodyPathDiff='[0*t;1+0*t;0*t;0*t;0*t;0*t;0*t]';
       this.a=0;

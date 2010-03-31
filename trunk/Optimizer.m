@@ -2,7 +2,7 @@
 classdef Optimizer < handle
   
   properties (Constant=true,GetAccess=public)
-    baseClass='Optimizer';  
+    frameworkClass='Optimizer';  
   end
 
   methods (Static=true,Access=public)

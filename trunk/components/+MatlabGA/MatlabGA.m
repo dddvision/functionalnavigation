@@ -1,4 +1,4 @@
-classdef matlabGA1 < matlabGA1.matlabGA1Config & Optimizer
+classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   properties (GetAccess=private,SetAccess=private)
     F
@@ -13,13 +13,13 @@ classdef matlabGA1 < matlabGA1.matlabGA1Config & Optimizer
   end
   
   methods (Access=public)
-    function this=matlabGA1(dynamicModelName,measureNames,uri)  
+    function this=MatlabGA(dynamicModelName,measureNames,uri)  
       this=this@Optimizer(dynamicModelName,measureNames,uri);
       fprintf('\n\n%s',class(this));
       
       if(this.hasLicense)
         if(~license('test','gads_toolbox'))
-          error('Requires license for GADS toolbox -- see matlabGA1 configuration options');
+          error('Requires license for GADS toolbox -- see MatlabGA configuration options');
         end
         this.defaultOptions = gaoptimset;
         this.defaultOptions.PopulationType = 'bitstring';

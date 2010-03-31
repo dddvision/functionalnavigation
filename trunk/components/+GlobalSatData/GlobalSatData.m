@@ -1,9 +1,5 @@
-% REFERENCE
-% Middlebury College "Art" dataset
-% H. Hirschmuller and D. Scharstein. Evaluation of cost functions for 
-% stereo matching. In IEEE Computer Society Conference on Computer Vision 
-% and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
-classdef middleburyData < middleburyData.middleburyDataConfig & DataContainer
+% Simulated measurements from the global sat bu-1** gps sensor
+classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & DataContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensors
@@ -11,14 +7,13 @@ classdef middleburyData < middleburyData.middleburyDataConfig & DataContainer
     hasRef
     bodyRef
   end
-  
+
   methods (Access=public)
-    function this=middleburyData
-      this=this@DataContainer;
-      this.sensors{1}=middleburyData.cameraSim;
-      this.names{1}='CAMERA';
+    function this=GlobalSatData
+      this.sensors{1}=GlobalSatData.GpsSim;
+      this.names{1}='GPS';
       this.hasRef=true;
-      this.bodyRef=middleburyData.bodyReference;
+      this.bodyRef=GlobalSatData.BodyReference;
     end
     
     function list=listSensors(this,type)

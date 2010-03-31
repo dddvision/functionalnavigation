@@ -1,4 +1,4 @@
-classdef middleburyDataConfig  < handle
+classdef MiddleburyDataConfig  < handle
   properties (Constant=true,GetAccess=protected)
     sceneYear = 'scenes2005'; % 'scenes2005', 'scenes2006'
     fractionalSize = 'ThirdSize'; % 'FullSize', 'HalfSize', 'ThirdSize'   

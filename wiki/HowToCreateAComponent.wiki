@@ -18,7 +18,8 @@ General coding guidelines for this project:
   * RULE: Only upload plain text, C++, or MATLAB files (makefile, .c, .cpp, .h, .m, .txt)
   * RULE: Do not upload binaries (.jpg, .png, .dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32)
   * RULE: Packages should not assume that they are in the ./components directory.
-  * RULE: Component configuration files have the same name as the component with ???Config??? appended.
+  * RULE: Component configuration files have the same name as the component with "Config" appended.
+  * RULE: All class names will be capitalized (as in UpperCamelCase).
   * RULE: Framework interface bugs should be submitted to the Google Code issue tracker.
   * RULE: Bugs in components should be noted using TODO statements within code or in a TODO.txt file that accompanies the component.
   * RULE: Use two spaces for each indentation level.

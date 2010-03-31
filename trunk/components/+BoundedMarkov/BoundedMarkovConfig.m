@@ -1,4 +1,4 @@
-classdef boundedMarkovConfig < handle
+classdef BoundedMarkovConfig < handle
 
   properties (Constant=true,GetAccess=protected)   
     % Markov process
