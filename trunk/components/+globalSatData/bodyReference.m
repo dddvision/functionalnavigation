@@ -1,19 +1,16 @@
-classdef bodyReference < Trajectory
+classdef bodyReference < globalSatData.globalSatDataConfig & Trajectory
     
   properties (SetAccess=private, GetAccess=private)
     pts
     gpsTime
     zone
-    splineTension
   end
   
   methods (Access=public)
     function this = bodyReference
-      config = globalSatData.globalSatDataConfig;
-      this.splineTension = config.splineTension;
       maindir = pwd;
       currdir = [maindir '/components/+globalSatData'];
-      full_fname = fullfile(currdir,config.referenceTrajectoryFile);
+      full_fname = fullfile(currdir,this.referenceTrajectoryFile);
       [this.gpsTime, lon, lat, alt, vDOP, hDOP] = textread(full_fname,'%f %f %f %f %f %f','delimiter',',');
       [X,Y,Z] = globalSatData.lolah2ecef(lon,lat,alt);
       this.pts = [X,Y,Z];

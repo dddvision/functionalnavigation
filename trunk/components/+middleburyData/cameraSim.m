@@ -1,4 +1,4 @@
-classdef cameraSim < middleburyData.middleburyDataConfig & camera
+classdef cameraSim < middleburyData.middleburyDataConfig & Camera
   
   properties
     ring
@@ -37,7 +37,7 @@ classdef cameraSim < middleburyData.middleburyDataConfig & camera
     end
     
     function refresh(this)
-      assert(isa(this,'camera'));
+      assert(isa(this,'Camera'));
     end
     
     function flag=hasData(this)

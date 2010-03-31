@@ -1,5 +1,5 @@
 % This class defines how to access data from a gyroscope
-classdef gyroscopeArray < inertialArray
+classdef GyroscopeArray < InertialArray
   
   methods (Abstract=true)
     % Get raw gyroscope data

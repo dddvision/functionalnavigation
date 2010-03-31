@@ -1,4 +1,4 @@
-classdef cameraSim < camera
+classdef cameraSim < Camera
   
   properties (SetAccess=private,GetAccess=private)
     localCache
@@ -37,7 +37,7 @@ classdef cameraSim < camera
     end
 
     function refresh(this)
-      assert(isa(this,'camera'));
+      assert(isa(this,'Camera'));
     end
     
     function flag=hasData(this)      

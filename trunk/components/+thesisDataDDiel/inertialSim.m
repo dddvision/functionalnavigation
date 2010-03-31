@@ -1,4 +1,4 @@
-classdef inertialSim < inertialSixDOF
+classdef inertialSim < InertialSixDof
   
   properties (SetAccess=private,GetAccess=private)
     pFrame
@@ -23,7 +23,7 @@ classdef inertialSim < inertialSixDOF
     end
 
     function refresh(this)
-      assert(isa(this,'inertialSixDOF'));
+      assert(isa(this,'InertialSixDof'));
     end
     
     function flag=hasData(this)

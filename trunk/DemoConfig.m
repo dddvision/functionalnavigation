@@ -1,15 +1,15 @@
 classdef DemoConfig < handle
   properties (Constant=true,GetAccess=public)
     % select hardware resource or data container
-    uri = 'matlab:middleburyData';
+    dataUri = 'matlab:middleburyData';
     
     % select default dynamic model
-    dynamicModel = 'linearKalmanDynamicModel';
+    dynamicModelName = 'LinearKalmanDynamicModel';
     
     % select default optimizer
-    optimizer = 'linearKalmanOptimizer';
+    optimizerName = 'LinearKalmanOptimizer';
         
     % select default measures
-    measures = {'linearKalmanMeasure'};
+    measureNames = {'LinearKalmanMeasure'};
   end 
 end

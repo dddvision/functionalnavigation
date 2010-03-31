@@ -1,6 +1,6 @@
 % This measure simulates a sensor that measures the body position
 %   and adds error sampled from a normal distribution
-classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & Measure
+classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & Measure
 
   properties (SetAccess=private,GetAccess=private)
     xRef
@@ -12,7 +12,7 @@ classdef linearKalmanMeasure < linearKalmanMeasure.linearKalmanMeasureConfig & M
   end
   
   methods (Access=public)
-    function this=linearKalmanMeasure(uri)
+    function this=LinearKalmanMeasure(uri)
       this=this@Measure(uri);
            
       try

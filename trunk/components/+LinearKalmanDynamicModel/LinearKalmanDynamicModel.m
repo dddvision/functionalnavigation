@@ -1,4 +1,4 @@
-classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamicModelConfig & DynamicModel
+classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamicModelConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
     sixthIntMax=715827883;
@@ -28,7 +28,7 @@ classdef linearKalmanDynamicModel < linearKalmanDynamicModel.linearKalmanDynamic
   end
   
   methods (Access=public)
-    function this=linearKalmanDynamicModel(initialTime,initialBlock,uri)
+    function this=LinearKalmanDynamicModel(initialTime,initialBlock,uri)
       this=this@DynamicModel(initialTime,initialBlock,uri);
       fprintf('\n\n%s',class(this));
       this.initialTime=initialTime;

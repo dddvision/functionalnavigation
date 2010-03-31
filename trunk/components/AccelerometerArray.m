@@ -1,5 +1,5 @@
 % This class defines how to access data from an accelerometer
-classdef accelerometerArray < inertialArray
+classdef AccelerometerArray < InertialArray
   
   methods (Abstract=true)
     % Get raw accelerometer data

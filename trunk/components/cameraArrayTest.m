@@ -1,5 +1,5 @@
 function cameraArrayTest(cam)
-  assert(isa(cam,'cameraArray'));
+  assert(isa(cam,'CameraArray'));
   testCameraArrayProjection(cam);
   testCameraArrayProjectionRoundTrip(cam);
 end
