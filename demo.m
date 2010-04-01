@@ -31,14 +31,11 @@ fprintf('\npath added: %s',componentPath);
 % reset the random stream state
 reset(RandStream.getDefaultStream);
 
-% get demo configuration
-config=DemoConfig;
-
 % instantiate a trajectory optimization manager
-tom=Optimizer.factory(config.optimizerName,config.dynamicModelName,config.measureNames,config.dataURI);
+tom=Optimizer.factory(DemoConfig.optimizerName);
 
 % create an instance of the GUI
-gui=DemoDisplay(config.dataURI);
+gui=DemoDisplay(ObjectiveConfig.uri);
 
 % optimize forever
 index=0;
