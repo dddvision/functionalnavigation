@@ -1,20 +1,15 @@
 classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   properties (GetAccess=private,SetAccess=private)
-    F
-    g
+    M
     bits
     cost
-    initialBlockDescription
-    extensionBlockDescription
-    updateRate
     defaultOptions
     stepGAhandle
   end
   
   methods (Access=public)
-    function this=MatlabGA(dynamicModelName,measureNames,uri)  
-      this=this@Optimizer(dynamicModelName,measureNames,uri);
+    function this=MatlabGA
       fprintf('\n\n%s',class(this));
             
       if(this.hasLicense)
@@ -47,8 +42,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
         this.defaultOptions.MutationFcnArgs = {this.mutationRatio};
         this.defaultOptions.Vectorized = 'on';
         this.defaultOptions.LinearConstr.type = 'unconstrained';
-        this.defaultOptions.PopulationSize=this.popSizeDefault;
-        this.defaultOptions.EliteCount=1+floor(this.popSizeDefault/12);
+        this.defaultOptions.PopulationSize=this.popSize;
+        this.defaultOptions.EliteCount=1+floor(this.popSize/12);
 
         % workaround to access stepGA from the gads toolbox
         userPath=pwd;
@@ -57,29 +52,13 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
         cd(userPath);
         this.stepGAhandle=temp;
       end
+      
+      % create objective
+      this.M=Objective(this.popSize);
      
-      % initialize measures
-      K=numel(measureNames);
-      this.g=cell(K,1);
-      for k=1:K
-        this.g{k}=Measure.factory(measureNames{k},uri);
-      end
-      initialTime=waitForData(this);      
-
-      % process dynamic model input description
-      this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
-      this.extensionBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getExtensionBlockDescription']);
-      this.updateRate=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']);
-
       % initialize dynamic models
-      K=this.popSizeDefault;
-      this.bits=logical(rand(K,numInitialBits(this))>0.5);
-      this.F=cell(K,1);
-      for k=1:K
-        initialBlock=getBlocks(this,k);
-        this.F{k}=DynamicModel.factory(dynamicModelName,initialTime,initialBlock,uri);
-      end
-      extendAll(this);
+      numBits=numInitialBits(this)+numExtensionBits(this)*getNumExtensionBlocks(this.M.F{1});
+      this.bits=logical(rand(this.popSize,numBits)>0.5);
       
       % determine initial costs
       objectiveContainer('put',this);
@@ -87,17 +66,22 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     end
     
     function [xEst,cEst]=getResults(this)
-      xEst=cat(1,this.F{:});
+      xEst=cat(1,this.M.F{:});
       cEst=this.cost;
     end
     
     function step(this)
-      refreshAll(this);
-      extendAll(this);
-      
+      oldNumBlocks=getNumExtensionBlocks(this.M.F{1});
+      refresh(this.M);
+      newNumBlocks=getNumExtensionBlocks(this.M.F{1});
+      if(newNumBlocks>oldNumBlocks)    
+        numAppend=newNumBlocks-oldNumBlocks;
+        this.bits=[this.bits,logical(rand(this.popSize,numAppend*numExtensionBits(this))>0.5)];
+      end
       if(this.hasLicense)
         nvars=size(this.bits,2);
         nullstate=struct('FunEval',0);
+        objectiveContainer('put',this);
         [this.cost,this.bits]=feval(this.stepGAhandle,this.cost,this.bits,this.defaultOptions,nullstate,nvars,@objectiveContainer);
         putBits(this);
       else
@@ -109,19 +93,19 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   end
   
   methods (Access=private)
-    % Vectorized objective function
+    % vectorized objective function
     function cost=objective(this,bits)
       this.bits=bits;
       putBits(this);
-      numIndividuals=numel(this.F);
-      numMeasures=numel(this.g);
+      numIndividuals=numel(this.M.F);
+      numMeasures=numel(this.M.g);
       allGraphs=cell(numIndividuals,numMeasures+1);
-      numEB=double(getNumExtensionBlocks(this.F{1}));
+      numEB=double(getNumExtensionBlocks(this.M.F{1}));
       numEB1=numEB+1;
       numEdges=zeros(1,numMeasures);
       for k=1:numIndividuals
         % build cost graph from dynamic model
-        Fk=this.F{k};
+        Fk=this.M.F{k};
         cost=sparse([],[],[],numEB1,numEB1,numEB1);
         initialBlock=getInitialBlock(Fk);
         cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
@@ -133,7 +117,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
 
         % build cost graphs from measures
         for m=1:numMeasures
-          gm=this.g{m};
+          gm=this.M.g{m};
           if(k==1)
             [a,b]=findEdges(gm,uint32(0),last(gm)-this.dMax);
             numEdges(m)=numel(a);
@@ -175,11 +159,11 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     % ...
     function [initialBlock,extensionBlocks]=getBlocks(this,k)
       b=this.bits(k,:);
-      n1=this.initialBlockDescription.numLogical;
-      n2=n1+32*this.initialBlockDescription.numUint32;
+      n1=this.M.F{1}.getInitialBlockDescription.numLogical;
+      n2=n1+32*this.M.F{1}.getInitialBlockDescription.numUint32;
       initialBlock=struct('logical',b(1:n1),'uint32',bits2uints(b((n1+1):n2)));
-      n3=this.extensionBlockDescription.numLogical;
-      n4=n3+32*this.extensionBlockDescription.numUint32;
+      n3=this.M.F{1}.getExtensionBlockDescription.numLogical;
+      n4=n3+32*this.M.F{1}.getExtensionBlockDescription.numUint32;
       extensionBlocks=struct('logical',{},'uint32',{});
       numLeftover=size(this.bits,2)-n2;
       numEBits=n3+n4;
@@ -191,65 +175,21 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
         end
       end
     end
-
-    % refresh all measures
-    function refreshAll(this)
-      for k=1:numel(this.g)
-        refresh(this.g{k});
-      end
-    end
-    
-    function initialTime=waitForData(this)
-      initialTime=Inf;
-      fprintf('\nWaiting for data...');
-      while(isinf(initialTime))
-        refreshAll(this);
-        for k=1:numel(this.g)
-          if(hasData(this.g{k}))
-            initialTime=min(initialTime,getTime(this.g{k},first(this.g{k})));
-          end
-        end
-      end
-      fprintf('done');
-    end
-    
-    % extend all dynamic models
-    function extendAll(this)
-      if(this.updateRate)
-        [lastTime,tb]=domain(this.F{1});
-        for k=1:numel(this.g)
-          if(hasData(this.g{k}))
-            lastTime=max(lastTime,getTime(this.g{k},last(this.g{k})));
-          end
-        end
-        numNewBlocks=ceil((lastTime-tb)*this.updateRate);
-        numNewBits=numNewBlocks*numExtensionBits(this);
-        K=numel(this.F);
-        this.bits=[this.bits,logical(rand(K,numNewBits)>0.5)];
-        numOldBlocks=getNumExtensionBlocks(this.F{k});
-        for k=1:K
-          [initialBlock,extensionBlocks]=getBlocks(this,k);
-          if(numNewBlocks>numOldBlocks)
-            appendExtensionBlocks(this.F{k},extensionBlocks((numOldBlocks+1):end));
-          end
-        end
-      end
-    end
    
     function b=numInitialBits(this)
-      b=this.initialBlockDescription.numLogical+32*this.initialBlockDescription.numUint32;
+      b=this.M.F{1}.getInitialBlockDescription.numLogical+32*this.M.F{1}.getInitialBlockDescription.numUint32;
     end
 
     function b=numExtensionBits(this)
-      b=this.extensionBlockDescription.numLogical+32*this.extensionBlockDescription.numUint32;
+      b=this.M.F{1}.getExtensionBlockDescription.numLogical+32*this.M.F{1}.getExtensionBlockDescription.numUint32;
     end
     
     function putBits(this)
-      for k=1:numel(this.F)
+      for k=1:numel(this.M.F)
         [initialBlock,extensionBlocks]=getBlocks(this,k);
-        setInitialBlock(this.F{k},initialBlock);
+        setInitialBlock(this.M.F{k},initialBlock);
         if(~isempty(extensionBlocks))
-          setExtensionBlocks(this.F{k},uint32(0:(numel(extensionBlocks)-1)),extensionBlocks);
+          setExtensionBlocks(this.M.F{k},uint32(0:(numel(extensionBlocks)-1)),extensionBlocks);
         end
       end
     end
@@ -271,10 +211,10 @@ end
 
 function varargout=objectiveContainer(varargin)
   persistent this
-  arg1=varargin{1};
-  if(~ischar(arg1))
-    varargout{1}=objective(this,arg1);
-  elseif(strcmp(arg1,'put'))
+  bits=varargin{1};
+  if(~ischar(bits))
+    varargout{1}=objective(this,bits);
+  elseif(strcmp(bits,'put'))
     this=varargin{2};
   else
     error('incorrect argument list');

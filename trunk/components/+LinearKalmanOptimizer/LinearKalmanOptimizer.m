@@ -1,44 +1,39 @@
 classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConfig & Optimizer
   
  properties (GetAccess=private,SetAccess=private)
-    F
-    g
+    M
     state
     covariance
     cost
-    initialBlockDescription
   end
   
   methods (Access=public)
-    function this=LinearKalmanOptimizer(dynamicModelName,measureName,uri)
-      this=this@Optimizer(dynamicModelName,measureName,uri);
+    function this=LinearKalmanOptimizer
       fprintf('\n\n%s',class(this));
       
       % display warning
       fprintf('\nWarning: This optimizer updates itself using only the last on-diagonal measure.');
       
-      % initialize the measure (assuming a single measure)
-      this.g=Measure.factory(measureName{1},uri);
-      initialTime=waitForData(this);  
+      % create objective (assume single input)
+      this.M=Objective(1);
       
       % handle dynamic model update rate
-      updateRate=eval([dynamicModelName,'.',dynamicModelName,'.getUpdateRate']); 
+      updateRate=this.M.F{1}.getUpdateRate; 
       if(updateRate)
         error('This optimizer does not yet handle dynamic models with nonzero update rates.');
       end
       
       % handle dynamic model initial block description
-      this.initialBlockDescription=eval([dynamicModelName,'.',dynamicModelName,'.getInitialBlockDescription']);
-      if(this.initialBlockDescription.numLogical>0)
+      if(this.M.F{1}.getInitialBlockDescription.numLogical>0)
         fprintf('\nWarning: This optimizer sets all logical parameters to false.');
       end
       
       % set initial state (assuming its range is the interval [0,1])
-      this.state=repmat(0.5,[this.initialBlockDescription.numUint32,1]);
+      this.state=repmat(0.5,[this.M.F{1}.getInitialBlockDescription.numUint32,1]);
       
       % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
-      this.F=DynamicModel.factory(dynamicModelName,initialTime,initialBlock,uri);
+      setInitialBlock(this.M.F{1},initialBlock);
       
       % compute prior distribution model (assuming non-zero prior uncertainty)
       [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');
@@ -50,16 +45,16 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     end
     
     function [xEst,cEst]=getResults(this)
-      xEst=this.F;
+      xEst=this.M.F{1};
       cEst=this.cost;
     end
     
     function step(this)      
       % update the sensor
-      refresh(this.g);
+      refresh(this.M);
       
-      % return if no data is available
-      if(~hasData(this.g))
+      % return if no data is available (assuming a single measure)
+      if(~hasData(this.M.g{1}))
         return;
       end
       
@@ -86,7 +81,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       this.covariance=posteriorCovariance;
 
       % compute current trajectory and approximate cost
-      setInitialBlock(this.F,state2initialBlock(this,this.state));
+      setInitialBlock(this.M.F{1},state2initialBlock(this,this.state));
       this.cost=sqrt(trace(this.covariance));
       
       % optionally plot distributions
@@ -142,19 +137,19 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     end
     
     function y=priorCost(this,x)
-      y=computeInitialBlockCost(this.F,param2initialBlock(this,uint32(x)));
+      y=computeInitialBlockCost(this.M.F{1},param2initialBlock(this,uint32(x)));
     end
     
     function y=measurementCost(this,x)
-      node=last(this.g);
-      setInitialBlock(this.F,param2initialBlock(this,x));
-      y=computeEdgeCost(this.g,this.F,node,node);
+      node=last(this.M.g{1});
+      setInitialBlock(this.M.F{1},param2initialBlock(this,x));
+      y=computeEdgeCost(this.M.g{1},this.M.F{1},node,node);
     end
       
     % INPUT
     % param = uint32 numUint32-by-1
     function block=param2initialBlock(this,param)
-      block=struct('logical',false(1,this.initialBlockDescription.numLogical),'uint32',param');
+      block=struct('logical',false(1,this.M.F{1}.getInitialBlockDescription.numLogical),'uint32',param');
     end
 
     % INPUT
@@ -162,18 +157,6 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     function block=state2initialBlock(this,state)
       scale=4294967295; % double(intmax('uint32'))
       block=param2initialBlock(this,uint32(round(state*scale)));
-    end
-    
-    function initialTime=waitForData(this)
-      initialTime=Inf;
-      fprintf('\nWaiting for data...');
-      while(isinf(initialTime))
-        refresh(this.g);
-        if(hasData(this.g))
-          initialTime=min(initialTime,getTime(this.g,first(this.g)));
-        end
-      end
-      fprintf('done');
     end
   end
   
