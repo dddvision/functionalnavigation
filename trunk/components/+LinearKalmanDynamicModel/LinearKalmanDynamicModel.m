@@ -74,8 +74,8 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       cost=this.extensionBlockCost;
     end
     
-    function numExtensionBlocks=getNumExtensionBlocks(this)
-      numExtensionBlocks=this.numExtension;
+    function num=numExtensionBlocks(this)
+      num=this.numExtension;
     end
     
     function setExtensionBlocks(this,k,blocks)

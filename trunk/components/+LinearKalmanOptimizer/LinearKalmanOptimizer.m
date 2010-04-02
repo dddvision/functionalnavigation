@@ -53,7 +53,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       refresh(this.objective);
       
       % return if no data is available (assuming a single measure)
-      if(~hasData(this.objective.g{1}))
+      if(~hasData(this.objective,1))
         return;
       end
       
@@ -140,9 +140,9 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     end
     
     function y=measurementCost(this,x)
-      node=last(this.objective.g{1});
+      node=last(this.objective,1);
       setInitialBlock(this.objective.F,param2initialBlock(this,x));
-      y=computeEdgeCost(this.objective.g{1},this.objective.F,node,node);
+      y=computeEdgeCost(this.objective,1,1,node,node);
     end
       
     % INPUT

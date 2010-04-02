@@ -123,8 +123,8 @@ classdef DynamicModel < Trajectory
     % Get the total number of extension blocks
     %
     % OUTPUT
-    % numExtensionBlocks = total number of extension blocks, uint32 scalar
-    numExtensionBlocks=getNumExtensionBlocks(this);
+    % num = total number of extension blocks, uint32 scalar
+    num=numExtensionBlocks(this);
     
     % Set/Get multiple extension blocks
     %

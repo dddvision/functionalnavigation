@@ -75,8 +75,8 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       cost=this.extensionBlockCost;
     end
     
-    function numExtensionBlocks=getNumExtensionBlocks(this)
-      numExtensionBlocks=numel(this.block);
+    function num=numExtensionBlocks(this)
+      num=numel(this.block);
     end
     
     function setExtensionBlocks(this,k,blocks)
