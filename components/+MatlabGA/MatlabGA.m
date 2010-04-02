@@ -56,7 +56,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       this.objective=Objective(this.popSize);
      
       % initialize dynamic models
-      numBits=numInitialBits(this)+numExtensionBits(this)*getNumExtensionBlocks(this.objective.F(1));
+      numBits=numInitialBits(this)+numExtensionBits(this)*numExtensionBlocks(this.objective.F(1));
       this.bits=logical(rand(this.popSize,numBits)>0.5);
       
       % determine initial costs
@@ -70,9 +70,9 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     end
     
     function step(this)
-      oldNumBlocks=getNumExtensionBlocks(this.objective.F(1));
+      oldNumBlocks=numExtensionBlocks(this.objective.F(1));
       refresh(this.objective);
-      newNumBlocks=getNumExtensionBlocks(this.objective.F(1));
+      newNumBlocks=numExtensionBlocks(this.objective.F(1));
       if(newNumBlocks>oldNumBlocks)    
         numAppend=newNumBlocks-oldNumBlocks;
         this.bits=[this.bits,logical(rand(this.popSize,numAppend*numExtensionBits(this))>0.5)];
@@ -92,43 +92,42 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   end
   
   methods (Access=private)
-    % vectorized objective function
     function cost=simpleObjective(this,bits)
       this.bits=bits;
       putBits(this);
-      numIndividuals=numel(this.objective.F);
-      numMeasures=numel(this.objective.g);
-      allGraphs=cell(numIndividuals,numMeasures+1);
-      numEB=double(getNumExtensionBlocks(this.objective.F(1)));
-      numEB1=numEB+1;
-      numEdges=zeros(1,numMeasures);
-      for k=1:numIndividuals
-        % build cost graph from dynamic model
+      K=numel(this.objective.F);
+      M=numMeasures(this.objective);
+      B=double(numExtensionBlocks(this.objective.F(1)));
+      allGraphs=cell(K,M+1);
+      
+      % build cost graph from prior
+      for k=1:K
         Fk=this.objective.F(k);
-        cost=sparse([],[],[],numEB1,numEB1,numEB1);
+        cost=sparse([],[],[],B+1,B+1,B+1);
         initialBlock=getInitialBlock(Fk);
         cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
-        extensionBlocks=getExtensionBlocks(Fk,uint32(0:(numEB-1)));
-        for blk=1:numEB
-          cost(blk,blk+1)=computeExtensionBlockCost(Fk,extensionBlocks(blk));
+        extensionBlocks=getExtensionBlocks(Fk,uint32(0:(B-1)));
+        for b=1:B
+          cost(b,b+1)=computeExtensionBlockCost(Fk,extensionBlocks(b));
         end
         allGraphs{k,1}=cost;
+      end
 
-        % build cost graphs from measures
-        for m=1:numMeasures
-          gm=this.objective.g{m};
-          if(k==1)
-            [a,b]=findEdges(gm,uint32(0),last(gm)-this.dMax);
-            numEdges(m)=numel(a);
-          end
+      % build cost graphs from measures
+      numEdges=zeros(1,M);
+      for m=1:M
+        lastNode=last(this.objective,m);
+        [ka,kb]=findEdges(this.objective,m,uint32(0),lastNode-this.dMax);
+        numEdges(m)=numel(ka);
+        for k=1:K
           if(numEdges(m))
             cost=zeros(1,numEdges(m));
             for edge=1:numEdges(m)
-              cost(edge)=computeEdgeCost(gm,Fk,a(edge),b(edge));
+              cost(edge)=computeEdgeCost(this.objective,m,k,ka(edge),kb(edge));
             end
-            base=a(1);
-            span=double(b(end)-base+1);
-            allGraphs{k,1+m}=sparse(double(a-base+1),double(b-base+1),cost,span,span,numEdges(m));
+            base=ka(1);
+            span=double(kb(end)-base+1);
+            allGraphs{k,1+m}=sparse(double(ka-base+1),double(kb-base+1),cost,span,span,numEdges(m));
           else
             allGraphs{k,1+m}=0;
           end
@@ -136,16 +135,16 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       end
 
       % sum costs across graphs for each individual
-      cost=zeros(numIndividuals,1);
-      for k=1:numIndividuals
-        for m=1:(numMeasures+1)
+      cost=zeros(K,1);
+      for k=1:K
+        for m=1:(M+1)
           costkm=allGraphs{k,m};
           cost(k)=cost(k)+sum(costkm(:));
         end
       end
 
       % normalize costs by total number of blocks and edges
-      cost=cost/(1+numEB+sum(numEdges));
+      cost=cost/(1+B+sum(numEdges));
     end
     
     % bits are packed in the following order:

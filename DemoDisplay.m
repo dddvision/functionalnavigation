@@ -1,4 +1,4 @@
-classdef DemoDisplay < DemoDisplayConfig & handle
+classdef DemoDisplay < DemoConfig & handle
   
   properties (SetAccess=private,GetAccess=private)
     hfigure

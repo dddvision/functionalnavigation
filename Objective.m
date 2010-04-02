@@ -1,16 +1,17 @@
-classdef Objective < ObjectiveConfig
+classdef Objective < ObjectiveConfig & handle
   
   properties (GetAccess=public,SetAccess=private)
     F
-    g
+  end
+
+  properties (GetAccess=private,SetAccess=private)
+    measure
   end
   
   methods (Access=public)
     function this=Objective(popSize)
-      numMeasures=numel(this.measureNames);
-      this.g=cell(numMeasures,1);
-      for k=1:numMeasures
-        this.g{k}=Measure.factory(this.measureNames{k},this.uri);
+      for k=1:numel(this.measureNames)
+        this.measure{k}=Measure.factory(this.measureNames{k},this.uri);
       end
       [ta,tb]=waitForData(this);
       description=eval([this.dynamicModelName,'.',this.dynamicModelName,'.initialBlockDescription']);
@@ -21,6 +22,34 @@ classdef Objective < ObjectiveConfig
         this.F(k)=DynamicModel.factory(this.dynamicModelName,ta,initialBlock,this.uri);
       end
       extend(this,tb);
+    end
+    
+    function num=numMeasures(this)
+      num=numel(this.measure);
+    end
+    
+    function [ka,kb]=findEdges(this,m,kaMin,kbMin)
+      [ka,kb]=findEdges(this.measure{m},kaMin,kbMin);
+    end
+    
+    function cost=computeEdgeCost(this,m,k,ka,kb)
+      cost=computeEdgeCost(this.measure{m},this.F(k),ka,kb);
+    end
+    
+    function flag=hasData(this,m)
+      flag=hasData(this.measure{m});
+    end
+    
+    function ka=first(this,m)
+      ka=first(this.measure{m});
+    end
+    
+    function ka=last(this,m)
+      ka=last(this.measure{m});
+    end
+    
+    function time=getTime(this,m,k)
+      time=getTime(this.measure{m},k);
     end
     
     function refresh(this)
@@ -34,22 +63,22 @@ classdef Objective < ObjectiveConfig
       ta=Inf;
       tb=-Inf;
       while(isinf(ta))
-        for k=1:numel(this.g)
-          gk=this.g{k};
-          refresh(gk);
-          if(hasData(gk))
-            ta=min(ta,getTime(gk,first(gk)));
-            tb=max(tb,getTime(gk,last(gk)));
+        for m=1:numel(this.measure)
+          gm=this.measure{m};
+          refresh(gm);
+          if(hasData(gm))
+            ta=min(ta,getTime(gm,first(gm)));
+            tb=max(tb,getTime(gm,last(gm)));
           end
         end
       end
     end
     
     function extend(this,tbNew)
-      rate=this.F(1).updateRate;
+      rate=this.F.updateRate;
       if(rate)
         [ta,tb]=domain(this.F(1));
-        oldNumBlocks=getNumExtensionBlocks(this.F(1));
+        oldNumBlocks=numExtensionBlocks(this.F(1));
         newNumBlocks=ceil((tbNew-tb)*rate);
         numAppend=newNumBlocks-oldNumBlocks;
         if(newNumBlocks>oldNumBlocks)
