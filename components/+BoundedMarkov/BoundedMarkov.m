@@ -39,7 +39,6 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   methods (Access=public)
     function this=BoundedMarkov(initialTime,initialBlock,uri)
       this=this@DynamicModel(initialTime,initialBlock,uri);
-      fprintf('\n\n%s',class(this));
       assert(numel(initialBlock)==1);
       this.initialBlock=initialBlock;
       this.firstNewBlock=1;

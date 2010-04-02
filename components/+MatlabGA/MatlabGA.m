@@ -1,7 +1,7 @@
 classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   properties (GetAccess=private,SetAccess=private)
-    M
+    objective
     bits
     cost
     defaultOptions
@@ -10,7 +10,6 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   methods (Access=public)
     function this=MatlabGA
-      fprintf('\n\n%s',class(this));
             
       if(this.hasLicense)
         if(~license('test','gads_toolbox'))
@@ -54,10 +53,10 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       end
       
       % create objective
-      this.M=Objective(this.popSize);
+      this.objective=Objective(this.popSize);
      
       % initialize dynamic models
-      numBits=numInitialBits(this)+numExtensionBits(this)*getNumExtensionBlocks(this.M.F{1});
+      numBits=numInitialBits(this)+numExtensionBits(this)*getNumExtensionBlocks(this.objective.F(1));
       this.bits=logical(rand(this.popSize,numBits)>0.5);
       
       % determine initial costs
@@ -66,14 +65,14 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     end
     
     function [xEst,cEst]=getResults(this)
-      xEst=cat(1,this.M.F{:});
+      xEst=this.objective.F;
       cEst=this.cost;
     end
     
     function step(this)
-      oldNumBlocks=getNumExtensionBlocks(this.M.F{1});
-      refresh(this.M);
-      newNumBlocks=getNumExtensionBlocks(this.M.F{1});
+      oldNumBlocks=getNumExtensionBlocks(this.objective.F(1));
+      refresh(this.objective);
+      newNumBlocks=getNumExtensionBlocks(this.objective.F(1));
       if(newNumBlocks>oldNumBlocks)    
         numAppend=newNumBlocks-oldNumBlocks;
         this.bits=[this.bits,logical(rand(this.popSize,numAppend*numExtensionBits(this))>0.5)];
@@ -94,18 +93,18 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   methods (Access=private)
     % vectorized objective function
-    function cost=objective(this,bits)
+    function cost=simpleObjective(this,bits)
       this.bits=bits;
       putBits(this);
-      numIndividuals=numel(this.M.F);
-      numMeasures=numel(this.M.g);
+      numIndividuals=numel(this.objective.F);
+      numMeasures=numel(this.objective.g);
       allGraphs=cell(numIndividuals,numMeasures+1);
-      numEB=double(getNumExtensionBlocks(this.M.F{1}));
+      numEB=double(getNumExtensionBlocks(this.objective.F(1)));
       numEB1=numEB+1;
       numEdges=zeros(1,numMeasures);
       for k=1:numIndividuals
         % build cost graph from dynamic model
-        Fk=this.M.F{k};
+        Fk=this.objective.F(k);
         cost=sparse([],[],[],numEB1,numEB1,numEB1);
         initialBlock=getInitialBlock(Fk);
         cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
@@ -117,7 +116,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
 
         % build cost graphs from measures
         for m=1:numMeasures
-          gm=this.M.g{m};
+          gm=this.objective.g{m};
           if(k==1)
             [a,b]=findEdges(gm,uint32(0),last(gm)-this.dMax);
             numEdges(m)=numel(a);
@@ -159,11 +158,11 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     % ...
     function [initialBlock,extensionBlocks]=getBlocks(this,k)
       b=this.bits(k,:);
-      n1=this.M.F{1}.initialBlockDescription.numLogical;
-      n2=n1+32*this.M.F{1}.initialBlockDescription.numUint32;
+      n1=this.objective.F(1).initialBlockDescription.numLogical;
+      n2=n1+32*this.objective.F(1).initialBlockDescription.numUint32;
       initialBlock=struct('logical',b(1:n1),'uint32',bits2uints(b((n1+1):n2)));
-      n3=this.M.F{1}.extensionBlockDescription.numLogical;
-      n4=n3+32*this.M.F{1}.extensionBlockDescription.numUint32;
+      n3=this.objective.F(1).extensionBlockDescription.numLogical;
+      n4=n3+32*this.objective.F(1).extensionBlockDescription.numUint32;
       extensionBlocks=struct('logical',{},'uint32',{});
       numLeftover=size(this.bits,2)-n2;
       numEBits=n3+n4;
@@ -177,19 +176,19 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     end
    
     function b=numInitialBits(this)
-      b=this.M.F{1}.initialBlockDescription.numLogical+32*this.M.F{1}.initialBlockDescription.numUint32;
+      b=this.objective.F(1).initialBlockDescription.numLogical+32*this.objective.F(1).initialBlockDescription.numUint32;
     end
 
     function b=numExtensionBits(this)
-      b=this.M.F{1}.extensionBlockDescription.numLogical+32*this.M.F{1}.extensionBlockDescription.numUint32;
+      b=this.objective.F(1).extensionBlockDescription.numLogical+32*this.objective.F(1).extensionBlockDescription.numUint32;
     end
     
     function putBits(this)
-      for k=1:numel(this.M.F)
+      for k=1:numel(this.objective.F)
         [initialBlock,extensionBlocks]=getBlocks(this,k);
-        setInitialBlock(this.M.F{k},initialBlock);
+        setInitialBlock(this.objective.F(k),initialBlock);
         if(~isempty(extensionBlocks))
-          setExtensionBlocks(this.M.F{k},uint32(0:(numel(extensionBlocks)-1)),extensionBlocks);
+          setExtensionBlocks(this.objective.F(k),uint32(0:(numel(extensionBlocks)-1)),extensionBlocks);
         end
       end
     end
@@ -213,7 +212,7 @@ function varargout=objectiveContainer(varargin)
   persistent this
   bits=varargin{1};
   if(~ischar(bits))
-    varargout{1}=objective(this,bits);
+    varargout{1}=simpleObjective(this,bits);
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else

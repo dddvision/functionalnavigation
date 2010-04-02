@@ -12,58 +12,52 @@ classdef Objective < ObjectiveConfig
       for k=1:numMeasures
         this.g{k}=Measure.factory(this.measureNames{k},this.uri);
       end
-      initialTime=waitForData(this);
+      [ta,tb]=waitForData(this);
       description=eval([this.dynamicModelName,'.',this.dynamicModelName,'.initialBlockDescription']);
-      this.F=cell(popSize,1);
-      for k=1:popSize
+      initialBlock=generateBlock(description);
+      this.F=DynamicModel.factory(this.dynamicModelName,ta,initialBlock,this.uri);
+      for k=2:popSize
         initialBlock=generateBlock(description);
-        this.F{k}=DynamicModel.factory(this.dynamicModelName,initialTime,initialBlock,this.uri);
+        this.F(k)=DynamicModel.factory(this.dynamicModelName,ta,initialBlock,this.uri);
       end
-      extend(this);
+      extend(this,tb);
     end
     
     function refresh(this)
-      for k=1:numel(this.g)
-        refresh(this.g{k});
-      end
-      extend(this);
+      [ta,tb]=waitForData(this);
+      extend(this,tb);
     end
   end
   
   methods (Access=private)    
-    function initialTime=waitForData(this)
-      initialTime=Inf;
-      fprintf('\nWaiting for data...');
-      while(isinf(initialTime))
+    function [ta,tb]=waitForData(this)
+      ta=Inf;
+      tb=-Inf;
+      while(isinf(ta))
         for k=1:numel(this.g)
-          refresh(this.g{k});
-          if(hasData(this.g{k}))
-            initialTime=min(initialTime,getTime(this.g{k},first(this.g{k})));
+          gk=this.g{k};
+          refresh(gk);
+          if(hasData(gk))
+            ta=min(ta,getTime(gk,first(gk)));
+            tb=max(tb,getTime(gk,last(gk)));
           end
         end
       end
-      fprintf('done');
     end
     
-    function extend(this)
-      rate=this.F{1}.updateRate;
+    function extend(this,tbNew)
+      rate=this.F(1).updateRate;
       if(rate)
-        [lastTime,tb]=domain(this.F{1});
-        for k=1:numel(this.g)
-          if(hasData(this.g{k}))
-            lastTime=max(lastTime,getTime(this.g{k},last(this.g{k})));
-          end
-        end
-        oldNumBlocks=getNumExtensionBlocks(this.F{1});
-        newNumBlocks=ceil((lastTime-tb)*rate);
+        [ta,tb]=domain(this.F(1));
+        oldNumBlocks=getNumExtensionBlocks(this.F(1));
+        newNumBlocks=ceil((tbNew-tb)*rate);
         numAppend=newNumBlocks-oldNumBlocks;
         if(newNumBlocks>oldNumBlocks)
-          description=this.F{1}.extensionBlockDescription;
-          K=numel(this.F);
-          for k=1:K
-            for blk=1:numAppend
+          description=this.F(1).extensionBlockDescription;
+          for k=1:numel(this.F)
+            for b=1:numAppend
               extensionBlock=generateBlock(description);
-              appendExtensionBlocks(this.F{k},extensionBlock);
+              appendExtensionBlocks(this.F(k),extensionBlock);
             end
           end
         end
