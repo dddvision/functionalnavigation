@@ -30,7 +30,6 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
   methods (Access=public)
     function this=LinearKalmanDynamicModel(initialTime,initialBlock,uri)
       this=this@DynamicModel(initialTime,initialBlock,uri);
-      fprintf('\n\n%s',class(this));
       this.initialTime=initialTime;
       this.initialBlock=initialBlock;
 

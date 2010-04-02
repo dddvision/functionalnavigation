@@ -1,7 +1,7 @@
 classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConfig & Optimizer
   
  properties (GetAccess=private,SetAccess=private)
-    M
+    objective
     state
     covariance
     cost
@@ -9,31 +9,30 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
   
   methods (Access=public)
     function this=LinearKalmanOptimizer
-      fprintf('\n\n%s',class(this));
       
       % display warning
-      fprintf('\nWarning: This optimizer updates itself using only the last on-diagonal measure.');
+      fprintf('\n\nwarning: LinearKalmanOptimizer updates itself using only the last on-diagonal measure.');
       
-      % create objective (assume single input)
-      this.M=Objective(1);
+      % create objective
+      this.objective=Objective(1);
       
       % handle dynamic model update rate
-      rate=this.M.F{1}.updateRate; 
+      rate=this.objective.F.updateRate; 
       if(rate)
-        error('This optimizer does not yet handle dynamic models with nonzero update rates.');
+        error('LinearKalmanOptimizer does not yet handle dynamic models with nonzero update rates.');
       end
       
       % handle dynamic model initial block description
-      if(this.M.F{1}.initialBlockDescription.numLogical>0)
-        fprintf('\nWarning: This optimizer sets all logical parameters to false.');
+      if(this.objective.F.initialBlockDescription.numLogical>0)
+        fprintf('\n\nwarning: LinearKalmanOptimizer sets all logical parameters to false.');
       end
       
       % set initial state (assuming its range is the interval [0,1])
-      this.state=repmat(0.5,[this.M.F{1}.initialBlockDescription.numUint32,1]);
+      this.state=repmat(0.5,[this.objective.F.initialBlockDescription.numUint32,1]);
       
       % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
-      setInitialBlock(this.M.F{1},initialBlock);
+      setInitialBlock(this.objective.F,initialBlock);
       
       % compute prior distribution model (assuming non-zero prior uncertainty)
       [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');
@@ -45,16 +44,16 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     end
     
     function [xEst,cEst]=getResults(this)
-      xEst=this.M.F{1};
+      xEst=this.objective.F;
       cEst=this.cost;
     end
     
     function step(this)      
       % update the sensor
-      refresh(this.M);
+      refresh(this.objective);
       
       % return if no data is available (assuming a single measure)
-      if(~hasData(this.M.g{1}))
+      if(~hasData(this.objective.g{1}))
         return;
       end
       
@@ -81,7 +80,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       this.covariance=posteriorCovariance;
 
       % compute current trajectory and approximate cost
-      setInitialBlock(this.M.F{1},state2initialBlock(this,this.state));
+      setInitialBlock(this.objective.F,state2initialBlock(this,this.state));
       this.cost=sqrt(trace(this.covariance));
       
       % optionally plot distributions
@@ -137,19 +136,19 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     end
     
     function y=priorCost(this,x)
-      y=computeInitialBlockCost(this.M.F{1},param2initialBlock(this,uint32(x)));
+      y=computeInitialBlockCost(this.objective.F,param2initialBlock(this,uint32(x)));
     end
     
     function y=measurementCost(this,x)
-      node=last(this.M.g{1});
-      setInitialBlock(this.M.F{1},param2initialBlock(this,x));
-      y=computeEdgeCost(this.M.g{1},this.M.F{1},node,node);
+      node=last(this.objective.g{1});
+      setInitialBlock(this.objective.F,param2initialBlock(this,x));
+      y=computeEdgeCost(this.objective.g{1},this.objective.F,node,node);
     end
       
     % INPUT
     % param = uint32 numUint32-by-1
     function block=param2initialBlock(this,param)
-      block=struct('logical',false(1,this.M.F{1}.initialBlockDescription.numLogical),'uint32',param');
+      block=struct('logical',false(1,this.objective.F.initialBlockDescription.numLogical),'uint32',param');
     end
 
     % INPUT

@@ -14,7 +14,6 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
   methods (Access=public)
     function this=LinearKalmanMeasure(uri)
       this=this@Measure(uri);
-           
       try
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
@@ -57,7 +56,7 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
           this.status=true;
         end
       else
-        fprintf('\nWarning: Simulation has run out of reference data.');
+        fprintf('\n\nwarning: Simulation has run out of reference data.');
       end
     end
 
