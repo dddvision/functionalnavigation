@@ -14,16 +14,16 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
   end
   
   methods (Static=true,Access=public)
-    function description=getInitialBlockDescription
+    function description=initialBlockDescription
       description=struct('numLogical',uint32(0),'numUint32',uint32(2));
     end
   
-    function description=getExtensionBlockDescription
+    function description=extensionBlockDescription
       description=struct('numLogical',uint32(0),'numUint32',uint32(0));
     end
     
-    function updateRate=getUpdateRate
-      updateRate=0;
+    function rate=updateRate
+      rate=0;
     end
   end
   

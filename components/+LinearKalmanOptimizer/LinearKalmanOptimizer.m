@@ -18,18 +18,18 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       this.M=Objective(1);
       
       % handle dynamic model update rate
-      updateRate=this.M.F{1}.getUpdateRate; 
-      if(updateRate)
+      rate=this.M.F{1}.updateRate; 
+      if(rate)
         error('This optimizer does not yet handle dynamic models with nonzero update rates.');
       end
       
       % handle dynamic model initial block description
-      if(this.M.F{1}.getInitialBlockDescription.numLogical>0)
+      if(this.M.F{1}.initialBlockDescription.numLogical>0)
         fprintf('\nWarning: This optimizer sets all logical parameters to false.');
       end
       
       % set initial state (assuming its range is the interval [0,1])
-      this.state=repmat(0.5,[this.M.F{1}.getInitialBlockDescription.numUint32,1]);
+      this.state=repmat(0.5,[this.M.F{1}.initialBlockDescription.numUint32,1]);
       
       % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
@@ -149,7 +149,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     % INPUT
     % param = uint32 numUint32-by-1
     function block=param2initialBlock(this,param)
-      block=struct('logical',false(1,this.M.F{1}.getInitialBlockDescription.numLogical),'uint32',param');
+      block=struct('logical',false(1,this.M.F{1}.initialBlockDescription.numLogical),'uint32',param');
     end
 
     % INPUT

@@ -13,7 +13,7 @@ classdef Objective < ObjectiveConfig
         this.g{k}=Measure.factory(this.measureNames{k},this.uri);
       end
       initialTime=waitForData(this);
-      description=eval([this.dynamicModelName,'.',this.dynamicModelName,'.getInitialBlockDescription']);
+      description=eval([this.dynamicModelName,'.',this.dynamicModelName,'.initialBlockDescription']);
       this.F=cell(popSize,1);
       for k=1:popSize
         initialBlock=generateBlock(description);
@@ -46,8 +46,8 @@ classdef Objective < ObjectiveConfig
     end
     
     function extend(this)
-      blocksPerSecond=this.F{1}.getUpdateRate;
-      if(blocksPerSecond)
+      rate=this.F{1}.updateRate;
+      if(rate)
         [lastTime,tb]=domain(this.F{1});
         for k=1:numel(this.g)
           if(hasData(this.g{k}))
@@ -55,10 +55,10 @@ classdef Objective < ObjectiveConfig
           end
         end
         oldNumBlocks=getNumExtensionBlocks(this.F{1});
-        newNumBlocks=ceil((lastTime-tb)*blocksPerSecond);
+        newNumBlocks=ceil((lastTime-tb)*rate);
         numAppend=newNumBlocks-oldNumBlocks;
         if(newNumBlocks>oldNumBlocks)
-          description=this.F{1}.getExtensionBlockDescription;
+          description=this.F{1}.extensionBlockDescription;
           K=numel(this.F);
           for k=1:K
             for blk=1:numAppend

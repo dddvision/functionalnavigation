@@ -24,7 +24,7 @@ classdef BoundedMarkovConfig < handle
     initialOmega=[0;0;0];
     
     % Model fidelity parameter (there are 32*numInputs bits per block)
-    updateRate=2;
+    rate=2;
   end
   
 end
