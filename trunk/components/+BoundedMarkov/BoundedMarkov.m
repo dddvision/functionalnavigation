@@ -23,16 +23,16 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   end
   
   methods (Static=true,Access=public)
-    function description=getInitialBlockDescription
+    function description=initialBlockDescription
       description=struct('numLogical',uint32(0),'numUint32',uint32(0));      
     end
     
-    function description=getExtensionBlockDescription
+    function description=extensionBlockDescription
       description=struct('numLogical',uint32(0),'numUint32',uint32(size(BoundedMarkov.BoundedMarkovConfig.B,2)));
     end
     
-    function updateRate=getUpdateRate
-      updateRate=BoundedMarkov.BoundedMarkovConfig.updateRate;
+    function rate=updateRate
+      rate=BoundedMarkov.BoundedMarkovConfig.rate;
     end
   end
   
@@ -49,7 +49,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       this.numInputs=size(this.B,2);
       this.state=zeros(this.numStates,this.chunkSize);
       this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
-      ABd=expmApprox(this.ABZ/this.updateRate);
+      ABd=expmApprox(this.ABZ/this.rate);
       this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
       this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
@@ -110,7 +110,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       if((N+1)>size(this.state,2))
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];
       end
-      this.tb=this.ta+N/this.updateRate;
+      this.tb=this.ta+N/this.rate;
     end
      
     function [ta,tb]=domain(this)
@@ -121,9 +121,9 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
       N=numel(t);
       dt=t-this.ta;
-      dk=dt*this.updateRate;
+      dk=dt*this.rate;
       dkFloor=floor(dk);
-      dtFloor=dkFloor/this.updateRate;
+      dtFloor=dkFloor/this.rate;
       dtRemain=dt-dtFloor;
       position=NaN(3,N);
       rotation=NaN(4,N);

@@ -159,11 +159,11 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     % ...
     function [initialBlock,extensionBlocks]=getBlocks(this,k)
       b=this.bits(k,:);
-      n1=this.M.F{1}.getInitialBlockDescription.numLogical;
-      n2=n1+32*this.M.F{1}.getInitialBlockDescription.numUint32;
+      n1=this.M.F{1}.initialBlockDescription.numLogical;
+      n2=n1+32*this.M.F{1}.initialBlockDescription.numUint32;
       initialBlock=struct('logical',b(1:n1),'uint32',bits2uints(b((n1+1):n2)));
-      n3=this.M.F{1}.getExtensionBlockDescription.numLogical;
-      n4=n3+32*this.M.F{1}.getExtensionBlockDescription.numUint32;
+      n3=this.M.F{1}.extensionBlockDescription.numLogical;
+      n4=n3+32*this.M.F{1}.extensionBlockDescription.numUint32;
       extensionBlocks=struct('logical',{},'uint32',{});
       numLeftover=size(this.bits,2)-n2;
       numEBits=n3+n4;
@@ -177,11 +177,11 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     end
    
     function b=numInitialBits(this)
-      b=this.M.F{1}.getInitialBlockDescription.numLogical+32*this.M.F{1}.getInitialBlockDescription.numUint32;
+      b=this.M.F{1}.initialBlockDescription.numLogical+32*this.M.F{1}.initialBlockDescription.numUint32;
     end
 
     function b=numExtensionBits(this)
-      b=this.M.F{1}.getExtensionBlockDescription.numLogical+32*this.M.F{1}.getExtensionBlockDescription.numUint32;
+      b=this.M.F{1}.extensionBlockDescription.numLogical+32*this.M.F{1}.extensionBlockDescription.numUint32;
     end
     
     function putBits(this)

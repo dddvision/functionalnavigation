@@ -60,23 +60,23 @@ classdef DynamicModel < Trajectory
     %
     % OUTPUT
     % description = (see above), struct scalar
-    description=getInitialBlockDescription;
+    description=initialBlockDescription;
     
     % Get description of a extension block
     %
     % OUTPUT
     % description = (see above), struct scalar
-    description=getExtensionBlockDescription;
+    description=extensionBlockDescription;
     
     % Get the conversion between number of extension blocks and associated time domain extension
     %
     % OUTPUT
-    % updateRate = each block will extend the domain the reciprical of this rate, double scalar
+    % rate = each block will extend the domain the reciprical of this rate, double scalar
     %
     % NOTES
     % The units for update rate are blocks per second
     % If the dynamic model takes no extension blocks then the update rate is 0
-    updateRate=getUpdateRate;
+    rate=updateRate;
   end
   
   methods (Abstract=true,Access=public)
