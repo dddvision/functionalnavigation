@@ -56,6 +56,63 @@ classdef Objective < ObjectiveConfig & handle
       [ta,tb]=waitForData(this);
       extend(this,tb);
     end
+    
+    function cost=computeCostMean(this)
+      % HACK: find another way to get these parameters
+      kaMaxLag=uint32(100);
+      kbMaxLag=uint32(100);
+
+      K=numel(this.F);
+      M=numMeasures(this);
+      B=double(numExtensionBlocks(this.F(1)));
+      allGraphs=cell(K,M+1);
+
+      % build cost graph from prior
+      for k=1:K
+        Fk=this.F(k);
+        cost=sparse([],[],[],B+1,B+1,B+1);
+        initialBlock=getInitialBlock(Fk);
+        cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
+        extensionBlocks=getExtensionBlocks(Fk,uint32(0:(B-1)));
+        for b=1:B
+          cost(b,b+1)=computeExtensionBlockCost(Fk,extensionBlocks(b));
+        end
+        allGraphs{k,1}=cost;
+      end
+
+      % build cost graphs from measures
+      numEdges=zeros(1,M);
+      for m=1:M
+        lastNode=last(this,m);
+        [ka,kb]=findEdges(this,m,lastNode-kaMaxLag,lastNode-kbMaxLag);
+        numEdges(m)=numel(ka);
+        for k=1:K
+          if(numEdges(m))
+            cost=zeros(1,numEdges(m));
+            for edge=1:numEdges(m)
+              cost(edge)=computeEdgeCost(this,m,k,ka(edge),kb(edge));
+            end
+            base=ka(1);
+            span=double(kb(end)-base+1);
+            allGraphs{k,1+m}=sparse(double(ka-base+1),double(kb-base+1),cost,span,span,numEdges(m));
+          else
+            allGraphs{k,1+m}=0;
+          end
+        end
+      end
+
+      % sum costs across graphs for each individual
+      cost=zeros(K,1);
+      for k=1:K
+        for m=1:(M+1)
+          costkm=allGraphs{k,m};
+          cost(k)=cost(k)+sum(costkm(:));
+        end
+      end
+
+      % normalize costs by total number of blocks and edges
+      cost=cost/(1+B+sum(numEdges));
+    end
   end
   
   methods (Access=private)    
