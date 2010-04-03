@@ -38,8 +38,8 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 Optimizer:
- *** Wrap "objective" so that all measures are refreshed simultaneously.
- * Use getInitialBlock and getExtensionBlocks to simplify MatlabGA optimizer.
+ * Find the right place to set kaMaxLag and kbMaxLag.
+ * getResults should return the objective instance (without costs?).
  * Create linkage-based GA crossover function.
 
 DynamicModel:
