@@ -6,7 +6,7 @@ classdef DataContainer < handle
   end
   
   methods (Static=true,Access=public)
-    % Instantiate a singleton subclass by name
+    % Public method to construct a singleton DataContainer
     %
     % INPUT
     % pkg = package identifier, string
@@ -35,7 +35,7 @@ classdef DataContainer < handle
   end
   
   methods (Access=protected)
-    % Construct a DataContainer
+    % Protected method to construct a singleton DataContainer
     %
     % NOTES
     % Each subclass constructor must explicitly call this constructor 

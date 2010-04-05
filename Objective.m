@@ -1,26 +1,36 @@
-classdef Objective < ObjectiveConfig & handle
+classdef Objective < handle
   
   properties (GetAccess=public,SetAccess=private)
-    F
+    input
   end
 
   properties (GetAccess=private,SetAccess=private)
     measure
+    dynamicModelName
+    uri
   end
   
   methods (Access=public)
-    function this=Objective(popSize)
-      for k=1:numel(this.measureNames)
-        this.measure{k}=Measure.factory(this.measureNames{k},this.uri);
+    function this=Objective(dynamicModelName,measureNames,uri)
+      assert(isa(dynamicModelName,'char'));
+      assert(isa(measureNames{1},'char'));
+      assert(isa(uri,'char'));
+      this.dynamicModelName=dynamicModelName;
+      this.uri=uri;
+      for m=1:numel(measureNames)
+        this.measure{m}=Measure.factory(measureNames{m},uri);
       end
       [ta,tb]=waitForData(this);
-      description=eval([this.dynamicModelName,'.',this.dynamicModelName,'.initialBlockDescription']);
+      description=eval([dynamicModelName,'.',dynamicModelName,'.initialBlockDescription']);
       initialBlock=generateBlock(description);
-      this.F=DynamicModel.factory(this.dynamicModelName,ta,initialBlock,this.uri);
-      for k=2:popSize
-        initialBlock=generateBlock(description);
-        this.F(k)=DynamicModel.factory(this.dynamicModelName,ta,initialBlock,this.uri);
-      end
+      this.input=DynamicModel.factory(dynamicModelName,ta,initialBlock,uri);
+      extend(this,tb);
+    end
+    
+    function addInput(this)
+      [ta,tb]=domain(this.input(1));
+      initialBlock=generateBlock(this.input(1).initialBlockDescription);
+      this.input(end+1)=DynamicModel.factory(this.dynamicModelName,ta,initialBlock,this.uri);
       extend(this,tb);
     end
     
@@ -33,7 +43,7 @@ classdef Objective < ObjectiveConfig & handle
     end
     
     function cost=computeEdgeCost(this,m,k,ka,kb)
-      cost=computeEdgeCost(this.measure{m},this.F(k),ka,kb);
+      cost=computeEdgeCost(this.measure{m},this.input(k),ka,kb);
     end
     
     function flag=hasData(this,m)
@@ -62,14 +72,14 @@ classdef Objective < ObjectiveConfig & handle
       kaMaxLag=uint32(100);
       kbMaxLag=uint32(100);
 
-      K=numel(this.F);
+      K=numel(this.input);
       M=numMeasures(this);
-      B=double(numExtensionBlocks(this.F(1)));
+      B=double(numExtensionBlocks(this.input(1)));
       allGraphs=cell(K,M+1);
 
       % build cost graph from prior
       for k=1:K
-        Fk=this.F(k);
+        Fk=this.input(k);
         cost=sparse([],[],[],B+1,B+1,B+1);
         initialBlock=getInitialBlock(Fk);
         cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
@@ -132,18 +142,18 @@ classdef Objective < ObjectiveConfig & handle
     end
     
     function extend(this,tbNew)
-      rate=this.F.updateRate;
+      rate=this.input.updateRate;
       if(rate)
-        [ta,tb]=domain(this.F(1));
-        oldNumBlocks=numExtensionBlocks(this.F(1));
+        [ta,tb]=domain(this.input(1));
+        oldNumBlocks=numExtensionBlocks(this.input(1));
         newNumBlocks=ceil((tbNew-tb)*rate);
         numAppend=newNumBlocks-oldNumBlocks;
         if(newNumBlocks>oldNumBlocks)
-          description=this.F(1).extensionBlockDescription;
-          for k=1:numel(this.F)
+          description=this.input(1).extensionBlockDescription;
+          for k=1:numel(this.input)
             for b=1:numAppend
               extensionBlock=generateBlock(description);
-              appendExtensionBlocks(this.F(k),extensionBlock);
+              appendExtensionBlocks(this.input(k),extensionBlock);
             end
           end
         end

@@ -16,7 +16,7 @@ classdef DynamicModel < Trajectory
   end
   
   methods (Static=true,Access=public)
-    % Instantiate a subclass by name
+    % Public method to construct a DynamicModel
     %
     % INPUT
     % pkg = package identifier, string
@@ -35,7 +35,7 @@ classdef DynamicModel < Trajectory
   end
   
   methods (Access=protected)
-    % Construct a dynamic model
+    % Protected method to construct a DynamicModel
     %
     % INPUT
     % initialTime = initial lower bound of the trajectory domain, double scalar

@@ -18,7 +18,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   end
   
   methods (Access=public)
-    function this=MatlabGA
+    function this=MatlabGA(objective)
+      this=this@Optimizer(objective);
             
       if(~license('test','gads_toolbox'))
         error('Requires license for GADS toolbox -- see MatlabGA configuration options');
@@ -60,17 +61,20 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       cd(userPath);
       this.stepGAhandle=temp;
       
-      % create objective
-      this.objective=Objective(this.PopulationSize);
+      % add inputs to the objective
+      for k=numel(objective.input):this.PopulationSize
+        addInput(objective);
+      end
       
       % determine initial costs
-      bits=getBits(this.objective);
-      objectiveContainer('put',this.objective);
+      bits=getBits(objective);
+      objectiveContainer('put',objective);
+      this.objective=objective;
       this.cost=feval(@objectiveContainer,bits);
     end
     
     function [xEst,cEst]=getResults(this)
-      xEst=this.objective.F;
+      xEst=this.objective.input;
       cEst=this.cost;
     end
     
@@ -80,31 +84,32 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       nvars=size(bits,2);
       nullstate=struct('FunEval',0);
       objectiveContainer('put',this.objective);
-      [this.cost,bits]=feval(this.stepGAhandle,this.cost,bits,this.defaultOptions,nullstate,nvars,@objectiveContainer);
+      [this.cost,bits]=feval(this.stepGAhandle,this.cost,bits,...
+        this.defaultOptions,nullstate,nvars,@objectiveContainer);
       putBits(this.objective,bits);
     end
   end
 end
 
 function [n1,n2,n3,n4]=analyzeStructure(objective)
-  n1=objective.F.initialBlockDescription.numLogical;
-  n2=n1+32*objective.F.initialBlockDescription.numUint32;
-  n3=objective.F.extensionBlockDescription.numLogical;
-  n4=n3+32*objective.F.extensionBlockDescription.numUint32;
+  n1=objective.input.initialBlockDescription.numLogical;
+  n2=n1+32*objective.input.initialBlockDescription.numUint32;
+  n3=objective.input.extensionBlockDescription.numLogical;
+  n4=n3+32*objective.input.extensionBlockDescription.numUint32;
 end
 
 function bits=getBits(objective)
   [n1,n2,n3,n4]=analyzeStructure(objective);
-  K=numel(objective.F);
-  B=objective.F(1).numExtensionBlocks;
+  K=numel(objective.input);
+  B=objective.input(1).numExtensionBlocks;
   bits=false(K,n2+B*n4);
   for k=1:K
-    initialBlock=getInitialBlock(objective.F(k));
+    initialBlock=getInitialBlock(objective.input(k));
     bits(k,1:n1)=initialBlock.logical;
     bits(k,(n1+1):n2)=uints2bits(initialBlock.uint32);
     base=n2;
     for b=1:B
-      extensionBlock=getExtensionBlocks(objective.F(k),uint32(b-1));
+      extensionBlock=getExtensionBlocks(objective.input(k),uint32(b-1));
       bits(k,(base+uint32(1)):(base+n3))=extensionBlock.logical;
       bits(k,(base+n3+uint32(1)):(base+n4))=uints2bits(extensionBlock.uint32);
       base=base+n4;
@@ -114,7 +119,7 @@ end
 
 function putBits(objective,bits)
   [n1,n2,n3,n4]=analyzeStructure(objective);
-  for k=1:numel(objective.F)
+  for k=1:numel(objective.input)
     b=bits(k,:);
     initialBlock=struct('logical',b(1:n1),'uint32',bits2uints(b((n1+1):n2)));
     extensionBlocks=struct('logical',{},'uint32',{});
@@ -128,9 +133,10 @@ function putBits(objective,bits)
         base=base+n4;
       end
     end
-    setInitialBlock(objective.F(k),initialBlock);
+    setInitialBlock(objective.input(k),initialBlock);
     if(~isempty(extensionBlocks))
-      setExtensionBlocks(objective.F(k),uint32(0:(numel(extensionBlocks)-1)),extensionBlocks);
+      setExtensionBlocks(objective.input(k),...
+        uint32(0:(numel(extensionBlocks)-1)),extensionBlocks);
     end
   end
 end
