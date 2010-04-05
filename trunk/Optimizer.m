@@ -6,10 +6,11 @@ classdef Optimizer < handle
   end
 
   methods (Static=true,Access=public)
-    % Instantiate a subclass by name
+    % Public method to construct an Optimizer
     %
     % INPUT
     % pkg = package identifier, string
+    % (see constructor argument list)
     %
     % OUTPUT
     % obj = object instance, Optimizer scalar
@@ -17,9 +18,23 @@ classdef Optimizer < handle
     % NOTES
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
-    function obj=factory(pkg)
-      obj=feval([pkg,'.',pkg]);
+    function obj=factory(pkg,objective)
+      obj=feval([pkg,'.',pkg],objective);
       assert(isa(obj,'Optimizer'));
+    end
+  end
+  
+  methods (Access=protected)
+    % Protected method to construct an Optimizer
+    %
+    % INPUT
+    % objective = object instance, Objective scalar
+    %
+    % NOTES
+    % Each subclass constructor must pass identical arguments to this 
+    %   constructor using the syntax this=this@Optimizer(objective);
+    function this=Optimizer(objective)
+      assert(isa(objective,'Objective'));
     end
   end
   

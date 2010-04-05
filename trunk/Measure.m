@@ -12,7 +12,7 @@ classdef Measure < Sensor
   end
 
   methods (Static=true,Access=public)
-    % Instantiate a subclass by name
+    % Public method to construct a Measure
     %
     % INPUT
     % pkg = package identifier, string
@@ -31,7 +31,7 @@ classdef Measure < Sensor
   end
   
   methods (Access=protected)
-    % Construct a Measure
+    % Protected method to construct a Measure
     %
     % INPUT
     % uri = uniform resource identifier, string
@@ -43,6 +43,7 @@ classdef Measure < Sensor
     %   'matlab:middleburyData'
     % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@Measure(uri);
+    % Non-subclasses should instantiate this class using its factory method
     function this=Measure(uri)
       assert(isa(uri,'char'));
     end

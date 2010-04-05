@@ -28,27 +28,30 @@ componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
 addpath(componentPath);
 fprintf('\npath added: %s',componentPath);
 
-% reset the random stream state
+% initialize the default pseudorandom number generator
 reset(RandStream.getDefaultStream);
 
-% instantiate a trajectory optimization manager
-tom=Optimizer.factory(DemoConfig.optimizerName);
+% instantiate an objective
+objective=Objective(DemoConfig.dynamicModelName,DemoConfig.measureNames,DemoConfig.uri);
 
-% create an instance of the GUI
-gui=DemoDisplay(ObjectiveConfig.uri);
+% instantiate an optimizer
+optimizer=Optimizer.factory(DemoConfig.optimizerName,objective);
+
+% instantiate the graphical display
+gui=DemoDisplay(DemoConfig.uri);
 
 % optimize forever
 index=0;
 while(true)
   % get the latest trajectory and cost estimates
-  [x,cost]=getResults(tom);
+  [trajectory,cost]=getResults(optimizer);
 
   % update graphical display
-  put(gui,x,cost,index);
+  put(gui,trajectory,cost,index);
 
   % take an optimization step
-  step(tom);
+  step(optimizer);
   
-  % increment the index
+  % increment index
   index=index+1;
 end

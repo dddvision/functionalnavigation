@@ -8,31 +8,32 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
   end
   
   methods (Access=public)
-    function this=LinearKalmanOptimizer
+    function this=LinearKalmanOptimizer(objective)
+      this=this@Optimizer(objective);
+      
+      % keep a copy of the objective handle
+      this.objective=objective;
       
       % display warning
       fprintf('\n\nwarning: LinearKalmanOptimizer updates itself using only the last on-diagonal measure.');
       
-      % create objective
-      this.objective=Objective(1);
-      
       % handle dynamic model update rate
-      rate=this.objective.F.updateRate; 
+      rate=this.objective.input.updateRate; 
       if(rate)
         error('LinearKalmanOptimizer does not yet handle dynamic models with nonzero update rates.');
       end
       
       % handle dynamic model initial block description
-      if(this.objective.F.initialBlockDescription.numLogical>0)
+      if(this.objective.input.initialBlockDescription.numLogical>0)
         fprintf('\n\nwarning: LinearKalmanOptimizer sets all logical parameters to false.');
       end
       
       % set initial state (assuming its range is the interval [0,1])
-      this.state=repmat(0.5,[this.objective.F.initialBlockDescription.numUint32,1]);
+      this.state=repmat(0.5,[this.objective.input.initialBlockDescription.numUint32,1]);
       
       % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
-      setInitialBlock(this.objective.F,initialBlock);
+      setInitialBlock(this.objective.input,initialBlock);
       
       % compute prior distribution model (assuming non-zero prior uncertainty)
       [jacobian,hessian]=computeSecondOrderModel(this,'priorCost');
@@ -44,7 +45,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     end
     
     function [xEst,cEst]=getResults(this)
-      xEst=this.objective.F;
+      xEst=this.objective.input;
       cEst=this.cost;
     end
     
@@ -80,7 +81,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       this.covariance=posteriorCovariance;
 
       % compute current trajectory and approximate cost
-      setInitialBlock(this.objective.F,state2initialBlock(this,this.state));
+      setInitialBlock(this.objective.input,state2initialBlock(this,this.state));
       this.cost=sqrt(trace(this.covariance));
       
       % optionally plot distributions
@@ -136,19 +137,19 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     end
     
     function y=priorCost(this,x)
-      y=computeInitialBlockCost(this.objective.F,param2initialBlock(this,uint32(x)));
+      y=computeInitialBlockCost(this.objective.input,param2initialBlock(this,uint32(x)));
     end
     
     function y=measurementCost(this,x)
       node=last(this.objective,1);
-      setInitialBlock(this.objective.F,param2initialBlock(this,x));
+      setInitialBlock(this.objective.input,param2initialBlock(this,x));
       y=computeEdgeCost(this.objective,1,1,node,node);
     end
       
     % INPUT
     % param = uint32 numUint32-by-1
     function block=param2initialBlock(this,param)
-      block=struct('logical',false(1,this.objective.F.initialBlockDescription.numLogical),'uint32',param');
+      block=struct('logical',false(1,this.objective.input.initialBlockDescription.numLogical),'uint32',param');
     end
 
     % INPUT
