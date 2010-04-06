@@ -1,7 +1,7 @@
 general:
  * Document that all measures are two-point functions.
  * Document that trajectory evaluations are in the "pose and tangent pose" space.
- * Making class aliases for "Time", "NodeIndex", and other simple classes.
+ * Making class aliases for "Time", "NodeIndex", "Pair" (for edges) and other simple classes.
 
 research:
  * Topics for publication:
@@ -24,6 +24,7 @@ research:
 testbed:
  *** Document distinction between testbed and Optimizer.
  * Create unit tests for all framework classes to check interfaces and exception handling.
+   * Make a container that has all sensors and type checks its inputs.
  * Create advanced unit tests to characterize measures
    * Cost when given ground truth
    * Granularity / dilution of precision
@@ -38,18 +39,16 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 Optimizer:
- * Find the right place to set kaMaxLag and kbMaxLag.
+ *** Find the right place to set kaMaxLag and kbMaxLag.
  * getResults should return the objective instance (without costs?).
  * Create linkage-based GA crossover function.
 
 DynamicModel:
- *** Store initial and extension blocks even if they do not affect the trajectory?
  *** Specify outputs of evaluate() using string like 'pqrs'
 
 Measure:
- *** Convert GlobalSatData to a Measure simulator.
- *** Review UCF's latest PointBasedMeasure submission.
- * Use SURF instead of SIFT.
+ *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).
+ * Split GlobalSatData into a measure and a reference trajectory simulator.
  * Implement SURF as a feature-matching option in OpticalFlowOpenCV.
  * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
  * Fix axis ordering bug in PointBasedMeasure
@@ -58,13 +57,9 @@ Measure:
 
 DataContainer:
  *** Develop stateless API compatible with AFRL ANTBED.
- * Find a way to distinguish between multiple sensors in a DataContainer that derive from the same class.
-   * Improve scheme for matching measures to sensor data.
-   * listSensors() should return a list of strings identifying sensors?
- * Split GlobalSatData into a measure and a reference trajectory simulator?
+ * Develop configuration tool that assists the user in selecting data sources.
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
- * Make a container that has all sensors and type checks its inputs.
  * VAMAV OpenSceneGraph simulator?
  * Packaging King Air flight?
  * Inertial sensor interface should specify its error characteristics?

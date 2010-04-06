@@ -26,6 +26,7 @@ classdef DynamicModel < Trajectory
     % obj = object instance, DynamicModel scalar
     %
     % NOTES
+    % Do not shadow this function
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
     function obj=factory(pkg,initialTime,initialBlock,uri)

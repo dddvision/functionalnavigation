@@ -15,6 +15,7 @@ classdef DataContainer < handle
     % this = object instance, DataContainer scalar
     %
     % NOTES
+    % Do not shadow this function
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
     % (MATLAB) The singleton design pattern is implemented by deriving from
@@ -29,7 +30,7 @@ classdef DataContainer < handle
       elseif(isa(singleton,subclass))
         this=singleton;
       else
-        error('Cannot switch subclass of singleton data container after instantiation.');
+        error('Cannot change subclass of singleton data container after instantiation.');
       end
     end
   end
@@ -44,7 +45,16 @@ classdef DataContainer < handle
     end
   end  
 
-  methods (Abstract=true) 
+  methods (Abstract=true)
+    % Get container description
+    %
+    % OUTPUT
+    % text = user friendly sensor description, string
+    %
+    % NOTES
+    % Description may be truncated after a few hundred characters when displayed
+    text=getDescription(this);    
+    
     % List available sensors of a given class
     %
     % INPUT
@@ -55,22 +65,22 @@ classdef DataContainer < handle
     %
     % NOTES
     % Sensors that inherit from the given class will also be included in the output list
-    % To list all sensors, use type='sensor'
+    % To list all, use type='Sensor'
     list=listSensors(this,type);
     
-    % Get sensor name
+    % Get sensor description
     %
     % INPUT
     % id = zero-based index, uint32 scalar
     %
     % OUTPUT
-    % name = sensor name, string
+    % text = user friendly sensor description, string
     %
     % NOTES
-    % The name does not need to be unique, but a specific name helps the 
-    %   user to configure the framework.
+    % Description may be truncated after a few hundred characters when displayed
+    % Description should be unique within a DataContainer
     % Throws an exception if input index is out of range
-    name=getSensorName(this,id);
+    text=getSensorDescription(this,id);
 
     % Get instance of a Sensor
     %

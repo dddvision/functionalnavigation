@@ -4,7 +4,8 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & DataContainer
     hasRef
     bodyRef
     sensors
-    names
+    description
+    sensorDescription
   end
   
   methods (Access=public)
@@ -26,13 +27,20 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & DataContainer
         delete(localZip);
       end
       this.hasRef=true;
-      this.bodyRef=ThesisDataDDiel.BodyReference(localCache,dataSetName);   
+      this.bodyRef=ThesisDataDDiel.BodyReference(localCache,dataSetName);
+      this.description=['Real and simulated visual and inertial data undergoing mixed motion. Reference: ',...
+        'David D. Diel. Stochastic Constraints for Vision-Aided Inertial Navigation. ',...
+        'MIT Masters Thesis, January 2005.'];
       this.sensors{1}=ThesisDataDDiel.CameraSim(localCache);
-      this.names{1}='CAMERA';
+      this.sensorDescription{1}='Monocular fisheye camera fixed to body frame with offset and rotation';
       this.sensors{2}=ThesisDataDDiel.InertialSim(localCache);
-      this.names{2}='IMU';
+      this.sensorDescription{2}='Six axis inertial sensor fixed to body frame with offset and rotation';
     end
-      
+    
+    function text=getDescription(this)
+      text=this.description;
+    end
+    
     function list=listSensors(this,type)
       assert(isa(type,'char'));
       K=numel(this.sensors);
@@ -45,9 +53,9 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & DataContainer
       list=uint32(find(flag)-1);
     end
     
-    function name=getSensorName(this,id)
+    function text=getSensorDescription(this,id)
       assert(isa(id,'uint32'));
-      name=this.names{id+1};
+      text=this.sensorDescription{id+1};
     end
     
     function obj=getSensor(this,id)
