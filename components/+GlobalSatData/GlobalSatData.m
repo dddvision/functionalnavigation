@@ -1,41 +1,46 @@
-% Simulated measurements from the global sat bu-1** gps sensor
 classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & DataContainer
 
   properties (GetAccess=private,SetAccess=private)
-    sensors
-    names
+    description
+    sensor
+    sensorDescription
     hasRef
     bodyRef
   end
 
   methods (Access=public)
     function this=GlobalSatData
-      this.sensors{1}=GlobalSatData.GpsSim;
-      this.names{1}='GPS';
+      this.description='Simulated GPS data';
+      this.sensor{1}=GlobalSatData.GpsSim;
+      this.sensorDescription{1}='GlobalSat BU-xxx GPS sensor';
       this.hasRef=true;
       this.bodyRef=GlobalSatData.BodyReference;
     end
     
+    function text=getDescription(this)
+      text=this.description;
+    end
+    
     function list=listSensors(this,type)
       assert(isa(type,'char'));
-      K=numel(this.sensors);
+      K=numel(this.sensor);
       flag=false(K,1);
       for k=1:K
-        if(isa(this.sensors{k},type))
+        if(isa(this.sensor{k},type))
           flag(k)=true;
         end
       end
       list=uint32(find(flag)-1);
     end
     
-    function name=getSensorName(this,id)
+    function text=getSensorDescription(this,id)
       assert(isa(id,'uint32'));
-      name=this.names{id+1};
+      text=this.sensorDescription{id+1};
     end
         
     function obj=getSensor(this,id)
       assert(isa(id,'uint32'));
-      obj=this.sensors{id+1};
+      obj=this.sensor{id+1};
     end
     
     function flag=hasReferenceTrajectory(this)

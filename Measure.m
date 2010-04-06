@@ -22,6 +22,7 @@ classdef Measure < Sensor
     % obj = object instance, Measure scalar
     %
     % NOTES
+    % Do not shadow this function
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
     function obj=factory(pkg,uri)
