@@ -43,7 +43,7 @@ classdef DataContainer < handle
     %   using the syntax this=this@DataContainer;
     function this=DataContainer
     end
-  end  
+  end
 
   methods (Abstract=true)
     % Get container description

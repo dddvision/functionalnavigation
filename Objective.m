@@ -142,15 +142,15 @@ classdef Objective < handle
     end
     
     function extend(this,tbNew)
-      rate=this.input.updateRate;
-      if(rate)
-        [ta,tb]=domain(this.input(1));
-        oldNumBlocks=numExtensionBlocks(this.input(1));
-        newNumBlocks=ceil((tbNew-tb)*rate);
-        numAppend=newNumBlocks-oldNumBlocks;
-        if(newNumBlocks>oldNumBlocks)
-          description=this.input(1).extensionBlockDescription;
-          for k=1:numel(this.input)
+      for k=1:numel(this.input)
+        rate=this.input(k).updateRate;
+        if(rate)
+          [ta,tb]=domain(this.input(k));
+          oldNumBlocks=numExtensionBlocks(this.input(k));
+          newNumBlocks=ceil((tbNew-tb)*rate);
+          numAppend=newNumBlocks-oldNumBlocks;
+          if(newNumBlocks>oldNumBlocks)
+            description=this.input(k).extensionBlockDescription;
             for b=1:numAppend
               extensionBlock=generateBlock(description);
               appendExtensionBlocks(this.input(k),extensionBlock);
