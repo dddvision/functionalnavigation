@@ -1,15 +1,20 @@
+#ifndef SENSOR_H
+#define SENSOR_H
+
+#include "tommas.h"
+
 namespace tommas
 {
-  typedef unsigned int NodeIndex;
-
   class Sensor
   {
   public:
-    void refresh(void);
-    bool hasData(void);
-    NodeIndex first(void);
-    NodeIndex last(void);
-    double getTime(NodeIndex);
+    virtual void refresh(void);
+    virtual bool hasData(void);
+    virtual NodeIndex first(void);
+    virtual NodeIndex last(void);
+    virtual Time getTime(NodeIndex);
   };
 }
+
+#endif
 
