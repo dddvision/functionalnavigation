@@ -91,7 +91,7 @@ classdef DynamicModel < Trajectory
     %
     % NOTE
     % For a normal distribution
-    %   Cost is the negative log likelihood of the distribution
+    %   Cost is the negative natural log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
     % Throws an exception if given block is not a struct scalar
     cost=computeInitialBlockCost(this,initialBlock);
@@ -116,7 +116,7 @@ classdef DynamicModel < Trajectory
     %
     % NOTE
     % For a normal distribution
-    %   Cost is the negative log likelihood of the distribution
+    %   Cost is the negative natural log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
     % Throws an exception if given block is not a struct scalar
     cost=computeExtensionBlockCost(this,block);

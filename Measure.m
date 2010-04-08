@@ -87,7 +87,7 @@ classdef Measure < Sensor
     %   body frame, then the sensor frame offset may need to be 
     %   kinematically composed with the body frame to locate the sensor
     % For a normal distribution
-    %   Cost is the negative log likelihood of the distribution
+    %   Cost is the negative natural log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
     % Throws an exception if any input is of the wrong size
     % Throws an exception if node indices do not correspond to an edge
