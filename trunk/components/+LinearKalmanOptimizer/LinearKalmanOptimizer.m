@@ -15,7 +15,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       this.objective=objective;
       
       % display warning
-      fprintf('\n\nwarning: LinearKalmanOptimizer updates itself using only the last on-diagonal measure.');
+      fprintf('\n\nwarning: LinearKalmanOptimizer only uses the last on-diagonal element of any measure.');
       
       % handle dynamic model update rate
       rate=this.objective.input.updateRate; 
@@ -52,12 +52,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     function step(this)      
       % update the sensor
       refresh(this.objective);
-      
-      % return if no data is available (assuming a single measure)
-      if(~hasData(this.objective,1))
-        return;
-      end
-      
+           
       % compute measurement distribution model
       [jacobian,hessian]=computeSecondOrderModel(this,'measurementCost');
       
@@ -141,9 +136,17 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     end
     
     function y=measurementCost(this,x)
-      node=last(this.objective,1);
+      y=0;
       setInitialBlock(this.objective.input,param2initialBlock(this,x));
-      y=computeEdgeCost(this.objective,1,1,node,node);
+      for m=1:numMeasures(this.objective)
+        if(hasData(this.objective,m));
+          node=last(this.objective,m);
+          node=findEdges(this.objective,m,node,node);
+          if(~isempty(node))
+            y=y+computeEdgeCost(this.objective,1,1,node,node);
+          end
+        end
+      end
     end
       
     % INPUT
