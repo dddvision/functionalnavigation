@@ -1,11 +1,15 @@
 % This class defines a uniform interface to sensor data and ground truth
 classdef DataContainer < handle
   
-  properties (Constant=true,GetAccess=public)
-    frameworkClass='DataContainer';
-  end
-  
   methods (Static=true,Access=public)
+    % Framework class identifier
+    %
+    % OUTPUT
+    % text = name of the framework class, string
+    function text=frameworkClass
+      text='DataContainer';
+    end
+    
     % Public method to construct a singleton DataContainer
     %
     % INPUT

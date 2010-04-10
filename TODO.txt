@@ -1,4 +1,6 @@
 general:
+ * Incorporate Google C++ Style Guidelines throughout the code.
+ * Explicitly use assert instead of exceptions in C++?
  * Document that all measures are two-point functions.
  * Document that trajectory evaluations are in the "pose and tangent pose" space.
  * Document that we are using log likelihood because it is summative instead of multiplicative.

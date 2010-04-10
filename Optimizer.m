@@ -1,11 +1,15 @@
 % This class defines the interface to an optimization engine
 classdef Optimizer < handle
-  
-  properties (Constant=true,GetAccess=public)
-    frameworkClass='Optimizer';  
-  end
 
   methods (Static=true,Access=public)
+    % Framework class identifier
+    %
+    % OUTPUT
+    % text = name of the framework class, string
+    function text=frameworkClass
+      text='Optimizer';
+    end
+      
     % Public method to construct an Optimizer
     %
     % INPUT

@@ -6,12 +6,16 @@
 % Each edge is assumed to be independent, and this means that correlated
 %   sensor noise must be modeled and mitigated behind the measure interface
 classdef Measure < Sensor
-  
-  properties (Constant=true,GetAccess=public)
-    frameworkClass='Measure';
-  end
 
   methods (Static=true,Access=public)
+    % Framework class identifier
+    %
+    % OUTPUT
+    % text = name of the framework class, string
+    function text=frameworkClass
+      text='Measure';
+    end
+    
     % Public method to construct a Measure
     %
     % INPUT

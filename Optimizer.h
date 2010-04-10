@@ -2,25 +2,29 @@
 #define OPTIMIZER_H
 
 #include "tommas.h"
-#include "Trajectory.h"
 
 namespace tommas
 {
+  class Optimizer;
+  typedef Optimizer* (*OptimizerFactory)(std::string,std::vector<std::string>,std::string);
+  extern std::map<const std::string,OptimizerFactory> optimizerList;
+  
   class Optimizer
   {
-  public:
-    static const std::string frameworkClass="Optimizer";
-    static Optimizer* factory(const std::string optimizerName,Objective* objective)
-      { return optimizerList[optimizerName](objective); }
-
   protected:
-    Optimizer(Objective*);
+    Optimizer(std::string,std::string,std::string){}
 
   public:
-    virtual void getResults(std::vector<Trajectory*>*,std::vector<Cost>*);
-    virtual void step(void);
+    virtual void getResults(std::vector<Trajectory*>*,std::vector<Cost>*) = 0;
+    virtual void step(void) = 0;
+    
+    static std::string frameworkClass(void) { return std::string("Optimizer"); }
+    static Optimizer* factory(std::string optimizerName,std::string dynamicModelName,
+      std::vector<std::string> measureNames,std::string uri)
+    {
+      return optimizerList[optimizerName](dynamicModelName,measureNames,uri);
+    }
   };
 }
 
 #endif
-

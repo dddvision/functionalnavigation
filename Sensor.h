@@ -5,14 +5,16 @@
 
 namespace tommas
 {
+  typedef unsigned int NodeIndex;
+
   class Sensor
   {
   public:
-    virtual void refresh(void);
-    virtual bool hasData(void);
-    virtual NodeIndex first(void);
-    virtual NodeIndex last(void);
-    virtual Time getTime(NodeIndex);
+    virtual void refresh(void) = 0;
+    virtual bool hasData(void) = 0;
+    virtual NodeIndex first(void) = 0;
+    virtual NodeIndex last(void) = 0;
+    virtual Time getTime(NodeIndex) = 0;
   };
 }
 

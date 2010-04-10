@@ -4,11 +4,6 @@
 %   trajectories in an infinite loop. See demoConfig for options.
 help(mfilename);
 
-% close figures and clear the workspace
-close('all');
-clear('classes');
-drawnow;
-
 % check MATLAB version
 try
   matlabVersion=version('-release');
@@ -18,6 +13,10 @@ end
 if(str2double(matlabVersion(1:4))<2008)
   error('TOMMAS requires MATLAB version 2008a or greater');
 end
+
+% close figures and clear the workspace
+close('all');
+clear('classes');
 
 % set the warning state
 warning('on','all');
@@ -31,14 +30,15 @@ fprintf('\npath added: %s',componentPath);
 % initialize the default pseudorandom number generator
 reset(RandStream.getDefaultStream);
 
-% instantiate an objective
-objective=Objective(DemoConfig.dynamicModelName,DemoConfig.measureNames,DemoConfig.uri);
+% get configuration
+config=DemoConfig;
 
 % instantiate an optimizer
-optimizer=Optimizer.factory(DemoConfig.optimizerName,objective);
+objective=Objective(config.dynamicModelName,config.measureNames,config.uri);
+optimizer=Optimizer.factory(config.optimizerName,objective);
 
 % instantiate the graphical display
-gui=DemoDisplay(DemoConfig.uri);
+gui=DemoDisplay(config.uri);
 
 % optimize forever
 index=0;
