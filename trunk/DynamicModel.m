@@ -11,11 +11,15 @@
 % The range of uint32 is [0,4294967295]
 classdef DynamicModel < Trajectory
   
-  properties (Constant=true,GetAccess=public)
-    frameworkClass='DynamicModel';
-  end
-  
   methods (Static=true,Access=public)
+    % Framework class identifier
+    %
+    % OUTPUT
+    % text = name of the framework class, string
+    function text=frameworkClass
+      text='DynamicModel';
+    end
+    
     % Public method to construct a DynamicModel
     %
     % INPUT
