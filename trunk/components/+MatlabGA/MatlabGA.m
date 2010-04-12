@@ -18,8 +18,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   end
   
   methods (Access=public)
-    function this=MatlabGA(objective)
-      this=this@Optimizer(objective);
+    function this=MatlabGA(dynamicModelName,measureNames,uri)
+      this=this@Optimizer(dynamicModelName,measureNames,uri);
             
       if(~license('test','gads_toolbox'))
         error('Requires license for GADS toolbox -- see MatlabGA configuration options');
@@ -61,15 +61,17 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       cd(userPath);
       this.stepGAhandle=temp;
       
+      % instantiate the default objective
+      this.objective=Objective(dynamicModelName,measureNames,uri);
+      
       % add inputs to the objective
-      for k=numel(objective.input):this.PopulationSize
-        addInput(objective);
+      for k=numel(this.objective.input):this.PopulationSize
+        addInput(this.objective);
       end
       
       % determine initial costs
-      bits=getBits(objective);
-      objectiveContainer('put',objective);
-      this.objective=objective;
+      bits=getBits(this.objective);
+      objectiveContainer('put',this.objective);
       this.cost=feval(@objectiveContainer,bits);
     end
     

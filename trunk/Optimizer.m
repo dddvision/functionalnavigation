@@ -23,8 +23,8 @@ classdef Optimizer < handle
     % Do not shadow this function
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
-    function obj=factory(pkg,objective)
-      obj=feval([pkg,'.',pkg],objective);
+    function obj=factory(pkg,dynamicModelName,measureNames,uri)
+      obj=feval([pkg,'.',pkg],dynamicModelName,measureNames,uri);
       assert(isa(obj,'Optimizer'));
     end
   end
@@ -33,13 +33,18 @@ classdef Optimizer < handle
     % Protected method to construct an Optimizer
     %
     % INPUT
-    % objective = object instance, Objective scalar
+    % dynamicModelName = name of a DynamicModel subclass, string
+    % measureNames = list of names of Measure subclasses, cell array of strings
+    % uri = (see Measure constructor)
     %
     % NOTES
     % Each subclass constructor must pass identical arguments to this 
-    %   constructor using the syntax this=this@Optimizer(objective);
-    function this=Optimizer(objective)
-      assert(isa(objective,'Objective'));
+    %   constructor using the syntax this=this@Optimizer(dynamicModelName,measureNames,uri);
+    function this=Optimizer(dynamicModelName,measureNames,uri)
+      assert(isa(dynamicModelName,'char'));
+      assert(isa(measureNames,'cell'));
+      assert(isa(measureNames{1},'char'));
+      assert(isa(uri,'char'));
     end
   end
   

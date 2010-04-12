@@ -34,8 +34,7 @@ reset(RandStream.getDefaultStream);
 config=DemoConfig;
 
 % instantiate an optimizer
-objective=Objective(config.dynamicModelName,config.measureNames,config.uri);
-optimizer=Optimizer.factory(config.optimizerName,objective);
+optimizer=Optimizer.factory(config.optimizerName,config.dynamicModelName,config.measureNames,config.uri);
 
 % instantiate the graphical display
 gui=DemoDisplay(config.uri);

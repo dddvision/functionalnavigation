@@ -8,11 +8,11 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
   end
   
   methods (Access=public)
-    function this=LinearKalmanOptimizer(objective)
-      this=this@Optimizer(objective);
+    function this=LinearKalmanOptimizer(dynamicModelName,measureNames,uri)
+      this=this@Optimizer(dynamicModelName,measureNames,uri);
       
-      % keep a copy of the objective handle
-      this.objective=objective;
+      % instantiate the default objective
+      this.objective=Objective(dynamicModelName,measureNames,uri);
       
       % display warning
       fprintf('\n\nwarning: LinearKalmanOptimizer only uses the last on-diagonal element of any measure.');
