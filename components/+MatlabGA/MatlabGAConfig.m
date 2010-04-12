@@ -1,5 +1,7 @@
 classdef MatlabGAConfig < handle
   properties (Constant=true,GetAccess=protected)
+    maxEdges=1000; % maximum number of edges to compute for each measure
+    
     % Genetic Algorithm parameters (see gaoptimset for details) 
     PopulationSize = 20;
     CrossoverFraction = 0.5;

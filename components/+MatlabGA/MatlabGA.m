@@ -11,6 +11,7 @@
 classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   properties (GetAccess=private,SetAccess=private)
+    kSpan
     objective
     cost
     defaultOptions
@@ -61,6 +62,9 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       cd(userPath);
       this.stepGAhandle=temp;
       
+      % compute span associated with a maximum number of graph edges (edges<=span*(span+1)/2)
+      this.kSpan=uint32(floor(-0.5+sqrt(0.25+2*this.maxEdges)));
+      
       % instantiate the default objective
       this.objective=Objective(dynamicModelName,measureNames,uri);
       
@@ -71,7 +75,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       
       % determine initial costs
       bits=getBits(this.objective);
-      objectiveContainer('put',this.objective);
+      objectiveContainer('put',this);
       this.cost=feval(@objectiveContainer,bits);
     end
     
@@ -85,7 +89,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       bits=getBits(this.objective);
       nvars=size(bits,2);
       nullstate=struct('FunEval',0);
-      objectiveContainer('put',this.objective);
+      objectiveContainer('put',this);
       [this.cost,bits]=feval(this.stepGAhandle,this.cost,bits,...
         this.defaultOptions,nullstate,nvars,@objectiveContainer);
       putBits(this.objective,bits);
@@ -160,8 +164,8 @@ function varargout=objectiveContainer(varargin)
   persistent this
   bits=varargin{1};
   if(~ischar(bits))
-    putBits(this,bits);
-    varargout{1}=computeCostMean(this);
+    putBits(this.objective,bits);
+    varargout{1}=computeCostMean(this.objective,this.kSpan,this.kSpan);
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else
