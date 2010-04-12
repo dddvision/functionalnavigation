@@ -42,9 +42,10 @@ demonstration:
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 Optimizer:
- *** Find the right place to set kaMaxLag and kbMaxLag.
- * getResults should return the objective instance (without costs?).
  * Create linkage-based GA crossover function.
+
+DynamicModel:
+ * Add functions for parameter generation and trajectory extension (then take MultiMeasure out of Objective).
 
 Measure:
  *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).
@@ -63,7 +64,6 @@ DataContainer:
  * VAMAV OpenSceneGraph simulator?
  * Packaging King Air flight?
  * Inertial sensor interface should specify its error characteristics?
- * Interfacing with Paul Metzger's simulator?
 
 CameraArray:
  * Check fisheye projection and inverseProjection equations at image center.

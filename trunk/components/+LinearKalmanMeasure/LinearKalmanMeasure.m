@@ -78,13 +78,13 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
       time=this.t(k);
     end
     
-    function [ka,kb]=findEdges(this,kaMin,kbMin)
-      assert(isa(kaMin,'uint32'));
-      assert(isa(kbMin,'uint32'));
-      assert(numel(kaMin)==1);
-      assert(numel(kbMin)==1);
+    function [ka,kb]=findEdges(this,kaSpan,kbSpan)
+      assert(isa(kaSpan,'uint32'));
+      assert(isa(kbSpan,'uint32'));
+      assert(numel(kaSpan)==1);
+      assert(numel(kbSpan)==1);
       if(this.status)
-        ka=max([this.ka,kaMin,kbMin]):this.kb;
+        ka=max([this.ka,this.kb-kaSpan,this.kb-kbSpan]):this.kb;
         kb=ka;
       else
         ka=uint32([]);

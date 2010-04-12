@@ -93,11 +93,13 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
       time=getTime(this.sensor,k);
     end
     
-    function [a,b]=findEdges(this,kaMin,kbMin)
-      assert(isa(kaMin,'uint32'));
-      assert(isa(kbMin,'uint32'));
-      assert(numel(kaMin)==1);
-      assert(numel(kbMin)==1);
+    function [a,b]=findEdges(this,kaSpan,kbSpan)
+      assert(isa(kaSpan,'uint32'));
+      assert(isa(kbSpan,'uint32'));
+      assert(numel(kaSpan)==1);
+      assert(numel(kbSpan)==1);
+      kaMin=last(this.sensor)-kaSpan;
+      kbMin=last(this.sensor)-kbSpan;
       if(hasData(this.sensor))
         kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
         kaMax=last(this.sensor)-uint32(1);

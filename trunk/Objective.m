@@ -38,8 +38,8 @@ classdef Objective < handle
       num=numel(this.measure);
     end
     
-    function [ka,kb]=findEdges(this,m,kaMin,kbMin)
-      [ka,kb]=findEdges(this.measure{m},kaMin,kbMin);
+    function [ka,kb]=findEdges(this,m,kaSpan,kbSpan)
+      [ka,kb]=findEdges(this.measure{m},kaSpan,kbSpan);
     end
     
     function cost=computeEdgeCost(this,m,k,ka,kb)
@@ -67,11 +67,7 @@ classdef Objective < handle
       extend(this,tb);
     end
     
-    function cost=computeCostMean(this)
-      % HACK: find another way to get these parameters
-      kaMaxLag=uint32(100);
-      kbMaxLag=uint32(100);
-
+    function cost=computeCostMean(this,kaSpan,kbSpan)
       K=numel(this.input);
       M=numMeasures(this);
       B=double(numExtensionBlocks(this.input(1)));
@@ -93,8 +89,7 @@ classdef Objective < handle
       % build cost graphs from measures
       numEdges=zeros(1,M);
       for m=1:M
-        lastNode=last(this,m);
-        [ka,kb]=findEdges(this,m,lastNode-kaMaxLag,lastNode-kbMaxLag);
+        [ka,kb]=findEdges(this,m,kaSpan,kbSpan);
         numEdges(m)=numel(ka);
         for k=1:K
           if(numEdges(m))

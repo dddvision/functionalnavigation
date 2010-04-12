@@ -58,8 +58,8 @@ classdef Measure < Sensor
     % Find a limited set of edges in the adjacency matrix of the cost graph
     %
     % INPUT
-    % kaMin = lower bound of lower node index, uint32 scalar
-    % kbMin = lower bound of upper node index, uint32 scalar
+    % kaSpan = maximum difference between lower node index and last node index, uint32 scalar
+    % kbSpan = maximum difference between upper node index and last node index, uint32 scalar
     %
     % OUTPUT
     % ka = lower node index for each edge, uint32 N-by-1
@@ -67,13 +67,13 @@ classdef Measure < Sensor
     %
     % NOTES
     % The number of edges returned is bounded:
-    %   numel(ka) <= (last(this)-kaMin+1)*(last(this)-kbMin+1)
+    %   numel(ka) <= (kaMaxLag+1)*(kbMaxLag+1)
     % If there are no edges, then the outputs are empty
     % Output indices are sorted in ascending order,
     %   first by lower index ka, then by upper index kb
     % If the graph is diagonal, then ka and kb are identical vectors
     % Throws an exception if any input is of the wrong size
-    [ka,kb]=findEdges(this,kaMin,kbMin);
+    [ka,kb]=findEdges(this,kaSpan,kbSpan);
     
     % Evaluate the cost of a single edge given a trajectory
     %
