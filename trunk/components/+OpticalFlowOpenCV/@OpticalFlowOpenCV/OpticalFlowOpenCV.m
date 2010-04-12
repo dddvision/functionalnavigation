@@ -124,20 +124,20 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
       ta=getTime(this.sensor,a);
       tb=getTime(this.sensor,b);
       
-      [pa,qa]=evaluate(x,ta);
-      [pb,qb]=evaluate(x,tb);  
+      poseA=evaluate(x,ta);
+      poseB=evaluate(x,tb);
 
       data=computeIntermediateDataCache(this,a,b);
       
       u=transpose(data.pixB(:,1)-data.pixA(:,1));
 	    v=transpose(data.pixB(:,2)-data.pixA(:,2));
       
-      Ea=Quat2Euler(qa);
-      Eb=Quat2Euler(qb);
+      Ea=Quat2Euler(poseA.q);
+      Eb=Quat2Euler(poseB.q);
       
- 	    translation=[pb(1)-pa(1);
-                   pb(2)-pa(2);
-                   pb(3)-pa(3)];
+ 	    translation=[poseB.p(1)-poseA.p(1);
+                   poseB.p(2)-poseA.p(2);
+                   poseB.p(3)-poseA.p(3)];
       rotation=[Eb(1)-Ea(1);
                 Eb(2)-Ea(2);
                 Eb(3)-Ea(3)];

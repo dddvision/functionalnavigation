@@ -2,7 +2,6 @@
 classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
-    halfIntMax=2147483647.5;
     initialBlockCost=0;
     extensionBlockCost=0;
     chunkSize=256;
@@ -117,32 +116,26 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       tb=this.tb;
     end
    
-    function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
+    function [pose,poseRate]=evaluate(this,t)
       N=numel(t);
       dt=t-this.ta;
       dk=dt*this.rate;
       dkFloor=floor(dk);
       dtFloor=dkFloor/this.rate;
       dtRemain=dt-dtFloor;
-      position=NaN(3,N);
-      rotation=NaN(4,N);
-      positionRate=NaN(3,N);
-      rotationRate=NaN(4,N);
+      pose=struct('p',NaN(3,N),'q',NaN(4,N));
       good=logical((t>=this.ta)&(t<=this.tb));
       firstGood=find(good,1,'first');
       lastGood=find(good,1,'last');
       blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers
       for n=firstGood:lastGood
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
-        position(:,n)=substate(1:3)+this.initialPosition;
+        pose.p(:,n)=substate(1:3)+this.initialPosition;
+        pose.q(:,n)=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
         if(nargout>1)
-          rotation(:,n)=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
-          if(nargout>2)
-            positionRate(:,n)=substate(7:9)+this.initialPositionRate;
-            if(nargout>3)
-              rotationRate(:,n)=0.5*Quat2Homo(rotation(:,n))*([0;this.initialOmega+substate(10:12)]);
-            end
-          end
+          poseRate=struct('r',NaN(3,N),'s',NaN(4,N));
+          poseRate.r(:,n)=substate(7:9)+this.initialPositionRate;
+          poseRate.s(:,n)=0.5*Quat2Homo(pose.q(:,n))*([0;this.initialOmega+substate(10:12)]);
         end
       end
     end
@@ -151,30 +144,31 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   methods (Access=private)
     function blockIntegrate(this,K)
       for k=this.firstNewBlock:K
-        force=block2unitforce(this,this.block(k));
-        this.state(:,k+1)=this.Ad*this.state(:,k)+this.Bd*force;
+        force=block2unitforce(this.block(k));
+        this.state(:,k+1)=this.Ad*this.state(:,k)+this.Bd*force';
       end
       this.firstNewBlock=K+1;
     end
     
     function substate=subIntegrate(this,kF,dt)
+      N=this.numStates;
       sF=kF+1;
       if(dt<eps)
         substate=this.state(:,sF);
       else
         ABsub=expmApprox(this.ABZ*dt);
-        Asub=ABsub(1:this.numStates,1:this.numStates);
-        Bsub=ABsub(1:this.numStates,(this.numStates+1):end);
-        force=block2unitforce(this,this.block(sF));
-        substate=Asub*this.state(:,sF)+Bsub*force;
+        force=block2unitforce(this.block(sF));
+        substate=ABsub*[this.state(:,sF);force']; % fast
+        substate=substate(1:N);
       end
-    end
-    
-    function force=block2unitforce(this,block)
-      force=double(block.uint32')/this.halfIntMax-1; % transpose
     end
   end
     
+end
+
+function force=block2unitforce(block)
+  halfIntMax=2147483647.5;
+  force=double(block.uint32)/halfIntMax-1;
 end
 
 function expA=expmApprox(A)

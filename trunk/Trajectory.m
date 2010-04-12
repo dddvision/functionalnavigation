@@ -16,10 +16,10 @@ classdef Trajectory < handle
     % t = time stamps sorted in ascending order, 1-by-N
     %
     % OUTPUT
-    % position = position of the body frame in ECEF at each time, double 3-by-N
-    % rotation = orientation of the body frame as a quaternion at each time, double 4-by-N
-    % positionRate = derivative of body position at each time, double 3-by-N
-    % rotationRate = derivative of body orientation at each time, double 4-by-N
+    % pose.p = position of the body frame in ECEF at each time, double 3-by-N
+    % pose.q = orientation of the body frame as a quaternion at each time, double 4-by-N
+    % poseRate.r = derivative of body position at each time, double 3-by-N
+    % poseRate.s = derivative of body orientation at each time, double 4-by-N
     %
     % NOTES
     % Using an Earth Centered Earth Fixed (ECEF) convention for the world frame:
@@ -32,7 +32,7 @@ classdef Trajectory < handle
     %   Body Axis 3 points down relative to the body (not gravity)
     % Quaternions are in scalar-first format
     % Evaluation outside of the domain returns NaN in corresponding columns
-    [position,rotation,positionRate,rotationRate]=evaluate(this,t);
+    [pose,poseRate]=evaluate(this,t);
   end
   
 end

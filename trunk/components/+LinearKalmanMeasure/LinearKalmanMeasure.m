@@ -44,10 +44,10 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
       else
         time=domain(this.xRef);
       end
-      truth=evaluate(this.xRef,time);
-      if(~isnan(truth))
+      pose=evaluate(this.xRef,time);
+      if(~isnan(pose.p))
         this.t=[this.t,time];
-        this.yBar=[this.yBar,truth(1)+this.deviation*randn];
+        this.yBar=[this.yBar,pose.p(1)+this.deviation*randn];
         if(this.status)
           this.kb=this.kb+uint32(1);
         else
@@ -101,8 +101,8 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
       assert(numel(b)==1);
       assert(this.status);
       assert(a==b);
-      pos=evaluate(x,this.t(b));
-      dnorm=(this.yBar(b)-pos(1))./this.deviation;
+      pose=evaluate(x,this.t(b));
+      dnorm=(this.yBar(b)-pose.p(1))./this.deviation;
       cost=0.5*dnorm.*dnorm;
     end
   end
