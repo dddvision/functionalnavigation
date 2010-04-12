@@ -108,31 +108,26 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       tb=Inf;
     end
    
-    function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
+    function [pose,poseRate]=evaluate(this,t)
       [a,b]=domain(this.xRef);
       t(t>b)=b;
 
       % simulate trajectory with position and velocity offsets
-      switch(nargout)
-        case 1
-          position=evaluate(this.xRef,t);
-        case 2
-          [position,rotation]=evaluate(this.xRef,t);
-        case 3
-          [position,rotation,positionRate]=evaluate(this.xRef,t);
-        otherwise
-          [position,rotation,positionRate,rotationRate]=evaluate(this.xRef,t);
+      if(nargout==1)
+        pose=evaluate(this.xRef,t);
+      else
+        [pose,poseRate]=evaluate(this.xRef,t);
       end
-      position(1,:)=position(1,:)+this.positionOffset+this.positionRateOffset*(t-this.initialTime);
-      if(nargout>2)
-        positionRate(1,:)=positionRate(1,:)+repmat(this.positionRateOffset,[1,numel(t)]);
+      pose.p(1,:)=pose.p(1,:)+this.positionOffset+this.positionRateOffset*(t-this.initialTime);
+      if(nargout>1)
+        poseRate.r(1,:)=poseRate.r(1,:)+repmat(this.positionRateOffset,[1,numel(t)]);
       end
         
       % compute correction based on given initial parameters
       z=initialBlock2deviation(this,this.initialBlock);
-      position(1,:)=position(1,:)-this.positionDeviation*z(1)-this.positionRateDeviation*z(2)*(t-this.initialTime);
-      if(nargout>2)
-        positionRate(1,:)=positionRate(1,:)-repmat(this.positionRateDeviation*z(2),[1,numel(t)]);
+      pose.p(1,:)=pose.p(1,:)-this.positionDeviation*z(1)-this.positionRateDeviation*z(2)*(t-this.initialTime);
+      if(nargout>1)
+        poseRate.r(1,:)=poseRate.r(1,:)-repmat(this.positionRateDeviation*z(2),[1,numel(t)]);
       end
     end
   end

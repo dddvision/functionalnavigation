@@ -41,19 +41,25 @@ classdef BodyReference < Trajectory
       b=this.T_imu(end);
     end
   
-    function [position,rotation,positionRate,rotationRate]=evaluate(this,t)
+    function [pose,poseRate]=evaluate(this,t)
       [a,b]=domain(this);
-      [pq,pqRate]=cardinalSpline(this.x_imu,this.T_imu,t);
-      position=pq(1:3,:);
-      rotation=pq(4:7,:);
-      positionRate=pqRate(1:3,:);
-      rotationRate=pqRate(4:7,:);
-      rotation=quatNorm(rotation);
       bad=(t<a)|(t>b);
-      position(:,bad)=NaN;
-      rotation(:,bad)=NaN;
-      positionRate(:,bad)=NaN;
-      rotationRate(:,bad)=NaN;
+      if(nargout==1)
+        [pq,rs]=cardinalSpline(this.x_imu,this.T_imu,t);
+      else
+        [pq,rs]=cardinalSpline(this.x_imu,this.T_imu,t);
+      end
+      pose.p=pq(1:3,:);
+      pose.p(:,bad)=NaN;
+      pose.q=pq(4:7,:);
+      pose.q=quatNorm(pose.q);
+      pose.q(:,bad)=NaN;
+      if(nargout>1)
+        poseRate.r=rs(1:3,:);
+        poseRate.r(:,bad)=NaN;
+        poseRate.s=rs(4:7,:);
+        poseRate.s(:,bad)=NaN;
+      end
     end
   end
   

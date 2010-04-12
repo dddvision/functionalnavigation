@@ -46,9 +46,6 @@ Optimizer:
  * getResults should return the objective instance (without costs?).
  * Create linkage-based GA crossover function.
 
-DynamicModel:
- *** Specify outputs of evaluate() using string like 'pqrs'
-
 Measure:
  *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).
  * Split GlobalSatData into a measure and a reference trajectory simulator.

@@ -20,19 +20,25 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
       b=this.gpsTime(end);
     end
     
-    function [position,rotation,positionRate,rotationRate] = evaluate(this,t)
+    function [pose,poseRate] = evaluate(this,t)
       [a,b]=domain(this);
-      [position,positionRate]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0);
-      position=position';
-      positionRate=positionRate';
       K=numel(t);
-      rotation=[ones(1,K);zeros(3,K)];
-      rotationRate=zeros(4,K);
       bad=(t<a)|(t>b);
-      position(:,bad)=NaN;
-      rotation(:,bad)=NaN;
-      positionRate(:,bad)=NaN;
-      rotationRate(:,bad)=NaN;
+      if(nargout==1)
+        pose.p=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0);
+      else
+        [pose.p,poseRate.r]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0);  
+      end
+      pose.p=pose.p';
+      pose.p(:,bad)=NaN;
+      pose.q=[ones(1,K);zeros(3,K)];
+      pose.q(:,bad)=NaN;
+      if(nargout>1)
+        poseRate.r=poseRate.r';
+        poseRate.r(:,bad)=NaN;
+        poseRate.s=zeros(4,K);
+        poseRate.s(:,bad)=NaN;
+      end
     end
   end
   
