@@ -2,6 +2,9 @@
 classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
+    initialNumLogical=uint32(0);
+    initialNumUint32=uint32(0);
+    extensionNumLogical=uint32(0);
     initialBlockCost=0;
     extensionBlockCost=0;
     chunkSize=256;
@@ -21,25 +24,23 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     ABZ % intermediate formulation of A and B matrices with zeros appended
   end
   
-  methods (Static=true,Access=public)
-    function description=initialBlockDescription
-      description=struct('numLogical',uint32(0),'numUint32',uint32(0));      
-    end
-    
-    function description=extensionBlockDescription
-      description=struct('numLogical',uint32(0),'numUint32',uint32(size(BoundedMarkov.BoundedMarkovConfig.B,2)));
-    end
-    
-    function rate=updateRate
-      rate=BoundedMarkov.BoundedMarkovConfig.rate;
-    end
-  end
-  
   methods (Access=public)
-    function this=BoundedMarkov(initialTime,initialBlock,uri)
-      this=this@DynamicModel(initialTime,initialBlock,uri);
-      assert(numel(initialBlock)==1);
-      this.initialBlock=initialBlock;
+    function description=initialBlockDescription(this)
+      description=struct('numLogical',this.initialNumLogical,'numUint32',this.initialNumUint32);      
+    end
+    
+    function description=extensionBlockDescription(this)
+      description=struct('numLogical',this.extensionNumLogical,'numUint32',uint32(size(this.B,2)));
+    end
+    
+    function rate=updateRate(this)
+      rate=this.rate;
+    end
+    
+    function this=BoundedMarkov(initialTime,uri)
+      this=this@DynamicModel(initialTime,uri);
+      this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
+        'uint32',zeros(1,this.initialNumUint32,'uint32'));
       this.firstNewBlock=1;
       this.ta=initialTime;
       this.tb=initialTime;
