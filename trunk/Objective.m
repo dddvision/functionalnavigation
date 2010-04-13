@@ -21,16 +21,17 @@ classdef Objective < handle
         this.measure{m}=Measure.factory(measureNames{m},uri);
       end
       [ta,tb]=waitForData(this);
-      description=eval([dynamicModelName,'.',dynamicModelName,'.initialBlockDescription']);
-      initialBlock=generateBlock(description);
-      this.input=DynamicModel.factory(dynamicModelName,ta,initialBlock,uri);
+      this.input=DynamicModel.factory(dynamicModelName,ta,uri);
+      initialBlock=generateBlock(this.input.initialBlockDescription);
+      setInitialBlock(this.input,initialBlock);
       extend(this,tb);
     end
     
     function addInput(this)
       [ta,tb]=domain(this.input(1));
-      initialBlock=generateBlock(this.input(1).initialBlockDescription);
-      this.input(end+1)=DynamicModel.factory(this.dynamicModelName,ta,initialBlock,this.uri);
+      this.input(end+1)=DynamicModel.factory(this.dynamicModelName,ta,this.uri);
+      initialBlock=generateBlock(this.input(end).initialBlockDescription);
+      setInitialBlock(this.input(end),initialBlock);
       extend(this,tb);
     end
     

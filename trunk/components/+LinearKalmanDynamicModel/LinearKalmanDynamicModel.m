@@ -1,8 +1,13 @@
 classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamicModelConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
-    sixthIntMax=715827883;
+    sixthIntMax=715827882.5;
+    initialNumLogical=uint32(0);
+    initialNumUint32=uint32(2);
+    extensionNumLogical=uint32(0);
+    extensionNumUint32=uint32(0);
     extensionBlockCost=0;
+    rate=0;
     numExtension=uint32(0);
     extensionErrorText='This dynamic model has no extension blocks.';
   end
@@ -13,25 +18,24 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
     xRef
   end
   
-  methods (Static=true,Access=public)
-    function description=initialBlockDescription
-      description=struct('numLogical',uint32(0),'numUint32',uint32(2));
+  methods (Access=public)
+    function description=initialBlockDescription(this)
+      description=struct('numLogical',this.initialNumLogical,'numUint32',this.initialNumUint32);
     end
   
-    function description=extensionBlockDescription
-      description=struct('numLogical',uint32(0),'numUint32',uint32(0));
+    function description=extensionBlockDescription(this)
+      description=struct('numLogical',this.extensionNumLogical,'numUint32',this.extensionNumUint32);
     end
     
-    function rate=updateRate
-      rate=0;
+    function rate=updateRate(this)
+      rate=this.rate;
     end
-  end
   
-  methods (Access=public)
-    function this=LinearKalmanDynamicModel(initialTime,initialBlock,uri)
-      this=this@DynamicModel(initialTime,initialBlock,uri);
+    function this=LinearKalmanDynamicModel(initialTime,uri)
+      this=this@DynamicModel(initialTime,uri);
       this.initialTime=initialTime;
-      this.initialBlock=initialBlock;
+      this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
+        'uint32',zeros(1,this.initialNumUint32,'uint32'));
 
       try
         [scheme,resource]=strtok(uri,':');

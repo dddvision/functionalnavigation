@@ -5,43 +5,53 @@
 
 namespace tommas
 {
+  class DynamicModel;
+  typedef DynamicModel* (*DynamicModelFactory)(Time,std::string);
+  extern std::map<const std::string,DynamicModelFactory> dynamicModelList;
+  
   typedef double Cost;
   typedef unsigned int BlockIndex;
   
-  // need to modify all of these types (see Tony's dynamic model code)
-  typedef unsigned int InitialBlock;
-  typedef unsigned int InitialBlockDescription;
-  typedef unsigned int ExtensionBlock;
-  typedef unsigned int ExtensionBlockDescription;
-  typedef unsigned int UpdateRate;
-  
-  class DynamicModel;
-  typedef DynamicModel* (*DynamicModelFactory)(Time,InitialBlock,std::string);
-  extern std::map<const std::string,DynamicModelFactory> dynamicModelList;
-
-  class DynamicModel : public Trajectory
+  class Block
   {
   public:
-    static std::string frameworkClass(void) { return std::string("DynamicModel"); }
-    static DynamicModel* factory(std::string dynamicModelName,Time initialTime,InitialBlock initialBlock,std::string uri)
-      { return dynamicModelList[dynamicModelName](initialTime,initialBlock,uri); }
+    virtual std::vector<bool>& Logical(void) = 0;
+    virtual std::vector<uint32_t>& Uint32(void) = 0;
+  };
   
-  protected:
-    DynamicModel(Time,InitialBlock,std::string){}
-  
+  class BlockDescription
+  {
   public:
-    static InitialBlockDescription initialBlockDescription;
-    static ExtensionBlockDescription extensionBlockDescription;
-    static UpdateRate updateRate;
-
-    virtual Cost computeInitialBlockCost(const InitialBlock) = 0;
-    virtual void setInitialBlock(const InitialBlock) = 0;
-    virtual InitialBlock getInitialBlock(void) = 0;
-    virtual Cost computeExtensionBlockCost(const ExtensionBlock) = 0;
+    virtual uint32_t numLogical(void) const = 0;
+    virtual uint32_t numUint32(void) const = 0;    
+  };
+  
+  class DynamicModel : public Trajectory
+  {
+  private:
+    DynamicModel(const DynamicModel&){}  
+    
+  protected:
+    DynamicModel(Time,std::string){}
+    ~DynamicModel(void){} 
+    
+  public:
+    virtual BlockDescription* initialBlockDescription(void) = 0;
+    virtual BlockDescription* extensionBlockDescription(void) = 0;
+    virtual Time updateRate(void) = 0;
+    virtual Cost computeInitialBlockCost(const Block*) = 0;
+    virtual void setInitialBlock(const Block*) = 0;
+    virtual Block* getInitialBlock(void) = 0;
+    virtual Cost computeExtensionBlockCost(const Block*) = 0;
     virtual BlockIndex numExtensionBlocks(void) = 0;
-    virtual void setExtensionBlocks(const std::vector<BlockIndex>,const std::vector<ExtensionBlock>) = 0;
-    virtual std::vector<ExtensionBlock> getExtensionBlocks(const std::vector<BlockIndex>) = 0;
-    virtual void appendExtensionBlocks(const std::vector<BlockIndex>) = 0;
+    virtual void setExtensionBlocks(const std::vector<BlockIndex>&,const std::vector<Block*>&) = 0;
+    virtual std::vector<Block*>& getExtensionBlocks(const std::vector<BlockIndex>&) = 0;
+    virtual void appendExtensionBlocks(const std::vector<BlockIndex>&,const std::vector<Block*>&) = 0;
+    
+  public:
+    static std::string frameworkClass(void) { return std::string("DynamicModel"); }
+    static DynamicModel* factory(std::string dynamicModelName,Time initialTime,std::string uri)
+      { return dynamicModelList[dynamicModelName](initialTime,uri); }
   };
 }
 

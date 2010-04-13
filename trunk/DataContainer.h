@@ -13,9 +13,11 @@ namespace tommas
   
   class DataContainer
   {
+  private:
+    DataContainer(const DataContainer&){}
+  
   protected:
     DataContainer(void){}
-    DataContainer(const DataContainer&){}
     
   public:
     virtual std::string getDescription(void) = 0;

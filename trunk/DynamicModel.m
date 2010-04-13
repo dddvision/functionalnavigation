@@ -33,8 +33,8 @@ classdef DynamicModel < Trajectory
     % Do not shadow this function
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
-    function obj=factory(pkg,initialTime,initialBlock,uri)
-      obj=feval([pkg,'.',pkg],initialTime,initialBlock,uri);
+    function obj=factory(pkg,initialTime,uri)
+      obj=feval([pkg,'.',pkg],initialTime,uri);
       assert(isa(obj,'DynamicModel'));
     end
   end
@@ -44,34 +44,31 @@ classdef DynamicModel < Trajectory
     %
     % INPUT
     % initialTime = initial lower bound of the trajectory domain, double scalar
-    % initialBlock = (see above), struct scalar
     % uri = (see Measure class constructor)
     %
     % NOTES
     % Each subclass constructor must pass identical arguments to this 
-    %   constructor using the syntax this=this@DynamicModel(initialTime,initialBlock,uri);
+    %   constructor using the syntax this=this@DynamicModel(initialTime,uri);
     % Throws an exception if any input is of the wrong size
-    function this=DynamicModel(initialTime,initialBlock,uri)
+    function this=DynamicModel(initialTime,uri)
       assert(isa(initialTime,'double'));
-      assert(isa(initialBlock,'struct'));
-      assert(isa(uri,'char'));
       assert(numel(initialTime)==1);
-      assert(numel(initialBlock)==1);
+      assert(isa(uri,'char'));
     end    
   end
   
-  methods (Abstract=true,Static=true,Access=public)
+  methods (Abstract=true,Access=public)
     % Get description of the initial block
     %
     % OUTPUT
     % description = (see above), struct scalar
-    description=initialBlockDescription;
+    description=initialBlockDescription(this);
     
     % Get description of a extension block
     %
     % OUTPUT
     % description = (see above), struct scalar
-    description=extensionBlockDescription;
+    description=extensionBlockDescription(this);
     
     % Get the conversion between number of extension blocks and associated time domain extension
     %
@@ -81,10 +78,8 @@ classdef DynamicModel < Trajectory
     % NOTES
     % The units for update rate are blocks per second
     % If the dynamic model takes no extension blocks then the update rate is 0
-    rate=updateRate;
-  end
-  
-  methods (Abstract=true,Access=public)
+    rate=updateRate(this);
+
     % Compute the cost associated with the initial block
     %
     % INPUT

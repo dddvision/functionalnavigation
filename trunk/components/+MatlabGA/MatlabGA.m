@@ -98,10 +98,12 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
 end
 
 function [n1,n2,n3,n4]=analyzeStructure(objective)
-  n1=objective.input.initialBlockDescription.numLogical;
-  n2=n1+32*objective.input.initialBlockDescription.numUint32;
-  n3=objective.input.extensionBlockDescription.numLogical;
-  n4=n3+32*objective.input.extensionBlockDescription.numUint32;
+  initialDescription=initialBlockDescription(objective.input(1));
+  extensionDescription=extensionBlockDescription(objective.input(1));
+  n1=initialDescription.numLogical;
+  n2=n1+32*initialDescription.numUint32;
+  n3=extensionDescription.numLogical;
+  n4=n3+32*extensionDescription.numUint32;
 end
 
 function bits=getBits(objective)
