@@ -42,7 +42,6 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & DataContainer
     end
     
     function list=listSensors(this,type)
-      assert(isa(type,'char'));
       K=numel(this.sensors);
       flag=false(K,1);
       for k=1:K
@@ -54,12 +53,10 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & DataContainer
     end
     
     function text=getSensorDescription(this,id)
-      assert(isa(id,'uint32'));
       text=this.sensorDescription{id+1};
     end
     
     function obj=getSensor(this,id)
-      assert(isa(id,'uint32'));
       obj=this.sensors{id+1};
     end
     

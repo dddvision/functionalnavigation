@@ -10,15 +10,15 @@ namespace tommas
       std::cout << std::endl << "OpticalFlowOpenCV::OpticalFlowOpenCV" << std::endl;
     }
 
-    EdgeList findEdges(const NodeIndex,const NodeIndex)
+    std::vector<Edge> findEdges(const unsigned,const unsigned)
     {
-      EdgeList edge(1);
+      std::vector<Edge> edge(1);
       return(edge);
     }
 
-    Cost computeEdgeCost(const Trajectory&,const NodeIndex,const NodeIndex)
+    double computeEdgeCost(const Trajectory&,const Edge)
     {
-      Cost cost=0.0;
+      double cost=0.0;
       return(cost);
     }
 
@@ -26,11 +26,11 @@ namespace tommas
 
     bool hasData(void) { return(true); };
 
-    NodeIndex first(void) { return(0); };
+    unsigned first(void) { return(0); };
 
-    NodeIndex last(void) { return(0); };
+    unsigned last(void) { return(0); };
 
-    Time getTime(NodeIndex) { return(0.0); };
+    Time getTime(unsigned k) { return(0.0); };
   };
   
   Measure* OpticalFlowOpenCVFactory(std::string uri) { return(new OpticalFlowOpenCV(uri)); }

@@ -22,7 +22,6 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
 
     function [pose,poseRate]=evaluate(this,t)
       t((t<this.a)|(t>this.b))=NaN;
-      assert(isa(t,'double'));
       posquat=double(eval(this.bodyPath)); % depends on t
       pose=struct('p',posquat(1:3,:),'q',posquat(4:7,:));
       if(nargout>1)

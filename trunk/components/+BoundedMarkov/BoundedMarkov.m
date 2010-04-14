@@ -54,13 +54,11 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     end
 
     function cost=computeInitialBlockCost(this,initialBlock)
-      assert(isa(initialBlock,'struct'));
       assert(numel(initialBlock)==1);
       cost=this.initialBlockCost;
     end
     
     function setInitialBlock(this,initialBlock)
-      assert(isa(initialBlock,'struct'));
       assert(numel(initialBlock)==1);
       this.initialBlock=initialBlock;
     end
@@ -70,7 +68,6 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     end
     
     function cost=computeExtensionBlockCost(this,block)
-      assert(isa(block,'struct'));
       assert(numel(block)==1);
       cost=this.extensionBlockCost;
     end
@@ -80,8 +77,6 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     end
     
     function setExtensionBlocks(this,k,blocks)
-      assert(isa(k,'uint32'));
-      assert(isa(blocks,'struct'));
       assert(numel(k)==numel(blocks));
       if(isempty(blocks))
         return;
@@ -93,7 +88,6 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     end
     
     function blocks=getExtensionBlocks(this,k)
-      assert(isa(k,'uint32'));
       blocks=struct('logical',{},'uint32',{});
       for kk=1:numel(k)
         blocks(kk)=this.block(k(kk)+1);

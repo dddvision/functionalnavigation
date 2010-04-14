@@ -22,7 +22,6 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & DataContainer
     end
     
     function list=listSensors(this,type)
-      assert(isa(type,'char'));
       K=numel(this.sensor);
       flag=false(K,1);
       for k=1:K
@@ -34,12 +33,10 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & DataContainer
     end
     
     function text=getSensorDescription(this,id)
-      assert(isa(id,'uint32'));
       text=this.sensorDescription{id+1};
     end
         
     function obj=getSensor(this,id)
-      assert(isa(id,'uint32'));
       obj=this.sensor{id+1};
     end
     

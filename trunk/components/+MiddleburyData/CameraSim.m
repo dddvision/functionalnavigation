@@ -37,7 +37,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
     end
     
     function refresh(this)
-      assert(isa(this,'Camera'));
+      assert(this.ready);
     end
     
     function flag=hasData(this)

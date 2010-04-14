@@ -10,7 +10,7 @@ classdef Trajectory < handle
     % tb = time domain upper bound, double scalar
     [ta,tb]=domain(this);
     
-    % Evaluate a single trajectory and its time derivative at multiple instants
+    % Evaluate a single trajectory (and its tangent) at multiple instants
     %
     % INPUT
     % t = time stamps sorted in ascending order, 1-by-N
@@ -33,6 +33,8 @@ classdef Trajectory < handle
     % Quaternions are in scalar-first format
     % Evaluation outside of the domain returns NaN in corresponding columns
     [pose,poseRate]=evaluate(this,t);
+    
+    %TODO: tangentPose=tangent(this,t);
   end
   
 end
