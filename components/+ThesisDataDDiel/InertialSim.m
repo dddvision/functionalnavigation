@@ -23,7 +23,7 @@ classdef InertialSim < InertialSixDoF
     end
 
     function refresh(this)
-      assert(isa(this,'InertialSixDoF'));
+      assert(this.ready);
     end
     
     function flag=hasData(this)

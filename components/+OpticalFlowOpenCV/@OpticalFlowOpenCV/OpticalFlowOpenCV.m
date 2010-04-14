@@ -94,8 +94,6 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
     end
     
     function [a,b]=findEdges(this,kaSpan,kbSpan)
-      assert(isa(kaSpan,'uint32'));
-      assert(isa(kbSpan,'uint32'));
       assert(numel(kaSpan)==1);
       assert(numel(kbSpan)==1);
       kaMin=last(this.sensor)-kaSpan;
@@ -112,9 +110,6 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
     end
     
     function cost=computeEdgeCost(this,x,a,b)
-      assert(isa(x,'Trajectory'));
-      assert(isa(a,'uint32'));
-      assert(isa(b,'uint32'));
       assert(numel(x)==1);
       assert(numel(a)==1);
       assert(numel(b)==1);

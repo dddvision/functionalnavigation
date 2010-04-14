@@ -5,7 +5,6 @@ general:
  * Document that all measures are two-point functions.
  * Document that trajectory evaluations are in the "pose and tangent pose" space.
  * Document that we are using log likelihood because it is summative instead of multiplicative.
- * Making class aliases for "Time", "NodeIndex", "Pair" (for edges) and other simple classes.
 
 research:
  * Topics for publication:
