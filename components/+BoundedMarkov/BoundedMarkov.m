@@ -12,8 +12,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   end
   
   properties (GetAccess=private,SetAccess=private)
-    ta
-    tb
+    interval
     numInputs
     initialBlock
     firstNewBlock % one-based indexing
@@ -42,8 +41,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
         'uint32',zeros(1,this.initialNumUint32,'uint32'));
       this.firstNewBlock=1;
-      this.ta=initialTime;
-      this.tb=initialTime;
+      this.interval=TimeInterval(initialTime,initialTime);
       this.block=struct('logical',{},'uint32',{});
       this.numInputs=size(this.B,2);
       this.state=zeros(this.numStates,this.chunkSize);
@@ -103,12 +101,11 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       if((N+1)>size(this.state,2))
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];
       end
-      this.tb=this.ta+N/this.rate;
+      this.interval.second=this.interval.first+N/this.rate;
     end
      
-    function [ta,tb]=domain(this)
-      ta=this.ta;
-      tb=this.tb;
+    function interval=domain(this)
+      interval=this.interval;
     end
    
     function pose=evaluate(this,t)
@@ -136,12 +133,12 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   
   methods (Access=private)
     function [goodList,dkFloor,dtRemain]=preEvaluate(this,t)
-      dt=t-this.ta;
+      dt=t-this.interval.first;
       dk=dt*this.rate;
       dkFloor=floor(dk);
       dtFloor=dkFloor/this.rate;
       dtRemain=dt-dtFloor;
-      good=logical((t>=this.ta)&(t<=this.tb));
+      good=logical((t>=this.interval.first)&(t<=this.interval.second));
       firstGood=find(good,1,'first');
       lastGood=find(good,1,'last');
       blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers

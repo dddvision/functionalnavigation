@@ -7,34 +7,33 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
   end
   
   methods (Access=public)
-    function this = BodyReference
+    function this=BodyReference
       currdir = fileparts(mfilename('fullpath'));
       full_fname = fullfile(currdir,this.referenceTrajectoryFile);
-      [this.gpsTime, lon, lat, alt, vDOP, hDOP] = textread(full_fname,'%f %f %f %f %f %f','delimiter',',');
+      [this.gpsTime,lon,lat,alt,vDOP,hDOP] = textread(full_fname,'%f %f %f %f %f %f','delimiter',',');
       [X,Y,Z] = GlobalSatData.lolah2ecef(lon,lat,alt);
       this.pts = [X,Y,Z];
     end
     
-    function [a,b] = domain(this)
-      a=this.gpsTime(1);
-      b=this.gpsTime(end);
+    function interval=domain(this)
+      interval=TimeInterval(this.gpsTime(1),this.gpsTime(end));
     end
     
-    function pose = evaluate(this,t)
+    function pose=evaluate(this,t)
       pose=repmat(Pose,[1,numel(t)]);
       p=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0); 
-      [a,b]=domain(this);
-      for k=find((t>=a)&(t<=b))
+      interval=domain(this);
+      for k=find((t>=interval.first)&(t<=interval.second))
         pose(k).p=p(:,k);
         pose(k).q=[1;0;0;0];
       end
     end
     
-    function tangentPose = tangent(this,t)
+    function tangentPose=tangent(this,t)
       tangentPose=repmat(TangentPose,[1,numel(t)]);
       [p,r]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0); 
-      [a,b]=domain(this);
-      for k=find((t>=a)&(t<=b))
+      interval=domain(this);
+      for k=find((t>=interval.first)&(t<=interval.second))
         tangentPose(k).p=p(:,k);
         tangentPose(k).q=[1;0;0;0];
         tangentPose(k).r=r(:,k);

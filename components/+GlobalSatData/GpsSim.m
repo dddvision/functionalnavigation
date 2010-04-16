@@ -26,8 +26,8 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
       % Read the noise errors from real Global Sat gps data file
       this.noise = readNoiseData('gtGPSdata.txt'); % Error samples (easting, northing, altitude)
       this.refTraj = GlobalSatData.BodyReference;
-      [ta,tb] = domain(this.refTraj);
-      tdelta = tb-ta;
+      interval = domain(this.refTraj);
+      tdelta = interval.second-interval.first;
       this.noise = this.noise(:,this.noise(1,:)<tdelta);
       this.precisionFlag = true;
       this.offset = [0;0;0];
@@ -59,8 +59,8 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
       assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
-      ta=domain(this.refTraj);
-      time=ta+this.noise(1,k);
+      interval=domain(this.refTraj);
+      time=interval.first+this.noise(1,k);
     end
 
     function [lon,lat,alt]=getGlobalPosition(this,k)

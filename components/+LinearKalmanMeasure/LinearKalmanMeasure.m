@@ -42,7 +42,8 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
       if(this.status)
         time=this.t(end)+this.dt;
       else
-        time=domain(this.xRef);
+        interval=domain(this.xRef);
+        time=interval.first;
       end
       pose=evaluate(this.xRef,time);
       if(~isnan(pose.p))
