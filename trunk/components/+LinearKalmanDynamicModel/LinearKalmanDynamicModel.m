@@ -111,27 +111,29 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       ta=this.initialTime;
       tb=Inf;
     end
-   
-    function [pose,poseRate]=evaluate(this,t)
+    
+    function pose=evaluate(this,t)
+      pose=evaluate(this.xRef,t);
       [a,b]=domain(this.xRef);
       t(t>b)=b;
-
-      % simulate trajectory with position and velocity offsets
-      if(nargout==1)
-        pose=evaluate(this.xRef,t);
-      else
-        [pose,poseRate]=evaluate(this.xRef,t);
-      end
-      pose.p(1,:)=pose.p(1,:)+this.positionOffset+this.positionRateOffset*(t-this.initialTime);
-      if(nargout>1)
-        poseRate.r(1,:)=poseRate.r(1,:)+repmat(this.positionRateOffset,[1,numel(t)]);
-      end
-        
-      % compute correction based on given initial parameters
       z=initialBlock2deviation(this,this.initialBlock);
-      pose.p(1,:)=pose.p(1,:)-this.positionDeviation*z(1)-this.positionRateDeviation*z(2)*(t-this.initialTime);
-      if(nargout>1)
-        poseRate.r(1,:)=poseRate.r(1,:)-repmat(this.positionRateDeviation*z(2),[1,numel(t)]);
+      for k=1:numel(t)
+        pose(k).p(1) = pose(k).p(1) + ...
+          this.positionOffset + this.positionRateOffset*(t(k)-this.initialTime) - ...
+          this.positionDeviation*z(1) - this.positionRateDeviation*z(2)*(t(k)-this.initialTime);
+      end
+    end
+   
+    function tangentPose=tangent(this,t)
+      tangentPose=tangent(this.xRef,t);
+      [a,b]=domain(this.xRef);
+      t(t>b)=b;
+      z=initialBlock2deviation(this,this.initialBlock);
+      for k=1:numel(t)
+        tangentPose(k).p(1) = tangentPose(k).p(1) + ...
+          this.positionOffset + this.positionRateOffset*(t(k)-this.initialTime) - ...
+          this.positionDeviation*z(1) - this.positionRateDeviation*z(2)*(t(k)-this.initialTime);
+        tangentPose(k).r(1) = tangentPose(k).r(1) + this.positionRateOffset - this.positionRateDeviation*z(2);
       end
     end
   end

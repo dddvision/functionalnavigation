@@ -20,24 +20,25 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
       b=this.gpsTime(end);
     end
     
-    function [pose,poseRate] = evaluate(this,t)
+    function pose = evaluate(this,t)
+      pose=repmat(Pose,[1,numel(t)]);
+      p=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0); 
       [a,b]=domain(this);
-      K=numel(t);
-      bad=(t<a)|(t>b);
-      if(nargout==1)
-        pose.p=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0);
-      else
-        [pose.p,poseRate.r]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0);  
+      for k=find((t>=a)&(t<=b))
+        pose(k).p=p(:,k);
+        pose(k).q=[1;0;0;0];
       end
-      pose.p=pose.p';
-      pose.p(:,bad)=NaN;
-      pose.q=[ones(1,K);zeros(3,K)];
-      pose.q(:,bad)=NaN;
-      if(nargout>1)
-        poseRate.r=poseRate.r';
-        poseRate.r(:,bad)=NaN;
-        poseRate.s=zeros(4,K);
-        poseRate.s(:,bad)=NaN;
+    end
+    
+    function tangentPose = tangent(this,t)
+      tangentPose=repmat(TangentPose,[1,numel(t)]);
+      [p,r]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0); 
+      [a,b]=domain(this);
+      for k=find((t>=a)&(t<=b))
+        tangentPose(k).p=p(:,k);
+        tangentPose(k).q=[1;0;0;0];
+        tangentPose(k).r=r(:,k);
+        tangentPose(k).s=[0;0;0;0];
       end
     end
   end

@@ -20,13 +20,24 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
       b=this.b;
     end
 
-    function [pose,poseRate]=evaluate(this,t)
-      t((t<this.a)|(t>this.b))=NaN;
+    function pose=evaluate(this,t)
+      pose=repmat(Pose,[1,numel(t)]);
       posquat=double(eval(this.bodyPath)); % depends on t
-      pose=struct('p',posquat(1:3,:),'q',posquat(4:7,:));
-      if(nargout>1)
-        posquatdot=double(eval(this.bodyPathDiff)); % depends on t
-        poseRate=struct('r',posquatdot(1:3,:),'s',posquatdot(4:7,:));
+      for k=find((t>=this.a)&(t<=this.b))
+        pose(k).p=posquat(1:3,k);
+        pose(k).q=posquat(4:7,k);
+      end
+    end
+    
+    function tangentPose=tangent(this,t)
+      tangentPose=repmat(TangentPose,[1,numel(t)]);
+      posquat=double(eval(this.bodyPath)); % depends on t
+      posquatdot=double(eval(this.bodyPathDiff)); % depends on t
+      for k=find((t>=this.a)&(t<=this.b))
+        tangentPose(k).p=posquat(1:3,k);
+        tangentPose(k).q=posquat(4:7,k);
+        tangentPose(k).r=posquatdot(1:3,k);
+        tangentPose(k).s=posquatdot(4:7,k);
       end
     end
   end

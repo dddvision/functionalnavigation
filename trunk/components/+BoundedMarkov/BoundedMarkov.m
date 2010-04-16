@@ -111,32 +111,43 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       tb=this.tb;
     end
    
-    function [pose,poseRate]=evaluate(this,t)
-      N=numel(t);
-      dt=t-this.ta;
-      dk=dt*this.rate;
-      dkFloor=floor(dk);
-      dtFloor=dkFloor/this.rate;
-      dtRemain=dt-dtFloor;
-      pose=struct('p',NaN(3,N),'q',NaN(4,N));
-      good=logical((t>=this.ta)&(t<=this.tb));
-      firstGood=find(good,1,'first');
-      lastGood=find(good,1,'last');
-      blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers
-      for n=firstGood:lastGood
+    function pose=evaluate(this,t)
+      [goodList,dkFloor,dtRemain]=preEvaluate(this,t);
+      pose=repmat(Pose,[1,numel(t)]);
+      for n=goodList
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
-        pose.p(:,n)=substate(1:3)+this.initialPosition;
-        pose.q(:,n)=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
-        if(nargout>1)
-          poseRate=struct('r',NaN(3,N),'s',NaN(4,N));
-          poseRate.r(:,n)=substate(7:9)+this.initialPositionRate;
-          poseRate.s(:,n)=0.5*Quat2Homo(pose.q(:,n))*([0;this.initialOmega+substate(10:12)]);
-        end
+        pose(n).p=substate(1:3)+this.initialPosition;
+        pose(n).q=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
+      end
+    end
+    
+    function tangentPose=tangent(this,t)
+      [goodList,dkFloor,dtRemain]=preEvaluate(this,t);
+      tangentPose=repmat(TangentPose,[1,numel(t)]);
+      for n=goodList
+        substate=subIntegrate(this,dkFloor(n),dtRemain(n));
+        tangentPose(n).p=substate(1:3)+this.initialPosition;
+        tangentPose(n).q=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
+        tangentPose(n).r=substate(7:9)+this.initialPositionRate;
+        tangentPose(n).s=0.5*Quat2Homo(pose.q(:,n))*([0;this.initialOmega+substate(10:12)]);
       end
     end
   end
   
   methods (Access=private)
+    function [goodList,dkFloor,dtRemain]=preEvaluate(this,t)
+      dt=t-this.ta;
+      dk=dt*this.rate;
+      dkFloor=floor(dk);
+      dtFloor=dkFloor/this.rate;
+      dtRemain=dt-dtFloor;
+      good=logical((t>=this.ta)&(t<=this.tb));
+      firstGood=find(good,1,'first');
+      lastGood=find(good,1,'last');
+      blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers
+      goodList=firstGood:lastGood;
+    end
+    
     function blockIntegrate(this,K)
       for k=this.firstNewBlock:K
         force=block2unitforce(this.block(k));

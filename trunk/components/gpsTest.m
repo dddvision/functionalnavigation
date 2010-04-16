@@ -18,7 +18,7 @@ function gpsTest(gpsHandle,refTraj)
   for indx = 1:K
     currTime = getTime(gpsHandle,indx);
     pose = evaluate(refTraj,currTime);
-    trueECEF(:,indx) = pose.p;
+    trueECEF(:,indx) = cat(2,pose.p);
     [gpsLonLatAlt(1,indx),gpsLonLatAlt(2,indx),gpsLonLatAlt(3,indx)] = getGlobalPosition(gpsHandle,ka+indx-1);
   end
   trueLonLatAlt = ecef2lolah(trueECEF);

@@ -35,34 +35,35 @@ classdef BodyReference < Trajectory
       % swap position and quaternion positions
       this.x_imu=this.x_imu([5,6,7,1,2,3,4],:);
     end
-  
+
     function [a,b]=domain(this)
       a=this.T_imu(1);
       b=this.T_imu(end);
     end
-  
-    function [pose,poseRate]=evaluate(this,t)
+
+    function pose=evaluate(this,t)
+      pose=repmat(Pose,[1,numel(t)]);
       [a,b]=domain(this);
-      bad=(t<a)|(t>b);
-      if(nargout==1)
-        [pq,rs]=cardinalSpline(this.x_imu,this.T_imu,t);
-      else
-        [pq,rs]=cardinalSpline(this.x_imu,this.T_imu,t);
+      pq=cardinalSpline(this.x_imu,this.T_imu,t);
+      for k=find((t>=a)&(t<=b))
+        pose(k).p=pq(1:3,k);
+        pose(k).q=pq(4:7,k);
       end
-      pose.p=pq(1:3,:);
-      pose.p(:,bad)=NaN;
-      pose.q=pq(4:7,:);
-      pose.q=quatNorm(pose.q);
-      pose.q(:,bad)=NaN;
-      if(nargout>1)
-        poseRate.r=rs(1:3,:);
-        poseRate.r(:,bad)=NaN;
-        poseRate.s=rs(4:7,:);
-        poseRate.s(:,bad)=NaN;
+    end
+
+    function tangentPose=tangent(this,t)
+      tangentPose=repmat(TangentPose,[1,numel(t)]);
+      [a,b]=domain(this);
+      [pq,rs]=cardinalSpline(this.x_imu,this.T_imu,t);
+      for k=find((t>=a)&(t<=b))
+        tangentPose(k).p=pq(1:3,k);
+        tangentPose(k).q=pq(4:7,k);
+        tangentPose(k).r=rs(1:3,k);
+        tangentPose(k).s=rs(4:7,k);
       end
     end
   end
-  
+
 end
 
 function [t,x]=ReadGantry(filename)

@@ -4,7 +4,8 @@ classdef DemoDisplay < DemoConfig & handle
     hfigure
     haxes
     tRef
-    poseRef
+    pRef
+    qRef
   end
   
   methods (Access=public)
@@ -29,7 +30,7 @@ classdef DemoDisplay < DemoConfig & handle
       set(this.haxes,'NextPlot','add');
       
       this.tRef=[];
-      this.poseRef=struct('p',{},'q',{});
+      this.pRef=[];
 
       if(nargin>0)
         [scheme,resource]=strtok(uri,':');
@@ -39,7 +40,9 @@ classdef DemoDisplay < DemoConfig & handle
           if(hasReferenceTrajectory(container))
             xRef=getReferenceTrajectory(container);
             this.tRef=generateSampleTimes(this,xRef);
-            this.poseRef=evaluate(xRef,this.tRef);
+            poseRef=evaluate(xRef,this.tRef);
+            this.pRef=cat(2,poseRef.p);
+            this.qRef=cat(2,poseRef.q);
           end
         end
       end
@@ -73,34 +76,38 @@ classdef DemoDisplay < DemoConfig & handle
       cla(this.haxes);
       
       % compute scene origin
-      if(isempty(this.poseRef.p))
+      if(isempty(this.pRef))
         pose=evaluate(x(kBest),domain(x(kBest)));
         origin=pose.p;
       else
-        origin=this.poseRef.p(:,1);
+        origin=this.pRef(:,1);
       end
         
       % plot trajectories and highlight the best one in a different color
       for k=1:K
         if(k==kBest)
           poseBest=evaluate(x(k),t);
-          plotIndividual(this,origin,poseBest,alpha(k),this.colorHighlight,'LineWidth',1.5);
+          pBest=cat(2,poseBest.p);
+          qBest=cat(2,poseBest.q);
+          plotIndividual(this,origin,pBest,qBest,alpha(k),this.colorHighlight,'LineWidth',1.5);
         elseif(~this.bestOnly)
           posek=evaluate(x(k),t);
-          plotIndividual(this,origin,posek,alpha(k),1-this.colorBackground);
+          pk=cat(2,posek.p);
+          qk=cat(2,posek.q);
+          plotIndividual(this,origin,pk,qk,alpha(k),1-this.colorBackground);
         end
       end
       
       % compare to ground truth if available
-      if(isempty(this.poseRef.p))
-        pScene=poseBest.p;
+      if(isempty(this.pRef))
+        pScene=pBest;
         summaryText=sprintf('cost=%0.6f',costBest);
       else
-        pScene=this.poseRef.p;
-        plotIndividual(this,origin,this.poseRef,1,this.colorReference,'LineWidth',1.5);
-        pDif=poseBest.p-this.poseRef.p; % position comparison
+        pScene=this.pRef;
+        plotIndividual(this,origin,this.pRef,this.qRef,1,this.colorReference,'LineWidth',1.5);
+        pDif=pBest-this.pRef; % position comparison
         pDif=sqrt(sum(pDif.*pDif,1));
-        qDif=acos(sum(poseBest.q.*this.poseRef.q,1)); % quaternion comparison
+        qDif=acos(sum(qBest.*this.qRef,1)); % quaternion comparison
         pTwoNorm=twoNorm(pDif);
         pInfNorm=infNorm(pDif);
         qTwoNorm=twoNorm(qDif);
@@ -149,17 +156,21 @@ classdef DemoDisplay < DemoConfig & handle
         tmin=max(tmin,this.tRef(1));
         tmax=min(tmax,this.tRef(end));
       end
-      tmax(isinf(tmax))=this.infinity; % prevent NaN on the following line
-      t=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
+      if(tmin==tmax)
+        t=repmat(tmin,[1,this.bigSteps*this.subSteps+1]);
+      else
+        tmax(isinf(tmax))=this.infinity; % prevent NaN
+        t=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
+      end
     end
     
-    function plotIndividual(this,origin,pose,alpha,color,varargin)
-      pose.p=pose.p-repmat(origin,[1,size(pose.p,2)]);
-      plot3(pose.p(1,:),pose.p(2,:),pose.p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3),'Clipping','off',varargin{:});
-      plotFrame(this,pose.p(:,1),pose.q(:,1),alpha); % plot first frame
+    function plotIndividual(this,origin,p,q,alpha,color,varargin)
+      p=p-repmat(origin,[1,size(p,2)]);
+      plot3(p(1,:),p(2,:),p(3,:),'Color',alpha*color+(1-alpha)*ones(1,3),'Clipping','off',varargin{:});
+      plotFrame(this,p(:,1),q(:,1),alpha); % plot first frame
       for bs=1:this.bigSteps
         ksub=(bs-1)*this.subSteps+(1:(this.subSteps+1));
-        plotFrame(this,pose.p(:,ksub(end)),pose.q(:,ksub(end)),alpha);
+        plotFrame(this,p(:,ksub(end)),q(:,ksub(end)),alpha);
       end
     end
 
