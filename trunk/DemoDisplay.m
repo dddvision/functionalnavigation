@@ -77,7 +77,8 @@ classdef DemoDisplay < DemoConfig & handle
       
       % compute scene origin
       if(isempty(this.pRef))
-        pose=evaluate(x(kBest),domain(x(kBest)));
+        interval=domain(x(kBest));
+        pose=evaluate(x(kBest),interval.first);
         origin=pose.p;
       else
         origin=this.pRef(:,1);
@@ -151,7 +152,9 @@ classdef DemoDisplay < DemoConfig & handle
     
     function t=generateSampleTimes(this,x)
       assert(numel(x)==1);
-      [tmin,tmax]=domain(x);
+      interval=domain(x);
+      tmin=interval.first;
+      tmax=interval.second;
       if(~isempty(this.tRef))
         tmin=max(tmin,this.tRef(1));
         tmax=min(tmax,this.tRef(end));

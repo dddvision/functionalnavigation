@@ -107,15 +107,14 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       end
     end
      
-    function [ta,tb]=domain(this)
-      ta=this.initialTime;
-      tb=Inf;
+    function interval=domain(this)
+      interval=TimeInterval(this.initialTime,inf);
     end
     
     function pose=evaluate(this,t)
       pose=evaluate(this.xRef,t);
-      [a,b]=domain(this.xRef);
-      t(t>b)=b;
+      interval=domain(this.xRef);
+      t(t>interval.second)=interval.second;
       z=initialBlock2deviation(this,this.initialBlock);
       for k=1:numel(t)
         pose(k).p(1) = pose(k).p(1) + ...
@@ -126,8 +125,8 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
    
     function tangentPose=tangent(this,t)
       tangentPose=tangent(this.xRef,t);
-      [a,b]=domain(this.xRef);
-      t(t>b)=b;
+      interval=domain(this.xRef);
+      t(t>interval.second)=interval.second;
       z=initialBlock2deviation(this,this.initialBlock);
       for k=1:numel(t)
         tangentPose(k).p(1) = tangentPose(k).p(1) + ...

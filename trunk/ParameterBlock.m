@@ -1,5 +1,5 @@
 classdef ParameterBlock
-  properties
+  properties (SetAccess=public,GetAccess=public)
     logical
     uint32
   end

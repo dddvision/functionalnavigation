@@ -1,5 +1,5 @@
 classdef SensorIndex < uint32
-  methods
+  methods (Access=public)
     function this=SensorIndex(varargin)
       this=this@uint32(varargin{:});
     end

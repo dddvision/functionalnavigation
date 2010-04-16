@@ -28,11 +28,11 @@ classdef Objective < handle
     end
     
     function addInput(this)
-      [ta,tb]=domain(this.input(1));
-      this.input(end+1)=DynamicModel.factory(this.dynamicModelName,ta,this.uri);
+      interval=domain(this.input(1));
+      this.input(end+1)=DynamicModel.factory(this.dynamicModelName,interval.first,this.uri);
       initialBlock=generateBlock(this.input(end).initialBlockDescription);
       setInitialBlock(this.input(end),initialBlock);
-      extend(this,tb);
+      extend(this,interval.second);
     end
     
     function num=numMeasures(this)
@@ -141,9 +141,9 @@ classdef Objective < handle
       for k=1:numel(this.input)
         rate=this.input(k).updateRate;
         if(rate)
-          [ta,tb]=domain(this.input(k));
+          interval=domain(this.input(k));
           oldNumBlocks=numExtensionBlocks(this.input(k));
-          newNumBlocks=ceil((tbNew-tb)*rate);
+          newNumBlocks=ceil((tbNew-interval.second)*rate);
           numAppend=newNumBlocks-oldNumBlocks;
           if(newNumBlocks>oldNumBlocks)
             description=this.input(k).extensionBlockDescription;

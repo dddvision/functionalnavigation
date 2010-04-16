@@ -6,14 +6,13 @@ classdef Trajectory < handle
     % Return the upper and lower bounds of the time domain of a trajectory
     %
     % OUTPUT
-    % ta = time domain lower bound, double scalar
-    % tb = time domain upper bound, double scalar
-    [ta,tb]=domain(this);
+    % interval = time domain bounds, TimeInterval scalar
+    interval=domain(this);
     
     % Evaluate a single trajectory at multiple instants
     %
     % INPUT
-    % t = time stamps sorted in ascending order, 1-by-N
+    % t = time stamps sorted in ascending order, Time 1-by-N
     %
     % OUTPUT
     % pose = pose at each time, Pose 1-by-N
@@ -25,7 +24,7 @@ classdef Trajectory < handle
     % Evaluate the tangent of a single trajectory at multiple time instants
     %
     % INPUT
-    % t = time stamps sorted in ascending order, 1-by-N
+    % t = time stamps sorted in ascending order, Time 1-by-N
     %
     % OUTPUT
     % tantentPose = tangent pose at each time, TangentPose 1-by-N
