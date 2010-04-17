@@ -97,17 +97,15 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
       end
     end
 
-    function cost=computeEdgeCost(this,x,a,b)
+    function cost=computeEdgeCost(this,x,edge)
       assert(isa(x,'Trajectory'));
-      assert(isa(a,'uint32'));
-      assert(isa(b,'uint32'));
+      assert(isa(edge,'Edge'));
       assert(numel(x)==1);
-      assert(numel(a)==1);
-      assert(numel(b)==1);
+      assert(numel(edge)==1);
       assert(this.status);
-      assert(a==b);
-      pose=evaluate(x,this.t(b));
-      dnorm=(this.yBar(b)-pose.p(1))./this.deviation;
+      assert(edge.first==edge.second);
+      pose=evaluate(x,this.t(edge.second));
+      dnorm=(this.yBar(edge.second)-pose.p(1))./this.deviation;
       cost=0.5*dnorm.*dnorm;
     end
   end

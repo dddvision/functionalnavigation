@@ -77,8 +77,7 @@ classdef Measure < Sensor
     %
     % INPUT
     % x = trajectory to evaluate, Trajectory scalar
-    % ka = lower node index, uint32 scalar
-    % kb = upper node index, uint32 scalar
+    % edge = an edge in the cost graph returned by findEdges, Edge scalar
     %
     % OUTPUT
     % cost = non-negative measure in the interval [0,1], double scalar
@@ -93,7 +92,7 @@ classdef Measure < Sensor
     %   Typical costs are in the range [0,4.5]
     % Throws an exception if any input is of the wrong size
     % Throws an exception if node indices do not correspond to an edge
-    cost=computeEdgeCost(this,x,ka,kb);
+    cost=computeEdgeCost(this,x,edge);
   end
   
 end

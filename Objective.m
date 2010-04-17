@@ -43,8 +43,8 @@ classdef Objective < handle
       edgeList=findEdges(this.measure{m},kaSpan,kbSpan);
     end
     
-    function cost=computeEdgeCost(this,m,k,ka,kb)
-      cost=computeEdgeCost(this.measure{m},this.input(k),ka,kb);
+    function cost=computeEdgeCost(this,m,k,edge)
+      cost=computeEdgeCost(this.measure{m},this.input(k),edge);
     end
     
     function flag=hasData(this,m)
@@ -98,7 +98,7 @@ classdef Objective < handle
           if(numEdges(m))
             cost=zeros(1,numEdges(m));
             for edge=1:numEdges(m)
-              cost(edge)=computeEdgeCost(this,m,k,ka(edge),kb(edge));
+              cost(edge)=computeEdgeCost(this,m,k,edgeList(edge));
             end
             base=ka(1);
             span=double(kb(end)-base+1);
