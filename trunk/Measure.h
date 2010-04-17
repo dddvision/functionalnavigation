@@ -3,8 +3,8 @@
 
 #include <map>
 #include <string>
-#include <vector>
 #include <iostream>
+#include <list>
 
 #include "Edge.h"
 #include "Trajectory.h"
@@ -22,7 +22,7 @@ namespace tommas
     Measure(const std::string uri){}
   
   public:
-    virtual std::vector<Edge> findEdges(const unsigned,const unsigned) = 0;
+    virtual std::list<Edge> findEdges(const unsigned,const unsigned) = 0;
     virtual double computeEdgeCost(const Trajectory&,const Edge) = 0;
     
     static std::string frameworkClass(void) { return std::string("Measure"); }

@@ -116,10 +116,10 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       interval=domain(this.xRef);
       t(t>interval.second)=interval.second;
       z=initialBlock2deviation(this,this.initialBlock);
+      c1=this.positionOffset-this.positionDeviation*z(1);
+      c2=this.positionRateOffset-this.positionRateDeviation*z(2);
       for k=1:numel(t)
-        pose(k).p(1) = pose(k).p(1) + ...
-          this.positionOffset + this.positionRateOffset*(t(k)-this.initialTime) - ...
-          this.positionDeviation*z(1) - this.positionRateDeviation*z(2)*(t(k)-this.initialTime);
+        pose(k).p(1)=pose(k).p(1)+c1+c2*(t(k)-this.initialTime);
       end
     end
    
@@ -128,11 +128,11 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       interval=domain(this.xRef);
       t(t>interval.second)=interval.second;
       z=initialBlock2deviation(this,this.initialBlock);
+      c1=this.positionOffset-this.positionDeviation*z(1);
+      c2=this.positionRateOffset-this.positionRateDeviation*z(2);
       for k=1:numel(t)
-        tangentPose(k).p(1) = tangentPose(k).p(1) + ...
-          this.positionOffset + this.positionRateOffset*(t(k)-this.initialTime) - ...
-          this.positionDeviation*z(1) - this.positionRateDeviation*z(2)*(t(k)-this.initialTime);
-        tangentPose(k).r(1) = tangentPose(k).r(1) + this.positionRateOffset - this.positionRateDeviation*z(2);
+        tangentPose(k).p(1)=tangentPose(k).p(1)+c1+c2*(t(k)-this.initialTime);
+        tangentPose(k).r(1)=tangentPose(k).r(1)+c2;
       end
     end
   end

@@ -41,7 +41,7 @@ classdef Sensor < handle
     % k = index, uint32 scalar
     %
     % OUTPUT
-    % time = time stamp, double scalar
+    % time = time stamp, Time scalar
     %
     % NOTES
     % Time stamps must not decrease with increasing indices

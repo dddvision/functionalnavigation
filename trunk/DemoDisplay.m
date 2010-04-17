@@ -11,6 +11,10 @@ classdef DemoDisplay < DemoConfig & handle
   methods (Access=public)
 
     function this=DemoDisplay(uri)
+      if(this.textOnly)
+        return;
+      end
+      
       this.hfigure=figure;
       set(this.hfigure,'Color',this.colorBackground);
       set(this.hfigure,'Units','pixels');
@@ -31,6 +35,7 @@ classdef DemoDisplay < DemoConfig & handle
       
       this.tRef=[];
       this.pRef=[];
+      this.qRef=[];
 
       if(nargin>0)
         [scheme,resource]=strtok(uri,':');
@@ -67,6 +72,10 @@ classdef DemoDisplay < DemoConfig & handle
       fprintf('\nindex: %d',index);
       fprintf('\ncost(%d): %0.6f',[1:numel(c);c']);
       fprintf('\nbest(%d): %0.6f',kBest,costBest);
+      
+      if(this.textOnly)
+        return;
+      end
       
       % generate sample times assuming all trajectories have the same domain
       t=generateSampleTimes(this,x(1));
@@ -160,10 +169,10 @@ classdef DemoDisplay < DemoConfig & handle
         tmax=min(tmax,this.tRef(end));
       end
       if(tmin==tmax)
-        t=repmat(tmin,[1,this.bigSteps*this.subSteps+1]);
+        t=Time(repmat(tmin,[1,this.bigSteps*this.subSteps+1]));
       else
         tmax(isinf(tmax))=this.infinity; % prevent NaN
-        t=tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
+        t=Time(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
       end
     end
     

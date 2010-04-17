@@ -133,12 +133,14 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   
   methods (Access=private)
     function [goodList,dkFloor,dtRemain]=preEvaluate(this,t)
-      dt=t-this.interval.first;
+      ta=this.interval.first;
+      tb=this.interval.second;
+      dt=t-ta;
       dk=dt*this.rate;
       dkFloor=floor(dk);
       dtFloor=dkFloor/this.rate;
       dtRemain=dt-dtFloor;
-      good=logical((t>=this.interval.first)&(t<=this.interval.second));
+      good=(t>=ta)&(t<=tb);
       firstGood=find(good,1,'first');
       lastGood=find(good,1,'last');
       blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers

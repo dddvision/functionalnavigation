@@ -39,8 +39,8 @@ classdef Objective < handle
       num=numel(this.measure);
     end
     
-    function [ka,kb]=findEdges(this,m,kaSpan,kbSpan)
-      [ka,kb]=findEdges(this.measure{m},kaSpan,kbSpan);
+    function edgeList=findEdges(this,m,kaSpan,kbSpan)
+      edgeList=findEdges(this.measure{m},kaSpan,kbSpan);
     end
     
     function cost=computeEdgeCost(this,m,k,ka,kb)
@@ -90,8 +90,10 @@ classdef Objective < handle
       % build cost graphs from measures
       numEdges=zeros(1,M);
       for m=1:M
-        [ka,kb]=findEdges(this,m,kaSpan,kbSpan);
-        numEdges(m)=numel(ka);
+        edgeList=findEdges(this,m,kaSpan,kbSpan);
+        numEdges(m)=numel(edgeList);
+        ka=cat(1,edgeList.first);
+        kb=cat(1,edgeList.second);
         for k=1:K
           if(numEdges(m))
             cost=zeros(1,numEdges(m));

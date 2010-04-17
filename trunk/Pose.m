@@ -1,6 +1,7 @@
 % This class represents the position and orientation of a body frame relative to a world frame
 %
 % NOTES
+% Using SI units (meters, radians, seconds)
 % Using an Earth Centered Earth Fixed (ECEF) convention for the world frame:
 %   World Axis 1 goes through the equator at the prime meridian
 %   World Axis 2 completes the frame using the right-hand-rule
