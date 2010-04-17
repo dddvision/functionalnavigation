@@ -139,9 +139,9 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       y=0;
       setInitialBlock(this.objective.input,param2initialBlock(this,x));
       for m=1:numMeasures(this.objective)
-        edgeList=findEdges(this.objective,m,uint32(0),uint32(0));
+        edgeList=findEdges(this.objective,m,uint32(0),uint32(0)); % returns zero or one edges
         if(~isempty(edgeList))
-          y=y+computeEdgeCost(this.objective,1,1,edgeList.second,edgeList.second);
+          y=y+computeEdgeCost(this.objective,1,1,edgeList);
         end
       end
     end

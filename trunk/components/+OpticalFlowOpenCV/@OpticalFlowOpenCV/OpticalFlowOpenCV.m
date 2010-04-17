@@ -113,13 +113,14 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
       end
     end
     
-    function cost=computeEdgeCost(this,x,a,b)
+    function cost=computeEdgeCost(this,x,edge)
       assert(numel(x)==1);
-      assert(numel(a)==1);
-      assert(numel(b)==1);
+      assert(numel(edge)==1);
       assert(hasData(this.sensor));
       ka=first(this.sensor);
       kb=last(this.sensor);
+      a=edge.first;
+      b=edge.second;
       assert((b>a)&&(a>=ka)&&(b<=kb));
       
       ta=getTime(this.sensor,a);
