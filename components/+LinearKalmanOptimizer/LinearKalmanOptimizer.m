@@ -139,13 +139,13 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       y=0;
       setInitialBlock(this.objective.input,param2initialBlock(this,x));
       for m=1:numMeasures(this.objective)
-        node=findEdges(this.objective,m,uint32(0),uint32(0));
-        if(~isempty(node))
-          y=y+computeEdgeCost(this.objective,1,1,node,node);
+        edgeList=findEdges(this.objective,m,uint32(0),uint32(0));
+        if(~isempty(edgeList))
+          y=y+computeEdgeCost(this.objective,1,1,edgeList.second,edgeList.second);
         end
       end
     end
-      
+
     % INPUT
     % param = uint32 numUint32-by-1
     function block=param2initialBlock(this,param)

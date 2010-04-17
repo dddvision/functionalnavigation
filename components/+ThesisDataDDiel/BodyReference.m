@@ -11,12 +11,13 @@ classdef BodyReference < Trajectory
         S=load(fullfile(localCache,'workspace.mat'),'INITIAL_BODY_STATE');
         [this.T_imu,this.x_imu]=ReadGantry(fullfile(localCache,'gantry_raw.dat'));
         N=size(this.x_imu,2);
+        this.T_imu=Time(this.T_imu);
         this.x_imu=[repmat(S.INITIAL_BODY_STATE(1:4),[1,N]);this.x_imu];
       else
         S=load(fullfile(localCache,'workspace.mat'),'T_imu','x_imu');
         this.x_imu=S.x_imu;
         N=size(S.x_imu,2);
-        this.T_imu=S.T_imu;
+        this.T_imu=Time(S.T_imu);
       end
       
       % MIT laboratory location

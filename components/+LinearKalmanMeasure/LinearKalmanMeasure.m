@@ -31,7 +31,7 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
       catch err
         error('Failed to open data resource: %s',err.message);
       end
-      this.t=[];
+      this.t=Time([]);
       this.yBar=[];
       this.ka=uint32([]);
       this.kb=uint32([]);
@@ -40,7 +40,7 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
 
     function refresh(this)
       if(this.status)
-        time=this.t(end)+this.dt;
+        time=Time(this.t(end)+this.dt);
       else
         interval=domain(this.xRef);
         time=interval.first;
@@ -76,20 +76,24 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
     end
 
     function time=getTime(this,k)
-      time=this.t(k);
+      time=Time(this.t(k));
     end
     
-    function [ka,kb]=findEdges(this,kaSpan,kbSpan)
+    function edgeList=findEdges(this,kaSpan,kbSpan)
       assert(isa(kaSpan,'uint32'));
       assert(isa(kbSpan,'uint32'));
       assert(numel(kaSpan)==1);
       assert(numel(kbSpan)==1);
       if(this.status)
-        ka=max([this.ka,this.kb-kaSpan,this.kb-kbSpan]):this.kb;
-        kb=ka;
+        node=max([this.ka,this.kb-kaSpan,this.kb-kbSpan]):this.kb;
+        N=numel(node);
+        edgeList=repmat(Edge,[N,1]);
+        for n=1:N
+          edgeList.first=node(n);
+          edgeList.second=node(n);
+        end
       else
-        ka=uint32([]);
-        kb=uint32([]);
+        edgeList=repmat(Edge,[0,1]);
       end
     end
 

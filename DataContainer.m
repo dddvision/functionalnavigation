@@ -65,7 +65,7 @@ classdef DataContainer < handle
     % type = class identifier, string
     %
     % OUTPUT
-    % list = list of unique sensor identifiers, uint32 N-by-1
+    % list = list of unique sensor identifiers, SensorIndex N-by-1
     %
     % NOTES
     % Sensors that inherit from the given class will also be included in the output list
@@ -75,7 +75,7 @@ classdef DataContainer < handle
     % Get sensor description
     %
     % INPUT
-    % id = zero-based index, uint32 scalar
+    % id = zero-based index, SensorIndex scalar
     %
     % OUTPUT
     % text = user friendly sensor description, string
@@ -89,7 +89,7 @@ classdef DataContainer < handle
     % Get instance of a Sensor
     %
     % INPUT
-    % id = zero-based index, uint32 scalar
+    % id = zero-based index, SensorIndex scalar
     %
     % OUTPUT
     % obj = object instance, Sensor scalar

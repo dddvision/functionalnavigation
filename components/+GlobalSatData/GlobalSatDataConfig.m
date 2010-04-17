@@ -4,7 +4,7 @@ classdef GlobalSatDataConfig < handle
     % File containing a list of points that define a reference trajectory
     % Must contain comma separated data in the following form:
     %   time, lon, lat, alt, hDOP, vDOP
-    %   time =  gps time (seconds since 12.00 am Jan 6, 1980)
+    %   time =  GPS time (seconds since 1980 JAN 06 T00:00:00)
     %   lon  =  longitude in  radians
     %   lat  =  latitude in radians
     %   alt  =  height above WGS84 ellipsoid in meters

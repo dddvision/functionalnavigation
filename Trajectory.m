@@ -1,5 +1,4 @@
 % This class defines a 6-DOF body trajectory in the vicinity of Earth
-% Using SI units (seconds, meters, radians)
 classdef Trajectory < handle
   
   methods (Abstract=true)
@@ -18,7 +17,7 @@ classdef Trajectory < handle
     % pose = pose at each time, Pose 1-by-N
     %
     % NOTES
-    % Evaluation outside of the domain returns NaN in corresponding poses
+    % Evaluation outside of the domain returns NaN in corresponding outputs
     pose=evaluate(this,t);
     
     % Evaluate the tangent of a single trajectory at multiple time instants

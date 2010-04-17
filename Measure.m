@@ -62,18 +62,16 @@ classdef Measure < Sensor
     % kbSpan = maximum difference between upper node index and last node index, uint32 scalar
     %
     % OUTPUT
-    % ka = lower node index for each edge, uint32 N-by-1
-    % kb = upper node index for each edge, uint32 N-by-1
+    % edgeList = list of edges, Edge N-by-1
     %
     % NOTES
     % The number of edges returned is bounded:
-    %   numel(ka) <= (kaMaxLag+1)*(kbMaxLag+1)
+    %   numel(edges) <= (kaSpan+1)*(kbSpan+1)
     % If there are no edges, then the outputs are empty
-    % Output indices are sorted in ascending order,
-    %   first by lower index ka, then by upper index kb
-    % If the graph is diagonal, then ka and kb are identical vectors
+    % Edges are sorted in ascending order of node indices,
+    %   first by lower index, then by upper index
     % Throws an exception if any input is of the wrong size
-    [ka,kb]=findEdges(this,kaSpan,kbSpan);
+    edgeList=findEdges(this,kaSpan,kbSpan);
     
     % Evaluate the cost of a single edge given a trajectory
     %

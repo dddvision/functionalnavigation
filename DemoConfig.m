@@ -4,6 +4,7 @@ classdef DemoConfig < handle
     dynamicModelName = 'LinearKalmanDynamicModel'; % select dynamic model
     measureNames = {'LinearKalmanMeasure'}; % select measures
     optimizerName = 'LinearKalmanOptimizer'; % optimizer selection
+    textOnly = true; % (true) show text output only
     bestOnly = true; % (true) show only the best trajectory
     saveFigure = false; % (false) saves figure as an image
     width = 640; % (640) figure width in pixels

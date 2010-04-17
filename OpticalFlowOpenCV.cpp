@@ -10,9 +10,9 @@ namespace tommas
       std::cout << std::endl << "OpticalFlowOpenCV::OpticalFlowOpenCV" << std::endl;
     }
 
-    std::vector<Edge> findEdges(const unsigned,const unsigned)
+    std::list<Edge> findEdges(const unsigned,const unsigned)
     {
-      std::vector<Edge> edge(1);
+      std::list<Edge> edge(1);
       return(edge);
     }
 

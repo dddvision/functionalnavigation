@@ -93,7 +93,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
       time=getTime(this.sensor,k);
     end
     
-    function [a,b]=findEdges(this,kaSpan,kbSpan)
+    function edgeList=findEdges(this,kaSpan,kbSpan)
       assert(numel(kaSpan)==1);
       assert(numel(kbSpan)==1);
       kaMin=last(this.sensor)-kaSpan;
@@ -102,10 +102,14 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
         kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
         kaMax=last(this.sensor)-uint32(1);
         a=kaMin:kaMax;
-        b=a+uint32(1);
+        N=numel(a);
+        edgeList=repmat(Edge,[N,1]);
+        for n=1:N
+          edgeList(n).first=a(n);
+          edgeList(n).second=a(n)+uint32(1);
+        end
       else
-        a=uint32([]);
-        b=uint32([]);
+        edgeList=repmat(Edge,[0,1]);
       end
     end
     

@@ -33,7 +33,7 @@ classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & DataContainer
           flag(k)=true;
         end
       end
-      list=uint32(find(flag)-1);
+      list=SensorIndex(find(flag)-1);
     end
     
     function text=getSensorDescription(this,id)
