@@ -24,12 +24,12 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       end
       
       % handle dynamic model initial block description
-      if(this.objective.input.initialBlockDescription.numLogical>0)
+      if(numInitialLogical(this.objective.input)>0)
         fprintf('\n\nwarning: LinearKalmanOptimizer sets all logical parameters to false.');
       end
       
       % set initial state (assuming its range is the interval [0,1])
-      this.state=repmat(0.5,[this.objective.input.initialBlockDescription.numUint32,1]);
+      this.state=repmat(0.5,[numInitialUint32(this.objective.input),1]);
       
       % initialize single instance of the dynamic model
       initialBlock=state2initialBlock(this,this.state);
@@ -149,7 +149,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     % INPUT
     % param = uint32 numUint32-by-1
     function block=param2initialBlock(this,param)
-      block=struct('logical',false(1,this.objective.input.initialBlockDescription.numLogical),'uint32',param');
+      block=struct('logical',false(1,numInitialLogical(this.objective.input)),'uint32',param');
     end
 
     % INPUT
