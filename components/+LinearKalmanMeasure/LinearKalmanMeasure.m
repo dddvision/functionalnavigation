@@ -89,8 +89,8 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
         N=numel(node);
         edgeList=repmat(Edge,[N,1]);
         for n=1:N
-          edgeList.first=node(n);
-          edgeList.second=node(n);
+          edgeList(n).first=node(n);
+          edgeList(n).second=node(n);
         end
       else
         edgeList=repmat(Edge,[0,1]);

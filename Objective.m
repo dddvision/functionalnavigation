@@ -22,7 +22,7 @@ classdef Objective < handle
       end
       [ta,tb]=waitForData(this);
       this.input=DynamicModel.factory(dynamicModelName,ta,uri);
-      initialBlock=generateBlock(this.input.initialBlockDescription);
+      initialBlock=generateBlock(numInitialLogical(this.input),numInitialUint32(this.input));
       setInitialBlock(this.input,initialBlock);
       extend(this,tb);
     end
@@ -30,7 +30,7 @@ classdef Objective < handle
     function addInput(this)
       interval=domain(this.input(1));
       this.input(end+1)=DynamicModel.factory(this.dynamicModelName,interval.first,this.uri);
-      initialBlock=generateBlock(this.input(end).initialBlockDescription);
+      initialBlock=generateBlock(numInitialLogical(this.input(end)),numInitialUint32(this.input(end)));
       setInitialBlock(this.input(end),initialBlock);
       extend(this,interval.second);
     end
@@ -148,9 +148,10 @@ classdef Objective < handle
           newNumBlocks=ceil((tbNew-interval.second)*rate);
           numAppend=newNumBlocks-oldNumBlocks;
           if(newNumBlocks>oldNumBlocks)
-            description=this.input(k).extensionBlockDescription;
+            numLogical=numExtensionLogical(this.input(k));
+            numUint32=numExtensionUint32(this.input(k));
             for b=1:numAppend
-              extensionBlock=generateBlock(description);
+              extensionBlock=generateBlock(numLogical,numUint32);
               appendExtensionBlocks(this.input(k),extensionBlock);
             end
           end
@@ -161,7 +162,7 @@ classdef Objective < handle
   
 end
 
-function block=generateBlock(description)
-  block=struct('logical',logical(rand(1,description.numLogical)>0.5),...
-    'uint32',randi([0,4294967295],1,description.numUint32,'uint32'));
+function block=generateBlock(numLogical,numUint32)
+  block=struct('logical',logical(rand(1,numLogical)>0.5),...
+    'uint32',randi([0,4294967295],1,numUint32,'uint32'));
 end
