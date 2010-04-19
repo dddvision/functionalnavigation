@@ -2,8 +2,6 @@
 %
 % NOTES
 % This class depends on parameter blocks of the following form
-%   description.numLogical = number of 1-bit logical parameters, uint32 scalar
-%   description.numUint32 = number of 32-bit unsigned integer parameters, uint32 scalar
 %   block.logical = logical parameters, logical 1-by-numLogical
 %   block.uint32 = unsigned integer parameters, uint32 1-by-numUint32
 % There are seperate block descriptions for initial and extension blocks
@@ -58,17 +56,29 @@ classdef DynamicModel < Trajectory
   end
   
   methods (Abstract=true,Access=public)
-    % Get description of the initial block
+    % Get number of logical parameters in the initial block
     %
     % OUTPUT
-    % description = (see above), struct scalar
-    description=initialBlockDescription(this);
+    % num = number of logical parameters, uint32 scalar
+    num=numInitialLogical(this);
     
-    % Get description of a extension block
+    % Get number of uint32 parameters in the initial block
     %
     % OUTPUT
-    % description = (see above), struct scalar
-    description=extensionBlockDescription(this);
+    % num = number of integer parameters, uint32 scalar
+    num=numInitialUint32(this);
+    
+    % Get number of logical parameters in each extension block
+    %
+    % OUTPUT
+    % num = number of logical parameters, uint32 scalar
+    num=numExtensionLogical(this);
+    
+    % Get number of uint32 parameters in each extension block
+    %
+    % OUTPUT
+    % num = number of integer parameters, uint32 scalar
+    num=numExtensionUint32(this);
     
     % Get the conversion between number of extension blocks and associated time domain extension
     %
