@@ -24,12 +24,20 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   end
   
   methods (Access=public)
-    function description=initialBlockDescription(this)
-      description=struct('numLogical',this.initialNumLogical,'numUint32',this.initialNumUint32);      
+    function num=numInitialLogical(this)
+      num=this.initialNumLogical;
     end
     
-    function description=extensionBlockDescription(this)
-      description=struct('numLogical',this.extensionNumLogical,'numUint32',uint32(size(this.B,2)));
+    function num=numInitialUint32(this)
+      num=this.initialNumUint32;      
+    end
+    
+    function num=numExtensionLogical(this)
+      num=this.extensionNumLogical;
+    end
+    
+    function num=numExtensionUint32(this)
+      num=uint32(size(this.B,2));
     end
     
     function rate=updateRate(this)
