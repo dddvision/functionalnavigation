@@ -22,16 +22,28 @@ classdef Objective < handle
       end
       [ta,tb]=waitForData(this);
       this.input=DynamicModel.factory(dynamicModelName,ta,uri);
-      initialBlock=generateBlock(numInitialLogical(this.input),numInitialUint32(this.input));
-      setInitialBlock(this.input,initialBlock);
+      L=generateLogical(numInitialLogical(this.input));
+      for p=uint32(1:numel(L))
+        setInitialLogical(this.input,p-1,L(p));
+      end
+      U=generateUint32(numInitialUint32(this.input));
+      for p=uint32(1:numel(U))
+        setInitialUint32(this.input,p-1,U(p));
+      end
       extend(this,tb);
     end
     
     function addInput(this)
       interval=domain(this.input(1));
       this.input(end+1)=DynamicModel.factory(this.dynamicModelName,interval.first,this.uri);
-      initialBlock=generateBlock(numInitialLogical(this.input(end)),numInitialUint32(this.input(end)));
-      setInitialBlock(this.input(end),initialBlock);
+      L=generateLogical(numInitialLogical(this.input(end)));
+      for p=uint32(1:numel(L))
+        setInitialLogical(this.input(end),p-1,L(p));
+      end
+      U=generateUint32(numInitialUint32(this.input(end)));
+      for p=uint32(1:numel(U))
+        setInitialUint32(this.input(end),p-1,U(p));
+      end
       extend(this,interval.second);
     end
     
@@ -78,11 +90,9 @@ classdef Objective < handle
       for k=1:K
         Fk=this.input(k);
         cost=sparse([],[],[],B+1,B+1,B+1);
-        initialBlock=getInitialBlock(Fk);
-        cost(1,1)=computeInitialBlockCost(Fk,initialBlock);
-        extensionBlocks=getExtensionBlocks(Fk,uint32(0:(B-1)));
-        for b=1:B
-          cost(b,b+1)=computeExtensionBlockCost(Fk,extensionBlocks(b));
+        cost(1,1)=computeInitialBlockCost(Fk);
+        for b=uint32(1):uint32(B)
+          cost(b,b+1)=computeExtensionBlockCost(Fk,b-1);
         end
         allGraphs{k,1}=cost;
       end
@@ -141,18 +151,26 @@ classdef Objective < handle
     
     function extend(this,tbNew)
       for k=1:numel(this.input)
-        rate=this.input(k).updateRate;
+        Fk=this.input(k);
+        rate=Fk.updateRate;
         if(rate)
-          interval=domain(this.input(k));
-          oldNumBlocks=numExtensionBlocks(this.input(k));
+          interval=domain(Fk);
+          oldNumBlocks=numExtensionBlocks(Fk);
           newNumBlocks=ceil((tbNew-interval.second)*rate);
           numAppend=newNumBlocks-oldNumBlocks;
           if(newNumBlocks>oldNumBlocks)
-            numLogical=numExtensionLogical(this.input(k));
-            numUint32=numExtensionUint32(this.input(k));
-            for b=1:numAppend
-              extensionBlock=generateBlock(numLogical,numUint32);
-              appendExtensionBlocks(this.input(k),extensionBlock);
+            numLogical=numExtensionLogical(Fk);
+            numUint32=numExtensionUint32(Fk);
+            extend(Fk,uint32(numAppend));
+            for b=(oldNumBlocks+1):newNumBlocks
+              L=generateLogical(numLogical);
+              for p=uint32(1):uint32(numel(L))
+                setExtensionLogical(Fk,b-1,p-1,L(p));
+              end
+              U=generateUint32(numUint32);
+              for p=uint32(1):uint32(numel(U))
+                setExtensionUint32(Fk,b-1,p-1,U(p));
+              end
             end
           end
         end
@@ -162,7 +180,10 @@ classdef Objective < handle
   
 end
 
-function block=generateBlock(numLogical,numUint32)
-  block=struct('logical',logical(rand(1,numLogical)>0.5),...
-    'uint32',randi([0,4294967295],1,numUint32,'uint32'));
+function v=generateLogical(num)
+  v=logical(rand(1,num)>0.5);
+end
+
+function v=generateUint32(num)
+  v=randi([0,4294967295],1,num,'uint32');
 end
