@@ -1,6 +1,8 @@
 #ifndef TRAJECTORY_H
 #define TRAJECTORY_H
 
+#include <vector>
+
 #include "Time.h"
 #include "Pose.h"
 #include "TangentPose.h"
