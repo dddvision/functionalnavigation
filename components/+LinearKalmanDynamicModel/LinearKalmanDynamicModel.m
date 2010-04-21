@@ -9,41 +9,21 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
     extensionBlockCost=0;
     rate=0;
     numExtension=uint32(0);
+    parameterErrorText='This dynamic model has no initial logical parameters.';
     extensionErrorText='This dynamic model has no extension blocks.';
   end
   
   properties (GetAccess=private,SetAccess=private)
     initialTime
-    initialBlock
+    initialUint32
     xRef
   end
   
   methods (Access=public)
-    function num=numInitialLogical(this)
-      num=this.initialNumLogical;
-    end
-    
-    function num=numInitialUint32(this)
-      num=this.initialNumUint32;      
-    end
-  
-    function num=numExtensionLogical(this)
-      num=this.extensionNumLogical;
-    end
-    
-    function num=numExtensionUint32(this)
-      num=this.extensionNumUint32;
-    end
-    
-    function rate=updateRate(this)
-      rate=this.rate;
-    end
-  
     function this=LinearKalmanDynamicModel(initialTime,uri)
       this=this@DynamicModel(initialTime,uri);
       this.initialTime=initialTime;
-      this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
-        'uint32',zeros(1,this.initialNumUint32,'uint32'));
+      this.initialUint32=zeros(1,this.initialNumUint32,'uint32');
 
       try
         [scheme,resource]=strtok(uri,':');
@@ -63,56 +43,114 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
         error('Failed to open data resource: %s',err.message);
       end
     end
+    
+    function rate=updateRate(this)
+      rate=this.rate;
+    end
+        
+    function num=numInitialLogical(this)
+      num=this.initialNumLogical;
+    end
+    
+    function num=numInitialUint32(this)
+      num=this.initialNumUint32;      
+    end
+  
+    function num=numExtensionLogical(this)
+      num=this.extensionNumLogical;
+    end
+    
+    function num=numExtensionUint32(this)
+      num=this.extensionNumUint32;
+    end
 
-    function cost=computeInitialBlockCost(this,initialBlock)
-      assert(isa(initialBlock,'struct'));
-      z=initialBlock2deviation(this,initialBlock);
-      cost=0.5*dot(z,z);
-    end
-    
-    function setInitialBlock(this,initialBlock)
-      assert(isa(initialBlock,'struct'));
-      assert(numel(initialBlock)==1);
-      this.initialBlock=initialBlock;
-    end
-    
-    function initialBlock=getInitialBlock(this)
-      initialBlock=this.initialBlock;
-    end
-      
-    function cost=computeExtensionBlockCost(this,block)
-      assert(isa(block,'struct'));
-      assert(numel(block)==1);
-      cost=this.extensionBlockCost;
-    end
-    
     function num=numExtensionBlocks(this)
       num=this.numExtension;
     end
     
-    function setExtensionBlocks(this,k,blocks)
-      assert(isa(k,'uint32'));
-      assert(isa(blocks,'struct'));
-      assert(numel(k)==numel(blocks));
-      if(~isempty(k))
-        error(this.extensionErrorText);
-      end
+    function v=getInitialLogical(this,p)
+      assert(isa(p,'uint32'));
+      assert(numel(p)==1);
+      v=false(size(p));
+      error(this.parameterErrorText);
+    end
+
+    function v=getInitialUint32(this,p)
+      assert(isa(p,'uint32'));
+      assert(numel(p)==1);
+      v=this.initialUint32(p+1);
+    end
+
+    function v=getExtensionLogical(this,b,p)
+      assert(isa(b,'uint32'));
+      assert(numel(b)==1);
+      assert(isa(p,'uint32'));
+      assert(numel(p)==1);
+      v=false(size(p));
+      error(this.extensionErrorText);
+    end
+
+    function v=getExtensionUint32(this,b,p)
+      assert(isa(b,'uint32'));
+      assert(numel(b)==1);
+      assert(isa(p,'uint32'));
+      assert(numel(p)==1);
+      v=zeros(size(p),'uint32');
+      error(this.extensionErrorText);
+    end
+
+    function setInitialLogical(this,p,v)
+      assert(isa(p,'uint32'));
+      assert(numel(p)==1);
+      assert(isa(v,'logical'));
+      assert(numel(v)==1);
+      error(this.parameterErrorText);
+    end
+
+    function setInitialUint32(this,p,v)
+      assert(isa(p,'uint32'));
+      assert(numel(p)==1);
+      assert(isa(v,'uint32'));
+      assert(numel(v)==1);
+      assert(p<this.initialNumUint32);
+      this.initialUint32(p+1)=v;
     end
     
-    function blocks=getExtensionBlocks(this,k)
-      assert(isa(k,'uint32'));
-      if(isempty(k))
-        blocks=struct('logical',{},'uint32',{});
-      else
-        error(this.extensionErrorText);
-      end
+    function setExtensionLogical(this,b,p,v)
+      assert(isa(b,'uint32'));
+      assert(numel(b)==1);
+      assert(isa(p,'uint32'));
+      assert(numel(p)==1);
+      assert(isa(v,'logical'));
+      assert(numel(v)==1);
+      error(this.extensionErrorText);
     end
     
-    function appendExtensionBlocks(this,blocks)
-      assert(isa(blocks,'struct'));
-      if(~isempty(blocks))
-        error(this.extensionErrorText);
-      end
+   function setExtensionUint32(this,b,p,v)
+      assert(isa(b,'uint32'));
+      assert(numel(b)==1);
+      assert(isa(p,'uint32'));
+      assert(numel(p)==1);
+      assert(isa(v,'uint32'));
+      assert(numel(v)==1);
+      error(this.extensionErrorText);
+    end
+    
+    function cost=computeInitialBlockCost(this)
+      z=initialBlock2deviation(this);
+      cost=0.5*dot(z,z);
+    end
+
+    function cost=computeExtensionBlockCost(this,b)
+      assert(isa(b,'uint32'));
+      assert(numel(b)==1);
+      cost=this.extensionBlockCost;
+    end
+    
+    function extend(this,num)
+      assert(isa(num,'uint32'));
+      assert(numel(num)==1);
+      error(this.extensionErrorText);
     end
      
     function interval=domain(this)
@@ -123,7 +161,7 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       pose=evaluate(this.xRef,t);
       interval=domain(this.xRef);
       t(t>interval.second)=interval.second;
-      z=initialBlock2deviation(this,this.initialBlock);
+      z=initialBlock2deviation(this);
       c1=this.positionOffset-this.positionDeviation*z(1);
       c2=this.positionRateOffset-this.positionRateDeviation*z(2);
       for k=1:numel(t)
@@ -135,7 +173,7 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       tangentPose=tangent(this.xRef,t);
       interval=domain(this.xRef);
       t(t>interval.second)=interval.second;
-      z=initialBlock2deviation(this,this.initialBlock);
+      z=initialBlock2deviation(this);
       c1=this.positionOffset-this.positionDeviation*z(1);
       c2=this.positionRateOffset-this.positionRateDeviation*z(2);
       for k=1:numel(t)
@@ -146,8 +184,9 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
   end
   
   methods (Access=private)
-    function z=initialBlock2deviation(this,initialBlock)
-      z=double(initialBlock.uint32)/this.sixthIntMax-3;
+    function z=initialBlock2deviation(this)
+      z=double(this.initialUint32)/this.sixthIntMax-3;
     end
   end
+  
 end

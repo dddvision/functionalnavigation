@@ -97,52 +97,77 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   end
 end
 
-function [n1,n2,n3,n4]=analyzeStructure(objective)
-  n1=numInitialLogical(objective.input(1));
-  n2=n1+32*numInitialUint32(objective.input(1));
-  n3=numExtensionLogical(objective.input(1));
-  n4=n3+32*numExtensionUint32(objective.input(1));
+function [K,B,n1,n2,n3,n4]=analyzeStructure(objective)
+  x=objective.input(1);
+  K=numel(objective.input);
+  B=numExtensionBlocks(x);
+  n1=numInitialLogical(x);
+  n2=numInitialUint32(x);
+  n3=numExtensionLogical(x);
+  n4=numExtensionUint32(x);
 end
 
 function bits=getBits(objective)
-  [n1,n2,n3,n4]=analyzeStructure(objective);
-  K=numel(objective.input);
-  B=objective.input(1).numExtensionBlocks;
-  bits=false(K,n2+B*n4);
+  [K,B,n1,n2,n3,n4]=analyzeStructure(objective);
+  bits=false(K,n1+n2+B*(n3+n4));
+  p1=uint32(1):n1;
+  p2=uint32(1):n2;
+  p3=uint32(1):n3;
+  p4=uint32(1):n4;
+  pU=uint32(1):uint32(32);
+  bB=uint32(1):uint32(B);
   for k=1:K
-    initialBlock=getInitialBlock(objective.input(k));
-    bits(k,1:n1)=initialBlock.logical;
-    bits(k,(n1+1):n2)=uints2bits(initialBlock.uint32);
-    base=n2;
-    for b=1:B
-      extensionBlock=getExtensionBlocks(objective.input(k),uint32(b-1));
-      bits(k,(base+uint32(1)):(base+n3))=extensionBlock.logical;
-      bits(k,(base+n3+uint32(1)):(base+n4))=uints2bits(extensionBlock.uint32);
-      base=base+n4;
+    Fk=objective.input(k);
+    base=uint32(0);
+    for p=p1
+      bits(k,base+p)=getInitialLogical(Fk,p-1);
+    end
+    base=base+n1;
+    for p=p2
+      bits(k,base+pU)=uints2bits(getInitialUint32(Fk,p-1));
+      base=base+uint32(32);
+    end
+    for b=bB
+      for p=p3
+        bits(k,base+p)=getExtensionLogical(Fk,b-1,p-1);
+      end
+      base=base+n3;
+      for p=p4
+        bits(k,base+pU)=uints2bits(getExtensionUint32(Fk,b-1,p-1));
+        base=base+uint32(32);
+      end
     end
   end
 end
 
 function putBits(objective,bits)
-  [n1,n2,n3,n4]=analyzeStructure(objective);
-  for k=1:numel(objective.input)
-    b=bits(k,:);
-    initialBlock=struct('logical',b(1:n1),'uint32',bits2uints(b((n1+1):n2)));
-    extensionBlocks=struct('logical',{},'uint32',{});
-    numLeftover=size(b,2)-n2;
-    numEBits=n3+n4;
-    base=n2;
-    if(numEBits)
-      for blk=1:(numLeftover/numEBits)
-        extensionBlocks(blk)=struct('logical',b((base+uint32(1)):(base+n3)),...
-          'uint32',bits2uints(b((base+n3+uint32(1)):(base+n4))));
-        base=base+n4;
-      end
+  [K,B,n1,n2,n3,n4]=analyzeStructure(objective);
+  p1=uint32(1):n1;
+  p2=uint32(1):n2;
+  p3=uint32(1):n3;
+  p4=uint32(1):n4;
+  pU=uint32(1):uint32(32);
+  bB=uint32(1):uint32(B);
+  for k=1:K
+    Fk=objective.input(k);
+    base=uint32(0);
+    for p=p1
+      setInitialLogical(Fk,p-1,bits(k,base+p));
     end
-    setInitialBlock(objective.input(k),initialBlock);
-    if(~isempty(extensionBlocks))
-      setExtensionBlocks(objective.input(k),...
-        uint32(0:(numel(extensionBlocks)-1)),extensionBlocks);
+    base=base+n1;
+    for p=p2
+      setInitialUint32(Fk,p-1,bits2uints(bits(k,base+pU)));
+      base=base+uint32(32);
+    end
+    for b=bB
+      for p=p3
+        setExtensionLogical(Fk,b-1,p-1,bits(k,base+p));
+      end
+      base=base+n3;
+      for p=p4
+        setExtensionUint32(Fk,b-1,p-1,bits2uints(bits(k,base+pU)));
+        base=base+uint32(32);
+      end
     end
   end
 end

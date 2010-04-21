@@ -24,6 +24,25 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   end
   
   methods (Access=public)
+    function this=BoundedMarkov(initialTime,uri)
+      this=this@DynamicModel(initialTime,uri);
+      this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
+        'uint32',zeros(1,this.initialNumUint32,'uint32'));
+      this.firstNewBlock=1;
+      this.interval=TimeInterval(initialTime,initialTime);
+      this.block=struct('logical',{},'uint32',{});
+      this.numInputs=size(this.B,2);
+      this.state=zeros(this.numStates,this.chunkSize);
+      this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
+      ABd=expmApprox(this.ABZ/this.rate);
+      this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
+      this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
+    end
+
+    function rate=updateRate(this)
+      rate=this.rate;
+    end
+    
     function num=numInitialLogical(this)
       num=this.initialNumLogical;
     end
@@ -40,71 +59,57 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       num=uint32(size(this.B,2));
     end
     
-    function rate=updateRate(this)
-      rate=this.rate;
-    end
-    
-    function this=BoundedMarkov(initialTime,uri)
-      this=this@DynamicModel(initialTime,uri);
-      this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
-        'uint32',zeros(1,this.initialNumUint32,'uint32'));
-      this.firstNewBlock=1;
-      this.interval=TimeInterval(initialTime,initialTime);
-      this.block=struct('logical',{},'uint32',{});
-      this.numInputs=size(this.B,2);
-      this.state=zeros(this.numStates,this.chunkSize);
-      this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
-      ABd=expmApprox(this.ABZ/this.rate);
-      this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
-      this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
-    end
-
-    function cost=computeInitialBlockCost(this,initialBlock)
-      assert(numel(initialBlock)==1);
-      cost=this.initialBlockCost;
-    end
-    
-    function setInitialBlock(this,initialBlock)
-      assert(numel(initialBlock)==1);
-      this.initialBlock=initialBlock;
-    end
-    
-    function initialBlock=getInitialBlock(this)
-      initialBlock=this.initialBlock;
-    end
-    
-    function cost=computeExtensionBlockCost(this,block)
-      assert(numel(block)==1);
-      cost=this.extensionBlockCost;
-    end
-    
     function num=numExtensionBlocks(this)
       num=numel(this.block);
     end
     
-    function setExtensionBlocks(this,k,blocks)
-      assert(numel(k)==numel(blocks));
-      if(isempty(blocks))
-        return;
-      end
-      assert((k(end)+1)<=numel(this.block));
-      k=k+1; % convert to one-based index
-      this.block(k)=blocks;
-      this.firstNewBlock=min(this.firstNewBlock,k(1));
+    function v=getInitialLogical(this,p)
+      v=this.initialBlock.logical(p+1);
     end
     
-    function blocks=getExtensionBlocks(this,k)
-      blocks=struct('logical',{},'uint32',{});
-      for kk=1:numel(k)
-        blocks(kk)=this.block(k(kk)+1);
-      end
+    function v=getInitialUint32(this,p)
+      v=this.initialBlock.uint32(p+1);
     end
     
-    function appendExtensionBlocks(this,blocks)
-      if(isempty(blocks))
-        return;
-      end
-      this.block=cat(2,this.block,blocks);
+    function v=getExtensionLogical(this,b,p)
+      v=this.block(b+1).logical(p+1);
+    end
+    
+    function v=getExtensionUint32(this,b,p)
+      v=this.block(b+1).uint32(p+1);
+    end
+    
+    function setInitialLogical(this,p,v)
+      this.initialBlock.logical(p+1)=v;
+    end
+    
+    function setInitialUint32(this,p,v)
+      this.initialBlock.uint32(p+1)=v;
+    end
+    
+    function setExtensionLogical(this,b,p,v)
+      this.block(b+1).logical(p+1)=v;
+      this.firstNewBlock=min(this.firstNewBlock,b+1);
+    end
+    
+    function setExtensionUint32(this,b,p,v)
+      this.block(b+1).uint32(p+1)=v;
+      this.firstNewBlock=min(this.firstNewBlock,b+1);
+    end
+
+    function cost=computeInitialBlockCost(this)
+      cost=this.initialBlockCost;
+    end
+
+    function cost=computeExtensionBlockCost(this,b)
+      assert(isa(b,'uint32'));
+      assert(numel(b)==1);
+      cost=this.extensionBlockCost;
+    end
+    
+    function extend(this,num)
+      blank=struct('logical',false(0,1),'uint32',zeros(1,numExtensionUint32(this),'uint32'));
+      this.block=cat(2,this.block,repmat(blank,[1,num]));
       N=numel(this.block);
       if((N+1)>size(this.state,2))
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];
@@ -149,10 +154,9 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       dtFloor=dkFloor/this.rate;
       dtRemain=dt-dtFloor;
       good=(t>=ta)&(t<=tb);
-      firstGood=find(good,1,'first');
-      lastGood=find(good,1,'last');
-      blockIntegrate(this,ceil(dk(lastGood))); % ceil is not floor+1 for integers
-      goodList=firstGood:lastGood;
+      dkMax=max(dk(good));
+      blockIntegrate(this,ceil(dkMax)); % ceil is not floor+1 for integers
+      goodList=find(good);
     end
     
     function blockIntegrate(this,K)

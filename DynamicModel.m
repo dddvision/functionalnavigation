@@ -1,10 +1,9 @@
 % This class augments a Trajectory with defining parameters
 %
 % NOTES
-% This class depends on parameter blocks of the following form
-%   block.logical = logical parameters, logical 1-by-numLogical
-%   block.uint32 = unsigned integer parameters, uint32 1-by-numUint32
+% Several member functions interact with groups of parameters called blocks
 % There are seperate block descriptions for initial and extension blocks
+% Each block has zero or more logical parameters and zero or more uint32 parameters
 % Each uint32 parameter may be treated as range-bounded double via static casting
 % The range of uint32 is [0,4294967295]
 classdef DynamicModel < Trajectory
@@ -52,115 +51,78 @@ classdef DynamicModel < Trajectory
       assert(isa(initialTime,'double'));
       assert(numel(initialTime)==1);
       assert(isa(uri,'char'));
-    end    
+    end
   end
   
   methods (Abstract=true,Access=public)
-    % Get number of logical parameters in the initial block
-    %
-    % OUTPUT
-    % num = number of logical parameters, uint32 scalar
-    num=numInitialLogical(this);
-    
-    % Get number of uint32 parameters in the initial block
-    %
-    % OUTPUT
-    % num = number of integer parameters, uint32 scalar
-    num=numInitialUint32(this);
-    
-    % Get number of logical parameters in each extension block
-    %
-    % OUTPUT
-    % num = number of logical parameters, uint32 scalar
-    num=numExtensionLogical(this);
-    
-    % Get number of uint32 parameters in each extension block
-    %
-    % OUTPUT
-    % num = number of integer parameters, uint32 scalar
-    num=numExtensionUint32(this);
-    
     % Get the conversion between number of extension blocks and associated time domain extension
     %
     % OUTPUT
-    % rate = each block will extend the domain the reciprical of this rate, double scalar
+    % rate = each block will extend the domain the reciprical of this rate, const double scalar
     %
     % NOTES
     % The units for update rate are blocks per second
     % If the dynamic model takes no extension blocks then the update rate is 0
     rate=updateRate(this);
+       
+    % Get number of parameters in each block
+    %
+    % OUTPUT
+    % num = number of parameters in each block, const uint32 scalar
+    num=numInitialLogical(this);
+    num=numInitialUint32(this);
+    num=numExtensionLogical(this);
+    num=numExtensionUint32(this);
 
-    % Compute the cost associated with the initial block
-    %
-    % INPUT
-    % initialBlock = (see above), struct scalar
+    % Get the number of extension blocks
     %
     % OUTPUT
-    % cost = non-negative cost associated with the block, double scalar
-    %
-    % NOTE
-    % For a normal distribution
-    %   Cost is the negative natural log likelihood of the distribution
-    %   Typical costs are in the range [0,4.5]
-    % Throws an exception if given block is not a struct scalar
-    cost=computeInitialBlockCost(this,initialBlock);
-    
-    % Set/Get the the initial block
-    %
-    % INPUT/OUTPUT
-    % initialBlock = (see above), struct scalar
-    %
-    % NOTES
-    % The set function throws an exception if the given block is not a struct scalar
-    setInitialBlock(this,initialBlock);
-    initialBlock=getInitialBlock(this);
-    
-    % Compute the cost associated with an extension block
-    %
-    % INPUT
-    % block = (see above), struct scalar
-    %
-    % OUTPUT
-    % cost = non-negative cost associated with the block, double scalar
-    %
-    % NOTE
-    % For a normal distribution
-    %   Cost is the negative natural log likelihood of the distribution
-    %   Typical costs are in the range [0,4.5]
-    % Throws an exception if given block is not a struct scalar
-    cost=computeExtensionBlockCost(this,block);
-    
-    % Get the total number of extension blocks
-    %
-    % OUTPUT
-    % num = total number of extension blocks, uint32 scalar
+    % num = number of extension blocks, uint32 scalar
     num=numExtensionBlocks(this);
     
-    % Set/Get multiple extension blocks
+    % Get/Set parameters
     %
     % INPUT
-    % k = zero-based indices of block locations sorted in ascending order, uint32 N-by-1
+    % blockIndex = zero-based block index, uint32 scalar
+    % parameterIndex = zero-based parameter index within each block, uint32 scalar
     %
     % INPUT/OUTPUT
-    % blocks = (see above), struct N-by-1
+    % value = parameter value, logical or uint32 scalar
     %
     % NOTES
-    % Vector arguments may be empty without consequence (no blocks will be set/returned)
-    % Throws an exception if any index is outside of the range [0,numExtensionBlocks-1]
-    % Unsorted indices may cause unexpected behaviour
-    % The set function throws an exception if the number of indices does not match the number of blocks
-    setExtensionBlocks(this,k,blocks);
-    blocks=getExtensionBlocks(this,k);
+    % Throws an exception if any index is outside of the range specified by other member functions
+    value=getInitialLogical(this,parameterIndex);
+    value=getInitialUint32(this,parameterIndex);
+    value=getExtensionLogical(this,blockIndex,parameterIndex);
+    value=getExtensionUint32(this,blockIndex,parameterIndex);
+    setInitialLogical(this,parameterIndex,value);
+    setInitialUint32(this,parameterIndex,value);
+    setExtensionLogical(this,blockIndex,parameterIndex,value);
+    setExtensionUint32(this,blockIndex,parameterIndex,value);
 
-    % Extend the time domain by appending consecutive extension blocks
+    % Compute the cost associated with a block
     %
     % INPUT
-    % blocks = (see above), struct M-by-1
+    % blockIndex = zero-based block index, uint32 scalar
+    %
+    % OUTPUT
+    % cost = non-negative cost associated with each block, double scalar
+    %
+    % NOTE
+    % For a normal distribution
+    %   Cost is the negative natural log likelihood of the distribution
+    %   Typical costs are in the range [0,4.5]
+    cost=computeInitialBlockCost(this);
+    cost=computeExtensionBlockCost(this,blockIndex);
+    
+    % Extend the time domain by appending extension blocks
+    %
+    % INPUT
+    % num = number of blocks to append, uint32 scalar
     %
     % NOTES
-    % Vector of blocks may be empty without consequence (no blocks will be appended)
     % Throws an exception if the update rate is 0
-    appendExtensionBlocks(this,blocks);
+    extend(this,num);
   end
     
 end
