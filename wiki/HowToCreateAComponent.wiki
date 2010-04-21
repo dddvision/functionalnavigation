@@ -3,7 +3,7 @@
 
 === Introduction ===
 
-This project provides a framework for testing navigation algorithms.  Do you want to create a component that will seamlessly integrate with this framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
+This project provides a framework for testing navigation algorithms.  Do you want to create a component that will seamlessly integrate with the framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
 
 There are an infinite number of ways to represent system dynamics, trajectory measures, and optimization methods.  Therefore, we intend to define clear interfaces and leave issues of information representation to the implementations of individual components.
 
@@ -32,7 +32,7 @@ General coding guidelines for this project:
   * RULE (MATLAB): Components must pass the "mlint" test or contain a comment at each line explaining why not.
   * RULE (MATLAB): Use fprintf() instead of disp() or warning().
 
-  * RULE (C++): Code must compile using "g++ -Wall -Werror ???pedantic???
+  * RULE (C++): Code must compile using "g++ -Wall -Werror -pedantic"
   * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
 
   * RULE: Place a description above each function that identifies INPUT, OUTPUT, RETURN VALUE, and NOTES when applicable.
