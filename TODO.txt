@@ -44,8 +44,8 @@ demonstration:
 Optimizer:
  * Create linkage-based GA crossover function.
 
-DynamicModel:
- * Add functions for parameter generation and trajectory extension (then take MultiMeasure out of Objective).
+MultiMeasure:
+ * Create new MultiMeasure class?
 
 Measure:
  *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).
