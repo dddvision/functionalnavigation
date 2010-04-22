@@ -2,7 +2,6 @@
 %
 % INPUT/OUTPUT
 % Q = quaternions (4-by-n)
-
 function Q=QuatNorm(Q)
 
   % extract elements

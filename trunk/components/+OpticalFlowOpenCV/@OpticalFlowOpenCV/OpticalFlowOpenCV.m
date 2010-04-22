@@ -13,7 +13,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
       if(~exist('mexOpticalFlowOpenCV','file'))
         fprintf('\nCompiling mex wrapper for OpenCV...');
         
-        % Locate openCV libraries
+        % Locate OpenCV libraries
         userPath=path;
         userWarnState=warning('off','all'); % see MATLAB Solution ID 1-5JUPSQ
         addpath(getenv('PATH'));

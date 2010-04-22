@@ -1,3 +1,6 @@
+#include <iostream>
+#include <map>
+
 #include "DataContainer.h"
 #include "DynamicModel.h"
 #include "Measure.h"
@@ -18,16 +21,16 @@ namespace tommas
   }
 }
 
-using namespace tommas;
-
 int main()
 { 
   std::cout << "This is an example application of the Trajectory Optimization Manager for " << std::endl
     << "Multiple Algorithms and Sensors (TOMMAS). It instantiates an optimizer " << std::endl
     << "and a graphical display, and then alternately optimizes and displays " << std::endl
-    << "trajectories in an infinite loop. See demoConfig for options." << std::endl;
-  RegisterComponents();
-  Measure* measure = Measure::factory("OpticalFlowOpenCV", "uri");
+    << "trajectories in an infinite loop. See DemoConfig for options." << std::endl;
+  
+  tommas::RegisterComponents();
+  
+  tommas::Measure* measure = tommas::Measure::factory("OpticalFlowOpenCV", "uri");
   measure->refresh();
-  return 0;
+  return(0);
 }
