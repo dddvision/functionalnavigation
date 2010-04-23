@@ -1,94 +1,101 @@
-#include <vector>
-#include <iostream>
+#include <algorithm>
+#include <cmath>
 #include <assert.h>
-#include <stdint.h>
 
-#include "WorldTime.h"
-#include "DynamicModel.h" 
+#include "DynamicModel.h"
 
 namespace tommas
 {
   class BrownianPlanarDiscrete : public DynamicModel
-  {
+  {  
   private:
-    double to;
-    uint32_t pxo;
-    uint32_t pyo;
-    uint32_t pao;
+    static const double rate;
+    static const double initialPosition[3];
+    static const double initialQuaternion[4];
+    
+    // parameters
     std::vector<uint32_t> px;
     std::vector<uint32_t> py;
     std::vector<uint32_t> pa;
+    
+    // forces
+    std::vector<double> fx;
+    std::vector<double> fy;
+    std::vector<double> fa;
+    
+    // positions
     std::vector<double> x;
     std::vector<double> y;
     std::vector<double> a;
+    
+    // rates
+    std::vector<double> xd;
+    std::vector<double> yd;
+    std::vector<double> ad;
+    
+    TimeInterval interval;
+    unsigned firstNewBlock;
+    
+    static double paramToForce(uint32_t p)
+    {
+      static const double sixthIntMax=4294967295.0/6.0;
+      return(static_cast<double>(p)/sixthIntMax-3.0);
+    }
 
   public:
-    BrownianPlanarDiscrete(WorldTime initialTime,std::string uri) : DynamicModel(initialTime,uri)
+    BrownianPlanarDiscrete(WorldTime initialTime, std::string uri) : DynamicModel(initialTime, uri)
     {
-      to=static_cast<double>(initialTime);
-      pxo=static_cast<uint32_t>(0);
-      pyo=static_cast<uint32_t>(0);
-      pao=static_cast<uint32_t>(0);
-      px.reserve(1024);
-      py.reserve(1024);
-      pa.reserve(1024);
-      px.clear();
-      py.clear();
-      pa.clear();
-      x.reserve(1024);
-      y.reserve(1024);
-      a.reserve(1024);
-      x[0]=0.0;
-      y[0]=0.0;
-      a[0]=0.0;
+      const unsigned reserve=1024;
+      px.reserve(reserve);
+      py.reserve(reserve);
+      pa.reserve(reserve);
+      fx.reserve(reserve);
+      fy.reserve(reserve);
+      fa.reserve(reserve);
+      x.reserve(reserve);
+      y.reserve(reserve);
+      a.reserve(reserve);
+      xd.reserve(reserve);
+      yd.reserve(reserve);
+      ad.reserve(reserve);
+      interval.first=initialTime;
+      interval.second=initialTime;
+      firstNewBlock=0;
       return;
     }
-    
-    WorldTime updateRate(void) const
-    {
-      return(static_cast<WorldTime>(0.5));
-    }
-    
+
+    WorldTime updateRate(void) const {return(rate);}
     unsigned numInitialLogical(void) const {return(0);}
-    unsigned numInitialUint32(void) const {return(3);}
+    unsigned numInitialUint32(void) const {return(0);}
     unsigned numExtensionLogical(void) const {return(0);}
     unsigned numExtensionUint32(void) const {return(3);}
-    
+
     unsigned numExtensionBlocks(void)
     {
-      return(static_cast<unsigned>(px.size()));
+      return(px.size());
     }
-    
+
     bool getInitialLogical(unsigned parameterIndex)
     {
-      std::cout << "Error: model has no logical parameters" << std::endl;
+      assert(false);
       return(false);
     }
-    
+
     uint32_t getInitialUint32(unsigned parameterIndex)
     {
-      assert(parameterIndex<this->numInitialUint32());
-      switch(parameterIndex)
-      {
-        case 0:
-          return(pxo);
-        case 1:
-          return(pyo);
-        case 2:
-          return(pao);
-      }
+      assert(false);
+      return(0);
     }
-    
+
     bool getExtensionLogical(unsigned blockIndex, unsigned parameterIndex)
     {
-      std::cout << "Error: model has no logical parameters" << std::endl;
+      assert(false);
       return(false);
     }
-    
+
     uint32_t getExtensionUint32(unsigned blockIndex, unsigned parameterIndex)
     {
       assert(blockIndex<this->numExtensionBlocks());
-      assert(parameterIndex<this->numExtensionUint32());
       switch(parameterIndex)
       {
         case 0:
@@ -97,17 +104,95 @@ namespace tommas
           return(py[blockIndex]);
         case 2:
           return(pa[blockIndex]);
+        default:
+          assert(false);
+          return(0);
       }
     }
-    
-    void setInitialLogical(unsigned,bool);
-    void setInitialUint32(unsigned,uint32_t);
-    void setExtensionLogical(unsigned,unsigned,bool);
-    void setExtensionUint32(unsigned,unsigned,uint32_t);
 
-    double computeInitialBlockCost(void);
-    double computeExtensionBlockCost(unsigned);
+    void setInitialLogical(unsigned parameterIndex, bool value)
+    {
+      assert(false);
+      return;
+    }
 
-    void extend(unsigned);
+    void setInitialUint32(unsigned parameterIndex, uint32_t value)
+    {
+      assert(false);
+      return;
+    }
+
+    void setExtensionLogical(unsigned blockIndex, unsigned parameterIndex, bool value)
+    {
+      assert(false);
+      return;
+    }
+
+    void setExtensionUint32(unsigned blockIndex, unsigned parameterIndex, uint32_t value)
+    {
+      switch(parameterIndex)
+      {
+        case 0:
+          px[blockIndex]=value;
+          fx[blockIndex]=paramToForce(value);
+          break;
+        case 1:
+          py[blockIndex]=value;
+          fy[blockIndex]=paramToForce(value);
+          break;
+        case 2:
+          pa[blockIndex]=value;
+          fa[blockIndex]=paramToForce(value);
+          break;
+        default:
+          assert(false);
+      }
+      firstNewBlock=std::min(firstNewBlock,blockIndex);
+    }
+
+    double computeInitialBlockCost(void) {return(0.0);}
+
+    double computeExtensionBlockCost(unsigned blockIndex)
+    {
+      double force[3];
+      double cost;
+      force[0]=fx[blockIndex];
+      force[1]=fy[blockIndex];
+      force[2]=fa[blockIndex];
+      cost=0.5*(force[0]*force[0]+force[1]*force[1]+force[2]*force[2]);
+      return(cost);
+    }
+
+    void extend(unsigned num)
+    {
+      static const uint32_t paramDefault=floor(4294967295.0/2.0);
+      static const double forceDefault=paramToForce(paramDefault);
+      unsigned newSize=px.size()+num;
+      px.resize(newSize,paramDefault);
+      py.resize(newSize,paramDefault);
+      pa.resize(newSize,paramDefault);
+      fx.resize(newSize,forceDefault);
+      fy.resize(newSize,forceDefault);
+      fa.resize(newSize,forceDefault);
+      interval.second=interval.first+static_cast<double>(newSize)/rate;
+      return;
+    }
+
+    TimeInterval domain(void) {return(interval);}
+
+    void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose)
+    {
+      return;    
+    }
+
+    void tangent(const std::vector<WorldTime>& pose, std::vector<TangentPose>& tangentPose)
+    {
+      return;
+    }
   };
+  
+  DynamicModel* BrownianPlanarDiscreteFactory(WorldTime initialTime, std::string uri)
+  { return(new BrownianPlanarDiscrete(initialTime,uri)); }
 }
+
+#include "BrownianPlanarDiscreteConfig.cpp"

@@ -12,9 +12,9 @@ namespace tommas
   class Trajectory
   {
   public:
-    virtual std::pair<WorldTime,WorldTime> domain(void) = 0;
-    virtual std::vector<Pose> evaluate(const std::vector<WorldTime>&) = 0;
-    virtual std::vector<TangentPose> tangent(const std::vector<WorldTime>&) = 0;
+    virtual TimeInterval domain(void) = 0;
+    virtual void evaluate(const std::vector<WorldTime>&,std::vector<Pose>&) = 0;
+    virtual void tangent(const std::vector<WorldTime>&,std::vector<TangentPose>&) = 0;
   };
 }
 

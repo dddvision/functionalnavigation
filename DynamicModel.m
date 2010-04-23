@@ -109,6 +109,7 @@ classdef DynamicModel < Trajectory
     % cost = non-negative cost associated with each block, double scalar
     %
     % NOTE
+    % A block with zero parameters returns zero cost
     % For a normal distribution
     %   Cost is the negative natural log likelihood of the distribution
     %   Typical costs are in the range [0,4.5]
