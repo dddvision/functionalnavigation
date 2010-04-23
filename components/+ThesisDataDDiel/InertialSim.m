@@ -44,7 +44,7 @@ classdef InertialSim < InertialSixDoF
       assert(this.ready);
       assert(k>=this.ka);
       assert(k<=this.kb);
-      time=Time(this.time(k));      
+      time=GPSTime(this.time(k));      
     end
     
     function dt=getIntegrationTime(this)

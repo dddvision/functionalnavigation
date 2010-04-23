@@ -31,7 +31,7 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
       catch err
         error('Failed to open data resource: %s',err.message);
       end
-      this.t=Time([]);
+      this.t=GPSTime([]);
       this.yBar=[];
       this.ka=uint32([]);
       this.kb=uint32([]);
@@ -40,7 +40,7 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
 
     function refresh(this)
       if(this.status)
-        time=Time(this.t(end)+this.dt);
+        time=GPSTime(this.t(end)+this.dt);
       else
         interval=domain(this.xRef);
         time=interval.first;
@@ -76,7 +76,7 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
     end
 
     function time=getTime(this,k)
-      time=Time(this.t(k));
+      time=GPSTime(this.t(k));
     end
     
     function edgeList=findEdges(this,kaSpan,kbSpan)
