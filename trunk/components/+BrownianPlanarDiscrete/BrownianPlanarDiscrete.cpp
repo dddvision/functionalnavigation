@@ -1,7 +1,9 @@
 #include <vector>
 #include <iostream>
+#include <assert.h>
 #include <stdint.h>
 
+#include "WorldTime.h"
 #include "DynamicModel.h" 
 
 namespace tommas
@@ -21,7 +23,7 @@ namespace tommas
     std::vector<double> a;
 
   public:
-    BrownianPlanarDiscrete(GPSTime initialTime,std::string uri) : DynamicModel(initialTime,uri)
+    BrownianPlanarDiscrete(WorldTime initialTime,std::string uri) : DynamicModel(initialTime,uri)
     {
       to=static_cast<double>(initialTime);
       pxo=static_cast<uint32_t>(0);
@@ -42,9 +44,9 @@ namespace tommas
       return;
     }
     
-    GPSTime updateRate(void) const
+    WorldTime updateRate(void) const
     {
-      return(static_cast<GPSTime>(0.5));
+      return(static_cast<WorldTime>(0.5));
     }
     
     unsigned numInitialLogical(void) const {return(0);}
@@ -59,12 +61,13 @@ namespace tommas
     
     bool getInitialLogical(unsigned parameterIndex)
     {
-      std::cout << "Error: getInitialLogical" << std::endl;
+      std::cout << "Error: model has no logical parameters" << std::endl;
       return(false);
     }
     
     uint32_t getInitialUint32(unsigned parameterIndex)
     {
+      assert(parameterIndex<this->numInitialUint32());
       switch(parameterIndex)
       {
         case 0:
@@ -73,20 +76,30 @@ namespace tommas
           return(pyo);
         case 2:
           return(pao);
-        default:
-          std::cout << "Error: getInitialDiscrete" << std::endl;
-          return(pxo);
       }
     }
     
     bool getExtensionLogical(unsigned blockIndex, unsigned parameterIndex)
     {
-      std::cout << "Error: getExtensionLogical" << std::endl;
+      std::cout << "Error: model has no logical parameters" << std::endl;
       return(false);
     }
     
+    uint32_t getExtensionUint32(unsigned blockIndex, unsigned parameterIndex)
+    {
+      assert(blockIndex<this->numExtensionBlocks());
+      assert(parameterIndex<this->numExtensionUint32());
+      switch(parameterIndex)
+      {
+        case 0:
+          return(px[blockIndex]);
+        case 1:
+          return(py[blockIndex]);
+        case 2:
+          return(pa[blockIndex]);
+      }
+    }
     
-    uint32_t getExtensionUint32(unsigned,unsigned);
     void setInitialLogical(unsigned,bool);
     void setInitialUint32(unsigned,uint32_t);
     void setExtensionLogical(unsigned,unsigned,bool);

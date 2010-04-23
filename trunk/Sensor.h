@@ -1,7 +1,7 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
-#include "GPSTime.h"
+#include "WorldTime.h"
 
 namespace tommas
 {
@@ -12,7 +12,7 @@ namespace tommas
     virtual bool hasData(void) = 0;
     virtual unsigned first(void) = 0;
     virtual unsigned last(void) = 0;
-    virtual GPSTime getTime(unsigned) = 0;
+    virtual WorldTime getTime(unsigned) = 0;
   };
 }
 
