@@ -1,11 +1,11 @@
 #ifndef TIMEINTERVAL_H
 #define TIMEINTERVAL_H
 
-#include "Time.h"
+#include "GPSTime.h"
 
 namespace tommas
 {
-  typedef std::pair<Time,Time> TimeInterval;
+  typedef std::pair<GPSTime,GPSTime> TimeInterval;
 }
 
 #endif

@@ -13,38 +13,38 @@ namespace tommas
     uint32_t pxo;
     uint32_t pyo;
     uint32_t pao;
+    std::vector<uint32_t> px;
+    std::vector<uint32_t> py;
+    std::vector<uint32_t> pa;
     std::vector<double> x;
     std::vector<double> y;
     std::vector<double> a;
-    std::vector<double> fx;
-    std::vector<double> fy;
-    std::vector<double> fa;
-    std::vector<uint32_t> px;
-    std::vector<uint32_t> py;
-    std::vector<uint32_t> pz;
-    
+
   public:
-    BrownianPlanar(Time initialTime,std::string uri)
+    BrownianPlanarDiscrete(GPSTime initialTime,std::string uri) : DynamicModel(initialTime,uri)
     {
-      this.to=static_cast<double>(initialTime);
-      this.x.reserve(1024);
-      this.y.reserve(1024);
-      this.a.reserve(1024);
-      this.fx.reserve(1024);
-      this.fy.reserve(1024);
-      this.fa.reserve(1024);
-      this.px.reserve(1024);
-      this.py.reserve(1024);
-      this.pa.reserve(1024);
+      to=static_cast<double>(initialTime);
+      pxo=static_cast<uint32_t>(0);
+      pyo=static_cast<uint32_t>(0);
+      pao=static_cast<uint32_t>(0);
+      px.reserve(1024);
+      py.reserve(1024);
+      pa.reserve(1024);
+      px.clear();
+      py.clear();
+      pa.clear();
+      x.reserve(1024);
+      y.reserve(1024);
+      a.reserve(1024);
       x[0]=0.0;
       y[0]=0.0;
-      z[0]=0.0;
+      a[0]=0.0;
       return;
     }
     
-    Time updateRate(void) const
+    GPSTime updateRate(void) const
     {
-      return(static_cast<Time>(0.5));
+      return(static_cast<GPSTime>(0.5));
     }
     
     unsigned numInitialLogical(void) const {return(0);}
@@ -54,7 +54,7 @@ namespace tommas
     
     unsigned numExtensionBlocks(void)
     {
-      return(static_cast<unsigned>(dx.size()));
+      return(static_cast<unsigned>(px.size()));
     }
     
     bool getInitialLogical(unsigned parameterIndex)
@@ -68,14 +68,14 @@ namespace tommas
       switch(parameterIndex)
       {
         case 0:
-          return(this.pxo);
+          return(pxo);
         case 1:
-          return(this.pyo);
+          return(pyo);
         case 2:
-          return(this.pao);
+          return(pao);
         default:
           std::cout << "Error: getInitialDiscrete" << std::endl;
-          return(this.pxo);
+          return(pxo);
       }
     }
     
@@ -96,5 +96,5 @@ namespace tommas
     double computeExtensionBlockCost(unsigned);
 
     void extend(unsigned);
-  }  
+  };
 }

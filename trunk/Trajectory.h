@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "Time.h"
+#include "GPSTime.h"
 #include "Pose.h"
 #include "TangentPose.h"
 
@@ -12,9 +12,9 @@ namespace tommas
   class Trajectory
   {
   public:
-    virtual std::pair<Time,Time> domain(void) = 0;
-    virtual std::vector<Pose> evaluate(const std::vector<Time>&) = 0;
-    virtual std::vector<TangentPose> tangent(const std::vector<Time>&) = 0;
+    virtual std::pair<GPSTime,GPSTime> domain(void) = 0;
+    virtual std::vector<Pose> evaluate(const std::vector<GPSTime>&) = 0;
+    virtual std::vector<TangentPose> tangent(const std::vector<GPSTime>&) = 0;
   };
 }
 
