@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "WorldTime.h"
+#include "TimeInterval.h"
 #include "Trajectory.h"
 
 namespace tommas
