@@ -11,7 +11,7 @@ classdef Trajectory < handle
     % Evaluate a single trajectory at multiple instants
     %
     % INPUT
-    % t = time stamps, GPSTime 1-by-N
+    % t = time stamps, WorldTime 1-by-N
     %
     % OUTPUT
     % pose = pose at each time, Pose 1-by-N
@@ -23,7 +23,7 @@ classdef Trajectory < handle
     % Evaluate the tangent of a single trajectory at multiple time instants
     %
     % INPUT
-    % t = time stamps, GPSTime 1-by-N
+    % t = time stamps, WorldTime 1-by-N
     %
     % OUTPUT
     % tantentPose = tangent pose at each time, TangentPose 1-by-N

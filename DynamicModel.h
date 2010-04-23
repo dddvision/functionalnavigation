@@ -7,13 +7,13 @@
 #include <iostream>
 #include <stdint.h>
 
-#include "GPSTime.h"
+#include "WorldTime.h"
 #include "Trajectory.h"
 
 namespace tommas
 {
   class DynamicModel;
-  typedef DynamicModel* (*DynamicModelFactory)(GPSTime,std::string);
+  typedef DynamicModel* (*DynamicModelFactory)(WorldTime,std::string);
   extern std::map<const std::string,DynamicModelFactory> dynamicModelList;
   
   class DynamicModel : public Trajectory
@@ -22,11 +22,11 @@ namespace tommas
     DynamicModel(const DynamicModel&){}  
     
   protected:
-    DynamicModel(GPSTime,std::string){}
+    DynamicModel(WorldTime,std::string){}
     ~DynamicModel(void){} 
     
   public:
-    virtual GPSTime updateRate(void) const = 0;
+    virtual WorldTime updateRate(void) const = 0;
     
     virtual unsigned numInitialLogical(void) const = 0;
     virtual unsigned numInitialUint32(void) const = 0;
@@ -51,7 +51,7 @@ namespace tommas
     
   public:
     static std::string frameworkClass(void) { return std::string("DynamicModel"); }
-    static DynamicModel* factory(std::string dynamicModelName,GPSTime initialTime,std::string uri)
+    static DynamicModel* factory(std::string dynamicModelName,WorldTime initialTime,std::string uri)
     {
       if(dynamicModelList.find(dynamicModelName) == dynamicModelList.end())
       { 

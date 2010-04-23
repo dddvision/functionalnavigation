@@ -169,10 +169,10 @@ classdef DemoDisplay < DemoConfig & handle
         tmax=min(tmax,this.tRef(end));
       end
       if(tmin==tmax)
-        t=GPSTime(repmat(tmin,[1,this.bigSteps*this.subSteps+1]));
+        t=WorldTime(repmat(tmin,[1,this.bigSteps*this.subSteps+1]));
       else
         tmax(isinf(tmax))=this.infinity; % prevent NaN
-        t=GPSTime(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
+        t=WorldTime(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
       end
     end
     
