@@ -12,7 +12,7 @@ namespace tommas
     static const double rate;
     static const double initialPosition[3];
     static const double initialQuaternion[4];
-    
+
     // parameters
     std::vector<uint32_t> px;
     std::vector<uint32_t> py;
@@ -40,6 +40,49 @@ namespace tommas
     {
       static const double sixthIntMax=4294967295.0/6.0;
       return(static_cast<double>(p)/sixthIntMax-3.0);
+    }
+    
+    void evaluateIndividual(const WorldTime time, Pose& pose)
+    {
+      static const Pose nullPose;
+      double tau;
+      double dt;
+      double dtRemain;
+      double c;
+      unsigned K;
+      unsigned k;
+      unsigned dk;
+      unsigned dkFloor;
+      unsigned dtFloor;
+      
+      if((time<this->interval.first)||(time<=this->interval.second))
+      {
+        pose=nullPose;
+        return;
+      }
+      
+      dt=time-interval.first;
+      dk=dt*rate;
+      dkFloor=floor(dk);
+      dtFloor=dkFloor/rate;
+      dtRemain=dt-dtFloor;
+      K=ceil(dk);
+      
+      // position and velocity A=[1,tau;0,1] B=[tau+0.5*tau*tau;tau]
+      tau=1/rate;
+      c=(tau+0.5*tau*tau);
+      for( k=firstNewBlock; k<ceil(dk); ++k )
+      {
+        x[k+1]=x[k]+tau*xd[k]+c*fx[k];
+        y[k+1]=y[k]+tau*yd[k]+c*fy[k];
+        a[k+1]=a[k]+tau*ad[k]+c*fa[k];
+        xd[k+1]=xd[k]+tau*fx[k];
+        yd[k+1]=yd[k]+tau*fy[k];
+        ad[k+1]=ad[k]+tau*fa[k];
+      }
+      firstNewBlock=K+1;
+
+      return;
     }
 
   public:
@@ -154,26 +197,26 @@ namespace tommas
 
     double computeExtensionBlockCost(unsigned blockIndex)
     {
-      double force[3];
+      double f0,f1,f2;
       double cost;
-      force[0]=fx[blockIndex];
-      force[1]=fy[blockIndex];
-      force[2]=fa[blockIndex];
-      cost=0.5*(force[0]*force[0]+force[1]*force[1]+force[2]*force[2]);
+      f0=fx[blockIndex];
+      f1=fy[blockIndex];
+      f2=fa[blockIndex];
+      cost=0.5*(f0*f0+f1*f1+f2*f2);
       return(cost);
     }
 
     void extend(unsigned num)
     {
-      static const uint32_t paramDefault=floor(4294967295.0/2.0);
-      static const double forceDefault=paramToForce(paramDefault);
+      static const uint32_t halfIntMax=floor(4294967295.0/2.0);
+      static const double force=paramToForce(halfIntMax);
       unsigned newSize=px.size()+num;
-      px.resize(newSize,paramDefault);
-      py.resize(newSize,paramDefault);
-      pa.resize(newSize,paramDefault);
-      fx.resize(newSize,forceDefault);
-      fy.resize(newSize,forceDefault);
-      fa.resize(newSize,forceDefault);
+      px.resize(newSize,halfIntMax);
+      py.resize(newSize,halfIntMax);
+      pa.resize(newSize,halfIntMax);
+      fx.resize(newSize,force);
+      fy.resize(newSize,force);
+      fa.resize(newSize,force);
       interval.second=interval.first+static_cast<double>(newSize)/rate;
       return;
     }
@@ -182,6 +225,11 @@ namespace tommas
 
     void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose)
     {
+      unsigned k;
+      for( k=0; k<time.size(); ++k)
+      {
+        evaluateIndividual(time[k],pose[k]);
+      }
       return;    
     }
 
