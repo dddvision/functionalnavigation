@@ -10,6 +10,7 @@
 %   Body Axis 1 points forward
 %   Body Axis 2 points right
 %   Body Axis 3 points down relative to the body (not gravity)
+% The initial undefined pose is represented by NaN values for all parameters
 classdef Pose
   properties
     p=nan(3,1); % position of the body frame, double 3-by-1
