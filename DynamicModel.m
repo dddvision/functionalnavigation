@@ -31,7 +31,12 @@ classdef DynamicModel < Trajectory
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
     function obj=factory(pkg,initialTime,uri)
-      obj=feval([pkg,'.',pkg],initialTime,uri);
+      subclass=[pkg,'.',pkg];
+      if(exist(subclass,'class'))
+        obj=feval(subclass,initialTime,uri);
+      else
+        obj=DynamicModelWrapper(pkg,initialTime,uri);
+      end
       assert(isa(obj,'DynamicModel'));
     end
   end

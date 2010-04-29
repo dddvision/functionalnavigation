@@ -30,7 +30,12 @@ classdef Measure < Sensor
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
     function obj=factory(pkg,uri)
-      obj=feval([pkg,'.',pkg],uri);
+      subclass=[pkg,'.',pkg];
+      if(exist(subclass,'class'))
+        obj=feval(subclass,uri);
+      else
+        obj=MeasureWrapper(pkg,uri);
+      end
       assert(isa(obj,'Measure'));
     end
   end
