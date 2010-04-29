@@ -4,12 +4,13 @@ namespace tommas
 {
   class OpticalFlowOpenCV : public Measure
   {
-  public:
+  private:
     OpticalFlowOpenCV(std::string uri) : Measure(uri)
     {
       std::cout << std::endl << "OpticalFlowOpenCV::OpticalFlowOpenCV" << std::endl;
     }
-
+  
+  public:
     std::list<Edge> findEdges(const unsigned,const unsigned)
     {
       std::list<Edge> edge(1);

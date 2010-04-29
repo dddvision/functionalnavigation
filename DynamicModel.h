@@ -14,17 +14,17 @@
 namespace tommas
 {
   class DynamicModel;
-  typedef DynamicModel* (*DynamicModelFactory)(WorldTime,std::string);
+  typedef DynamicModel* (*DynamicModelFactory)(const WorldTime,const std::string);
   extern std::map<const std::string,DynamicModelFactory> dynamicModelList;
   
   class DynamicModel : public Trajectory
   {
   private:
     DynamicModel(const DynamicModel&){}  
-    
+
   protected:
-    DynamicModel(WorldTime,std::string){}
-    ~DynamicModel(void){} 
+    DynamicModel(const WorldTime,const std::string){}
+    ~DynamicModel(void){}
     
   public:
     virtual WorldTime updateRate(void) const = 0;
@@ -52,7 +52,7 @@ namespace tommas
     
   public:
     static std::string frameworkClass(void) { return std::string("DynamicModel"); }
-    static DynamicModel* factory(std::string dynamicModelName,WorldTime initialTime,std::string uri)
+    static DynamicModel* factory(const std::string dynamicModelName,const WorldTime initialTime,const std::string uri)
     {
       if(dynamicModelList.find(dynamicModelName) == dynamicModelList.end())
       { 

@@ -20,7 +20,7 @@ namespace tommas
       q[2] = NAN;
       q[3] = NAN;
     }
-    Pose(Pose& pose)
+    Pose(const Pose& pose)
     {
       this->p[0]=pose.p[0];
       this->p[1]=pose.p[1];
