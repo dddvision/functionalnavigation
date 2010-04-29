@@ -4,7 +4,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <stdint.h>
 
 #include "WorldTime.h"
@@ -54,12 +53,8 @@ namespace tommas
     static std::string frameworkClass(void) { return std::string("DynamicModel"); }
     static DynamicModel* factory(const std::string dynamicModelName,const WorldTime initialTime,const std::string uri)
     {
-      if(dynamicModelList.find(dynamicModelName) == dynamicModelList.end())
-      { 
-        std::cerr << dynamicModelName << " not found in dynamic model list" << std::endl;
-        return NULL;
-      }
-      else { return dynamicModelList[dynamicModelName](initialTime,uri); }
+      assert(dynamicModelList.find(dynamicModelName) != dynamicModelList.end());
+      return dynamicModelList[dynamicModelName](initialTime,uri);
     }
   };
 }

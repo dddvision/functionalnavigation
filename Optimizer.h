@@ -4,7 +4,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "Trajectory.h"
 
@@ -31,12 +30,8 @@ namespace tommas
     static Optimizer* factory(std::string optimizerName,std::string dynamicModelName,
       std::vector<std::string> measureNames,std::string uri)
     {
-      if(optimizerList.find(optimizerName) == optimizerList.end())
-      { 
-        std::cerr << optimizerName << " not found in optimizer list" << std::endl;
-        return NULL;
-      }
-      else { return optimizerList[optimizerName](dynamicModelName,measureNames,uri); }
+      assert(optimizerList.find(optimizerName) != optimizerList.end());
+      return optimizerList[optimizerName](dynamicModelName,measureNames,uri);
     }
   };
 }

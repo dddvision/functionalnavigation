@@ -1,4 +1,5 @@
 general:
+ * Find a better way to pass classes that are structs from C++ to MATLAB.
  * Make policy decisions regarding copy constructors for each class.
  * Incorporate Google C++ Style Guidelines throughout the code.
  * Explicitly use assert instead of exceptions in C++?

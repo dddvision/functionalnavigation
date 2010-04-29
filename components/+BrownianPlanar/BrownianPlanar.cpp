@@ -53,7 +53,6 @@ namespace tommas
       static const double c1=normalizedRotationalMass*(tau+0.5*tau*tau);
       static const double c2=normalizedMass*tau;
       static const double c3=normalizedRotationalMass*tau;
-      static const Pose nullPose;
       
       double dt;
       double ct0;
@@ -62,12 +61,6 @@ namespace tommas
       unsigned k;
       unsigned dk;
       unsigned dtFloor;
-      
-      if((time<interval.first)||(time<=interval.second))
-      {
-        pose=nullPose;
-        return;
-      }
       
       dt=time-interval.first;
       dk=dt*rate;
@@ -108,9 +101,16 @@ namespace tommas
     
     void evaluatePose(const WorldTime time, Pose& pose)
     {
+      static const Pose nullPose;
       unsigned dkFloor;
       double dtRemain;
       double halfAngle;
+      
+      if((time<interval.first)||(time>interval.second))
+      {
+        pose=nullPose;
+        return;
+      }
       
       evaluateGeneral(time,pose,dkFloor,dtRemain,halfAngle);
       
@@ -119,12 +119,19 @@ namespace tommas
     
     void evaluateTangentPose(const WorldTime time, TangentPose& tangentPose)
     {
+      static const TangentPose nullTangentPose;
       unsigned dkFloor;
       double dtRemain;
       double halfAngle;
       double halfAngleRate;
       double ct2;
       double ct3;
+      
+      if((time<interval.first)||(time>interval.second))
+      {
+        tangentPose=nullTangentPose;
+        return;
+      }
       
       evaluateGeneral(time,tangentPose,dkFloor,dtRemain,halfAngle);
       

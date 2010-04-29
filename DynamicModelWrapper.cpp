@@ -72,7 +72,6 @@ void convert(const tommas::TimeInterval& timeInterval, mxArray* array[])
   second=mxCreateDoubleScalar(timeInterval.second);
   mxSetFieldByNumber(array[0],0,0,first);
   mxSetFieldByNumber(array[0],0,1,second);
-  mxSetClassName(array[0],"TimeInterval");
   return;
 }
 
@@ -102,7 +101,6 @@ void convert(const std::vector<tommas::Pose>& pose, mxArray* array[])
     mxSetFieldByNumber(array[0],n,0,p);
     mxSetFieldByNumber(array[0],n,1,q);
   }
-  mxSetClassName(array[0],"Pose");
   return;
 }
 
@@ -149,7 +147,6 @@ void convert(const std::vector<tommas::TangentPose>& tangentPose, mxArray* array
     mxSetFieldByNumber(array[0],n,2,r);
     mxSetFieldByNumber(array[0],n,3,s);
   }
-  mxSetClassName(array[0],"TangentPose");
   return;
 }
 
@@ -232,8 +229,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     convert(prhs[0],&handle);
     convert(prhs[1],memberName);
 
+    assert(handle<instance.size());
     switch(memberMap[memberName])
     {
+    case undefined:
+      assert(false);
+      break;
+      
     case updateRate:
       convert(instance[handle]->updateRate(),&plhs[0]);
       break;
