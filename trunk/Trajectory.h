@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "WorldTime.h"
+#include "TimeInterval.h"
 #include "Pose.h"
 #include "TangentPose.h"
 

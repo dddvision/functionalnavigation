@@ -143,9 +143,9 @@ namespace tommas
       
       return;
     }
-
+    
   public:
-    BrownianPlanar(WorldTime initialTime, std::string uri) : DynamicModel(initialTime, uri)
+    BrownianPlanar(const WorldTime initialTime,const std::string uri) : DynamicModel(initialTime, uri)
     {
       const unsigned reserve=1024;
       px.reserve(reserve);
@@ -285,7 +285,9 @@ namespace tommas
     void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose)
     {
       unsigned k;
-      for( k=0; k<time.size(); ++k)
+      unsigned K=time.size();
+      pose.resize(K);
+      for( k=0; k<K; ++k)
       {
         evaluatePose(time[k],pose[k]);
       }
@@ -295,7 +297,9 @@ namespace tommas
     void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose)
     {
       unsigned k;
-      for( k=0; k<time.size(); ++k)
+      unsigned K=time.size();
+      tangentPose.resize(K);
+      for( k=0; k<K; ++k)
       {
         evaluateTangentPose(time[k],tangentPose[k]);
       }
@@ -303,8 +307,8 @@ namespace tommas
     }
   };
   
-  DynamicModel* BrownianPlanarFactory(WorldTime initialTime, std::string uri)
+  DynamicModel* BrownianPlanarFactory(const WorldTime initialTime,const std::string uri)
   { return(new BrownianPlanar(initialTime,uri)); }
 }
 
-#include "BrownianPlanarDiscreteConfig.cpp"
+#include "BrownianPlanarConfig.cpp"

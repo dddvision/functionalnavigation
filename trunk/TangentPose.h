@@ -20,7 +20,7 @@ namespace tommas
       s[2] = NAN;
       s[3] = NAN;
     }
-    TangentPose(TangentPose& tangentPose) : Pose(tangentPose)
+    TangentPose(const TangentPose& tangentPose) : Pose(tangentPose)
     {
       this->r[0]=tangentPose.r[0];
       this->r[1]=tangentPose.r[1];

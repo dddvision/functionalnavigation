@@ -16,8 +16,12 @@ namespace tommas
   
   class Optimizer
   {
+  private:
+    Optimizer(const Optimizer&){}
+    
   protected:
     Optimizer(std::string,std::string,std::string){}
+    ~Optimizer(void){}
 
   public:
     virtual void getResults(std::vector<Trajectory*>*,std::vector<double>*) = 0;
