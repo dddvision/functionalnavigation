@@ -24,7 +24,12 @@ classdef Optimizer < handle
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
     function obj=factory(pkg,dynamicModelName,measureNames,uri)
-      obj=feval([pkg,'.',pkg],dynamicModelName,measureNames,uri);
+      subclass=[pkg,'.',pkg];
+      if(exist(subclass,'class'))
+        obj=feval(subclass,dynamicModelName,measureNames,uri);
+      else
+        obj=OptimizerWrapper(pkg,dynamicModelName,measureNames,uri);
+      end
       assert(isa(obj,'Optimizer'));
     end
   end
