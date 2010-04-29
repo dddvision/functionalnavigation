@@ -82,14 +82,17 @@ classdef DynamicModelWrapper < DynamicModel
      
     function interval=domain(this)
       interval=feval(this.c,this.h,'domain');
+      interval=TimeInterval(interval.first,interval.second);
     end
    
     function pose=evaluate(this,t)
       pose=feval(this.c,this.h,'evaluate',t);
+      pose=Pose(pose);
     end
     
     function tangentPose=tangent(this,t)
       tangentPose=feval(this.c,this.h,'tangent',t);
+      tangentPose=TangentPose(tangentPose);
     end
   end
   

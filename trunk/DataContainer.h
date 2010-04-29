@@ -4,7 +4,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "Sensor.h"
 #include "SensorIndex.h"
@@ -39,11 +38,8 @@ namespace tommas
       static DataContainer* singleton = NULL;
       if(!singleton)
       {
-        if(dataContainerList.find(dataContainerName) == dataContainerList.end())
-        { 
-          std::cerr << dataContainerName << " not found in data container list" << std::endl;
-        }
-        else { singleton=dataContainerList[dataContainerName](); }
+        assert(dataContainerList.find(dataContainerName) != dataContainerList.end());
+        singleton=dataContainerList[dataContainerName]();
       }
       return singleton;
     }

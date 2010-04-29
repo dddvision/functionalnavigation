@@ -3,7 +3,6 @@
 
 #include <map>
 #include <string>
-#include <iostream>
 #include <list>
 
 #include "Edge.h"
@@ -32,12 +31,8 @@ namespace tommas
     static std::string frameworkClass(void) { return std::string("Measure"); }
     static Measure* factory(const std::string measureName, const std::string uri)
     {
-      if(measureList.find(measureName) == measureList.end())
-      { 
-        std::cerr << measureName << " not found in measure list" << std::endl;
-        return NULL;
-      }
-      else { return measureList[measureName](uri); }
+      assert(measureList.find(measureName) != measureList.end());
+      return measureList[measureName](uri);
     }
   };
 }
