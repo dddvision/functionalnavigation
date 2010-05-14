@@ -23,7 +23,9 @@ namespace tommas
     ~Optimizer(void){}
 
   public:
-    virtual void getResults(std::vector<Trajectory*>*,std::vector<double>*) = 0;
+    virtual unsigned numResults(void) = 0;
+    virtual Trajectory* getTrajectory(unsigned) = 0;
+    virtual double getCost(unsigned) = 0;
     virtual void step(void) = 0;
     
     static std::string frameworkClass(void) { return std::string("Optimizer"); }

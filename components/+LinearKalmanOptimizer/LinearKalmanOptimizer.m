@@ -40,8 +40,17 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       step(this);
     end
     
-    function [xEst,cEst]=getResults(this)
+    function num=numResults(this)
+      num=numel(this.objective.input);
+    end
+    
+    function xEst=getTrajectory(this,k)
+      assert(k==0);
       xEst=this.objective.input;
+    end
+
+    function cEst=getCost(this,k)
+      assert(k==0);
       cEst=this.cost;
     end
     

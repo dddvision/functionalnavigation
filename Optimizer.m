@@ -54,15 +54,37 @@ classdef Optimizer < handle
   end
   
   methods (Abstract=true)
-    % Get the most recent trajectory and cost estimates
+    % Get the number of results
     %
     % OUTPUT
-    % xEst = trajectory instances, popSize-by-1
-    % cEst = non-negative cost associated with each trajectory instance, double popSize-by-1
+    % num = number of results, uint32 scalar
+    num=numResults(this);
+    
+    % Get the most recent trajectory estimate
+    %
+    % INPUT
+    % k = zero based result index, uint32 scalar
+    %
+    % OUTPUT
+    % xEst = trajectory instance, Trajectory scalar
     %
     % NOTES
     % This function returns initial conditions if called before the first optimization step occurrs
-    [xEst,cEst]=getResults(this);
+    % Throws an exception if index is out of range
+    xEst=getTrajectory(this,k);
+    
+    % Get the most recent cost estimate
+    %
+    % INPUT
+    % k = zero based result index, uint32 scalar
+    %
+    % OUTPUT
+    % cEst = non-negative cost associated with each trajectory instance, double scalar
+    %
+    % NOTES
+    % This function returns initial conditions if called before the first optimization step occurrs
+    % Throws an exception if index is out of range
+    cEst=getCost(this,k);
     
     % Execute one step of the optimizer to evolve parameters toward lower cost
     %
