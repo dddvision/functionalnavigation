@@ -3,7 +3,7 @@ classdef DemoConfig < handle
     uri = 'matlab:MiddleburyData'; % select hardware resource or data container
     dynamicModelName = 'LinearKalmanDynamicModel'; % select dynamic model
     measureNames = {'LinearKalmanMeasure'}; % select measures
-    optimizerName = 'MatlabGA'; % optimizer selection
+    optimizerName = 'LinearKalmanOptimizer'; % optimizer selection
     textOnly = true; % (true) show text output only
     bestOnly = true; % (true) show only the best trajectory
     saveFigure = false; % (false) saves figure as an image

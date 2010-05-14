@@ -79,9 +79,16 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       this.cost=feval(@objectiveContainer,bits);
     end
     
-    function [xEst,cEst]=getResults(this)
-      xEst=this.objective.input;
-      cEst=this.cost;
+    function num=numResults(this)
+      num=numel(this.objective.input);
+    end
+       
+    function xEst=getTrajectory(this,k)
+      xEst=this.objective.input(k+1);
+    end
+    
+    function cEst=getCost(this,k)
+      cEst=this.cost(k+1);
     end
     
     function step(this)

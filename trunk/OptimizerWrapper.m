@@ -12,8 +12,16 @@ classdef OptimizerWrapper < Optimizer
       this.h=feval(this.c,pkg,uri);
     end
 
-    function [xEst,cEst]=getResults(this)
-      [xEst,cEst]=feval(this.c,this.h,'getResults');
+    function num=numResults(this)
+      num=feval(this.c,this.h,'numResults');
+    end
+    
+    function xEst=getTrajectory(this)
+      xEst=feval(this.c,this.h,'getTrajectory');
+    end
+    
+    function cEst=getCost(this)
+      cEst=feval(this.c,this.h,'getCost');
     end
     
     function step(this)

@@ -3,9 +3,8 @@ general:
  * Make policy decisions regarding copy constructors for each class.
  * Incorporate Google C++ Style Guidelines throughout the code.
  * Explicitly use assert instead of exceptions in C++?
- * Document that all measures are two-point functions.
- * Document that trajectory evaluations are in the "pose and tangent pose" space.
- * Document that we are using log likelihood because it is summative instead of multiplicative.
+ * Document on wiki that all measures are two-point functions.
+ * Document on wiki that trajectory evaluations are in the "pose and tangent pose" space.
 
 research:
  * Topics for publication:
@@ -45,8 +44,9 @@ demonstration:
 Optimizer:
  * Create linkage-based GA crossover function.
 
-MultiMeasure:
- * Create new MultiMeasure class?
+Objective:
+ *** Consider getting rid of objective
+   * Replace with new MultiMeasure class?
 
 Measure:
  *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).

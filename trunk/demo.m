@@ -42,12 +42,20 @@ gui=DemoDisplay(config.uri);
 % optimize forever
 index=0;
 while(true)
-  % get the latest trajectory and cost estimates
-  [trajectory,cost]=getResults(optimizer);
-
-  % update graphical display
-  put(gui,trajectory,cost,index);
-
+  K=numResults(optimizer);
+  if(K>0)
+    % get the latest trajectory and cost estimates
+    trajectory=getTrajectory(optimizer,uint32(0));
+    cost=getCost(optimizer,uint32(0));
+    for k=uint32(1):(K-1)
+      trajectory(k,1)=getTrajectory(optimizer,k);
+      cost(k,1)=getCost(optimizer,k);
+    end
+    
+    % update graphical display
+    put(gui,trajectory,cost,index);
+  end
+    
   % take an optimization step
   step(optimizer);
   
