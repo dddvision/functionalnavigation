@@ -5,10 +5,21 @@ classdef Edge
     second  % upper node index for this edge, uint32 scalar
   end
   methods (Access=public)
-    function this=Edge(first,second)
-      if(nargin==2)
-        this.first=uint32(first);
-        this.second=uint32(second);
+    function this=Edge(A,B)
+      if(nargin==1)
+        N=numel(A);
+        this=repmat(this,[1,N]);
+        for n=1:N
+          this(n).first=A(n).first;
+          this(n).second=A(n).second;
+        end
+      elseif(nargin==2)
+        N=numel(A);
+        this=repmat(this,[1,N]);
+        for n=1:N
+          this(n).first=uint32(A(n));
+          this(n).second=uint32(B(n));
+        end
       end
     end
   end

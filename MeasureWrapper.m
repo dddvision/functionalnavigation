@@ -34,9 +34,11 @@ classdef MeasureWrapper < Measure
     
     function edgeList=findEdges(this,kaSpan,kbSpan)
       edgeList=feval(this.c,this.h,'findEdges',kaSpan,kbSpan);
+      edgeList=Edge(edgeList);
     end
 
     function cost=computeEdgeCost(this,x,edge)
+      % implements a workaround that depends on the trajectory being named 'x'
       cost=feval(this.c,this.h,'computeEdgeCost',x,edge);
     end
   end

@@ -1,21 +1,21 @@
 #include "mex.h"
 #include "tommas.h"
 
-void convert(const mxArray* array, double* value)
+void convert(const mxArray* array, double& value)
 {
-  value[0]=(*static_cast<double*>(mxGetData(array)));
+  value=(*static_cast<double*>(mxGetData(array)));
   return;
 }
 
-void convert(const mxArray* array, uint32_t* value)
+void convert(const mxArray* array, uint32_t& value)
 {
-  value[0]=(*static_cast<uint32_t*>(mxGetData(array)));
+  value=(*static_cast<uint32_t*>(mxGetData(array)));
   return;
 }
 
-void convert(const mxArray* array, bool* value)
+void convert(const mxArray* array, bool& value)
 {
-  value[0]=(*static_cast<bool*>(mxGetLogicals(array)));
+  value=(*static_cast<bool*>(mxGetLogicals(array)));
   return;
 }
 
@@ -43,39 +43,39 @@ void convert(const mxArray* array, std::vector<tommas::WorldTime>& cppTime)
   return;
 }
 
-void convert(const double value, mxArray* array[])
+void convert(const double value, mxArray*& array)
 {
-  array[0]=mxCreateDoubleScalar(value);
+  array=mxCreateDoubleScalar(value);
   return;
 }
 
-void convert(const uint32_t value, mxArray* array[])
+void convert(const uint32_t value, mxArray*& array)
 {
-  array[0]=mxCreateNumericMatrix(1,1,mxUINT32_CLASS,mxREAL);
-  (*static_cast<uint32_t*>(mxGetData(array[0])))=value;
+  array=mxCreateNumericMatrix(1,1,mxUINT32_CLASS,mxREAL);
+  (*static_cast<uint32_t*>(mxGetData(array)))=value;
   return;
 }
 
-void convert(const bool value, mxArray* array[])
+void convert(const bool value, mxArray*& array)
 {
-  array[0]=mxCreateLogicalScalar(value);
+  array=mxCreateLogicalScalar(value);
   return;
 }
 
-void convert(const tommas::TimeInterval& timeInterval, mxArray* array[])
+void convert(const tommas::TimeInterval& timeInterval, mxArray*& array)
 {
   static const char* fields[]={"first","second"};
   mxArray* first;
   mxArray* second;
-  array[0]=mxCreateStructMatrix(1,1,2,fields);
+  array=mxCreateStructMatrix(1,1,2,fields);
   first=mxCreateDoubleScalar(timeInterval.first);
   second=mxCreateDoubleScalar(timeInterval.second);
-  mxSetFieldByNumber(array[0],0,0,first);
-  mxSetFieldByNumber(array[0],0,1,second);
+  mxSetFieldByNumber(array,0,0,first);
+  mxSetFieldByNumber(array,0,1,second);
   return;
 }
 
-void convert(const std::vector<tommas::Pose>& pose, mxArray* array[])
+void convert(const std::vector<tommas::Pose>& pose, mxArray*& array)
 {
   static const char* fields[]={"p","q"};
   mxArray* p;
@@ -84,7 +84,7 @@ void convert(const std::vector<tommas::Pose>& pose, mxArray* array[])
   double* pq;
   unsigned n;
   unsigned N=pose.size();
-  array[0]=mxCreateStructMatrix(1,N,2,fields);
+  array=mxCreateStructMatrix(1,N,2,fields);
   for( n=0 ; n<N ; ++n )
   {
     p=mxCreateDoubleMatrix(3,1,mxREAL);
@@ -98,13 +98,13 @@ void convert(const std::vector<tommas::Pose>& pose, mxArray* array[])
     pq[1]=pose[n].q[1];
     pq[2]=pose[n].q[2];
     pq[3]=pose[n].q[3];
-    mxSetFieldByNumber(array[0],n,0,p);
-    mxSetFieldByNumber(array[0],n,1,q);
+    mxSetFieldByNumber(array,n,0,p);
+    mxSetFieldByNumber(array,n,1,q);
   }
   return;
 }
 
-void convert(const std::vector<tommas::TangentPose>& tangentPose, mxArray* array[])
+void convert(const std::vector<tommas::TangentPose>& tangentPose, mxArray*& array)
 {
   static const char* fields[]={"p","q","r","s"};
   mxArray* p;
@@ -117,7 +117,7 @@ void convert(const std::vector<tommas::TangentPose>& tangentPose, mxArray* array
   double* ps;
   unsigned n;
   unsigned N=tangentPose.size();
-  array[0]=mxCreateStructMatrix(1,N,4,fields);
+  array=mxCreateStructMatrix(1,N,4,fields);
   for( n=0 ; n<N ; ++n )
   {
     p=mxCreateDoubleMatrix(3,1,mxREAL);
@@ -142,10 +142,10 @@ void convert(const std::vector<tommas::TangentPose>& tangentPose, mxArray* array
     ps[1]=tangentPose[n].s[1];
     ps[2]=tangentPose[n].s[2];
     ps[3]=tangentPose[n].s[3];
-    mxSetFieldByNumber(array[0],n,0,p);
-    mxSetFieldByNumber(array[0],n,1,q);
-    mxSetFieldByNumber(array[0],n,2,r);
-    mxSetFieldByNumber(array[0],n,3,s);
+    mxSetFieldByNumber(array,n,0,p);
+    mxSetFieldByNumber(array,n,1,q);
+    mxSetFieldByNumber(array,n,2,r);
+    mxSetFieldByNumber(array,n,3,s);
   }
   return;
 }
@@ -211,68 +211,71 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   {
     std::string pkg;
     std::string uri;
+    tommas::DynamicModel* obj;
     tommas::WorldTime initialTime;
     uint32_t numInstances = instance.size();
 
     convert(prhs[0],pkg);
-    convert(prhs[1],&initialTime);
+    convert(prhs[1],initialTime);
     convert(prhs[2],uri);
+    obj = tommas::DynamicModel::factory(pkg,initialTime,uri);
+    mxAssert(obj!=NULL,"failed to instantiate the specified DynamicModel");
     instance.resize(numInstances+1);
-    instance[numInstances] = tommas::DynamicModel::factory(pkg,initialTime,uri);
-    convert(numInstances,&plhs[0]);
+    instance[numInstances] = obj;
+    convert(numInstances,plhs[0]);
   }
   else
   {
     uint32_t handle;
     std::string memberName;
 
-    convert(prhs[0],&handle);
+    convert(prhs[0],handle);
     convert(prhs[1],memberName);
 
-    assert(handle<instance.size());
+    mxAssert(handle<instance.size(),"requested invalid handle to DynamicModel");
     switch(memberMap[memberName])
     {
     case undefined:
-      assert(false);
+      mexErrMsgTxt("unrecognized member function in call to DynamicModel");
       break;
       
     case updateRate:
-      convert(instance[handle]->updateRate(),&plhs[0]);
+      convert(instance[handle]->updateRate(),plhs[0]);
       break;
 
     case numInitialLogical:
-      convert(instance[handle]->numInitialLogical(),&plhs[0]);
+      convert(instance[handle]->numInitialLogical(),plhs[0]);
       break;
     
     case numInitialUint32:
-      convert(instance[handle]->numInitialUint32(),&plhs[0]);
+      convert(instance[handle]->numInitialUint32(),plhs[0]);
       break;
 
     case numExtensionLogical:
-      convert(instance[handle]->numExtensionLogical(),&plhs[0]);
+      convert(instance[handle]->numExtensionLogical(),plhs[0]);
       break;
 
     case numExtensionUint32:
-      convert(instance[handle]->numExtensionUint32(),&plhs[0]);
+      convert(instance[handle]->numExtensionUint32(),plhs[0]);
       break;
       
     case numExtensionBlocks:
-      convert(instance[handle]->numExtensionBlocks(),&plhs[0]);
+      convert(instance[handle]->numExtensionBlocks(),plhs[0]);
       break;
       
     case getInitialLogical:
     {
       uint32_t p;
-      convert(prhs[2],&p);
-      convert(instance[handle]->getInitialLogical(p),&plhs[0]);
+      convert(prhs[2],p);
+      convert(instance[handle]->getInitialLogical(p),plhs[0]);
       break;
     }
 
     case getInitialUint32:
     {
       uint32_t p;
-      convert(prhs[2],&p);
-      convert(instance[handle]->getInitialUint32(p),&plhs[0]);
+      convert(prhs[2],p);
+      convert(instance[handle]->getInitialUint32(p),plhs[0]);
       break;
     }
   
@@ -280,9 +283,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       uint32_t b;
       uint32_t p;
-      convert(prhs[2],&b);
-      convert(prhs[3],&p);
-      convert(instance[handle]->getExtensionLogical(b,p),&plhs[0]);
+      convert(prhs[2],b);
+      convert(prhs[3],p);
+      convert(instance[handle]->getExtensionLogical(b,p),plhs[0]);
       break;
     }
   
@@ -290,9 +293,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       uint32_t b;
       uint32_t p;
-      convert(prhs[2],&b);
-      convert(prhs[3],&p);
-      convert(instance[handle]->getExtensionUint32(b,p),&plhs[0]);
+      convert(prhs[2],b);
+      convert(prhs[3],p);
+      convert(instance[handle]->getExtensionUint32(b,p),plhs[0]);
       break;
     }
 
@@ -300,8 +303,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       uint32_t p;
       bool v;
-      convert(prhs[2],&p);
-      convert(prhs[3],&v);
+      convert(prhs[2],p);
+      convert(prhs[3],v);
       instance[handle]->setInitialLogical(p,v);
       break;
     }
@@ -310,8 +313,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       uint32_t p;
       uint32_t v;
-      convert(prhs[2],&p);
-      convert(prhs[3],&v);
+      convert(prhs[2],p);
+      convert(prhs[3],v);
       instance[handle]->setInitialUint32(p,v);
       break;
     }
@@ -321,9 +324,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       uint32_t b;
       uint32_t p;
       bool v;
-      convert(prhs[2],&b);
-      convert(prhs[3],&p);
-      convert(prhs[4],&v);
+      convert(prhs[2],b);
+      convert(prhs[3],p);
+      convert(prhs[4],v);
       instance[handle]->setExtensionLogical(b,p,v);
       break;
     }
@@ -333,35 +336,35 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       uint32_t b;
       uint32_t p;
       uint32_t v;
-      convert(prhs[2],&b);
-      convert(prhs[3],&p);
-      convert(prhs[4],&v);
+      convert(prhs[2],b);
+      convert(prhs[3],p);
+      convert(prhs[4],v);
       instance[handle]->setExtensionUint32(b,p,v);
       break;
     }
 
     case computeInitialBlockCost:
-      convert(instance[handle]->computeInitialBlockCost(),&plhs[0]);
+      convert(instance[handle]->computeInitialBlockCost(),plhs[0]);
       break;
       
     case computeExtensionBlockCost:
     {
       uint32_t b;
-      convert(prhs[2],&b);
-      convert(instance[handle]->computeExtensionBlockCost(b),&plhs[0]);
+      convert(prhs[2],b);
+      convert(instance[handle]->computeExtensionBlockCost(b),plhs[0]);
       break;
     }
 
     case extend:
     {
       uint32_t num;
-      convert(prhs[2],&num);
+      convert(prhs[2],num);
       instance[handle]->extend(num);
       break;
     }
 
     case domain:
-      convert(instance[handle]->domain(),&plhs[0]);
+      convert(instance[handle]->domain(),plhs[0]);
       break;
       
     case evaluate:
@@ -370,7 +373,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       std::vector<tommas::Pose> pose;
       convert(prhs[2],time);
       instance[handle]->evaluate(time,pose);
-      convert(pose,&plhs[0]);
+      convert(pose,plhs[0]);
       break;
     }
 
@@ -380,7 +383,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       std::vector<tommas::TangentPose> tangentPose;
       convert(prhs[2],time);
       instance[handle]->tangent(time,tangentPose);
-      convert(tangentPose,&plhs[0]);
+      convert(tangentPose,plhs[0]);
       break;
     }
     }

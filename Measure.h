@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include <list>
+#include <vector>
 
 #include "Edge.h"
 #include "Trajectory.h"
@@ -25,14 +25,18 @@ namespace tommas
     ~Measure(void){}
   
   public:
-    virtual std::list<Edge> findEdges(const unsigned,const unsigned) = 0;
+    virtual std::vector<Edge> findEdges(const unsigned,const unsigned) = 0;
     virtual double computeEdgeCost(const Trajectory&,const Edge) = 0;
     
     static std::string frameworkClass(void) { return std::string("Measure"); }
     static Measure* factory(const std::string measureName, const std::string uri)
     {
-      assert(measureList.find(measureName) != measureList.end());
-      return measureList[measureName](uri);
+      Measure* obj=NULL;
+      if(measureList.find(measureName) != measureList.end())
+      {
+        obj=measureList[measureName](uri);
+      }
+      return obj;
     }
   };
 }
