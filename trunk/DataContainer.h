@@ -38,8 +38,10 @@ namespace tommas
       static DataContainer* singleton = NULL;
       if(!singleton)
       {
-        assert(dataContainerList.find(dataContainerName) != dataContainerList.end());
-        singleton=dataContainerList[dataContainerName]();
+        if(dataContainerList.find(dataContainerName) != dataContainerList.end())
+        {
+          singleton=dataContainerList[dataContainerName]();
+        }
       }
       return singleton;
     }

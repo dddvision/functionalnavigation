@@ -53,8 +53,12 @@ namespace tommas
     static std::string frameworkClass(void) { return std::string("DynamicModel"); }
     static DynamicModel* factory(const std::string dynamicModelName,const WorldTime initialTime,const std::string uri)
     {
-      assert(dynamicModelList.find(dynamicModelName) != dynamicModelList.end());
-      return dynamicModelList[dynamicModelName](initialTime,uri);
+      DynamicModel* obj=NULL;
+      if(dynamicModelList.find(dynamicModelName) != dynamicModelList.end())
+      {
+        obj=dynamicModelList[dynamicModelName](initialTime,uri);
+      }
+      return obj;
     }
   };
 }

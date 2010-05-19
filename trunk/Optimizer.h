@@ -24,16 +24,20 @@ namespace tommas
 
   public:
     virtual unsigned numResults(void) = 0;
-    virtual Trajectory* getTrajectory(unsigned) = 0;
-    virtual double getCost(unsigned) = 0;
+    virtual Trajectory* getTrajectory(const unsigned) = 0;
+    virtual double getCost(const unsigned) = 0;
     virtual void step(void) = 0;
     
     static std::string frameworkClass(void) { return std::string("Optimizer"); }
     static Optimizer* factory(std::string optimizerName,std::string dynamicModelName,
       std::vector<std::string> measureNames,std::string uri)
     {
-      assert(optimizerList.find(optimizerName) != optimizerList.end());
-      return optimizerList[optimizerName](dynamicModelName,measureNames,uri);
+      Optimizer* obj;
+      if(optimizerList.find(optimizerName) != optimizerList.end())
+      {
+        obj=optimizerList[optimizerName](dynamicModelName,measureNames,uri);
+      }
+      return obj;
     }
   };
 }
