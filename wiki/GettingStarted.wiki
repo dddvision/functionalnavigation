@@ -1,13 +1,13 @@
 #summary Read this first!
 #labels Featured,Phase-Deploy
 
-Download the source code and run the script demo.m.
+To try out the framework in MATLAB, download the source code and run the script {{{demo.m}}}. There is also a C++ framework, but it lacks demonstration components.
 
-You will need {{{MATLAB R2008a}}} or later, and in order to make full use of the current version, you will also need the {{{Image Processing Toolbox}}} and the {{{Genetic Algorithm and Direct Search (GADS) Toolbox}}}.  
+You will need MATLAB {{{R2008a}}} or later, and in order to make full use of the current version, you will also need the {{{Image Processing Toolbox}}} and the {{{Genetic Algorithm and Direct Search (GADS) Toolbox}}}.  
 
 === Next Steps ===
 
-The framework comes with a few default examples of components that can be selected by editing tommasConfig.m.  In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.
+The framework comes with a few default examples of components that can be selected by editing demoConfig.m. In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.
 
 === Class Diagram ===
 
