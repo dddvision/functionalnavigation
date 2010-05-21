@@ -8,7 +8,7 @@ classdef OptimizerWrapper < Optimizer
   methods (Access=public)
     function this=OptimizerWrapper(pkg,uri)
       this=this@Optimizer(uri);
-      this.c=pkg;
+      this.c=[pkg,'.',pkg];
       this.h=feval(this.c,pkg,uri);
     end
 

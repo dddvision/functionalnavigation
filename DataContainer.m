@@ -28,11 +28,7 @@ classdef DataContainer < handle
       persistent singleton
       subclass=[pkg,'.',pkg];
       if(isempty(singleton))
-        if(exist(subclass,'class'))
-          this=feval(subclass);
-        else
-          this=DataContainerWrapper(pkg);
-        end
+        this=feval(subclass);
         assert(isa(this,'DataContainer'));
         singleton=this;
       elseif(isa(singleton,subclass))

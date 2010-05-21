@@ -8,7 +8,13 @@ classdef DynamicModelWrapper < DynamicModel
   methods (Access=public)
     function this=DynamicModelWrapper(pkg,initialTime,uri)
       this=this@DynamicModel(initialTime,uri);
-      this.c=pkg;
+      this.c=[pkg,'.',pkg];
+      base=fullfile(['+',pkg],pkg);
+      if(~exist(base,'file'))
+        basecpp=[base,'.cpp'];
+        cpp=which(basecpp);
+        mex('-I"."','DynamicModelWrapper.cpp',cpp,'-output',cpp(1:(end-4)));
+      end
       this.h=feval(this.c,pkg,initialTime,uri);
     end
 
@@ -81,18 +87,18 @@ classdef DynamicModelWrapper < DynamicModel
     end
      
     function interval=domain(this)
-      interval=feval(this.c,this.h,'domain');
-      interval=TimeInterval(interval.first,interval.second);
+      interval=TimeInterval(0,0);
+      interval=feval(this.c,this.h,'domain',interval);
     end
    
     function pose=evaluate(this,t)
-      pose=feval(this.c,this.h,'evaluate',t);
-      pose=Pose(pose);
+      pose=repmat(Pose,[1,numel(t)]);
+      pose=feval(this.c,this.h,'evaluate',pose,t);
     end
     
     function tangentPose=tangent(this,t)
-      tangentPose=feval(this.c,this.h,'tangent',t);
-      tangentPose=TangentPose(tangentPose);
+      tangentPose=repmat(TangentPose,[1,numel(t)]);
+      tangentPose=feval(this.c,this.h,'tangent',tangentPose,t);
     end
   end
   
