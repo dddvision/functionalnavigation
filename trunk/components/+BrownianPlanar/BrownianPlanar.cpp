@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cmath>
-#include <assert.h>
 
 #include "DynamicModel.h"
 
@@ -186,25 +185,25 @@ namespace tommas
 
     bool getInitialLogical(unsigned parameterIndex)
     {
-      assert(false);
+      throw(0);
       return(false);
     }
 
     uint32_t getInitialUint32(unsigned parameterIndex)
     {
-      assert(false);
+      throw(0);
       return(0);
     }
 
     bool getExtensionLogical(unsigned blockIndex, unsigned parameterIndex)
     {
-      assert(false);
+      throw(0);
       return(false);
     }
 
     uint32_t getExtensionUint32(unsigned blockIndex, unsigned parameterIndex)
     {
-      assert(blockIndex<this->numExtensionBlocks());
+      if(blockIndex>=numExtensionBlocks()) { throw(0); }
       switch(parameterIndex)
       {
         case 0:
@@ -214,26 +213,26 @@ namespace tommas
         case 2:
           return(pa[blockIndex]);
         default:
-          assert(false);
+          throw(0);
           return(0);
       }
     }
 
     void setInitialLogical(unsigned parameterIndex, bool value)
     {
-      assert(false);
+      throw(0);
       return;
     }
 
     void setInitialUint32(unsigned parameterIndex, uint32_t value)
     {
-      assert(false);
+      throw(0);
       return;
     }
 
     void setExtensionLogical(unsigned blockIndex, unsigned parameterIndex, bool value)
     {
-      assert(false);
+      throw(0);
       return;
     }
 
@@ -254,7 +253,7 @@ namespace tommas
           fa[blockIndex]=paramToForce(value);
           break;
         default:
-          assert(false);
+          throw(0);
       }
       firstNewBlock=std::min(firstNewBlock,blockIndex);
     }

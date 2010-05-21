@@ -3,18 +3,30 @@
 
 void convert(const mxArray* array, double& value)
 {
+  if(mxGetClassID(array)!=mxDOUBLE_CLASS)
+  {
+    mexErrMsgTxt("input array must be double");
+  }
   value=(*static_cast<double*>(mxGetData(array)));
   return;
 }
 
 void convert(const mxArray* array, uint32_t& value)
 {
+  if(mxGetClassID(array)!=mxUINT32_CLASS)
+  {
+    mexErrMsgTxt("input array must be uint32");
+  }
   value=(*static_cast<uint32_t*>(mxGetData(array)));
   return;
 }
 
 void convert(const mxArray* array, bool& value)
 {
+  if(mxGetClassID(array)!=mxLOGICAL_CLASS)
+  {
+    mexErrMsgTxt("input array must be logical");
+  }
   value=(*static_cast<bool*>(mxGetLogicals(array)));
   return;
 }
@@ -23,6 +35,10 @@ void convert(const mxArray* array, std::string& cppString)
 {
   unsigned N = mxGetNumberOfElements(array)+1;
   char *cString = new char[N];
+  if(mxGetClassID(array)!=mxCHAR_CLASS)
+  {
+    mexErrMsgTxt("input array must be char");
+  }
   mxGetString(array,cString,N);
   cppString = cString;
   delete[] cString;
@@ -31,10 +47,15 @@ void convert(const mxArray* array, std::string& cppString)
 
 void convert(const mxArray* array, std::vector<tommas::WorldTime>& cppTime)
 {
+  double* mTime;
   unsigned n;
   unsigned N=mxGetNumberOfElements(array);
-  double* mTime=static_cast<double*>(mxGetData(array));
 
+  if(!mxIsClass(array,"WorldTime"))
+  {
+    mexErrMsgTxt("input array must be WorldTime");
+  }
+  mTime=static_cast<double*>(mxGetData(array));
   cppTime.resize(N);
   for( n=0 ; n<N ; ++n )
   {
@@ -62,33 +83,39 @@ void convert(const bool value, mxArray*& array)
   return;
 }
 
-void convert(const tommas::TimeInterval& timeInterval, mxArray*& array)
+void convert(const tommas::TimeInterval& timeInterval, const mxArray*& source, mxArray*& array)
 {
-  static const char* fields[]={"first","second"};
   mxArray* first;
   mxArray* second;
-  array=mxCreateStructMatrix(1,1,2,fields);
-  first=mxCreateDoubleScalar(timeInterval.first);
-  second=mxCreateDoubleScalar(timeInterval.second);
-  mxSetFieldByNumber(array,0,0,first);
-  mxSetFieldByNumber(array,0,1,second);
+  if(!mxIsClass(source,"TimeInterval"))
+  {
+    mexErrMsgTxt("input array must be TimeInterval");
+  }
+  array=mxDuplicateArray(source);
+  first=mxGetProperty(array,0,"first");
+  second=mxGetProperty(array,0,"second");
+  (*mxGetPr(first))=timeInterval.first;
+  (*mxGetPr(second))=timeInterval.second;
   return;
 }
 
-void convert(const std::vector<tommas::Pose>& pose, mxArray*& array)
+void convert(const std::vector<tommas::Pose>& pose, const mxArray*& source, mxArray*& array)
 {
-  static const char* fields[]={"p","q"};
   mxArray* p;
   mxArray* q;
   double* pp;
   double* pq;
   unsigned n;
   unsigned N=pose.size();
-  array=mxCreateStructMatrix(1,N,2,fields);
+  if(!mxIsClass(source,"Pose"))
+  {
+    mexErrMsgTxt("input array must be Pose");
+  }
+  array=mxDuplicateArray(source);
   for( n=0 ; n<N ; ++n )
   {
-    p=mxCreateDoubleMatrix(3,1,mxREAL);
-    q=mxCreateDoubleMatrix(4,1,mxREAL);
+    p=mxGetProperty(array,n,"p");
+    q=mxGetProperty(array,n,"q");
     pp=mxGetPr(p);
     pq=mxGetPr(q);
     pp[0]=pose[n].p[0];
@@ -98,15 +125,12 @@ void convert(const std::vector<tommas::Pose>& pose, mxArray*& array)
     pq[1]=pose[n].q[1];
     pq[2]=pose[n].q[2];
     pq[3]=pose[n].q[3];
-    mxSetFieldByNumber(array,n,0,p);
-    mxSetFieldByNumber(array,n,1,q);
   }
   return;
 }
 
-void convert(const std::vector<tommas::TangentPose>& tangentPose, mxArray*& array)
+void convert(const std::vector<tommas::TangentPose>& tangentPose, const mxArray*& source, mxArray*& array)
 {
-  static const char* fields[]={"p","q","r","s"};
   mxArray* p;
   mxArray* q;
   mxArray* r;
@@ -117,13 +141,17 @@ void convert(const std::vector<tommas::TangentPose>& tangentPose, mxArray*& arra
   double* ps;
   unsigned n;
   unsigned N=tangentPose.size();
-  array=mxCreateStructMatrix(1,N,4,fields);
+  if(!mxIsClass(source,"TangentPose"))
+  {
+    mexErrMsgTxt("input array must be TangentPose");
+  }
+  array=mxDuplicateArray(source);
   for( n=0 ; n<N ; ++n )
   {
-    p=mxCreateDoubleMatrix(3,1,mxREAL);
-    q=mxCreateDoubleMatrix(4,1,mxREAL);
-    r=mxCreateDoubleMatrix(3,1,mxREAL);
-    s=mxCreateDoubleMatrix(4,1,mxREAL);
+    p=mxGetProperty(array,n,"p");
+    q=mxGetProperty(array,n,"q");
+    r=mxGetProperty(array,n,"r");
+    s=mxGetProperty(array,n,"s");
     pp=mxGetPr(p);
     pq=mxGetPr(q);
     pr=mxGetPr(r);
@@ -142,10 +170,6 @@ void convert(const std::vector<tommas::TangentPose>& tangentPose, mxArray*& arra
     ps[1]=tangentPose[n].s[1];
     ps[2]=tangentPose[n].s[2];
     ps[3]=tangentPose[n].s[3];
-    mxSetFieldByNumber(array,n,0,p);
-    mxSetFieldByNumber(array,n,1,q);
-    mxSetFieldByNumber(array,n,2,r);
-    mxSetFieldByNumber(array,n,3,s);
   }
   return;
 }
@@ -175,7 +199,7 @@ enum DynamicModelMember
   tangent
 };
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
 {
   static std::map<std::string,DynamicModelMember> memberMap;
   static std::vector<tommas::DynamicModel*> instance;
@@ -207,6 +231,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     initialized=true;
   }
   
+  if(nrhs<2)
+  {
+    mexErrMsgTxt("function requires at least 2 arguments");
+  }
   if(mxIsChar(prhs[0]))
   {
     std::string pkg;
@@ -214,12 +242,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     tommas::DynamicModel* obj;
     tommas::WorldTime initialTime;
     uint32_t numInstances = instance.size();
-
     convert(prhs[0],pkg);
     convert(prhs[1],initialTime);
     convert(prhs[2],uri);
     obj = tommas::DynamicModel::factory(pkg,initialTime,uri);
-    mxAssert(obj!=NULL,"failed to instantiate the specified DynamicModel");
+    if(obj==NULL)
+    {
+      mexErrMsgTxt("failed to instantiate the specified DynamicModel");
+    }
     instance.resize(numInstances+1);
     instance[numInstances] = obj;
     convert(numInstances,plhs[0]);
@@ -232,7 +262,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     convert(prhs[0],handle);
     convert(prhs[1],memberName);
 
-    mxAssert(handle<instance.size(),"requested invalid handle to DynamicModel");
+    if(handle>=instance.size())
+    {
+      mexErrMsgTxt("requested invalid handle to DynamicModel");
+    }
     switch(memberMap[memberName])
     {
     case undefined:
@@ -364,16 +397,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     case domain:
-      convert(instance[handle]->domain(),plhs[0]);
+      convert(instance[handle]->domain(),prhs[2],plhs[0]);
       break;
       
     case evaluate:
     {
       std::vector<tommas::WorldTime> time;
       std::vector<tommas::Pose> pose;
-      convert(prhs[2],time);
+      convert(prhs[3],time);
       instance[handle]->evaluate(time,pose);
-      convert(pose,plhs[0]);
+      convert(pose,prhs[2],plhs[0]);
       break;
     }
 
@@ -381,13 +414,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       std::vector<tommas::WorldTime> time;
       std::vector<tommas::TangentPose> tangentPose;
-      convert(prhs[2],time);
+      convert(prhs[3],time);
       instance[handle]->tangent(time,tangentPose);
-      convert(tangentPose,plhs[0]);
+      convert(tangentPose,prhs[2],plhs[0]);
       break;
     }
     }
   }
 
+  return;
+}
+
+void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+{
+  try
+  {
+    safeMexFunction(nlhs,plhs,nrhs,prhs);
+  }
+  catch(const char* str)
+  {
+    mexErrMsgTxt(str);
+  }
+  catch(...)
+  {
+    mexErrMsgTxt("unhandled exception");
+  }
   return;
 }

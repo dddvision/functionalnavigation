@@ -8,7 +8,7 @@ classdef MeasureWrapper < Measure
   methods (Access=public)
     function this=MeasureWrapper(pkg,uri)
       this=this@Measure(uri);
-      this.c=pkg;
+      this.c=[pkg,'.',pkg];
       this.h=feval(this.c,pkg,uri);
     end
 
@@ -32,14 +32,16 @@ classdef MeasureWrapper < Measure
       time=feval(this.c,this.h,'getTime',k);
     end
     
-    function edgeList=findEdges(this,kaSpan,kbSpan)
-      edgeList=feval(this.c,this.h,'findEdges',kaSpan,kbSpan);
-      edgeList=Edge(edgeList);
+    function edge=findEdges(this,kaSpan,kbSpan)
+      % implements workaround that calls repmat(Edge,...) internally
+      edge=Edge(0,0);
+      edge=feval(this.c,this.h,'findEdges',edge,kaSpan,kbSpan);
     end
 
     function cost=computeEdgeCost(this,x,edge)
-      % implements a workaround that depends on the trajectory being named 'x'
-      cost=feval(this.c,this.h,'computeEdgeCost',x,edge);
+      % implements a workaround that depends on a Trajectory named 'x'
+      assert(isa(x,'Trajectory'));
+      cost=feval(this.c,this.h,'computeEdgeCost',edge);
     end
   end
   
