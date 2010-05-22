@@ -43,7 +43,7 @@ namespace tommas
       return(static_cast<double>(p)/sixthIntMax-3.0);
     }
     
-    void evaluateGeneral(const WorldTime time, Pose& pose,
+    void evaluateGeneral(const WorldTime& time, Pose& pose,
                          unsigned& dkFloor, double& dtRemain, double& halfAngle)
     {
       // position and velocity A=[1,tau;0,1] B=[tau+0.5*tau*tau;tau]
@@ -98,7 +98,7 @@ namespace tommas
       return;
     }
     
-    void evaluatePose(const WorldTime time, Pose& pose)
+    void evaluatePose(const WorldTime& time, Pose& pose)
     {
       static const Pose nullPose;
       unsigned dkFloor;
@@ -116,7 +116,7 @@ namespace tommas
       return;
     }
     
-    void evaluateTangentPose(const WorldTime time, TangentPose& tangentPose)
+    void evaluateTangentPose(const WorldTime& time, TangentPose& tangentPose)
     {
       static const TangentPose nullTangentPose;
       unsigned dkFloor;
@@ -185,25 +185,28 @@ namespace tommas
 
     bool getInitialLogical(unsigned parameterIndex)
     {
-      throw(0);
+      throw("BrownianPlanar: has no initial logical parameters");
       return(false);
     }
 
     uint32_t getInitialUint32(unsigned parameterIndex)
     {
-      throw(0);
+      throw("BrownianPlanar: has no initial integer parameters");
       return(0);
     }
 
     bool getExtensionLogical(unsigned blockIndex, unsigned parameterIndex)
     {
-      throw(0);
+      throw("BrownianPlanar: has no extension logical parameters");
       return(false);
     }
 
     uint32_t getExtensionUint32(unsigned blockIndex, unsigned parameterIndex)
     {
-      if(blockIndex>=numExtensionBlocks()) { throw(0); }
+      if(blockIndex>=numExtensionBlocks())
+      {
+        throw("BrownianPlanar: extension integer block index is out of range");
+      }
       switch(parameterIndex)
       {
         case 0:
@@ -213,31 +216,35 @@ namespace tommas
         case 2:
           return(pa[blockIndex]);
         default:
-          throw(0);
+          throw("BrownianPlanar: extension integer parameter index is out of range");
           return(0);
       }
     }
 
     void setInitialLogical(unsigned parameterIndex, bool value)
     {
-      throw(0);
+      throw("BrownianPlanar: has no initial logical parameters");
       return;
     }
 
     void setInitialUint32(unsigned parameterIndex, uint32_t value)
     {
-      throw(0);
+      throw("BrownianPlanar: has no initial integer parameters");
       return;
     }
 
     void setExtensionLogical(unsigned blockIndex, unsigned parameterIndex, bool value)
     {
-      throw(0);
+      throw("BrownianPlanar: has no extension logical parameters");
       return;
     }
 
     void setExtensionUint32(unsigned blockIndex, unsigned parameterIndex, uint32_t value)
     {
+      if(blockIndex>=numExtensionBlocks())
+      {
+        throw("BrownianPlanar: extension integer block index is out of range");
+      }
       switch(parameterIndex)
       {
         case 0:
@@ -253,7 +260,7 @@ namespace tommas
           fa[blockIndex]=paramToForce(value);
           break;
         default:
-          throw(0);
+          throw("BrownianPlanar: extension integer parameter index is out of range");
       }
       firstNewBlock=std::min(firstNewBlock,blockIndex);
     }
@@ -286,7 +293,7 @@ namespace tommas
       return;
     }
 
-    TimeInterval domain(void) {return(interval);}
+    TimeInterval domain(void) { return(interval); }
 
     void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose)
     {

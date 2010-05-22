@@ -334,9 +334,17 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   {
     safeMexFunction(nlhs,plhs,nrhs,prhs);
   }
+  catch(std::exception& e)
+  {
+    mexErrMsgTxt(e.what());
+  }
+  catch(const char* str)
+  {
+    mexErrMsgTxt(str);
+  }
   catch(...)
   {
-    mexErrMsgTxt("unhandled exception");
+    mexErrMsgTxt("MeasureWrapper: unhandled exception");
   }
   return;
 }

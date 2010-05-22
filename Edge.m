@@ -8,17 +8,27 @@ classdef Edge
     function this=Edge(A,B)
       if(nargin==1)
         N=numel(A);
-        this=repmat(this,[1,N]);
-        for n=1:N
-          this(n).first=A(n).first;
-          this(n).second=A(n).second;
+        if(N==1)
+          this.first=uint32(A.first);
+          this.second=uint32(A.second);
+        else
+          this=repmat(this,[1,N]);
+          for n=1:N
+            this(n).first=uint32(A(n).first);
+            this(n).second=uint32(A(n).second);
+          end
         end
       elseif(nargin==2)
         N=numel(A);
-        this=repmat(this,[1,N]);
-        for n=1:N
-          this(n).first=uint32(A(n));
-          this(n).second=uint32(B(n));
+        if(N==1)
+          this.first=uint32(A);
+          this.second=uint32(B);
+        else
+          this=repmat(this,[1,N]);
+          for n=1:N
+            this(n).first=uint32(A(n));
+            this(n).second=uint32(B(n));
+          end
         end
       end
     end
