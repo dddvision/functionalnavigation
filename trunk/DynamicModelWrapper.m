@@ -15,6 +15,8 @@ classdef DynamicModelWrapper < DynamicModel
         cpp=which(basecpp);
         mex('-I"."','DynamicModelWrapper.cpp',cpp,'-output',cpp(1:(end-4)));
       end
+      assert(isa(initialTime,'WorldTime'));
+      initialTime=double(initialTime); % workaround avoids array duplication
       this.h=feval(this.c,pkg,initialTime,uri);
     end
 
@@ -87,17 +89,20 @@ classdef DynamicModelWrapper < DynamicModel
     end
      
     function interval=domain(this)
-      interval=TimeInterval(0,0);
-      interval=feval(this.c,this.h,'domain',interval);
+      interval=feval(this.c,this.h,'domain');
     end
    
     function pose=evaluate(this,t)
-      pose=repmat(Pose,[1,numel(t)]);
+      assert(isa(t,'WorldTime'));
+      t=double(t); % workaround avoids array duplication
+      pose=repmat(Pose,[1,numel(t)]); % workaround creates object externally
       pose=feval(this.c,this.h,'evaluate',pose,t);
     end
     
     function tangentPose=tangent(this,t)
-      tangentPose=repmat(TangentPose,[1,numel(t)]);
+      assert(isa(t,'WorldTime'));
+      t=double(t); % workaround avoids array duplication
+      tangentPose=repmat(TangentPose,[1,numel(t)]); % workaround creates object externally
       tangentPose=feval(this.c,this.h,'tangent',tangentPose,t);
     end
   end

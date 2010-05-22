@@ -1,179 +1,6 @@
 #include "mex.h"
 #include "tommas.h"
 
-void convert(const mxArray* array, double& value)
-{
-  if(mxGetClassID(array)!=mxDOUBLE_CLASS)
-  {
-    mexErrMsgTxt("input array must be double");
-  }
-  value=(*static_cast<double*>(mxGetData(array)));
-  return;
-}
-
-void convert(const mxArray* array, uint32_t& value)
-{
-  if(mxGetClassID(array)!=mxUINT32_CLASS)
-  {
-    mexErrMsgTxt("input array must be uint32");
-  }
-  value=(*static_cast<uint32_t*>(mxGetData(array)));
-  return;
-}
-
-void convert(const mxArray* array, bool& value)
-{
-  if(mxGetClassID(array)!=mxLOGICAL_CLASS)
-  {
-    mexErrMsgTxt("input array must be logical");
-  }
-  value=(*static_cast<bool*>(mxGetLogicals(array)));
-  return;
-}
-
-void convert(const mxArray* array, std::string& cppString)
-{
-  unsigned N = mxGetNumberOfElements(array)+1;
-  char *cString = new char[N];
-  if(mxGetClassID(array)!=mxCHAR_CLASS)
-  {
-    mexErrMsgTxt("input array must be char");
-  }
-  mxGetString(array,cString,N);
-  cppString = cString;
-  delete[] cString;
-  return;
-}
-
-void convert(const mxArray* array, std::vector<tommas::WorldTime>& cppTime)
-{
-  double* mTime;
-  unsigned n;
-  unsigned N=mxGetNumberOfElements(array);
-
-  if(!mxIsClass(array,"WorldTime"))
-  {
-    mexErrMsgTxt("input array must be WorldTime");
-  }
-  mTime=static_cast<double*>(mxGetData(array));
-  cppTime.resize(N);
-  for( n=0 ; n<N ; ++n )
-  {
-    cppTime[n]=mTime[n];
-  }
-  return;
-}
-
-void convert(const double value, mxArray*& array)
-{
-  array=mxCreateDoubleScalar(value);
-  return;
-}
-
-void convert(const uint32_t value, mxArray*& array)
-{
-  array=mxCreateNumericMatrix(1,1,mxUINT32_CLASS,mxREAL);
-  (*static_cast<uint32_t*>(mxGetData(array)))=value;
-  return;
-}
-
-void convert(const bool value, mxArray*& array)
-{
-  array=mxCreateLogicalScalar(value);
-  return;
-}
-
-void convert(const tommas::TimeInterval& timeInterval, const mxArray*& source, mxArray*& array)
-{
-  mxArray* first;
-  mxArray* second;
-  if(!mxIsClass(source,"TimeInterval"))
-  {
-    mexErrMsgTxt("input array must be TimeInterval");
-  }
-  array=mxDuplicateArray(source);
-  first=mxGetProperty(array,0,"first");
-  second=mxGetProperty(array,0,"second");
-  (*mxGetPr(first))=timeInterval.first;
-  (*mxGetPr(second))=timeInterval.second;
-  return;
-}
-
-void convert(const std::vector<tommas::Pose>& pose, const mxArray*& source, mxArray*& array)
-{
-  mxArray* p;
-  mxArray* q;
-  double* pp;
-  double* pq;
-  unsigned n;
-  unsigned N=pose.size();
-  if(!mxIsClass(source,"Pose"))
-  {
-    mexErrMsgTxt("input array must be Pose");
-  }
-  array=mxDuplicateArray(source);
-  for( n=0 ; n<N ; ++n )
-  {
-    p=mxGetProperty(array,n,"p");
-    q=mxGetProperty(array,n,"q");
-    pp=mxGetPr(p);
-    pq=mxGetPr(q);
-    pp[0]=pose[n].p[0];
-    pp[1]=pose[n].p[1];
-    pp[2]=pose[n].p[2];
-    pq[0]=pose[n].q[0];
-    pq[1]=pose[n].q[1];
-    pq[2]=pose[n].q[2];
-    pq[3]=pose[n].q[3];
-  }
-  return;
-}
-
-void convert(const std::vector<tommas::TangentPose>& tangentPose, const mxArray*& source, mxArray*& array)
-{
-  mxArray* p;
-  mxArray* q;
-  mxArray* r;
-  mxArray* s;
-  double* pp;
-  double* pq;
-  double* pr;
-  double* ps;
-  unsigned n;
-  unsigned N=tangentPose.size();
-  if(!mxIsClass(source,"TangentPose"))
-  {
-    mexErrMsgTxt("input array must be TangentPose");
-  }
-  array=mxDuplicateArray(source);
-  for( n=0 ; n<N ; ++n )
-  {
-    p=mxGetProperty(array,n,"p");
-    q=mxGetProperty(array,n,"q");
-    r=mxGetProperty(array,n,"r");
-    s=mxGetProperty(array,n,"s");
-    pp=mxGetPr(p);
-    pq=mxGetPr(q);
-    pr=mxGetPr(r);
-    ps=mxGetPr(s);
-    pp[0]=tangentPose[n].p[0];
-    pp[1]=tangentPose[n].p[1];
-    pp[2]=tangentPose[n].p[2];
-    pq[0]=tangentPose[n].q[0];
-    pq[1]=tangentPose[n].q[1];
-    pq[2]=tangentPose[n].q[2];
-    pq[3]=tangentPose[n].q[3];
-    pr[0]=tangentPose[n].r[0];
-    pr[1]=tangentPose[n].r[1];
-    pr[2]=tangentPose[n].r[2];
-    ps[0]=tangentPose[n].s[0];
-    ps[1]=tangentPose[n].s[1];
-    ps[2]=tangentPose[n].s[2];
-    ps[3]=tangentPose[n].s[3];
-  }
-  return;
-}
-
 enum DynamicModelMember
 {
   undefined,
@@ -198,6 +25,176 @@ enum DynamicModelMember
   evaluate,
   tangent
 };
+
+void argcheck(int& narg,int n)
+{
+  if(n>narg)
+  {
+    mexErrMsgTxt("DynamicModelWrapper: too few input arguments");
+  }
+  return;
+}
+
+void convert(const mxArray*& array, double& value)
+{
+  if(mxGetClassID(array)!=mxDOUBLE_CLASS)
+  {
+    mexErrMsgTxt("DynamicModelWrapper: array must be double");
+  }
+  value=(*static_cast<double*>(mxGetData(array)));
+  return;
+}
+
+void convert(const mxArray*& array, uint32_t& value)
+{
+  if(mxGetClassID(array)!=mxUINT32_CLASS)
+  {
+    mexErrMsgTxt("DynamicModelWrapper: array must be uint32");
+  }
+  value=(*static_cast<uint32_t*>(mxGetData(array)));
+  return;
+}
+
+void convert(const mxArray*& array, bool& value)
+{
+  if(mxGetClassID(array)!=mxLOGICAL_CLASS)
+  {
+    mexErrMsgTxt("DynamicModelWrapper: array must be logical");
+  }
+  value=(*static_cast<bool*>(mxGetLogicals(array)));
+  return;
+}
+
+void convert(const mxArray*& array, std::string& cppString)
+{
+  unsigned N=mxGetNumberOfElements(array)+1; // add one for terminating character
+  char *cString = new char[N];
+  if(mxGetClassID(array)!=mxCHAR_CLASS)
+  {
+    mexErrMsgTxt("DynamicModelWrapper: array must be char");
+  }
+  mxGetString(array,cString,N);
+  cppString = cString;
+  delete[] cString;
+  return;
+}
+
+void convert(const mxArray*& array, std::vector<tommas::WorldTime>& cppTime)
+{
+  double* mTime;
+  unsigned n;
+  unsigned N=mxGetNumberOfElements(array);
+  mTime=mxGetPr(array);
+  cppTime.resize(N);
+  for( n=0 ; n<N ; ++n )
+  {
+    cppTime[n]=mTime[n];
+  }
+  return;
+}
+
+void convert(const double& value, mxArray*& array)
+{
+  array=mxCreateDoubleScalar(value);
+  return;
+}
+
+void convert(const uint32_t& value, mxArray*& array)
+{
+  array=mxCreateNumericMatrix(1,1,mxUINT32_CLASS,mxREAL);
+  (*static_cast<uint32_t*>(mxGetData(array)))=value;
+  return;
+}
+
+void convert(const bool& value, mxArray*& array)
+{
+  array=mxCreateLogicalScalar(value);
+  return;
+}
+
+void convert(const tommas::TimeInterval& timeInterval, mxArray*& array)
+{
+  mxArray* interval[2];
+  interval[0]=mxCreateDoubleScalar(timeInterval.first);
+  interval[1]=mxCreateDoubleScalar(timeInterval.second);
+  mexCallMATLAB(1,&array,2,interval,"TimeInterval");
+  mxDestroyArray(interval[1]);
+  mxDestroyArray(interval[0]);
+  return;
+}
+
+void convert(const std::vector<tommas::Pose>& pose, const mxArray*& source, mxArray*& array)
+{
+  mxArray* p;
+  mxArray* q;
+  double* pp;
+  double* pq;
+  unsigned n;
+  unsigned N=pose.size();
+  array=mxDuplicateArray(source);
+  for( n=0 ; n<N ; ++n )
+  {
+    p=mxCreateDoubleMatrix(3,1,mxREAL);
+    q=mxCreateDoubleMatrix(4,1,mxREAL);
+    pp=mxGetPr(p);
+    pq=mxGetPr(q);
+    pp[0]=pose[n].p[0];
+    pp[1]=pose[n].p[1];
+    pp[2]=pose[n].p[2];
+    pq[0]=pose[n].q[0];
+    pq[1]=pose[n].q[1];
+    pq[2]=pose[n].q[2];
+    pq[3]=pose[n].q[3];
+    mxSetProperty(array,n,"p",p);
+    mxSetProperty(array,n,"q",q);
+  }
+  return;
+}
+
+void convert(const std::vector<tommas::TangentPose>& tangentPose, const mxArray*& source, mxArray*& array)
+{
+  mxArray* p;
+  mxArray* q;
+  mxArray* r;
+  mxArray* s;
+  double* pp;
+  double* pq;
+  double* pr;
+  double* ps;
+  unsigned n;
+  unsigned N=tangentPose.size();
+  array=mxDuplicateArray(source);
+  for( n=0 ; n<N ; ++n )
+  {
+    p=mxCreateDoubleMatrix(3,1,mxREAL);
+    q=mxCreateDoubleMatrix(4,1,mxREAL);
+    r=mxCreateDoubleMatrix(3,1,mxREAL);
+    s=mxCreateDoubleMatrix(4,1,mxREAL);
+    pp=mxGetPr(p);
+    pq=mxGetPr(q);
+    pr=mxGetPr(r);
+    ps=mxGetPr(s);
+    pp[0]=tangentPose[n].p[0];
+    pp[1]=tangentPose[n].p[1];
+    pp[2]=tangentPose[n].p[2];
+    pq[0]=tangentPose[n].q[0];
+    pq[1]=tangentPose[n].q[1];
+    pq[2]=tangentPose[n].q[2];
+    pq[3]=tangentPose[n].q[3];
+    pr[0]=tangentPose[n].r[0];
+    pr[1]=tangentPose[n].r[1];
+    pr[2]=tangentPose[n].r[2];
+    ps[0]=tangentPose[n].s[0];
+    ps[1]=tangentPose[n].s[1];
+    ps[2]=tangentPose[n].s[2];
+    ps[3]=tangentPose[n].s[3];
+    mxSetProperty(array,n,"p",p);
+    mxSetProperty(array,n,"q",q);
+    mxSetProperty(array,n,"r",r);
+    mxSetProperty(array,n,"s",s);
+  }
+  return;
+}
 
 void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
 {
@@ -231,10 +228,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     initialized=true;
   }
   
-  if(nrhs<2)
-  {
-    mexErrMsgTxt("function requires at least 2 arguments");
-  }
+  argcheck(nrhs,2);
   if(mxIsChar(prhs[0]))
   {
     std::string pkg;
@@ -242,13 +236,15 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     tommas::DynamicModel* obj;
     tommas::WorldTime initialTime;
     uint32_t numInstances = instance.size();
+
+    argcheck(nrhs,3);
     convert(prhs[0],pkg);
     convert(prhs[1],initialTime);
     convert(prhs[2],uri);
     obj = tommas::DynamicModel::factory(pkg,initialTime,uri);
     if(obj==NULL)
     {
-      mexErrMsgTxt("failed to instantiate the specified DynamicModel");
+      mexErrMsgTxt("DynamicModelWrapper: failed to instantiate subclass");
     }
     instance.resize(numInstances+1);
     instance[numInstances] = obj;
@@ -264,12 +260,12 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
     if(handle>=instance.size())
     {
-      mexErrMsgTxt("requested invalid handle to DynamicModel");
+      mexErrMsgTxt("DynamicModelWrapper: invalid instance handle");
     }
     switch(memberMap[memberName])
     {
     case undefined:
-      mexErrMsgTxt("unrecognized member function in call to DynamicModel");
+      mexErrMsgTxt("DynamicModelWrapper: invalid member function");
       break;
       
     case updateRate:
@@ -299,6 +295,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     case getInitialLogical:
     {
       uint32_t p;
+      argcheck(nrhs,3);
       convert(prhs[2],p);
       convert(instance[handle]->getInitialLogical(p),plhs[0]);
       break;
@@ -307,6 +304,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     case getInitialUint32:
     {
       uint32_t p;
+      argcheck(nrhs,3);
       convert(prhs[2],p);
       convert(instance[handle]->getInitialUint32(p),plhs[0]);
       break;
@@ -316,6 +314,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     {
       uint32_t b;
       uint32_t p;
+      argcheck(nrhs,4);
       convert(prhs[2],b);
       convert(prhs[3],p);
       convert(instance[handle]->getExtensionLogical(b,p),plhs[0]);
@@ -326,6 +325,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     {
       uint32_t b;
       uint32_t p;
+      argcheck(nrhs,4);
       convert(prhs[2],b);
       convert(prhs[3],p);
       convert(instance[handle]->getExtensionUint32(b,p),plhs[0]);
@@ -336,6 +336,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     {
       uint32_t p;
       bool v;
+      argcheck(nrhs,4);
       convert(prhs[2],p);
       convert(prhs[3],v);
       instance[handle]->setInitialLogical(p,v);
@@ -346,6 +347,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     {
       uint32_t p;
       uint32_t v;
+      argcheck(nrhs,4);
       convert(prhs[2],p);
       convert(prhs[3],v);
       instance[handle]->setInitialUint32(p,v);
@@ -357,6 +359,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       uint32_t b;
       uint32_t p;
       bool v;
+      argcheck(nrhs,5);
       convert(prhs[2],b);
       convert(prhs[3],p);
       convert(prhs[4],v);
@@ -369,6 +372,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       uint32_t b;
       uint32_t p;
       uint32_t v;
+      argcheck(nrhs,5);
       convert(prhs[2],b);
       convert(prhs[3],p);
       convert(prhs[4],v);
@@ -383,6 +387,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     case computeExtensionBlockCost:
     {
       uint32_t b;
+      argcheck(nrhs,3);
       convert(prhs[2],b);
       convert(instance[handle]->computeExtensionBlockCost(b),plhs[0]);
       break;
@@ -391,19 +396,21 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     case extend:
     {
       uint32_t num;
+      argcheck(nrhs,3);
       convert(prhs[2],num);
       instance[handle]->extend(num);
       break;
     }
 
     case domain:
-      convert(instance[handle]->domain(),prhs[2],plhs[0]);
+      convert(instance[handle]->domain(),plhs[0]);
       break;
       
     case evaluate:
     {
       std::vector<tommas::WorldTime> time;
       std::vector<tommas::Pose> pose;
+      argcheck(nrhs,4);
       convert(prhs[3],time);
       instance[handle]->evaluate(time,pose);
       convert(pose,prhs[2],plhs[0]);
@@ -414,6 +421,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     {
       std::vector<tommas::WorldTime> time;
       std::vector<tommas::TangentPose> tangentPose;
+      argcheck(nrhs,4);
       convert(prhs[3],time);
       instance[handle]->tangent(time,tangentPose);
       convert(tangentPose,prhs[2],plhs[0]);
@@ -421,7 +429,6 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     }
     }
   }
-
   return;
 }
 
@@ -431,13 +438,17 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   {
     safeMexFunction(nlhs,plhs,nrhs,prhs);
   }
+  catch(std::exception& e)
+  {
+    mexErrMsgTxt(e.what());
+  }
   catch(const char* str)
   {
     mexErrMsgTxt(str);
   }
   catch(...)
   {
-    mexErrMsgTxt("unhandled exception");
+    mexErrMsgTxt("DynamicModelWrapper: unhandled exception");
   }
   return;
 }

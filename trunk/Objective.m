@@ -147,6 +147,8 @@ classdef Objective < handle
           end
         end
       end
+      ta=WorldTime(ta);
+      tb=WorldTime(tb);
     end
     
     function extend(this,tbNew)

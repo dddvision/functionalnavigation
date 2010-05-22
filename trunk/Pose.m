@@ -20,10 +20,15 @@ classdef Pose
     function this=Pose(S)
       if(nargin)
         N=numel(S);
-        this=repmat(this,[1,N]);
-        for n=1:N
-          this(n).p=S(n).p;
-          this(n).q=S(n).q;
+        if(N==1)
+          this.p=S.p;
+          this.q=S.q;
+        else
+          this=repmat(this,[1,N]);
+          for n=1:N
+            this(n).p=S(n).p;
+            this(n).q=S(n).q;
+          end
         end
       end
     end
