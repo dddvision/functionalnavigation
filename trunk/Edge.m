@@ -1,33 +1,36 @@
 % This class represents edges that determine the adjacency of nodes in a cost graph
 classdef Edge
   properties (SetAccess=public,GetAccess=public)
-    first % lower node index for this edge, uint32 scalar
-    second  % upper node index for this edge, uint32 scalar
+    first=uint32(0); % lower node index for this edge, uint32 scalar
+    second=uint32(0);  % upper node index for this edge, uint32 scalar
   end
   methods (Access=public)
     function this=Edge(A,B)
       if(nargin==1)
+        assert(isa(A(1).first,'uint32'));
         N=numel(A);
         if(N==1)
-          this.first=uint32(A.first);
-          this.second=uint32(A.second);
+          this.first=A.first;
+          this.second=A.second;
         else
           this=repmat(this,[1,N]);
           for n=1:N
-            this(n).first=uint32(A(n).first);
-            this(n).second=uint32(A(n).second);
+            this(n).first=A(n).first;
+            this(n).second=A(n).second;
           end
         end
       elseif(nargin==2)
+        assert(isa(A,'uint32'));
+        assert(isa(B,'uint32'));
         N=numel(A);
         if(N==1)
-          this.first=uint32(A);
-          this.second=uint32(B);
+          this.first=A;
+          this.second=B;
         else
           this=repmat(this,[1,N]);
           for n=1:N
-            this(n).first=uint32(A(n));
-            this(n).second=uint32(B(n));
+            this(n).first=A(n);
+            this(n).second=B(n);
           end
         end
       end

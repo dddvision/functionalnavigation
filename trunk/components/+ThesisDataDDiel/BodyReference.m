@@ -38,7 +38,7 @@ classdef BodyReference < Trajectory
     end
 
     function interval=domain(this)
-      interval=TimeInterval(this.T_imu(1),this.T_imu(end));
+      interval=TimeInterval(WorldTime(this.T_imu(1)),WorldTime(this.T_imu(end)));
     end
 
     function pose=evaluate(this,t)

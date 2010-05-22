@@ -154,7 +154,7 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
     end
      
     function interval=domain(this)
-      interval=TimeInterval(this.initialTime,inf);
+      interval=TimeInterval(this.initialTime,WorldTime(inf));
     end
     
     function pose=evaluate(this,t)
