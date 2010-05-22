@@ -1,11 +1,11 @@
 classdef DemoConfig < handle
   properties (Constant=true,GetAccess=public)
     uri = 'matlab:MiddleburyData'; % select hardware resource or data container
-    dynamicModelName = 'BrownianPlanar'; % select dynamic model
+    dynamicModelName = 'LinearKalmanDynamicModel'; % select dynamic model
     measureNames = {'LinearKalmanMeasure'}; % select measures
-    optimizerName = 'MatlabGA'; % optimizer selection
-    textOnly = false; % (true) show text output only
-    bestOnly = false; % (true) show only the best trajectory
+    optimizerName = 'LinearKalmanOptimizer'; % optimizer selection
+    textOnly = true; % (true) show text output only
+    bestOnly = true; % (true) show only the best trajectory
     saveFigure = false; % (false) saves figure as an image
     width = 640; % (640) figure width in pixels
     height = 480; % (480) figure height in pixels
