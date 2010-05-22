@@ -6,7 +6,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
   
   methods (Access=public)
     function this=BodyReference
-      this.interval=TimeInterval(0,(this.numImages-1)/this.fps);
+      this.interval=TimeInterval(WorldTime(0),WorldTime((this.numImages-1)/this.fps));
     end
 
     function interval=domain(this)

@@ -16,7 +16,7 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
     end
     
     function interval=domain(this)
-      interval=TimeInterval(this.gpsTime(1),this.gpsTime(end));
+      interval=TimeInterval(WorldTime(this.gpsTime(1)),WorldTime(this.gpsTime(end)));
     end
     
     function pose=evaluate(this,t)

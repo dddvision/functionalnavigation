@@ -114,12 +114,23 @@ void convert(const bool& value, mxArray*& array)
 
 void convert(const tommas::TimeInterval& timeInterval, mxArray*& array)
 {
+  mxArray* first;
+  mxArray* second;
+  mxArray* firstWT;
+  mxArray* secondWT;
   mxArray* interval[2];
-  interval[0]=mxCreateDoubleScalar(timeInterval.first);
-  interval[1]=mxCreateDoubleScalar(timeInterval.second);
+  
+  first=mxCreateDoubleScalar(timeInterval.first);
+  second=mxCreateDoubleScalar(timeInterval.second);
+  mexCallMATLAB(1,&firstWT,1,&first,"WorldTime");
+  mexCallMATLAB(1,&secondWT,1,&second,"WorldTime");
+  interval[0]=firstWT;
+  interval[1]=secondWT;
   mexCallMATLAB(1,&array,2,interval,"TimeInterval");
-  mxDestroyArray(interval[1]);
-  mxDestroyArray(interval[0]);
+  mxDestroyArray(first);
+  mxDestroyArray(second);
+  mxDestroyArray(firstWT);
+  mxDestroyArray(secondWT);
   return;
 }
 

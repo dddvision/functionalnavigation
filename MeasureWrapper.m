@@ -34,7 +34,7 @@ classdef MeasureWrapper < Measure
     
     function edge=findEdges(this,kaSpan,kbSpan)
       % implements workaround that calls repmat(Edge,...) internally
-      edge=Edge(0,0);
+      edge=Edge(uint32(0),uint32(0));
       edge=feval(this.c,this.h,'findEdges',edge,kaSpan,kbSpan);
     end
 
