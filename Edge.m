@@ -13,7 +13,7 @@ classdef Edge
           this.first=A.first;
           this.second=A.second;
         else
-          this=repmat(this,[1,N]);
+          this(1,N)=this;
           for n=1:N
             this(n).first=A(n).first;
             this(n).second=A(n).second;
@@ -27,7 +27,7 @@ classdef Edge
           this.first=A;
           this.second=B;
         else
-          this=repmat(this,[1,N]);
+          this(1,N)=this;
           for n=1:N
             this(n).first=A(n);
             this(n).second=B(n);

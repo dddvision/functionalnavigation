@@ -14,20 +14,24 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
     end
 
     function pose=evaluate(this,t)
-      pose=repmat(Pose,[1,numel(t)]);
-      good=find((t>=this.interval.first)&(t<=this.interval.second));
+      pose(1,numel(t))=Pose;
       t=double(t);
-      for k=good
+      tmin=double(this.interval.first);
+      tmax=double(this.interval.second);
+      good=(t>=tmin)&(t<=tmax);
+      for k=find(good)
         pose(k).p=[0;t(k);0];
         pose(k).q=[1;0;0;0];
       end
     end
     
     function tangentPose=tangent(this,t)
-      tangentPose=repmat(TangentPose,[1,numel(t)]);
-      good=find((t>=this.interval.first)&(t<=this.interval.second));
+      tangentPose(1,numel(t))=TangentPose;
       t=double(t);
-      for k=good
+      tmin=double(this.interval.first);
+      tmax=double(this.interval.second);
+      good=(t>=tmin)&(t<=tmax);
+      for k=find(good)
         tangentPose(k).p=[0;t(k);0];
         tangentPose(k).q=[1;0;0;0];
         tangentPose(k).r=[0;1;0];

@@ -33,9 +33,8 @@ classdef MeasureWrapper < Measure
     end
     
     function edge=findEdges(this,kaSpan,kbSpan)
-      % implements workaround that calls repmat(Edge,...) internally
-      edge=Edge(uint32(0),uint32(0));
-      edge=feval(this.c,this.h,'findEdges',edge,kaSpan,kbSpan);
+      error('MeasureWrapper::findEdges has not been implemented')
+      edge=feval(this.c,this.h,'findEdges',kaSpan,kbSpan);
     end
 
     function cost=computeEdgeCost(this,x,edge)

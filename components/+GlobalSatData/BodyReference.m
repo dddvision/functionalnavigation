@@ -20,7 +20,7 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
     end
     
     function pose=evaluate(this,t)
-      pose=repmat(Pose,[1,numel(t)]);
+      pose(1,numel(t))=Pose;
       p=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0); 
       interval=domain(this);
       for k=find((t>=interval.first)&(t<=interval.second))
@@ -30,7 +30,7 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
     end
     
     function tangentPose=tangent(this,t)
-      tangentPose=repmat(TangentPose,[1,numel(t)]);
+      tangentPose(1,numel(t))=TangentPose;
       [p,r]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0); 
       interval=domain(this);
       for k=find((t>=interval.first)&(t<=interval.second))

@@ -11,7 +11,7 @@ classdef TangentPose < Pose
     function this=TangentPose(S)
       if(nargin)
         N=numel(S);
-        this=repmat(this,[1,N]);
+        this(1,N)=this;
         for n=1:N
           this(n).p=S(n).p;
           this(n).q=S(n).q;
