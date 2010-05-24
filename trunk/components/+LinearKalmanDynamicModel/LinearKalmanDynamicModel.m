@@ -1,7 +1,6 @@
 classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamicModelConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
-    sixthIntMax=715827882.5;
     initialNumLogical=uint32(0);
     initialNumUint32=uint32(2);
     extensionNumLogical=uint32(0);
@@ -112,7 +111,7 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       assert(numel(p)==1);
       assert(isa(v,'uint32'));
       assert(numel(v)==1);
-      assert(p<this.initialNumUint32);
+      % assert(p<this.initialNumUint32); % removed for speed
       this.initialUint32(p+1)=v;
     end
     
@@ -160,24 +159,30 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
     function pose=evaluate(this,t)
       pose=evaluate(this.xRef,t);
       interval=domain(this.xRef);
-      t(t>interval.second)=interval.second;
+      tmax=double(interval.second);
+      t=double(t);
+      t(t>tmax)=tmax;
       z=initialBlock2deviation(this);
+      t0=double(this.initialTime);
       c1=this.positionOffset-this.positionDeviation*z(1);
       c2=this.positionRateOffset-this.positionRateDeviation*z(2);
       for k=1:numel(t)
-        pose(k).p(1)=pose(k).p(1)+c1+c2*(t(k)-this.initialTime);
+        pose(k).p(1)=pose(k).p(1)+c1+c2*(t(k)-t0);
       end
     end
    
     function tangentPose=tangent(this,t)
       tangentPose=tangent(this.xRef,t);
       interval=domain(this.xRef);
-      t(t>interval.second)=interval.second;
+      tmax=double(interval.second);
+      t=double(t);
+      t(t>tmax)=tmax;
       z=initialBlock2deviation(this);
+      t0=double(this.initialTime);
       c1=this.positionOffset-this.positionDeviation*z(1);
       c2=this.positionRateOffset-this.positionRateDeviation*z(2);
       for k=1:numel(t)
-        tangentPose(k).p(1)=tangentPose(k).p(1)+c1+c2*(t(k)-this.initialTime);
+        tangentPose(k).p(1)=tangentPose(k).p(1)+c1+c2*(t(k)-t0);
         tangentPose(k).r(1)=tangentPose(k).r(1)+c2;
       end
     end
@@ -185,7 +190,8 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
   
   methods (Access=private)
     function z=initialBlock2deviation(this)
-      z=double(this.initialUint32)/this.sixthIntMax-3;
+      sixthIntMax=715827882.5;
+      z=double(this.initialUint32)/sixthIntMax-3;
     end
   end
   

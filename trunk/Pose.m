@@ -24,7 +24,7 @@ classdef Pose
           this.p=S.p;
           this.q=S.q;
         else
-          this=repmat(this,[1,N]);
+          this(1,N)=this;
           for n=1:N
             this(n).p=S(n).p;
             this(n).q=S(n).q;

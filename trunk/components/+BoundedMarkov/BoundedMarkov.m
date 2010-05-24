@@ -123,7 +123,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
    
     function pose=evaluate(this,t)
       [goodList,dkFloor,dtRemain]=preEvaluate(this,t);
-      pose=repmat(Pose,[1,numel(t)]);
+      pose(1,numel(t))=Pose;
       for n=goodList
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
         pose(n).p=substate(1:3)+this.initialPosition;
@@ -133,7 +133,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     
     function tangentPose=tangent(this,t)
       [goodList,dkFloor,dtRemain]=preEvaluate(this,t);
-      tangentPose=repmat(TangentPose,[1,numel(t)]);
+      tangentPose(1,numel(t))=TangentPose;
       for n=goodList
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
         tangentPose(n).p=substate(1:3)+this.initialPosition;

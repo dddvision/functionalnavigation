@@ -102,12 +102,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
         kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
         kaMax=last(this.sensor)-uint32(1);
         a=kaMin:kaMax;
-        N=numel(a);
-        edgeList=repmat(Edge,[N,1]);
-        for n=1:N
-          edgeList(n).first=a(n);
-          edgeList(n).second=a(n)+uint32(1);
-        end
+        edgeList=Edge(a,a+uint32(1));
       else
         edgeList=repmat(Edge,[0,1]);
       end

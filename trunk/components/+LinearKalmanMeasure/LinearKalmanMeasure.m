@@ -86,12 +86,7 @@ classdef LinearKalmanMeasure < LinearKalmanMeasure.LinearKalmanMeasureConfig & M
       assert(numel(kbSpan)==1);
       if(this.status)
         node=max([this.ka,this.kb-kaSpan,this.kb-kbSpan]):this.kb;
-        N=numel(node);
-        edgeList=repmat(Edge,[N,1]);
-        for n=1:N
-          edgeList(n).first=node(n);
-          edgeList(n).second=node(n);
-        end
+        edgeList=Edge(node,node);
       else
         edgeList=repmat(Edge,[0,1]);
       end
