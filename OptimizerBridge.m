@@ -1,4 +1,4 @@
-classdef OptimizerWrapper < Optimizer
+classdef OptimizerBridge < Optimizer
 
   properties (SetAccess=private,GetAccess=private)
     c % class name
@@ -6,7 +6,7 @@ classdef OptimizerWrapper < Optimizer
   end
   
   methods (Access=public)
-    function this=OptimizerWrapper(pkg,uri)
+    function this=OptimizerBridge(pkg,uri)
       this=this@Optimizer(uri);
       this.c=[pkg,'.',pkg];
       this.h=feval(this.c,pkg,uri);

@@ -34,7 +34,7 @@ classdef Measure < Sensor
       if(exist(subclass,'class'))
         obj=feval(subclass,uri);
       else
-        obj=MeasureWrapper(pkg,uri);
+        obj=MeasureBridge(pkg,uri);
       end
       assert(isa(obj,'Measure'));
     end
