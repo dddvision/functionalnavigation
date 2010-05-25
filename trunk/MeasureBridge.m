@@ -1,4 +1,4 @@
-classdef MeasureWrapper < Measure
+classdef MeasureBridge < Measure
 
   properties (SetAccess=private,GetAccess=private)
     c % class name
@@ -6,7 +6,7 @@ classdef MeasureWrapper < Measure
   end
   
   methods (Access=public)
-    function this=MeasureWrapper(pkg,uri)
+    function this=MeasureBridge(pkg,uri)
       this=this@Measure(uri);
       this.c=[pkg,'.',pkg];
       this.h=feval(this.c,pkg,uri);
@@ -33,7 +33,7 @@ classdef MeasureWrapper < Measure
     end
     
     function edge=findEdges(this,kaSpan,kbSpan)
-      error('MeasureWrapper::findEdges has not been implemented')
+      error('MeasureBridge::findEdges has not been implemented')
       edge=feval(this.c,this.h,'findEdges',kaSpan,kbSpan);
     end
 

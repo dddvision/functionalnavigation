@@ -35,7 +35,7 @@ classdef DynamicModel < Trajectory
       if(exist(subclass,'class'))
         obj=feval(subclass,initialTime,uri);
       else
-        obj=DynamicModelWrapper(pkg,initialTime,uri);
+        obj=DynamicModelBridge(pkg,initialTime,uri);
       end
       assert(isa(obj,'DynamicModel'));
     end

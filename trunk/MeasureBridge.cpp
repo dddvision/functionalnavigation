@@ -175,7 +175,7 @@ void convert(const std::vector<tommas::Edge>& edge, const mxArray*& source, mxAr
   return;
 }
 
-class TrajectoryWrapper : public tommas::Trajectory
+class TrajectoryBridge : public tommas::Trajectory
 {
   public:
     tommas::TimeInterval domain(void)
@@ -318,7 +318,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
     case computeEdgeCost:
     {
-      TrajectoryWrapper x;
+      TrajectoryBridge x;
       tommas::Edge edge;
       convert(prhs[2],edge);
       convert(instance[handle]->computeEdgeCost(x,edge),plhs[0]);
@@ -344,7 +344,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   }
   catch(...)
   {
-    mexErrMsgTxt("MeasureWrapper: unhandled exception");
+    mexErrMsgTxt("MeasureBridge: unhandled exception");
   }
   return;
 }

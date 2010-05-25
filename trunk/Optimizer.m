@@ -28,7 +28,7 @@ classdef Optimizer < handle
       if(exist(subclass,'class'))
         obj=feval(subclass,dynamicModelName,measureNames,uri);
       else
-        obj=OptimizerWrapper(pkg,dynamicModelName,measureNames,uri);
+        obj=OptimizerBridge(pkg,dynamicModelName,measureNames,uri);
       end
       assert(isa(obj,'Optimizer'));
     end

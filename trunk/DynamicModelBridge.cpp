@@ -30,7 +30,7 @@ void argcheck(int& narg,int n)
 {
   if(n>narg)
   {
-    mexErrMsgTxt("DynamicModelWrapper: too few input arguments");
+    mexErrMsgTxt("DynamicModelBridge: too few input arguments");
   }
   return;
 }
@@ -39,7 +39,7 @@ void convert(const mxArray*& array, double& value)
 {
   if(mxGetClassID(array)!=mxDOUBLE_CLASS)
   {
-    mexErrMsgTxt("DynamicModelWrapper: array must be double");
+    mexErrMsgTxt("DynamicModelBridge: array must be double");
   }
   value=(*static_cast<double*>(mxGetData(array)));
   return;
@@ -49,7 +49,7 @@ void convert(const mxArray*& array, uint32_t& value)
 {
   if(mxGetClassID(array)!=mxUINT32_CLASS)
   {
-    mexErrMsgTxt("DynamicModelWrapper: array must be uint32");
+    mexErrMsgTxt("DynamicModelBridge: array must be uint32");
   }
   value=(*static_cast<uint32_t*>(mxGetData(array)));
   return;
@@ -59,7 +59,7 @@ void convert(const mxArray*& array, bool& value)
 {
   if(mxGetClassID(array)!=mxLOGICAL_CLASS)
   {
-    mexErrMsgTxt("DynamicModelWrapper: array must be logical");
+    mexErrMsgTxt("DynamicModelBridge: array must be logical");
   }
   value=(*static_cast<bool*>(mxGetLogicals(array)));
   return;
@@ -71,7 +71,7 @@ void convert(const mxArray*& array, std::string& cppString)
   char *cString = new char[N];
   if(mxGetClassID(array)!=mxCHAR_CLASS)
   {
-    mexErrMsgTxt("DynamicModelWrapper: array must be char");
+    mexErrMsgTxt("DynamicModelBridge: array must be char");
   }
   mxGetString(array,cString,N);
   cppString = cString;
@@ -255,7 +255,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     obj = tommas::DynamicModel::factory(pkg,initialTime,uri);
     if(obj==NULL)
     {
-      mexErrMsgTxt("DynamicModelWrapper: failed to instantiate subclass");
+      mexErrMsgTxt("DynamicModelBridge: failed to instantiate subclass");
     }
     instance.resize(numInstances+1);
     instance[numInstances] = obj;
@@ -271,12 +271,12 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
     if(handle>=instance.size())
     {
-      mexErrMsgTxt("DynamicModelWrapper: invalid instance handle");
+      mexErrMsgTxt("DynamicModelBridge: invalid instance handle");
     }
     switch(memberMap[memberName])
     {
     case undefined:
-      mexErrMsgTxt("DynamicModelWrapper: invalid member function");
+      mexErrMsgTxt("DynamicModelBridge: invalid member function");
       break;
       
     case updateRate:
@@ -459,7 +459,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   }
   catch(...)
   {
-    mexErrMsgTxt("DynamicModelWrapper: unhandled exception");
+    mexErrMsgTxt("DynamicModelBridge: unhandled exception");
   }
   return;
 }

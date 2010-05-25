@@ -1,4 +1,4 @@
-classdef DynamicModelWrapper < DynamicModel
+classdef DynamicModelBridge < DynamicModel
 
   properties (SetAccess=private,GetAccess=private)
     c % class name
@@ -6,14 +6,14 @@ classdef DynamicModelWrapper < DynamicModel
   end
   
   methods (Access=public)
-    function this=DynamicModelWrapper(pkg,initialTime,uri)
+    function this=DynamicModelBridge(pkg,initialTime,uri)
       this=this@DynamicModel(initialTime,uri);
       this.c=[pkg,'.',pkg];
       base=fullfile(['+',pkg],pkg);
       if(~exist(base,'file'))
         basecpp=[base,'.cpp'];
         cpp=which(basecpp);
-        mex('-I"."','DynamicModelWrapper.cpp',cpp,'-output',cpp(1:(end-4)));
+        mex('-I"."','DynamicModelBridge.cpp',cpp,'-output',cpp(1:(end-4)));
       end
       assert(isa(initialTime,'WorldTime'));
       initialTime=double(initialTime); % workaround avoids array duplication
