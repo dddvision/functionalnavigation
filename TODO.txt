@@ -1,19 +1,31 @@
 general:
+ *** Follow up with Boeing.
  * Find a better way to pass classes that are structs from C++ to MATLAB.
  * Make policy decisions regarding copy constructors for each class.
  * Incorporate Google C++ Style Guidelines throughout the code.
- * Explicitly use assert instead of exceptions in C++?
- * Document on wiki that all measures are two-point functions.
- * Document on wiki that trajectory evaluations are in the "pose and tangent pose" space.
+ * Finalize the review of standards.
+
+wiki:
+ * Assert is not allowed in C++.
+ * All measures are two-point functions.
+ * Trajectory evaluations are in the "pose and tangent pose" space.
+ * Distinction between testbed and Optimizer.
+ * Glossary
+   * dynamic model
+   * measure
+   * cost graph
+   * edge
+   * node
+   * optimization step
+   * sensativity
+   * granularity
+   * monotonicity
+   * forcing function
+   * metric
 
 research:
  * Topics for publication:
    * Measurement graphs are an alternative to pose graphs.
- * Review standards (briefly):
-   * STANAG 4586
-   * JAUS V3.3 (JAUGS?)
-   * SMART (Sandia Modular Architecture for Robotics and Teleoperation)
- * Olsen: Pose graphs
  * H. W. Sorenson. "Parameter Estimation". 1980.
  * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007.
  * Review other code in /projects/1490/software
@@ -25,7 +37,6 @@ research:
  * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
 
 testbed:
- *** Document distinction between testbed and Optimizer.
  * Create unit tests for all framework classes to check interfaces and exception handling.
    * Make a container that has all sensors and type checks its inputs.
  * Create advanced unit tests to characterize measures
@@ -41,15 +52,20 @@ demonstration:
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
  * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
+DynamicModel:
+ * Bug: Why does BrownianPlanar produce straight paths?
+
 Optimizer:
  * Create linkage-based GA crossover function.
+ * Implement Pose Graph optimization.
 
 Objective:
- *** Consider getting rid of objective
+ *** Consider getting rid of objective.
    * Replace with new MultiMeasure class?
 
 Measure:
  *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).
+ *** Consider whether findEdges needs trajectory input to compute intercepts for path planning applications.
  * Split GlobalSatData into a measure and a reference trajectory simulator.
  * Implement SURF as a feature-matching option in OpticalFlowOpenCV.
  * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
@@ -59,6 +75,8 @@ Measure:
 
 DataContainer:
  *** Develop stateless API compatible with AFRL ANTBED.
+ * Consider use of netcdf format for ANTBED data.
+ * Link into RAWSEEDS data (ask developers about value of standardized API).
  * Develop configuration tool that assists the user in selecting data sources.
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
@@ -69,17 +87,3 @@ DataContainer:
 CameraArray:
  * Check fisheye projection and inverseProjection equations at image center.
  * Should masking be separate from projection?
-
-glossary:
- * Add a page to wiki for each term
-   * dynamic model
-   * measure
-   * cost graph
-   * edge
-   * node
-   * optimization step
-   * sensativity
-   * granularity
-   * monotonicity
-   * forcing function
-   * metric
