@@ -3,9 +3,9 @@
 
 === Introduction ===
 
-This project provides a framework for testing navigation algorithms.  Do you want to create a component that will seamlessly integrate with the framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
+This page will help you create a component that will seamlessly integrate with our trajectory optimization framework. There are an infinite number of ways to represent system dynamics, trajectory measures, and optimization methods. Therefore, we primarily focus on providing clear interface definitions and leave implementation issues to the developers of individual components.
 
-There are an infinite number of ways to represent system dynamics, trajectory measures, and optimization methods. Therefore, we provide clear interface definitions and leave implementation issues to the developers of individual components.
+Alternatively, you might want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
 
 === Interface Control Document ===
 
@@ -15,17 +15,17 @@ Specific guidelines for each component:
   * [InterfaceOptimizationMethods Interface for Optimization Methods]
 
 General coding guidelines for all components including those that are hosted externally:
-  * RULE: Component names must be capitalized in UpperCamelCase (ex. MyComponent).
-  * RULE: All code must be grouped within a single directory prefixed by a "+" sign (ex. +MyComponent).
-  * RULE: The component directory must contain either a MATLAB or C++ class definition file with the same name as the component (ex. +MyComponent/MyComponent.m or +MyComponent/MyComponent.cpp).
-  * RULE: Users should only be expected to modify at most one configuration file. It should have the same name as the component appended by "Config" (ex. +MyComponent/MyComponentConfig.m or +MyComponent/MyComponentConfig.cpp).
+  * RULE: Component names must be capitalized in {{{UpperCamelCase}}} (ex. {{{MyComponent}}}).
+  * RULE: All code must be grouped within a single directory prefixed by a "+" sign (ex. {{{+MyComponent}}}).
+  * RULE: The component directory must contain either a MATLAB or C++ class definition file with the same name as the component (ex. {{{+MyComponent/MyComponent.m}}} or {{{+MyComponent/MyComponent.cpp}}}).
+  * RULE: Users should only be expected to modify at most one configuration file. It should have the same name as the component appended by "Config" (ex. {{{+MyComponent/MyComponentConfig.m}}} or {{{+MyComponent/MyComponentConfig.cpp}}}).
   * RULE: Components should not assume that they are in the ./components directory.
   * RULE: Framework interface bugs should be submitted to the Google Code issue tracker.
 
 Additional coding guidelines for all code hosted in this repository:
-  * RULE: Only upload plain text, C++, or MATLAB files (makefile, .c, .cpp, .h, .m, .txt)
-  * RULE: Do not upload binaries (.jpg, .png, .dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32)
-  * RULE: Bugs in components should be noted using TODO statements within code or in a TODO.txt file that accompanies the component.
+  * RULE: Only upload plain text, C++, or MATLAB files ({{{makefile, .c, .cpp, .h, .m, .txt}}})
+  * RULE: Do not upload binaries ({{{.jpg, .png, .dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32}}})
+  * RULE: Bugs in components should be noted using {{{TODO:}}} statements within code or in a {{{TODO.txt}}} file that accompanies the component.
   * RULE: Use two spaces for each indentation level.
   * RULE: At least one blank line should separate functions in files that define multiple functions.
   * RULE: Don't put an empty comment on a line by itself unless it separates other comments.
@@ -33,10 +33,10 @@ Additional coding guidelines for all code hosted in this repository:
   * RULE: Place constants in configuration files or headers whenever possible.
   * RULE: Avoid using global variables.
 
-  * RULE (MATLAB): Components must pass the "mlint" test or contain a comment at each line explaining why not.
-  * RULE (MATLAB): Use fprintf() instead of disp() or warning().
+  * RULE (MATLAB): Components must pass the {{{mlint}}} test or contain a comment at each line explaining why not.
+  * RULE (MATLAB): Use {{{fprintf()}}} instead of {{{disp()}}} or {{{warning()}}}.
 
-  * RULE (C++): Code must compile using "g++ -Wall -Werror -pedantic"
+  * RULE (C++): Code must compile using "{{{g++ -Wall -Werror -pedantic}}}"
   * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
 
   * RULE: Place a description above each function that identifies INPUT, OUTPUT, RETURN VALUE, and NOTES when applicable.
