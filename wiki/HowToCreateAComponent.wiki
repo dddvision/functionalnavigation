@@ -15,9 +15,9 @@ Specific guidelines for each component:
   * [InterfaceOptimizationMethods Interface for Optimization Methods]
 
 General coding guidelines for all components including those that are hosted externally:
-  * RULE: Names must be capitalized in UpperCamelCase (ex. MyComponent).
+  * RULE: Component names must be capitalized in UpperCamelCase (ex. MyComponent).
   * RULE: All code must be grouped within a single directory prefixed by a "+" sign (ex. +MyComponent).
-  * RULE: The directory must contain either a MATLAB or C++ class definition file with the same name as the component (ex. +MyComponent/MyComponent.m or +MyComponent/MyComponent.cpp).
+  * RULE: The component directory must contain either a MATLAB or C++ class definition file with the same name as the component (ex. +MyComponent/MyComponent.m or +MyComponent/MyComponent.cpp).
   * RULE: Users should only be expected to modify at most one configuration file. It should have the same name as the component appended by "Config" (ex. +MyComponent/MyComponentConfig.m or +MyComponent/MyComponentConfig.cpp).
   * RULE: Components should not assume that they are in the ./components directory.
   * RULE: Framework interface bugs should be submitted to the Google Code issue tracker.
