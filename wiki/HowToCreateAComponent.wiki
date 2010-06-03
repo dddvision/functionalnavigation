@@ -5,7 +5,7 @@
 
 This project provides a framework for testing navigation algorithms.  Do you want to create a component that will seamlessly integrate with the framework?  If so, then you have come to the right place.  Otherwise, maybe you want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
 
-There are an infinite number of ways to represent system dynamics, trajectory measures, and optimization methods.  Therefore, we intend to define clear interfaces and leave issues of information representation to the implementations of individual components.
+There are an infinite number of ways to represent system dynamics, trajectory measures, and optimization methods. Therefore, we provide clear interface definitions and leave implementation issues to the developers of individual components.
 
 === Interface Control Document ===
 
@@ -14,13 +14,17 @@ Specific guidelines for each component:
   * [InterfaceTrajectoryMeasures Interface for Trajectory Measures]
   * [InterfaceOptimizationMethods Interface for Optimization Methods]
 
-General coding guidelines for this project:
+General coding guidelines for all components including those that are hosted externally:
+  * RULE: Names must be capitalized in UpperCamelCase (ex. MyComponent).
+  * RULE: All code must be grouped within a single directory prefixed by a "+" sign (ex. +MyComponent).
+  * RULE: The directory must contain either a MATLAB or C++ class definition file with the same name as the component (ex. +MyComponent/MyComponent.m or +MyComponent/MyComponent.cpp).
+  * RULE: Users should only be expected to modify at most one configuration file. It should have the same name as the component appended by "Config" (ex. +MyComponent/MyComponentConfig.m or +MyComponent/MyComponentConfig.cpp).
+  * RULE: Components should not assume that they are in the ./components directory.
+  * RULE: Framework interface bugs should be submitted to the Google Code issue tracker.
+
+Additional coding guidelines for all code hosted in this repository:
   * RULE: Only upload plain text, C++, or MATLAB files (makefile, .c, .cpp, .h, .m, .txt)
   * RULE: Do not upload binaries (.jpg, .png, .dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32)
-  * RULE: Packages should not assume that they are in the ./components directory.
-  * RULE: Component configuration files have the same name as the component with "Config" appended.
-  * RULE: All class names will be capitalized (as in UpperCamelCase).
-  * RULE: Framework interface bugs should be submitted to the Google Code issue tracker.
   * RULE: Bugs in components should be noted using TODO statements within code or in a TODO.txt file that accompanies the component.
   * RULE: Use two spaces for each indentation level.
   * RULE: At least one blank line should separate functions in files that define multiple functions.
