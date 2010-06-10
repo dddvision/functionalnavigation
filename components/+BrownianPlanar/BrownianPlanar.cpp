@@ -86,10 +86,10 @@ namespace tommas
       ct1=normalizedRotationalMass*ct0;
       ct0*=normalizedMass;
       
-      pose.p[0]=x[dkFloor]+tau*xRate[dkFloor]+ct0*fx[dkFloor];
-      pose.p[1]=y[dkFloor]+tau*yRate[dkFloor]+ct0*fy[dkFloor];
+      pose.p[0]=x[dkFloor]+dtRemain*xRate[dkFloor]+ct0*fx[dkFloor];
+      pose.p[1]=y[dkFloor]+dtRemain*yRate[dkFloor]+ct0*fy[dkFloor];
       pose.p[2]=0.0;
-      halfAngle=0.5*(a[dkFloor]+tau*aRate[dkFloor]+ct1*fa[dkFloor]);
+      halfAngle=0.5*(a[dkFloor]+dtRemain*aRate[dkFloor]+ct1*fa[dkFloor]);
       pose.q[0]=cos(halfAngle);
       pose.q[1]=0.0;
       pose.q[2]=0.0;
