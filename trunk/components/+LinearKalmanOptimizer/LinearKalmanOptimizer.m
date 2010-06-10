@@ -15,12 +15,12 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       this.objective=Objective(dynamicModelName,measureNames,uri);
       
       % display warning
-      fprintf('\n\nwarning: LinearKalmanOptimizer only uses the last on-diagonal element of any measure.');
+      fprintf('\n\nwarning: LinearKalmanOptimizer currently only uses the last on-diagonal element of any measure.');
       
       % handle dynamic model update rate
       rate=this.objective.input.updateRate; 
       if(rate)
-        error('LinearKalmanOptimizer does not yet handle dynamic models with nonzero update rates.');
+        fprintf('\n\nwarning: LinearKalmanOptimizer currently only optimizes over initial parameters.');
       end
       
       % handle dynamic model initial block description

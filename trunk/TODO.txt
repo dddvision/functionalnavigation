@@ -1,13 +1,15 @@
 general:
  *** Follow up with Boeing.
+ * Unify notation through paper, wiki, ppt, and code involving node indices and block indices (j or n).
  * Find a better way to pass classes that are structs from C++ to MATLAB.
  * Make policy decisions regarding copy constructors for each class.
  * Incorporate Google C++ Style Guidelines throughout the code.
  * Finalize the review of standards.
 
 wiki:
+ * Update class diagram.
  * Assert is not allowed in C++.
- * All measures are two-point functions.
+ * All measures are functionals that evaluate trajectories over an interval defined by two points.
  * Trajectory evaluations are in the "pose and tangent pose" space.
  * Distinction between testbed and Optimizer.
  * Glossary
@@ -26,6 +28,7 @@ wiki:
 research:
  * Topics for publication:
    * Measurement graphs are an alternative to pose graphs.
+ * Evolution Robotics VSLAM
  * H. W. Sorenson. "Parameter Estimation". 1980.
  * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007.
  * Review other code in /projects/1490/software
@@ -56,6 +59,7 @@ DynamicModel:
  * Bug: Why does BrownianPlanar produce straight paths?
 
 Optimizer:
+ *** Should accept a vector of DynamicModel names to potentially use.
  * Create linkage-based GA crossover function.
  * Implement Pose Graph optimization.
 
