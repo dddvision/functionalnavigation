@@ -154,27 +154,21 @@ classdef Objective < handle
     function extend(this,tbNew)
       for k=1:numel(this.input)
         Fk=this.input(k);
-        rate=Fk.updateRate;
-        if(rate)
-          interval=domain(Fk);
-          oldNumBlocks=numExtensionBlocks(Fk);
-          newNumBlocks=ceil((tbNew-interval.second)*rate);
-          numAppend=newNumBlocks-oldNumBlocks;
-          if(newNumBlocks>oldNumBlocks)
-            numLogical=numExtensionLogical(Fk);
-            numUint32=numExtensionUint32(Fk);
-            extend(Fk,uint32(numAppend));
-            for b=(oldNumBlocks+1):newNumBlocks
-              L=generateLogical(numLogical);
-              for p=uint32(1):uint32(numel(L))
-                setExtensionLogical(Fk,b-1,p-1,L(p));
-              end
-              U=generateUint32(numUint32);
-              for p=uint32(1):uint32(numel(U))
-                setExtensionUint32(Fk,b-1,p-1,U(p));
-              end
-            end
+        numLogical=numExtensionLogical(Fk);
+        numUint32=numExtensionUint32(Fk);
+        interval=domain(Fk);
+        while(interval.second<tbNew)
+          extend(Fk);
+          b=numExtensionBlocks(Fk); % depends on one-based index
+          L=generateLogical(numLogical);
+          for p=uint32(1):uint32(numel(L))
+            setExtensionLogical(Fk,b-1,p-1,L(p));
           end
+          U=generateUint32(numUint32);
+          for p=uint32(1):uint32(numel(U))
+            setExtensionUint32(Fk,b-1,p-1,U(p));
+          end
+          interval=domain(Fk);
         end
       end
     end

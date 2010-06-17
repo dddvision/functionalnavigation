@@ -20,10 +20,6 @@ classdef DynamicModelBridge < DynamicModel
       this.h=feval(this.c,pkg,initialTime,uri);
     end
 
-    function rate=updateRate(this)
-      rate=feval(this.c,this.h,'updateRate');
-    end
-    
     function num=numInitialLogical(this)
       num=feval(this.c,this.h,'numInitialLogical');
     end
@@ -84,8 +80,8 @@ classdef DynamicModelBridge < DynamicModel
       cost=feval(this.c,this.h,'computeExtensionBlockCost',b);
     end
     
-    function extend(this,num)
-      feval(this.c,this.h,'extend',num);
+    function extend(this)
+      feval(this.c,this.h,'extend');
     end
      
     function interval=domain(this)

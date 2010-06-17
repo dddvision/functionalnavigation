@@ -60,16 +60,6 @@ classdef DynamicModel < Trajectory
   end
   
   methods (Abstract=true,Access=public)
-    % Get the conversion between number of extension blocks and associated time domain extension
-    %
-    % OUTPUT
-    % rate = each block will extend the domain the reciprical of this rate, const double scalar
-    %
-    % NOTES
-    % The units for update rate are blocks per second
-    % If the dynamic model takes no extension blocks then the update rate is 0
-    rate=updateRate(this);
-       
     % Get number of parameters in each block
     %
     % OUTPUT
@@ -121,14 +111,11 @@ classdef DynamicModel < Trajectory
     cost=computeInitialBlockCost(this);
     cost=computeExtensionBlockCost(this,blockIndex);
     
-    % Extend the time domain by appending extension blocks
-    %
-    % INPUT
-    % num = number of blocks to append, uint32 scalar
+    % Extend the time domain by appending one extension block
     %
     % NOTES
-    % Throws an exception if the update rate is 0
-    extend(this,num);
+    % Has no effect if the upper bound of the domain is infinite
+    extend(this);
   end
     
 end

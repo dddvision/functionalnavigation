@@ -1,10 +1,10 @@
 general:
- *** Follow up with Boeing.
  * Unify notation through paper, wiki, ppt, and code involving node indices and block indices (j or n).
  * Find a better way to pass classes that are structs from C++ to MATLAB.
  * Make policy decisions regarding copy constructors for each class.
  * Incorporate Google C++ Style Guidelines throughout the code.
  * Finalize the review of standards.
+ * Disseminate to people listed in 1490/correspondence directory
 
 wiki:
  * Update class diagram.
@@ -59,17 +59,21 @@ DynamicModel:
  * Bug: Why does BrownianPlanar produce straight paths?
 
 Optimizer:
- *** Should accept a vector of DynamicModel names to potentially use.
  * Create linkage-based GA crossover function.
  * Implement Pose Graph optimization.
+ * Consider making OptimizerBridge (difficult long-term objective).
 
 Objective:
  *** Consider getting rid of objective.
+   * Try to move functionality into other classes?
    * Replace with new MultiMeasure class?
 
 Measure:
  *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).
- *** Consider whether findEdges needs trajectory input to compute intercepts for path planning applications.
+ *** Consider how intervals should be handled
+   * Should findEdges return an interval index?
+   * Should findEdges receive a trajectory input to compute intercepts for path planning applications?
+   * Should [ta,tb]=[-inf,inf] be a valid interval?
  * Split GlobalSatData into a measure and a reference trajectory simulator.
  * Implement SURF as a feature-matching option in OpticalFlowOpenCV.
  * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)

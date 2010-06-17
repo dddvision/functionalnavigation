@@ -17,12 +17,6 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       % display warning
       fprintf('\n\nwarning: LinearKalmanOptimizer currently only uses the last on-diagonal element of any measure.');
       
-      % handle dynamic model update rate
-      rate=this.objective.input.updateRate; 
-      if(rate)
-        fprintf('\n\nwarning: LinearKalmanOptimizer currently only optimizes over initial parameters.');
-      end
-      
       % handle dynamic model initial block description
       if(numInitialLogical(this.objective.input)>0)
         fprintf('\n\nwarning: LinearKalmanOptimizer sets all logical parameters to false.');

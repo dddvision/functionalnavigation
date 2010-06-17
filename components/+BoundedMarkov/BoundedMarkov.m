@@ -39,10 +39,6 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
 
-    function rate=updateRate(this)
-      rate=this.rate;
-    end
-    
     function num=numInitialLogical(this)
       num=this.initialNumLogical;
     end
@@ -107,9 +103,9 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       cost=this.extensionBlockCost;
     end
     
-    function extend(this,num)
+    function extend(this)
       blank=struct('logical',false(0,1),'uint32',zeros(1,numExtensionUint32(this),'uint32'));
-      this.block=cat(2,this.block,repmat(blank,[1,num]));
+      this.block=cat(2,this.block,blank);
       N=numel(this.block);
       if((N+1)>size(this.state,2))
         this.state=[this.state,zeros(this.numStates,this.chunkSize)];

@@ -172,7 +172,6 @@ namespace tommas
       return;
     }
 
-    WorldTime updateRate(void) const {return(rate);}
     unsigned numInitialLogical(void) const {return(0);}
     unsigned numInitialUint32(void) const {return(0);}
     unsigned numExtensionLogical(void) const {return(0);}
@@ -278,11 +277,11 @@ namespace tommas
       return(cost);
     }
 
-    void extend(unsigned num)
+    void extend(void)
     {
       static const uint32_t halfIntMax=floor(4294967295.0/2.0);
       static const double force=paramToForce(halfIntMax);
-      unsigned newSize=px.size()+num;
+      unsigned newSize=px.size()+1;
       px.resize(newSize,halfIntMax);
       py.resize(newSize,halfIntMax);
       pa.resize(newSize,halfIntMax);

@@ -10,7 +10,6 @@ int main()
   
   tommas::tommas();
   tommas::DynamicModel* dynamicModel = tommas::DynamicModel::factory("BrownianPlanar",0.0,"uri");
-  std::cout << dynamicModel->updateRate() << std::endl;
   std::cout << dynamicModel->numExtensionBlocks() << std::endl;
 //  tommas::Measure* measure = tommas::Measure::factory("OpticalFlowOpenCV", "uri");
 //  measure->refresh();

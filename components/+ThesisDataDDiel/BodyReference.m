@@ -52,7 +52,7 @@ classdef BodyReference < Trajectory
     end
 
     function tangentPose=tangent(this,t)
-      tangentPose(1,numel(t)=TangentPose;
+      tangentPose(1,numel(t))=TangentPose;
       interval=domain(this);
       [pq,rs]=cardinalSpline(this.x_imu,this.T_imu,t);
       for k=find((t>=interval.first)&(t<=interval.second))
