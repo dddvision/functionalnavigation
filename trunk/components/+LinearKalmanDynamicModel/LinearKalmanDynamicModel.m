@@ -43,10 +43,6 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       end
     end
     
-    function rate=updateRate(this)
-      rate=this.rate;
-    end
-        
     function num=numInitialLogical(this)
       num=this.initialNumLogical;
     end
@@ -146,10 +142,8 @@ classdef LinearKalmanDynamicModel < LinearKalmanDynamicModel.LinearKalmanDynamic
       cost=this.extensionBlockCost;
     end
     
-    function extend(this,num)
-      assert(isa(num,'uint32'));
-      assert(numel(num)==1);
-      error(this.extensionErrorText);
+    function extend(this)
+      assert(isa(this,'DynamicModel'));
     end
      
     function interval=domain(this)

@@ -4,7 +4,6 @@
 enum DynamicModelMember
 {
   undefined,
-  updateRate,
   numInitialLogical,
   numInitialUint32,
   numExtensionLogical,
@@ -216,7 +215,6 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   if(!initialized)
   {
     tommas::tommas();
-    memberMap["updateRate"]=updateRate;
     memberMap["numInitialLogical"]=numInitialLogical;
     memberMap["numInitialUint32"]=numInitialUint32;
     memberMap["numExtensionLogical"]=numExtensionLogical;
@@ -279,10 +277,6 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       mexErrMsgTxt("DynamicModelBridge: invalid member function");
       break;
       
-    case updateRate:
-      convert(instance[handle]->updateRate(),plhs[0]);
-      break;
-
     case numInitialLogical:
       convert(instance[handle]->numInitialLogical(),plhs[0]);
       break;
@@ -406,10 +400,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
     case extend:
     {
-      uint32_t num;
-      argcheck(nrhs,3);
-      convert(prhs[2],num);
-      instance[handle]->extend(num);
+      instance[handle]->extend();
       break;
     }
 

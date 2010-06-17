@@ -26,8 +26,6 @@ namespace tommas
     ~DynamicModel(void){}
     
   public:
-    virtual WorldTime updateRate(void) const = 0;
-    
     virtual unsigned numInitialLogical(void) const = 0;
     virtual unsigned numInitialUint32(void) const = 0;
     virtual unsigned numExtensionLogical(void) const = 0;
@@ -47,7 +45,7 @@ namespace tommas
     virtual double computeInitialBlockCost(void) = 0;
     virtual double computeExtensionBlockCost(unsigned) = 0;
 
-    virtual void extend(unsigned) = 0;
+    virtual void extend(void) = 0;
     
   public:
     static std::string frameworkClass(void) { return std::string("DynamicModel"); }
