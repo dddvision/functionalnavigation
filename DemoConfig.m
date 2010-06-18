@@ -1,8 +1,8 @@
 classdef DemoConfig < handle
   properties (Constant=true,GetAccess=public)
     uri = 'matlab:MiddleburyData'; % select hardware resource or data container
-    dynamicModelName = 'LinearKalmanDynamicModel'; % select dynamic model
-    measureNames = {'LinearKalmanMeasure'}; % select measures
+    dynamicModelName = 'XDynamics'; % select dynamic model
+    measureNames = {'XMeasure'}; % select measures
     optimizerName = 'LinearKalmanOptimizer'; % optimizer selection
     textOnly = false; % (true) show text output only
     bestOnly = false; % (true) show only the best trajectory

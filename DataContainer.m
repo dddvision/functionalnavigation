@@ -34,7 +34,7 @@ classdef DataContainer < handle
       elseif(isa(singleton,subclass))
         this=singleton;
       else
-        error('Cannot change subclass of singleton data container after instantiation.');
+        error('Cannot change subclass of singleton data container after instantiation');
       end
     end
   end
