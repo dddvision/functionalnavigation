@@ -11,7 +11,7 @@ The framework comes with a few default examples of components that can be select
 
 === Class Diagram ===
 
-<img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagram.png">
+<img src="http://functionalnavigation.googlecode.com/svn/wiki/SimpleClassDiagram.png">
 
 === Class Diagram Notation (from Design Patterns) ===
 

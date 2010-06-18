@@ -144,7 +144,7 @@ Information on how to wrap code written in different languages:
 
 === Class Diagram ===
 
-<img src="http://functionalnavigation.googlecode.com/svn/wiki/classDiagram.png">
+<img src="http://functionalnavigation.googlecode.com/svn/wiki/SimpleClassDiagram.png">
 
 === Class Diagram Notation (from Design Patterns) ===
 
