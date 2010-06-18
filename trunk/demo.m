@@ -8,7 +8,7 @@ help(mfilename);
 try
   matlabVersion=version('-release');
 catch err
-  error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB.',err.message);
+  error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB',err.message);
 end
 if(str2double(matlabVersion(1:4))<2008)
   error('TOMMAS requires MATLAB version 2008a or greater');

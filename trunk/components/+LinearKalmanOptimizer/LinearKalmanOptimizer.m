@@ -15,11 +15,11 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       this.objective=Objective(dynamicModelName,measureNames,uri);
       
       % display warning
-      fprintf('\n\nwarning: LinearKalmanOptimizer currently only uses the last on-diagonal element of any measure.');
+      fprintf('\n\nWarning: LinearKalmanOptimizer currently only uses the last on-diagonal element of any measure');
       
       % handle dynamic model initial block description
       if(numInitialLogical(this.objective.input)>0)
-        fprintf('\n\nwarning: LinearKalmanOptimizer sets all logical parameters to false.');
+        fprintf('\n\nWarning: LinearKalmanOptimizer sets all logical parameters to false');
       end
       
       % set initial state (assuming its range is the interval [0,1])

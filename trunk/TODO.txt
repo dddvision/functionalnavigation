@@ -70,16 +70,15 @@ Objective:
 
 Measure:
  *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).
- *** Consider how intervals should be handled
+ *** Split GlobalSatData into a GPS simulator that uses data set refrences, and a seperate reference trajectory simulator.
+ * Consider how intervals should be handled
    * Should findEdges return an interval index?
    * Should findEdges receive a trajectory input to compute intercepts for path planning applications?
    * Should [ta,tb]=[-inf,inf] be a valid interval?
- * Split GlobalSatData into a measure and a reference trajectory simulator.
  * Implement SURF as a feature-matching option in OpticalFlowOpenCV.
- * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
- * Fix axis ordering bug in PointBasedMeasure
  * In PointBasedMeasure, cache results of finding keypoints for each image.
  * In OpticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
+ * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
 
 DataContainer:
  *** Develop stateless API compatible with AFRL ANTBED.
