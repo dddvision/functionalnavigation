@@ -57,6 +57,7 @@ classdef DataContainer < handle
     %
     % NOTES
     % Description may be truncated after a few hundred characters when displayed
+    % Avoid using line feed or return characters
     text=getDescription(this);    
     
     % List available sensors of a given class
@@ -83,6 +84,7 @@ classdef DataContainer < handle
     % NOTES
     % Description may be truncated after a few hundred characters when displayed
     % Description should be unique within a DataContainer
+    % Avoid using line feed or return characters
     % Throws an exception if input index is out of range
     text=getSensorDescription(this,id);
 
