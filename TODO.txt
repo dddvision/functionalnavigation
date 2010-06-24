@@ -1,59 +1,26 @@
-general:
- * Unify notation through paper, wiki, ppt, and code involving node indices and block indices (j or n).
- * Find a better way to pass classes that are structs from C++ to MATLAB.
+General:
+ *** Transfer most TODO items to the main repository issue tracker.
+ *** BUG: Rename Edge class so that it doesn't clobber MATLAB's edge function.
+ *** Add getDescription() or description() function to all framework classes.
+ * Is there a better way to pass classes that are structs from C++ to MATLAB?
  * Make policy decisions regarding copy constructors for each class.
  * Incorporate Google C++ Style Guidelines throughout the code.
- * Finalize the review of standards.
- * Disseminate to people listed in 1490/correspondence directory
+ * Disseminate to people listed in 1490/correspondence directory.
 
-wiki:
- * Update class diagram.
- * Assert is not allowed in C++.
- * All measures are functionals that evaluate trajectories over an interval defined by two points.
- * Trajectory evaluations are in the "pose and tangent pose" space.
- * Distinction between testbed and Optimizer.
- * Glossary
-   * dynamic model
-   * measure
-   * cost graph
-   * edge
-   * node
-   * optimization step
-   * sensativity
-   * granularity
-   * monotonicity
-   * forcing function
-   * metric
-
-research:
- * Topics for publication:
-   * Measurement graphs are an alternative to pose graphs.
- * Evolution Robotics VSLAM
- * H. W. Sorenson. "Parameter Estimation". 1980.
- * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007.
- * Review other code in /projects/1490/software
- * Cramer-Rao: cov(your estimator)>=inv(information)
- * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
- * Natalia Hernandez Gardiol @ CSAIL:
- * Adam Klivans: learning decision trees over binary inputs
- * Kalai: learning halfspaces
- * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
-
-testbed:
+Testbed:
  * Create unit tests for all framework classes to check interfaces and exception handling.
    * Make a container that has all sensors and type checks its inputs.
- * Create advanced unit tests to characterize measures
+ * Create advanced unit tests to characterize measures.
    * Cost when given ground truth
    * Granularity / dilution of precision
    * Monotonicity
    * Bias / distance to nearest local minimum
    * Sensitivity to perturbation of initial tangent pose
 
-demonstration:
- *** Create inertial/visual DataContainer for MacBook demo.
- *** Write code for low level access to iSight camera.
+Demo:
+ *** Complete the inertial/visual data container for MacBook.
+ *** BUG: Why are trajectories not displayed on Omar's machine?
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
- * Perform trade studies: GPS quality, IMU quality, camera FOV, camera FPS, image resolution, limited computation
 
 DynamicModel:
  * Bug: Why does BrownianPlanar produce straight paths?
@@ -81,16 +48,56 @@ Measure:
  * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
 
 DataContainer:
+ *** Inertial sensor interfaces should specify their error characteristics.
+ *** Develop configuration tool that assists the user in selecting data sources.
  *** Develop stateless API compatible with AFRL ANTBED.
+ *** Create arbitrary scene simulator (VAMAV OpenSceneGraph?).
  * Consider use of netcdf format for ANTBED data.
  * Link into RAWSEEDS data (ask developers about value of standardized API).
- * Develop configuration tool that assists the user in selecting data sources.
  * Add rangefinder class that could also represent bearing-only tracker output.
  * Add SICK laser scanner interface for legacy purposes.
- * VAMAV OpenSceneGraph simulator?
- * Packaging King Air flight?
- * Inertial sensor interface should specify its error characteristics?
 
 CameraArray:
- * Check fisheye projection and inverseProjection equations at image center.
+ *** BUG: Check fisheye projection and inverseProjection equations at image center.
  * Should masking be separate from projection?
+
+Documentation (mostly on wiki):
+ * Distinction between testbed and Optimizer.
+ * Unify notation through paper, wiki, ppt, and code involving node indices and block indices (j or n).
+ * Assert is not allowed in C++.
+ * All measures are functionals that evaluate trajectories over an interval defined by two points.
+ * Trajectory evaluations are in the "pose and tangent pose" space.
+ * Show how to perform trade studies
+   * GPS quality
+   * IMU quality
+   * camera FOV
+   * camera FPS
+   * image resolution
+   * limited computation
+ * Glossary
+   * dynamic model
+   * measure
+   * cost graph
+   * edge
+   * node
+   * optimization step
+   * sensativity
+   * granularity
+   * monotonicity
+   * forcing function
+   * metric
+
+Research:
+ * Topics for publication:
+   * Measurement graphs are an alternative to pose graphs.
+ * Evolution Robotics VSLAM
+ * H. W. Sorenson. "Parameter Estimation". 1980.
+ * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007.
+ * Review other code in /projects/1490/software
+ * Continuing review of standards documents
+ * Cramer-Rao: cov(your estimator)>=inv(information)
+ * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
+ * Natalia Hernandez Gardiol @ CSAIL:
+ * Adam Klivans: learning decision trees over binary inputs
+ * Kalai: learning halfspaces
+ * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
