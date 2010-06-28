@@ -14,6 +14,12 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
       if(~ismac)
         error('This data source depends on MacBook or MacBook Pro laptop hardware.');
       end
+      path=fileparts(mfilename('fullpath'));
+      localCache=fullfile(path,'tmp');
+      if(~exist(localCache,'dir'))
+        mkdir(localCache);
+      end
+      delete(fullfile(localCache,'*.png'));
       this.hasRef=false;
       this.bodyRef=[];
       this.noRefText='MacBook cannot supply a reference trajectory';
@@ -22,8 +28,8 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
         'in most MacBook and MacBook Pro laptops.'];
       this.sensorDescription{1}='MacBook builtin iSight camera, low resolution, depends on VLC for access.';
       this.sensorDescription{2}='MacBook Sudden Motion Sensor (SMS) three-axis accelerometer.';
-      this.sensors{1}=MacBookBuiltInSensors.MacCam;
-      this.sensors{2}=MacBookBuiltInSensors.MacAcc;
+      this.sensors{1}=MacBookBuiltInSensors.MacCam(path,localCache);
+      this.sensors{2}=MacBookBuiltInSensors.MacAcc(path,localCache);
     end
     
     function text=getDescription(this)
