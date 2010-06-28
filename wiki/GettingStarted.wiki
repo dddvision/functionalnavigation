@@ -3,7 +3,7 @@
 
 To try out the framework in MATLAB, download the source code and run the script {{{demo.m}}}. There is also a C++ framework, but it lacks demonstration components.
 
-You will need MATLAB {{{R2008a}}} or later, and in order to make full use of the current version, you will also need the {{{Image Processing Toolbox}}} and the {{{Genetic Algorithm and Direct Search (GADS) Toolbox}}}.  
+You will need MATLAB {{{R2009a}}} or later, and in order to make full use of the current version, you will also need the {{{Image Processing Toolbox}}} and the {{{Genetic Algorithm and Direct Search (GADS) Toolbox}}}.  
 
 === Next Steps ===
 
