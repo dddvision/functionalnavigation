@@ -68,6 +68,7 @@ function testCameraArrayProjection(cam)
       imshow(newImage);
       title('Test Camera Array Projection');
       drawnow;
+      pause(0.1);
     end
   end 
 end

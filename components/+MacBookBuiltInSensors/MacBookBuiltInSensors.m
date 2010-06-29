@@ -19,15 +19,17 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
       if(~exist(localCache,'dir'))
         mkdir(localCache);
       end
-      delete(fullfile(localCache,'*.png'));
+      delete(fullfile(localCache,'*'));
       this.hasRef=false;
       this.bodyRef=[];
       this.noRefText='MacBook cannot supply a reference trajectory';
       this.description=['Provides data from the built in camera ',...
-        'and three-axis accelerometer available',...
+        'and three-axis accelerometer available ',...
         'in most MacBook and MacBook Pro laptops.'];
-      this.sensorDescription{1}='MacBook builtin iSight camera, low resolution, depends on VLC for access.';
-      this.sensorDescription{2}='MacBook Sudden Motion Sensor (SMS) three-axis accelerometer.';
+      this.sensorDescription{1}=['MacBook builtin iSight camera in low resolution mode. ',...
+        'Depends on VLC for access. Clear the sensor instance to stop recording.'];
+      this.sensorDescription{2}=['MacBook Sudden Motion Sensor (SMS) three-axis accelerometer. ',...
+        'Clear the sensor instance to stop recording.'];
       this.sensors{1}=MacBookBuiltInSensors.MacCam(path,localCache);
       this.sensors{2}=MacBookBuiltInSensors.MacAcc(path,localCache);
     end

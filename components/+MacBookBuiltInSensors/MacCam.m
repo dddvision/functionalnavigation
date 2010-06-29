@@ -5,8 +5,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     localCache
     ka
     kb
-    numStrides
     numSteps
+    numStrides
     layers
     frameDynamic
     projectionDynamic
@@ -17,6 +17,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   end
   
   methods (Static=true,Access=public)
+    % Stops the image capture process
     function stop
       unix('killall -9 VLC');
     end
@@ -28,8 +29,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       this.localCache=localCache;
       this.ka=uint32(1);
       this.kb=uint32(2);
-      this.numStrides=120;
-      this.numSteps=160;
+      this.numSteps=120;
+      this.numStrides=160;
       this.layers='rgb';
       this.frameDynamic=false;
       this.projectionDynamic=false;
@@ -37,8 +38,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       ready=false;
       startcmd=['/Applications/VLC.app/Contents/MacOS/VLC qtcapture:// ',...
         '--vout=dummy --aout=dummy --video-filter=scene --scene-format=png --scene-prefix="" ',...
-        sprintf('--scene-width=%d --scene-height=%d ',this.numSteps,this.numStrides),...
-        sprintf('--scene-ratio=%d --scene-path=%s ',this.frameIncrement,this.localCache),...
+        sprintf('--scene-width=%d --scene-height=%d ',this.numStrides,this.numSteps),...
+        sprintf('--scene-ratio=%d --scene-path=%s ',this.cameraIncrement,this.localCache),...
         '2> /dev/null &'];
       unix(startcmd);
       t0=clock; 
@@ -55,7 +56,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       end
       ready=false;
       t2=clock;
-      while(etime(t2,t1)<(this.timeOut+0.1*this.frameIncrement))
+      while(etime(t2,t1)<(this.timeOut+0.1*this.cameraIncrement))
         t2=clock;
         if(isValid(this,uint32(2)))
           ready=true;
@@ -114,7 +115,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     function im=getImage(this,k,varargin)
       assert(k>=this.ka);
       assert(k<=this.kb);
-      num=this.ka+this.frameIncrement*k;
+      num=this.ka+this.cameraIncrement*k;
       im=imread(fullfile(this.localCache,sprintf('%05d.png',num)));
     end
     
@@ -125,30 +126,30 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     function [p,q]=getFrame(this,k,varargin)
       assert(k>=this.ka);
       assert(k<=this.kb);
-      p=this.frameOffset(1:3);
-      q=this.frameOffset(4:7);
+      p=this.cameraFrameOffset(1:3);
+      q=this.cameraFrameOffset(4:7);
     end
         
     function flag=isProjectionDynamic(this,varargin)
       flag=this.projectionDynamic;
     end
 
+    % MacBook camera has approximately 64 degrees horizontal FOV
+    % Appears to be equal angular increments for each pixel
     function pix=projection(this,ray,varargin)
-      % MacBook camera has approximately 64 degrees horizontal FOV
-      % Appears to be equal angular increments for each pixel
       c1=ray(1,:);
       c2=ray(2,:);
       c3=ray(3,:);
-      m=this.numStrides;
-      n=this.numSteps;
+      m=this.numSteps;
+      n=this.numStrides;
       mc=m/2;
       nc=n/2;
       dpp=64/n;
       rpp=pi/180*dpp;
       r=acos(c1)/rpp;
       theta=atan2(c3,c2);
-      pn=r.*cos(theta)+nc;
       pm=r.*sin(theta)+mc;
+      pn=r.*cos(theta)+nc;
       behind=find((c1<=0)|(pm<0)|(pn<0)|(pn>=n)|(pm>=m));
       pm(behind)=NaN;
       pn(behind)=NaN;
@@ -156,8 +157,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     end
     
     function ray=inverseProjection(this,pix,varargin)
-      m=this.numStrides;
-      n=this.numSteps;
+      m=this.numSteps;
+      n=this.numStrides;
       mc=m/2;
       nc=n/2;
       pm=pix(2,:)-mc;
@@ -166,17 +167,17 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       theta=atan2(pm,pn);
       dpp=64/n;
       rpp=pi/180*dpp;
-      alpha=r/rpp;
+      alpha=r*rpp;
       c1=cos(alpha);
-      c2=cos(theta).*sin(alpha);
-      c3=cos(theta).*cos(alpha);
+      c2=sin(alpha).*cos(theta);
+      c3=sin(alpha).*sin(theta);
       ray=[c1;c2;c3];
     end
 end
   
   methods (Access=private)
     function flag=isValid(this,k)
-      num=this.ka+this.frameIncrement*k;
+      num=this.ka+this.cameraIncrement*k;
       fname=fullfile(this.localCache,sprintf('%05d.png',num));
       flag=exist(fname,'file');
     end
