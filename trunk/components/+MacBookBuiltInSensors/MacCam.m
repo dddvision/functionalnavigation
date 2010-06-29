@@ -10,6 +10,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     layers
     frameDynamic
     projectionDynamic
+    focal
     refTime
     initialTime
     rate
@@ -25,6 +26,10 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   
   methods (Access=public)
     function this=MacCam(path,localCache)
+      this=this@Camera;
+      fprintf('\n');
+      fprintf('\nInitializing %s\n',class(this));
+      
       this.path=path;
       this.localCache=localCache;
       this.ka=uint32(1);
@@ -34,15 +39,22 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       this.layers='rgb';
       this.frameDynamic=false;
       this.projectionDynamic=false;
+      this.focal=this.numStrides*cot(64/2*pi/180);
       this.timeOutText='timeout while waiting for camera initialization';
+      
       ready=false;
-      startcmd=['/Applications/VLC.app/Contents/MacOS/VLC qtcapture:// ',...
+      vlcPath='/Applications/VLC.app/Contents/MacOS/VLC';
+      if(~exist(vlcPath,'file'))
+        error('MacBook camera depends on VLC Media Player for OS X installed in the Applications folder');
+      end
+      startcmd=[sprintf('%s qtcapture:// ',vlcPath),...
         '--vout=dummy --aout=dummy --video-filter=scene --scene-format=png --scene-prefix="" ',...
         sprintf('--scene-width=%d --scene-height=%d ',this.numStrides,this.numSteps),...
         sprintf('--scene-ratio=%d --scene-path=%s ',this.cameraIncrement,this.localCache),...
         '2> /dev/null &'];
       unix(startcmd);
-      t0=clock; 
+      
+      t0=clock;
       t1=clock;
       while(etime(t1,t0)<this.timeOut)
         t1=clock;
@@ -135,7 +147,6 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     end
 
     % MacBook camera has approximately 64 degrees horizontal FOV
-    % Appears to be equal angular increments for each pixel
     function pix=projection(this,ray,varargin)
       c1=ray(1,:);
       c2=ray(2,:);
@@ -144,15 +155,14 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       n=this.numStrides;
       mc=m/2;
       nc=n/2;
-      dpp=64/n;
-      rpp=pi/180*dpp;
-      r=acos(c1)/rpp;
+      c1((c1<=0)|(c1>1))=NaN;
+      r=this.focal*sqrt(1-c1.*c1)./c1; % r=f*tan(acos(c1))
       theta=atan2(c3,c2);
       pm=r.*sin(theta)+mc;
       pn=r.*cos(theta)+nc;
-      behind=find((c1<=0)|(pm<0)|(pn<0)|(pn>=n)|(pm>=m));
-      pm(behind)=NaN;
-      pn(behind)=NaN;
+      outside=((-0.5>pm)|(-0.5>pn)|(pn>(n-0.5))|(pm>(m-0.5)));
+      pm(outside)=NaN;
+      pn(outside)=NaN;
       pix=[pn;pm];
     end
     
@@ -161,13 +171,16 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       n=this.numStrides;
       mc=m/2;
       nc=n/2;
-      pm=pix(2,:)-mc;
-      pn=pix(1,:)-nc;
+      pm=pix(2,:);
+      pn=pix(1,:);
+      outside=((-0.5>pm)|(-0.5>pn)|(pn>(n-0.5))|(pm>(m-0.5)));
+      pm(outside)=NaN;
+      pn(outside)=NaN;
+      pm=pm-mc;
+      pn=pn-nc;
       r=sqrt(pm.*pm+pn.*pn);
+      alpha=atan(r/this.focal);
       theta=atan2(pm,pn);
-      dpp=64/n;
-      rpp=pi/180*dpp;
-      alpha=r*rpp;
       c1=cos(alpha);
       c2=sin(alpha).*cos(theta);
       c3=sin(alpha).*sin(theta);

@@ -8,7 +8,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
     function this=OpticalFlowOpenCV(uri)
       this=this@Measure(uri);
       fprintf('\n');
-      fprintf('\nOpticalFlowOpenCV::OpticalFlowOpenCV');
+      fprintf('\nInitializing %s\n',class(this));
       
       if(~exist('mexOpticalFlowOpenCV','file'))
         fprintf('\nCompiling mex wrapper for OpenCV...');

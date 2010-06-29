@@ -1,16 +1,25 @@
+Milestones (prioritized):
+ * Testbed for trajectory Measures
+ * Integration with AFRL data
+ * Novel and efficient visual Measure independent of third party libraries
+ * Novel and efficient Optimizer independent of third party libraries
+ * Documentation in the code repository for each object
+ * Second conference publication on the whole framework with examples
+ * Testbed configuration tool with data preview
+
 General:
- *** Transfer most TODO items to the main repository issue tracker.
- *** BUG: Rename Edge class so that it doesn't clobber MATLAB's edge function.
- *** Add getDescription() or description() function to all framework classes.
+ *** Transfer most TODO items to the main repository issue tracker
+ *** BUG: Rename Edge class so that it doesn't clobber MATLAB's edge function
+ *** Add (Static?) getDescription() or description() function to all framework classes (and Sensor class?)
  * Is there a better way to pass classes that are structs from C++ to MATLAB?
- * Make policy decisions regarding copy constructors for each class.
- * Incorporate Google C++ Style Guidelines throughout the code.
- * Disseminate to people listed in 1490/correspondence directory.
+ * Make policy decisions regarding copy constructors for each class
+ * Incorporate Google C++ Style Guidelines throughout the code
+ * Disseminate to people listed in 1490/correspondence directory
 
 Testbed:
- * Create unit tests for all framework classes to check interfaces and exception handling.
-   * Make a container that has all sensors and type checks its inputs.
- * Create advanced unit tests to characterize measures.
+ * Create unit tests for all framework classes to check interfaces and exception handling
+   * Make a container that has all sensors and type checks its inputs
+ * Create advanced unit tests to characterize measures
    * Cost when given ground truth
    * Granularity / dilution of precision
    * Monotonicity
@@ -18,56 +27,56 @@ Testbed:
    * Sensitivity to perturbation of initial tangent pose
 
 Demo:
- *** Complete the inertial/visual data container for MacBook.
+ *** Complete the inertial/visual data container for MacBook
  *** BUG: Why are trajectories not displayed on Omar's machine?
- * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes.
+ * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes
 
 DynamicModel:
  * Bug: Why does BrownianPlanar produce straight paths?
 
 Optimizer:
- * Create linkage-based GA crossover function.
- * Implement Pose Graph optimization.
- * Consider making OptimizerBridge (difficult long-term objective).
+ * Create linkage-based GA crossover function
+ * Implement Pose Graph optimization
+ * Consider making OptimizerBridge (difficult long-term objective)
 
 Objective:
- *** Consider getting rid of objective.
+ *** Consider getting rid of objective
    * Try to move functionality into other classes?
    * Replace with new MultiMeasure class?
 
 Measure:
- *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT).
- *** Split GlobalSatData into a GPS simulator that uses data set refrences, and a seperate reference trajectory simulator.
+ *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT)
+ *** Split GlobalSatData into a GPS simulator that uses data set refrences, and a seperate reference trajectory simulator
  * Consider how intervals should be handled
    * Should findEdges return an interval index?
    * Should findEdges receive a trajectory input to compute intercepts for path planning applications?
    * Should [ta,tb]=[-inf,inf] be a valid interval?
- * Implement SURF as a feature-matching option in OpticalFlowOpenCV.
- * In PointBasedMeasure, cache results of finding keypoints for each image.
- * In OpticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack.
+ * Implement SURF as a feature-matching option in OpticalFlowOpenCV
+ * In PointBasedMeasure, cache results of finding keypoints for each image
+ * In OpticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack
  * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
 
 DataContainer:
- *** Inertial sensor interfaces should specify their error characteristics.
- *** Develop configuration tool that assists the user in selecting data sources.
- *** Develop stateless API compatible with AFRL ANTBED.
- *** Create arbitrary scene simulator (VAMAV OpenSceneGraph?).
- * Consider use of netcdf format for ANTBED data.
- * Link into RAWSEEDS data (ask developers about value of standardized API).
- * Add rangefinder class that could also represent bearing-only tracker output.
- * Add SICK laser scanner interface for legacy purposes.
+ *** Inertial sensor interfaces should specify their error characteristics
+ *** Develop configuration tool that assists the user in selecting data sources
+ *** Develop stateless API compatible with AFRL ANTBED
+ *** Create arbitrary scene simulator (VAMAV OpenSceneGraph?)
+ * Consider use of netcdf format for ANTBED data
+ * Link into RAWSEEDS data (ask developers about value of standardized API)
+ * Add rangefinder class that could also represent bearing-only tracker output
+ * Add SICK laser scanner interface for legacy purposes
 
 CameraArray:
- *** BUG: Check fisheye projection and inverseProjection equations at image center.
- *** Write to VLC about choosing video resolution for iSight camera.
+ *** BUG: Check fisheye projection and inverseProjection equations at image center
+ *** Write to VLC about choosing video resolution for iSight camera
  * Should masking be separate from projection?
 
 Documentation (mostly on wiki):
- * Distinction between testbed and Optimizer.
- * Unify notation through paper, wiki, ppt, and code involving node indices and block indices (j or n).
- * Assert is not allowed in C++.
- * All measures are functionals that evaluate trajectories over an interval defined by two points.
- * Trajectory evaluations are in the "pose and tangent pose" space.
+ * Distinction between testbed and Optimizer
+ * Unify notation through paper, wiki, ppt, and code involving node indices and block indices (j or n)
+ * Assert is not allowed in C++
+ * All measures are functionals that evaluate trajectories over an interval defined by two points
+ * Trajectory evaluations are in the "pose and tangent pose" space
  * Show how to perform trade studies
    * GPS quality
    * IMU quality
@@ -90,10 +99,10 @@ Documentation (mostly on wiki):
 
 Research:
  * Topics for publication:
-   * Measurement graphs are an alternative to pose graphs.
+   * Measurement graphs are an alternative to pose graphs
  * Evolution Robotics VSLAM
- * H. W. Sorenson. "Parameter Estimation". 1980.
- * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007.
+ * H. W. Sorenson. "Parameter Estimation". 1980
+ * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007
  * Review other code in /projects/1490/software
  * Continuing review of standards documents
  * Cramer-Rao: cov(your estimator)>=inv(information)
@@ -101,4 +110,4 @@ Research:
  * Natalia Hernandez Gardiol @ CSAIL:
  * Adam Klivans: learning decision trees over binary inputs
  * Kalai: learning halfspaces
- * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004.
+ * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004
