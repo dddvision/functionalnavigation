@@ -59,6 +59,7 @@ DataContainer:
 
 CameraArray:
  *** BUG: Check fisheye projection and inverseProjection equations at image center.
+ *** Write to VLC about choosing video resolution for iSight camera.
  * Should masking be separate from projection?
 
 Documentation (mostly on wiki):
