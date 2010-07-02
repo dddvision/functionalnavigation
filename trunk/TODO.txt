@@ -19,12 +19,14 @@ General:
 Testbed:
  * Create unit tests for all framework classes to check interfaces and exception handling
    * Make a container that has all sensors and type checks its inputs
- * Create advanced unit tests to characterize measures
-   * Cost when given ground truth
-   * Granularity / dilution of precision
-   * Monotonicity
-   * Bias / distance to nearest local minimum
-   * Sensitivity to perturbation of initial tangent pose
+ * Compute bias? (distance from ground truth to cost minimum)
+ * Perturb trajectory small amounts around ground truth and evaluate costs
+   * Include tests with ta=tb
+   * Granularity (dilution of precision, distance until cost increases at all)
+   * Monotonicity (distance until cost begins to decrease)
+   * Cost (maybe smoothed around ground truth)
+   * Jacobian (sensitivity)
+   * Hessian (eigenvalues and consistency of their ratios, eigenvectors)
 
 Demo:
  *** Complete the inertial/visual data container for MacBook
@@ -45,15 +47,24 @@ Objective:
    * Replace with new MultiMeasure class?
 
 Measure:
- *** Review UCF's latest PointBasedMeasure submission (should use SURF instead of SIFT)
  *** Split GlobalSatData into a GPS simulator that uses data set refrences, and a seperate reference trajectory simulator
  * Consider how intervals should be handled
    * Should findEdges return an interval index?
    * Should findEdges receive a trajectory input to compute intercepts for path planning applications?
    * Should [ta,tb]=[-inf,inf] be a valid interval?
  * Implement SURF as a feature-matching option in OpticalFlowOpenCV
- * In PointBasedMeasure, cache results of finding keypoints for each image
- * In OpticalFlowOpenCV, cache results of finding cvGoodFeaturesToTrack
+ * Review PointBasedMeasure
+   * SURF not SIFT
+   * Efficient caching of keypoints for each image
+   * Camera offset
+   * Supply mex on Linux
+ * Review OpticalFlowOpenCV
+   * Configuration option for SURF instead of LucasKanade cvGoodFeaturesToTrack
+   * Efficient caching of flow results
+ * New visual measure that implements full sensor interface
+   * Fisheye
+   * Camera offset
+   * Example: based on SURF tracking in image space
  * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
 
 DataContainer:
@@ -69,6 +80,7 @@ DataContainer:
 CameraArray:
  *** BUG: Check fisheye projection and inverseProjection equations at image center
  *** Write to VLC about choosing video resolution for iSight camera
+ *** Read images in MacBookBuiltInSensors using %06d, %07d or appropriate digits
  * Should masking be separate from projection?
 
 Documentation (mostly on wiki):
@@ -91,9 +103,6 @@ Documentation (mostly on wiki):
    * edge
    * node
    * optimization step
-   * sensativity
-   * granularity
-   * monotonicity
    * forcing function
    * metric
 

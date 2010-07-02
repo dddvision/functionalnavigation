@@ -264,7 +264,7 @@ static float prefFloatRead(NSString *prefName, BOOL *success);
 static void prefFloatWrite(NSString *prefName, float prefValue);
 static void prefDelete(NSString *prefName);
 static void prefSynchronize(void);
-static long getMicroseconds(void);
+// static long getMicroseconds(void);
 float fakeData(NSTimeInterval time);
 
 #pragma mark Static variables
@@ -920,11 +920,11 @@ NSString *getOSVersion(void) {
 }
 
 // Returns time within the current second in microseconds.
-long getMicroseconds() {
-	struct timeval t;
-	gettimeofday(&t, 0);
-	return t.tv_usec;
-}
+// long getMicroseconds() {
+//	struct timeval t;
+//	gettimeofday(&t, 0);
+//	return t.tv_usec;
+//}
 
 // Returns fake data given the time. Range is +/-1.
 float fakeData(NSTimeInterval time) {

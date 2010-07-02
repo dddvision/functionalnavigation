@@ -1,20 +1,23 @@
 classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   
+  properties (Constant=true,Access=private)
+    numSteps=120;
+    numStrides=160;
+    layers='rgb';
+    frameDynamic=false;
+    projectionDynamic=false;
+    timeOutText='Timeout while waiting for camera initialization';
+  end
+  
   properties (Access=private)
     path
     localCache
     ka
     kb
-    numSteps
-    numStrides
-    layers
-    frameDynamic
-    projectionDynamic
     focal
     refTime
     initialTime
     rate
-    timeOutText
   end
   
   methods (Static=true,Access=public)
@@ -25,22 +28,15 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   end
   
   methods (Access=public)
-    function this=MacCam(path,localCache)
+    function this=MacCam(thisPath,localCache)
       this=this@Camera;
-      fprintf('\n');
       fprintf('\nInitializing %s\n',class(this));
       
-      this.path=path;
+      this.path=thisPath;
       this.localCache=localCache;
       this.ka=uint32(1);
       this.kb=uint32(2);
-      this.numSteps=120;
-      this.numStrides=160;
-      this.layers='rgb';
-      this.frameDynamic=false;
-      this.projectionDynamic=false;
       this.focal=this.numStrides*cot(64/2*pi/180);
-      this.timeOutText='timeout while waiting for camera initialization';
       
       ready=false;
       vlcPath='/Applications/VLC.app/Contents/MacOS/VLC';

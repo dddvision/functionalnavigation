@@ -7,7 +7,6 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
   methods (Access=public)
     function this=OpticalFlowOpenCV(uri)
       this=this@Measure(uri);
-      fprintf('\n');
       fprintf('\nInitializing %s\n',class(this));
       
       if(~exist('mexOpticalFlowOpenCV','file'))

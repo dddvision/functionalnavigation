@@ -1,7 +1,4 @@
 /*
- * smsutil.m
- * smslib command line tool
- *
  * SMSLib Sudden Motion Sensor Access Library
  * Copyright (c) 2010 Suitable Systems
  * All rights reserved.
@@ -52,6 +49,7 @@
 #import "smslib.h"
 #include <unistd.h>
 #include <sysexits.h>
+#include <sys/time.h>
 
 #define SMSUTIL_VERSION "1.2"
 
@@ -188,15 +186,14 @@ int main (int argc, char ** argv) {
 			fprintf(stderr,
 				"usage: %s -[hud] [-i <period>] [-c <count>] [-a <axes>] [-s <char>]\n"
 				"options:\n"
-				"    -h          prints this message\n"
-				"    -u          uncalibrated output\n"
-				"    -d          debugging: hardware ignored, data are decaying sine waves\n"
-				"    -i <period> seconds between samples (default: 1.0,\n"
-				"                0 => sample as fast as possible)\n"
-				"    -c <count>  number of samples (default: 0 => run forever)\n"
-				"    -a <axes>   axes to be output (default: xyz,\n"
-				"                can be in any order, use t for time in microseconds)\n"
-				"    -s <char>   ASCII value of separator char (default: 32)\n",
+				"  -h          prints this message\n"
+				"  -u          uncalibrated output\n"
+				"  -i <period> seconds between samples (default: 1.0,\n"
+				"              0 => sample as fast as possible)\n"
+				"  -c <count>  number of samples (default: 0 => run forever)\n"
+				"  -a <axes>   output axes (default: xyz,\n"
+				"              use t for time in microseconds)\n"
+				"  -s <char>   ASCII value of separator (default: 32)\n",
 				name);
 			if (error) {
 				return EX_USAGE;
@@ -250,32 +247,32 @@ int main (int argc, char ** argv) {
 			switch (c) {
 				case 'x':
 					if (calibrated) {
-						printf("%0.6f", accel.x*MEAN_GRAVITY);
+						printf("%+08.3f", accel.x*MEAN_GRAVITY);
 					} else {
-						printf("%d", lrint(accel.x));
+						printf("%ld", lrint(accel.x));
 					}
 					break;
 					
 				case 'y':
 					if (calibrated) {
-						printf("%0.6f", accel.y*MEAN_GRAVITY);
+						printf("%+08.3f", accel.y*MEAN_GRAVITY);
 					} else {
-						printf("%d", lrint(accel.y));
+						printf("%ld", lrint(accel.y));
 					}
 					break;
 				
 				case 'z':
 					if (calibrated) {
-						printf("%0.6f", accel.z*MEAN_GRAVITY);
+						printf("%+08.3f", accel.z*MEAN_GRAVITY);
 					} else {
-						printf("%d", lrint(accel.z));
+						printf("%ld", lrint(accel.z));
 					}
 					break;
 					
 				case 't':
 					// Show microseconds since program started
           diffUTime = getUTime()-startUTime;
-					printf("%ld.%06ld", diffUTime/1000000,diffUTime%1000000);
+					printf("%05ld.%06ld", diffUTime/1000000,diffUTime%1000000);
 					break;
 			}
 		}	// End field loop
