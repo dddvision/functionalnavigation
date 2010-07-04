@@ -78,7 +78,6 @@ DataContainer:
  * Add SICK laser scanner interface for legacy purposes
 
 CameraArray:
- *** BUG: Check fisheye projection and inverseProjection equations at image center
  *** Write to VLC about choosing video resolution for iSight camera
  *** Read images in MacBookBuiltInSensors using %06d, %07d or appropriate digits
  * Should masking be separate from projection?

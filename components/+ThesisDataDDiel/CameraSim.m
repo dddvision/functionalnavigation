@@ -125,12 +125,12 @@ classdef CameraSim < Camera
           c1=-ray(3,:);
           c2=ray(1,:);
           c3=-ray(2,:);
-          c1(abs(1-c1)<eps)=eps;
           c1(c1<cos(thmax))=NaN;
           th=acos(c1);
           th2=th.*th;
           r=(a1*th+a2*th2)./(1+b1*th+b2*th2);
           mag=sqrt(c2.*c2+c3.*c3);
+          mag(abs(mag)<eps)=eps;
           pix=[jc+r.*c2./mag-1;ic+r.*c3./mag-1];
         otherwise
           error('unrecognized camera type');
