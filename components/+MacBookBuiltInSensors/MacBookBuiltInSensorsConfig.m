@@ -1,20 +1,24 @@
 classdef MacBookBuiltInSensorsConfig < handle
   properties (Constant=true)
+    % Camera frame offset relative to the accelerometer frame
+    %   Camera frame is forward-right-down
+    %   Default accelerometer frame
+    %     axis 0 points to the user's right
+    %     axis 1 points away from the user in the forward direction
+    %     axis 2 points upward
+    cameraPositionOffset=[0;0.1;0.2]; % position offset in meters ([0;0.1;0.2])
+    cameraRotationOffset=[0;1;-1;0]/sqrt(2); % quaternion offset in radians ([0;1;-1;0]/sqrt(2))
     
-    % path to VLC Media Player for OS X ('/Applications/VLC.app/Contents/MacOS/VLC')
+    % Camera field of view in radians (64/180*pi)
+    cameraFieldOfView=64/180*pi;
+    
+    % Number of frames to advance per data index (10)
+    cameraIncrement=10;
+    
+    % Path to VLC Media Player for OS X ('/Applications/VLC.app/Contents/MacOS/VLC')
     vlcPath='/Applications/VLC.app/Contents/MacOS/VLC';
     
-    % number of frames to advance per data node (10)
-    cameraIncrement=1;
-    
-    % position offset in meters of camera frame relative to the body frame ([0;0.1;0.2])
-    cameraPositionOffset=[0;0.1;0.2];
-    
-    % quaternion offset in radians ([1;0;0;0])
-    cameraRotationOffset=[1;0;0;0]; 
-    
-    % maximum time in seconds to wait for individual sensor initialization (10)
+    % Maximum time in seconds to wait for individual sensor initialization (10)
     timeOut=10;
-    
   end
 end

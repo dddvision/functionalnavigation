@@ -40,7 +40,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       this.localCache=localCache;
       this.ka=uint32(1);
       this.kb=uint32(2);
-      this.focal=this.numStrides*cot(64/2*pi/180);
+      this.focal=this.numStrides*cot(this.cameraFieldOfView/2);
       
       if(~exist(this.vlcPath,'file'))
         error(this.vlcErrorText);
