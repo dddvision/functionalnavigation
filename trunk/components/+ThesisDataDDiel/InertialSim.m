@@ -47,10 +47,6 @@ classdef InertialSim < InertialSixDoF
       time=WorldTime(this.time(k));      
     end
     
-    function dt=getIntegrationTime(this)
-      dt=this.time(2)-this.time(1);
-    end
-    
     function [p,q]=getFrame(this)
       p=this.pFrame;
       q=this.qFrame;

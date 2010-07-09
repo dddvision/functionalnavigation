@@ -3,16 +3,6 @@
 classdef InertialArray < Sensor
 
   methods (Abstract)
-    % Get inertial integration time
-    %
-    % OUTPUT
-    % dt = time period, double scalar
-    %
-    % NOTES
-    % This value is not guaranteed to match the difference between
-    %   the time stamps of consecutively indexed data
-    dt=getIntegrationTime(this);
-    
     % Get number of axes in the array
     %
     % OUTPUT

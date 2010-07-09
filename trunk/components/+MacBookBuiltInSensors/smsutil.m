@@ -247,7 +247,7 @@ int main (int argc, char ** argv) {
 			switch (c) {
 				case 'x':
 					if (calibrated) {
-						printf("%+08.3f", accel.x*MEAN_GRAVITY);
+						printf("%+08.3f", accel.x*(MEAN_GRAVITY*MEAN_GRAVITY/10.0));
 					} else {
 						printf("%ld", lrint(accel.x));
 					}
@@ -255,7 +255,7 @@ int main (int argc, char ** argv) {
 					
 				case 'y':
 					if (calibrated) {
-						printf("%+08.3f", accel.y*MEAN_GRAVITY);
+						printf("%+08.3f", accel.y*(MEAN_GRAVITY*MEAN_GRAVITY/10.0));
 					} else {
 						printf("%ld", lrint(accel.y));
 					}
@@ -263,7 +263,7 @@ int main (int argc, char ** argv) {
 				
 				case 'z':
 					if (calibrated) {
-						printf("%+08.3f", accel.z*MEAN_GRAVITY);
+						printf("%+08.3f", accel.z*(MEAN_GRAVITY*MEAN_GRAVITY/10.0));
 					} else {
 						printf("%ld", lrint(accel.z));
 					}
@@ -278,6 +278,7 @@ int main (int argc, char ** argv) {
 		}	// End field loop
 		
 		printf("\n");
+    fflush(stdout);
 		if (count > 0 && --count == 0) {
 			// Time to stop sampling
 			break;

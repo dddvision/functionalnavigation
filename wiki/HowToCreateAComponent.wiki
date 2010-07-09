@@ -112,16 +112,6 @@ int a = 0;
 double **matrix = NULL;
 double point[2] = {0,0};
 }}}
-  * RULE (C++): Pointer stars should be grouped with variables.
-{{{
-int *abc;
-double **xyz;
-}}}
-  * RULE (C++): Don't include variable names in function prototypes.
-{{{
-function1(int*,obj*,double,int);
-function2(int,int,int,int,int);
-}}}
   * RULE (C++): Scope brackets should align on equal indentation levels.
 {{{
 if(a)
