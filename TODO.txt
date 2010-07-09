@@ -9,7 +9,6 @@ Milestones (prioritized):
 
 General:
  *** Transfer most TODO items to the main repository issue tracker
- *** BUG: Rename Edge class so that it doesn't clobber MATLAB's edge function
  *** Add (Static?) getDescription() or description() function to all framework classes (and Sensor class?)
  * Is there a better way to pass classes that are structs from C++ to MATLAB?
  * Make policy decisions regarding copy constructors for each class
@@ -29,12 +28,7 @@ Testbed:
    * Hessian (eigenvalues and consistency of their ratios, eigenvectors)
 
 Demo:
- *** Complete the inertial/visual data container for MacBook
- *** BUG: Why are trajectories not displayed on Omar's machine?
  * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes
-
-DynamicModel:
- * Bug: Why does BrownianPlanar produce straight paths?
 
 Optimizer:
  * Create linkage-based GA crossover function
@@ -78,16 +72,18 @@ DataContainer:
  * Add SICK laser scanner interface for legacy purposes
 
 CameraArray:
- *** Write to VLC about choosing video resolution for iSight camera
- *** Read images in MacBookBuiltInSensors using %06d, %07d or appropriate digits
+ *** Should the camera frame be constrained to the projection in some way (principal axis)?
  * Should masking be separate from projection?
+ * Follow up with VLC about choosing video resolution for iSight camera
 
 Documentation (mostly on wiki):
+ * Update "download components" links, point to another wiki page that links to downloads and UCF code
  * Distinction between testbed and Optimizer
  * Unify notation through paper, wiki, ppt, and code involving node indices and block indices (j or n)
- * Assert is not allowed in C++
+ * Assert is not allowed in C++, use exceptions instead
  * All measures are functionals that evaluate trajectories over an interval defined by two points
  * Trajectory evaluations are in the "pose and tangent pose" space
+ * Add a glossary page
  * Show how to perform trade studies
    * GPS quality
    * IMU quality
@@ -95,21 +91,14 @@ Documentation (mostly on wiki):
    * camera FPS
    * image resolution
    * limited computation
- * Glossary
-   * dynamic model
-   * measure
-   * cost graph
-   * edge
-   * node
-   * optimization step
-   * forcing function
-   * metric
 
 Research:
  * Topics for publication:
    * Measurement graphs are an alternative to pose graphs
+   * Re-interpretation of old data through re-evaluation of Measures
  * Evolution Robotics VSLAM
  * H. W. Sorenson. "Parameter Estimation". 1980
+ * Michael Kaess' iSAM approach as an Optimizer with quadratic assumption, benefit is non-linear measures 
  * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007
  * Review other code in /projects/1490/software
  * Continuing review of standards documents
