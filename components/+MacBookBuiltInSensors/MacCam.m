@@ -1,6 +1,7 @@
 classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   
-  properties (Constant=true)
+  properties (Constant=true,GetAccess=private)
+    ka=uint32(1);
     numSteps=120;
     numStrides=160;
     layers='rgb';
@@ -13,9 +14,6 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   end
   
   properties (Access=private)
-    path
-    localCache
-    ka
     kb
     focal
     refTime
@@ -24,23 +22,18 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     ready
   end
   
-  methods (Static=true,Access=public)
-    % Stops the image capture process
-    function stop
-      unix('killall -9 VLC');
-    end
-  end
-  
   methods (Access=public)
-    function this=MacCam(thisPath,localCache)
+    function this=MacCam
       this=this@Camera;
       fprintf('\nInitializing %s\n',class(this));
       
-      this.path=thisPath;
-      this.localCache=localCache;
-      this.ka=uint32(1);
-      this.kb=uint32(2);
       this.focal=this.numStrides*cot(this.cameraFieldOfView/2);
+      
+      if(~exist(this.localCache,'dir'))
+        mkdir(this.localCache);
+      end
+      delete(fullfile(this.localCache,'*.png'));
+      delete(fullfile(this.localCache,'*.swp'));
       
       if(~exist(this.vlcPath,'file'))
         error(this.vlcErrorText);
@@ -82,6 +75,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       this.rate=etime(t2,t1);
       this.initialTime=etime(t1,this.clockBase)-this.rate;
       this.refTime=t1;
+      this.kb=uint32(2);
     end
 
     function refresh(this)
@@ -188,18 +182,20 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       c3=sin(alpha).*sin(theta);
       ray=[c1;c2;c3];
     end
-end
+    
+    % Stops the image capture process
+    function delete(this)
+      [base,name,ext]=fileparts(this.vlcPath);
+      unix(['killall -9 ',name,ext]);
+    end
+  end
   
   methods (Access=private)
-    % the next image must exist for isValid to be true
+    % the next image must exist for flag to be true
     function flag=isValid(this,k)
       num=this.ka+this.cameraIncrement*(k+1); % adds one
       fname=fullfile(this.localCache,sprintf(this.fileFormat,num));
       flag=exist(fname,'file');
-    end
-    
-    function delete(this)
-      this.stop;
     end
   end
 end

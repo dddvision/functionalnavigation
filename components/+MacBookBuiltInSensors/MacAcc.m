@@ -1,6 +1,6 @@
 classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & AccelerometerArray
   
-  properties (Constant=true)
+  properties (Constant=true,GetAccess=private)
     ka=uint32(0);
     nAxes=uint32(3);
     smsLib='smslib.m';
@@ -22,21 +22,21 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
     initialTime
   end
   
-  methods (Static=true,Access=public)
-    function stop
-      unix('killall -9 smsapp');
-    end
-  end
-  
   methods (Access=public)
-    function this=MacAcc(thisPath,localCache)
+    function this=MacAcc
       this=this@AccelerometerArray;
       fprintf('\nInitializing %s\n',class(this));
       
+      thisPath=fileparts(mfilename('fullpath'));
       smsLibPath=fullfile(thisPath,this.smsLib);
       smsCodePath=fullfile(thisPath,this.smsCode);
-      smsAppPath=fullfile(thisPath,this.smsApp);
-      smsLogPath=fullfile(localCache,this.smsLog);
+      smsAppPath=fullfile(this.localCache,this.smsApp);
+      smsLogPath=fullfile(this.localCache,this.smsLog);
+      
+      if(~exist(this.localCache,'dir'))
+        mkdir(this.localCache);
+      end
+      delete([smsLogPath,'*']);
       
       if(~exist(smsAppPath,'file'))
         unix(sprintf('g++ %s %s %s -o %s',this.compilerFlags,smsLibPath,smsCodePath,smsAppPath));
@@ -118,6 +118,15 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
       direction=zeros(3,1);
       direction(ax+1)=1;
     end
+    
+    function delete(this)
+      unix(['killall -9 ',this.smsApp]);
+      try
+        fclose(this.fid);
+      catch err
+        fprintf('%s',err.message);
+      end
+    end
   end
   
   methods (Access=private)
@@ -144,10 +153,6 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
         otherwise
           v=pt;
       end
-    end
-      
-    function delete(this)
-      this.stop;
     end
   end
 end

@@ -1,110 +1,63 @@
-Milestones (prioritized):
- * Testbed for trajectory Measures
- * Integration with AFRL data
- * Novel and efficient visual Measure independent of third party libraries
- * Novel and efficient Optimizer independent of third party libraries
- * Documentation in the code repository for each object
- * Second conference publication on the whole framework with examples
- * Testbed configuration tool with data preview
-
-General:
- *** Transfer most TODO items to the main repository issue tracker
- *** Add (Static?) getDescription() or description() function to all framework classes (and Sensor class?)
- * Is there a better way to pass classes that are structs from C++ to MATLAB?
- * Make policy decisions regarding copy constructors for each class
- * Incorporate Google C++ Style Guidelines throughout the code
- * Disseminate to people listed in 1490/correspondence directory
-
 Testbed:
- * Create unit tests for all framework classes to check interfaces and exception handling
-   * Make a container that has all sensors and type checks its inputs
- * Compute bias? (distance from ground truth to cost minimum)
- * Perturb trajectory small amounts around ground truth and evaluate costs
-   * Include tests with ta=tb
-   * Granularity (dilution of precision, distance until cost increases at all)
-   * Monotonicity (distance until cost begins to decrease)
-   * Cost (maybe smoothed around ground truth)
-   * Jacobian (sensitivity)
-   * Hessian (eigenvalues and consistency of their ratios, eigenvectors)
+ * Characterization of trajectory Measures
+   * Compute bias? (distance from ground truth to cost minimum)
+   * Perturb trajectory small amounts around ground truth and evaluate costs
+     * Include tests with ta=tb
+     * Granularity (dilution of precision, distance until cost increases at all)
+     * Monotonicity (distance until cost begins to decrease)
+     * Cost (maybe smoothed around ground truth)
+     * Jacobian (sensitivity)
+     * Hessian (eigenvalues and consistency of their ratios, eigenvectors)
+ * Unit tests for all framework classes
+   * Call all constructors, copy constructors, and destructors
+   * Call all interface functions
+   * Check exception handling
 
-Demo:
- * Demonstrate GPS/IMU fused in loose, tight, and ultra-tight modes
-
-Optimizer:
- * Create linkage-based GA crossover function
- * Implement Pose Graph optimization
- * Consider making OptimizerBridge (difficult long-term objective)
-
-Objective:
- *** Consider getting rid of objective
-   * Try to move functionality into other classes?
-   * Replace with new MultiMeasure class?
-
-Measure:
- *** Split GlobalSatData into a GPS simulator that uses data set refrences, and a seperate reference trajectory simulator
- * Consider how intervals should be handled
-   * Should findEdges return an interval index?
-   * Should findEdges receive a trajectory input to compute intercepts for path planning applications?
-   * Should [ta,tb]=[-inf,inf] be a valid interval?
- * Implement SURF as a feature-matching option in OpticalFlowOpenCV
- * Review PointBasedMeasure
-   * SURF not SIFT
-   * Efficient caching of keypoints for each image
-   * Camera offset
-   * Supply mex on Linux
- * Review OpticalFlowOpenCV
-   * Configuration option for SURF instead of LucasKanade cvGoodFeaturesToTrack
-   * Efficient caching of flow results
- * New visual measure that implements full sensor interface
-   * Fisheye
-   * Camera offset
-   * Example: based on SURF tracking in image space
- * Should cost be provided in two parts related to Shannon information? (inconsistent bits, total bits)
+Demonstration:
+ * Use MacBookBuiltInSensors hardware
+ * Demonstrate variable computation concept
 
 DataContainer:
- *** Inertial sensor interfaces should specify their error characteristics
- *** Develop configuration tool that assists the user in selecting data sources
- *** Develop stateless API compatible with AFRL ANTBED
- *** Create arbitrary scene simulator (VAMAV OpenSceneGraph?)
- * Consider use of netcdf format for ANTBED data
- * Link into RAWSEEDS data (ask developers about value of standardized API)
- * Add rangefinder class that could also represent bearing-only tracker output
- * Add SICK laser scanner interface for legacy purposes
+ * Integration with AFRL ANTBED
+   * Stateless API
+   * Ask about netcdf format
+   * Provide configuration tool with graphical data preview
 
-CameraArray:
- *** Should the camera frame be constrained to the projection in some way (principal axis)?
- * Should masking be separate from projection?
- * Follow up with VLC about choosing video resolution for iSight camera
+Measure:
+ * New visual measure that is novel, efficient, complete, and independent of third party libraries
+   * SURF feature tracks to be compared to trajectories?
 
-Documentation (mostly on wiki):
+Optimizer:
+ * New optimizer that is novel, efficient, complete, and independent of third party libraries
+   * Linkage-based GA crossover function?
+   * Adaptation of Pose Graph method?
+
+Publication:
+ * Present latest material on the whole framework
+ * Offer examples of each object type
+ * Measurement graphs are an alternative to pose graphs
+ * Re-interpretation of old data through re-evaluation of Measures
+ * Partial or scale-dependent computation
+ * Disseminate to people listed in the correspondence directory
+
+Documentation:
+ * Visual Measures must take into account the camera offset and projection function
+ * Code must compile and run on both Windows and Linux unless the user's environment is not capable
+ * Write class level comments for all classes
+ * Incorporate Google C++ Style Guidelines throughout the code
  * Update "download components" links, point to another wiki page that links to downloads and UCF code
- * Distinction between testbed and Optimizer
+ * Describe the distinction between testbed and Optimizer
  * Unify notation through paper, wiki, ppt, and code involving node indices and block indices (j or n)
  * Assert is not allowed in C++, use exceptions instead
- * All measures are functionals that evaluate trajectories over an interval defined by two points
+ * The measurement cost functional evaluates trajectories over an interval defined by two points
  * Trajectory evaluations are in the "pose and tangent pose" space
+ * Image masking is incorporated into the camera projection, most easily queried by its inverse
  * Add a glossary page
- * Show how to perform trade studies
+ * Describe how to perform trade studies
+   * loose, tight, and ultra-tight modes
+   * computation limitations
    * GPS quality
    * IMU quality
    * camera FOV
    * camera FPS
    * image resolution
-   * limited computation
-
-Research:
- * Topics for publication:
-   * Measurement graphs are an alternative to pose graphs
-   * Re-interpretation of old data through re-evaluation of Measures
- * Evolution Robotics VSLAM
- * H. W. Sorenson. "Parameter Estimation". 1980
- * Michael Kaess' iSAM approach as an Optimizer with quadratic assumption, benefit is non-linear measures 
- * Xi-Ren Cao. "Stochastic Learning and Optimization: A sensitivity-based Approach". Springer 2007
- * Review other code in /projects/1490/software
- * Continuing review of standards documents
- * Cramer-Rao: cov(your estimator)>=inv(information)
- * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
- * Natalia Hernandez Gardiol @ CSAIL:
- * Adam Klivans: learning decision trees over binary inputs
- * Kalai: learning halfspaces
- * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation Technology. IEE, page 254, 2004
