@@ -45,7 +45,7 @@ classdef DynamicModel < Trajectory
     % Protected method to construct a DynamicModel
     %
     % INPUT
-    % initialTime = initial lower bound of the trajectory domain, double scalar
+    % initialTime = finite lower bound of the trajectory time domain, double scalar
     % uri = (see Measure class constructor)
     %
     % NOTES

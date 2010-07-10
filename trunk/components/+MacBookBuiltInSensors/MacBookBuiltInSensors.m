@@ -1,37 +1,34 @@
 classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & DataContainer
-  properties (GetAccess=private,SetAccess=private)
-    hasRef
-    bodyRef
-    noRefText
+  properties (Constant=true,GetAccess=private)
+    hasRef=false;
+    bodyRef=[];
+    noRefText='MacBook cannot supply a reference trajectory';
+    notMacText='This data source depends on MacBook or MacBook Pro laptop hardware';
+    description=['Provides data from the built-in camera and three-axis accelerometer ',...
+      'available in most MacBook and MacBook Pro laptops.'];
+    camDescription=['MacBook builtin iSight camera in low resolution mode. ',...
+        'Depends on VLC for access. Clear the sensor instance to stop recording.'];
+    accDescription=['MacBook Sudden Motion Sensor (SMS) three-axis accelerometer. ',...
+        'Clear the sensor instance to stop recording.'];
+  end
+  
+  properties (Access=private)
     sensors
-    description
     sensorDescription
   end
   
   methods (Access=public)
     function this=MacBookBuiltInSensors
       this=this@DataContainer;
+      fprintf('\nInitializing %s\n',class(this));
       if(~ismac)
-        error('This data source depends on MacBook or MacBook Pro laptop hardware.');
+        error(this.notMacText);
       end
-      path=fileparts(mfilename('fullpath'));
-      localCache=fullfile(path,'tmp');
-      if(~exist(localCache,'dir'))
-        mkdir(localCache);
-      end
-      delete(fullfile(localCache,'*'));
-      this.hasRef=false;
-      this.bodyRef=[];
-      this.noRefText='MacBook cannot supply a reference trajectory';
-      this.description=['Provides data from the built-in camera ',...
-        'and three-axis accelerometer available ',...
-        'in most MacBook and MacBook Pro laptops.'];
-      this.sensorDescription{1}=['MacBook builtin iSight camera in low resolution mode. ',...
-        'Depends on VLC for access. Clear the sensor instance to stop recording.'];
-      this.sensorDescription{2}=['MacBook Sudden Motion Sensor (SMS) three-axis accelerometer. ',...
-        'Clear the sensor instance to stop recording.'];
-      this.sensors{1}=MacBookBuiltInSensors.MacCam(path,localCache);
-      this.sensors{2}=MacBookBuiltInSensors.MacAcc(path,localCache);
+
+      this.sensorDescription{1}=this.camDescription;
+      this.sensorDescription{2}=this.accDescription;
+      this.sensors{1}=MacBookBuiltInSensors.MacCam;
+      this.sensors{2}=MacBookBuiltInSensors.MacAcc;
     end
     
     function text=getDescription(this)
@@ -62,8 +59,7 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
     end
     
     function x=getReferenceTrajectory(this)
-      assert(isa(this,'DataContainer'));
-      x=[];
+      x=this.bodyRef;
       error(this.noRefText);
     end
   end
