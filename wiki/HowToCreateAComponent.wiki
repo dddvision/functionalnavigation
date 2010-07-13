@@ -39,19 +39,16 @@ Additional coding guidelines for all code hosted in this repository:
   * RULE (C++): Code must compile using "{{{g++ -Wall -Werror -pedantic}}}"
   * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
 
-  * RULE: Place a description above each function that identifies INPUT, OUTPUT, RETURN VALUE, and NOTES when applicable.
+  * RULE: Place a description above each function that identifies INPUT, OUTPUT, and NOTES when applicable.
 {{{
 // Description of C++ function
 //
 // INPUT
-// a = awesome number
-// b = basic number
+// a = description of input and units
+// b = description of another input and units
 //
 // OUTPUT
-// c = cool number
-//
-// RETURN VALUE
-// Meaning of life
+// c = description of output argument or return value and units
 //
 // NOTES
 // Here is extra information
@@ -60,11 +57,11 @@ Additional coding guidelines for all code hosted in this repository:
 % Description of MATLAB function
 %
 % INPUT
-% a = awesome number
-% b = basic number
+% a = description of input and units
+% b = description of another input and units
 %
 % OUTPUT
-% c = cool number
+% c = description of output and units
 %
 % NOTES
 % Here is extra information
