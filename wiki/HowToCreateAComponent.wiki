@@ -77,8 +77,8 @@ computeSVD
 }}}
   * RULE: No space between function identifier and the opening parenthesis.
 {{{
-myFunction(void);
-if( a==b )
+myFunction(void); // good
+myFunction (void); // bad
 }}}
   * RULE: Use whitespace consistently.
 {{{
