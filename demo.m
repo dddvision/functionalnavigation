@@ -42,9 +42,8 @@ optimizer=Optimizer.factory(config.optimizerName,config.dynamicModelName,config.
 % instantiate the graphical display
 gui=DemoDisplay(config.uri);
 
-% optimize forever
-index=0;
-while(true)
+% optimize for a number of steps
+for index=0:config.numSteps
   K=numResults(optimizer);
   if(K>0)
     % get the latest trajectory and cost estimates
@@ -61,7 +60,4 @@ while(true)
     
   % take an optimization step
   step(optimizer);
-  
-  % increment index
-  index=index+1;
 end
