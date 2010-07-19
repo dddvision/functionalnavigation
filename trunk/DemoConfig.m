@@ -4,6 +4,7 @@ classdef DemoConfig < handle
     dynamicModelName = 'XDynamics'; % select dynamic model
     measureNames = {'XMeasure'}; % select measures
     optimizerName = 'LinearKalmanOptimizer'; % optimizer selection
+    numSteps = Inf; % (Inf) number of optimization steps until termination
     textOnly = false; % (true) show text output only
     bestOnly = false; % (true) show only the best trajectory
     saveFigure = false; % (false) saves figure as an image
