@@ -43,13 +43,16 @@ optimizer=Optimizer.factory(config.optimizerName,config.dynamicModelName,config.
 gui=DemoDisplay(config.uri);
 
 % optimize for a number of steps
-for index=0:config.numSteps
+for index=uint32(0):config.numSteps
+  % check number of results
   K=numResults(optimizer);
-  if(K>0)
-    % get the latest trajectory and cost estimates
+  
+  % if there are any results
+  if(K>uint32(0))
+    % get all trajectory and cost estimates
     trajectory=getTrajectory(optimizer,uint32(0));
     cost=getCost(optimizer,uint32(0));
-    for k=uint32(1):(K-1)
+    for k=uint32(1):(K-uint32(1))
       trajectory(k,1)=getTrajectory(optimizer,k);
       cost(k,1)=getCost(optimizer,k);
     end

@@ -1,10 +1,10 @@
 classdef DemoConfig < handle
   properties (Constant=true,GetAccess=public)
-    uri = 'matlab:MiddleburyData'; % select hardware resource or data container
-    dynamicModelName = 'XDynamics'; % select dynamic model
-    measureNames = {'XMeasure'}; % select measures
-    optimizerName = 'LinearKalmanOptimizer'; % optimizer selection
-    numSteps = Inf; % (Inf) number of optimization steps until termination
+    uri = 'matlab:MiddleburyData'; % ('matlab:MiddleburyData') select hardware resource or data container
+    dynamicModelName = 'BrownianPlanar'; % ('XDynamics') select dynamic model
+    measureNames = {'OpticalFlowOpenCV'}; % ('XMeasure') select measures
+    optimizerName = 'MatlabGA'; % ('LinearKalmanOptimizer') optimizer selection
+    numSteps = intmax('uint32'); % (intmax('uint32')) number of optimization steps until termination
     textOnly = false; % (true) show text output only
     bestOnly = false; % (true) show only the best trajectory
     saveFigure = false; % (false) saves figure as an image

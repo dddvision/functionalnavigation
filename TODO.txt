@@ -14,14 +14,13 @@ Testbed:
    * Check exception handling
 
 Demonstration:
- * Use MacBookBuiltInSensors hardware
  * Demonstrate variable computation concept
 
 DataContainer:
  * Integration with AFRL ANTBED
    * Stateless API
-   * Ask about netcdf format
    * Provide configuration tool with graphical data preview
+   * Ask about netcdf format
 
 Measure:
  * New visual measure that is novel, efficient, complete, and independent of third party libraries
