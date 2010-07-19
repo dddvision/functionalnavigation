@@ -3,6 +3,9 @@
 
 #include "DynamicModel.h"
 
+//debug
+#include "mex.h"
+
 namespace tommas
 {
   class BrownianPlanar : public DynamicModel
@@ -46,10 +49,10 @@ namespace tommas
     void evaluateGeneral(const WorldTime& time, Pose& pose,
                          unsigned& dkFloor, double& dtRemain, double& halfAngle)
     {
-      // position and velocity A=[1,tau;0,1] B=[tau+0.5*tau*tau;tau]
+      // position and velocity A=[1,tau;0,1] B=[0.5*tau*tau;tau]
       static const double tau=1/rate;
-      static const double c0=normalizedMass*(tau+0.5*tau*tau);
-      static const double c1=normalizedRotationalMass*(tau+0.5*tau*tau);
+      static const double c0=normalizedMass*(0.5*tau*tau);
+      static const double c1=normalizedRotationalMass*(0.5*tau*tau);
       static const double c2=normalizedMass*tau;
       static const double c3=normalizedRotationalMass*tau;
       
@@ -82,7 +85,7 @@ namespace tommas
       dtFloor=static_cast<double>(dkFloor)/rate;
       dtRemain=dt-dtFloor;
       
-      ct0=dtRemain+0.5*dtRemain*dtRemain;
+      ct0=0.5*dtRemain*dtRemain;
       ct1=normalizedRotationalMass*ct0;
       ct0*=normalizedMass;
       
@@ -154,6 +157,27 @@ namespace tommas
     BrownianPlanar(const WorldTime initialTime,const std::string uri) : DynamicModel(initialTime, uri)
     {
       const unsigned reserve=1024;
+      interval.first=initialTime;
+      interval.second=initialTime;
+      firstNewBlock=0;
+      
+      // begin with no parameter blocks
+      px.resize(0);
+      py.resize(0);
+      pa.resize(0);
+      fx.resize(0);
+      fy.resize(0);
+      fa.resize(0);
+
+      // begin at an initial resting state
+      x.resize(1,0.0);
+      y.resize(1,0.0);
+      a.resize(1,0.0);
+      xRate.resize(1,0.0);
+      yRate.resize(1,0.0);
+      aRate.resize(1,0.0);
+
+      // reserve space for vector expansion
       px.reserve(reserve);
       py.reserve(reserve);
       pa.reserve(reserve);
@@ -166,9 +190,6 @@ namespace tommas
       xRate.reserve(reserve);
       yRate.reserve(reserve);
       aRate.reserve(reserve);
-      interval.first=initialTime;
-      interval.second=initialTime;
-      firstNewBlock=0;
       return;
     }
 
@@ -281,14 +302,21 @@ namespace tommas
     {
       static const uint32_t halfIntMax=floor(4294967295.0/2.0);
       static const double force=paramToForce(halfIntMax);
-      unsigned newSize=px.size()+1;
-      px.resize(newSize,halfIntMax);
-      py.resize(newSize,halfIntMax);
-      pa.resize(newSize,halfIntMax);
-      fx.resize(newSize,force);
-      fy.resize(newSize,force);
-      fa.resize(newSize,force);
-      interval.second=interval.first+static_cast<double>(newSize)/rate;
+      unsigned oldSize=x.size();
+      unsigned newSize=oldSize+1;
+      px.resize(oldSize,halfIntMax);
+      py.resize(oldSize,halfIntMax);
+      pa.resize(oldSize,halfIntMax);
+      fx.resize(oldSize,force);
+      fy.resize(oldSize,force);
+      fa.resize(oldSize,force);
+      x.resize(newSize);
+      y.resize(newSize);
+      a.resize(newSize);
+      xRate.resize(newSize);
+      yRate.resize(newSize);
+      aRate.resize(newSize);
+      interval.second=interval.first+static_cast<double>(oldSize)/rate;
       return;
     }
 
