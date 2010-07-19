@@ -14,9 +14,12 @@ if(str2double(matlabVersion(1:4))<2009)
   error('\nTOMMAS requires MATLAB version 2009a or greater');
 end
 
-% close figures and clear the workspace
+% close figures and clear everything except breakpoints
 close('all');
+breakpoints=dbstatus;
+save('breakpoints','breakpoints');
 clear('classes');
+load('breakpoints');
 
 % set the warning state
 warning('on','all');
