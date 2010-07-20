@@ -35,5 +35,8 @@ classdef Edge
         end
       end
     end
+    function display(this)
+      fprintf('\n%s = [%d,%d]\n',inputname(1),this.first,this.second);
+    end
   end
 end

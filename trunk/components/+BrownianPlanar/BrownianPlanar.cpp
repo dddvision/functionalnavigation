@@ -3,7 +3,7 @@
 
 #include "DynamicModel.h"
 
-//debug
+// DEBUG
 #include "mex.h"
 
 namespace tommas
@@ -67,19 +67,16 @@ namespace tommas
       dt=time-interval.first;
       dk=dt*rate;
       K=static_cast<unsigned>(ceil(dk));
-      if(K>firstNewBlock)
+      for( k=firstNewBlock; k<K; ++k )
       {
-        for( k=firstNewBlock; k<K; ++k )
-        {
-          x[k+1]=x[k]+tau*xRate[k]+c0*fx[k];
-          y[k+1]=y[k]+tau*yRate[k]+c0*fy[k];
-          a[k+1]=a[k]+tau*aRate[k]+c1*fa[k];
-          xRate[k+1]=xRate[k]+c2*fx[k];
-          yRate[k+1]=yRate[k]+c2*fy[k];
-          aRate[k+1]=aRate[k]+c3*fa[k];
-        }
-        firstNewBlock=K;
+        x[k+1]=x[k]+tau*xRate[k]+c0*fx[k];
+        y[k+1]=y[k]+tau*yRate[k]+c0*fy[k];
+        a[k+1]=a[k]+tau*aRate[k]+c1*fa[k];
+        xRate[k+1]=xRate[k]+c2*fx[k];
+        yRate[k+1]=yRate[k]+c2*fy[k];
+        aRate[k+1]=aRate[k]+c3*fa[k];
       }
+      firstNewBlock=K;
       
       dkFloor=static_cast<unsigned>(floor(dk));
       dtFloor=static_cast<double>(dkFloor)/rate;
@@ -315,7 +312,7 @@ namespace tommas
       a.resize(newSize);
       xRate.resize(newSize);
       yRate.resize(newSize);
-      aRate.resize(newSize);
+      aRate.resize(newSize);      
       interval.second=interval.first+static_cast<double>(oldSize)/rate;
       return;
     }
