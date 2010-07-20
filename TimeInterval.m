@@ -35,5 +35,8 @@ classdef TimeInterval
         end
       end
     end
+    function display(this)
+      fprintf('\n%s = [%f,%f]\n',inputname(1),double(this.first),double(this.second));
+    end
   end
 end

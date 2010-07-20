@@ -20,5 +20,12 @@ classdef TangentPose < Pose
         end
       end
     end
+    function display(this)
+      name=inputname(1);
+      fprintf('\n%s.p = [%f;%f;%f]',name,this.p(1),this.p(2),this.p(3));
+      fprintf('\n%s.q = [%f;%f;%f;%f]',name,this.q(1),this.q(2),this.q(3),this.q(4));
+      fprintf('\n%s.r = [%f;%f;%f]',name,this.r(1),this.r(2),this.r(3));
+      fprintf('\n%s.s = [%f;%f;%f;%f]\n',name,this.s(1),this.s(2),this.s(3),this.s(4));      
+    end
   end
 end
