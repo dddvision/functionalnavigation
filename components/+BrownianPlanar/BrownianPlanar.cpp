@@ -3,9 +3,6 @@
 
 #include "DynamicModel.h"
 
-// DEBUG
-#include "mex.h"
-
 namespace tommas
 {
   class BrownianPlanar : public DynamicModel
@@ -59,10 +56,10 @@ namespace tommas
       double dt;
       double ct0;
       double ct1;
+      double dk;
+      double dtFloor;
       unsigned K;
       unsigned k;
-      unsigned dk;
-      unsigned dtFloor;
       
       dt=time-interval.first;
       dk=dt*rate;
@@ -78,7 +75,7 @@ namespace tommas
       }
       firstNewBlock=K;
       
-      dkFloor=static_cast<unsigned>(floor(dk));
+      dkFloor=static_cast<unsigned>(floor(dk));    
       dtFloor=static_cast<double>(dkFloor)/rate;
       dtRemain=dt-dtFloor;
       
