@@ -35,9 +35,14 @@ function DynamicModelTest(packageName,initialTime,uri)
   assert(interval.first==initialTime);
   assert(interval.second==initialTime);
   
-  for block=0:3
+  v=uint32(5);
+  
+  for b=uint32(0:3)
     fprintf('\nextend');
     extend(dynamicModel);
+    for p=uint32(0:(extensionUint32-1))
+      setExtensionUint32(dynamicModel,b,p,v);
+    end
     testCurrentState(dynamicModel);
   end
 end
@@ -51,11 +56,21 @@ function testCurrentState(dynamicModel)
   assert(isa(interval,'TimeInterval'));
   display(interval);
   
+  alpha=10*eps;
+  
   pose=evaluate(dynamicModel,interval.second);
   assert(isa(pose,'Pose'));
   display(pose);
   
+  pose=evaluate(dynamicModel,WorldTime(alpha*interval.first+(1-alpha)*interval.second));
+  assert(isa(pose,'Pose'));
+  display(pose); 
+  
   tangentPose=tangent(dynamicModel,interval.second);
+  assert(isa(tangentPose,'TangentPose'));
+  display(tangentPose);
+  
+  tangentPose=tangent(dynamicModel,WorldTime(alpha*interval.first+(1-alpha)*interval.second));
   assert(isa(tangentPose,'TangentPose'));
   display(tangentPose);
 end
