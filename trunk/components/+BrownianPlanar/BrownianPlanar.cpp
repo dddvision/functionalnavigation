@@ -43,15 +43,60 @@ namespace tommas
       return(static_cast<double>(p)/sixthIntMax-3.0);
     }
     
+    void transformPose(Pose& pose)
+    {
+      double i0=initialQuaternion[0];
+      double i1=initialQuaternion[1];
+      double i2=initialQuaternion[2];
+      double i3=initialQuaternion[3];
+      
+      double q0=pose.q[0];
+      double q1=pose.q[1];
+      double q2=pose.q[2];
+      double q3=pose.q[3];
+      
+      pose.p[0]+=initialPosition[0];
+      pose.p[1]+=initialPosition[1];
+      pose.p[2]+=initialPosition[2];
+    
+      pose.q[0]=q0*i0-q1*i1-q2*i2-q3*i3;
+      pose.q[1]=q1*i0+q0*i1-q3*i2+q2*i3;
+      pose.q[2]=q2*i0+q3*i1+q0*i2-q1*i3;
+      pose.q[3]=q3*i0-q2*i1+q1*i2+q0*i3;
+      
+      return;
+    }
+    
+    void transformTangentPose(TangentPose& tangentPose)
+    {
+      double i0=initialQuaternion[0];
+      double i1=initialQuaternion[1];
+      double i2=initialQuaternion[2];
+      double i3=initialQuaternion[3];
+      
+      double s0=tangentPose.s[0];
+      double s1=tangentPose.s[1];
+      double s2=tangentPose.s[2];
+      double s3=tangentPose.s[3];
+      
+      transformPose(tangentPose);
+      tangentPose.s[0]=s0*i0-s1*i1-s2*i2-s3*i3;
+      tangentPose.s[1]=s1*i0+s0*i1-s3*i2+s2*i3;
+      tangentPose.s[2]=s2*i0+s3*i1+s0*i2-s1*i3;
+      tangentPose.s[3]=s3*i0-s2*i1+s1*i2+s0*i3;
+      
+      return;
+    }
+    
     void evaluateGeneral(const WorldTime& time, Pose& pose,
                          unsigned& dkFloor, double& dtRemain, double& halfAngle)
     {
       // position and velocity A=[1,tau;0,1] B=[0.5*tau*tau;tau]
       static const double tau=1/rate;
-      static const double c0=normalizedMass*(0.5*tau*tau);
-      static const double c1=normalizedRotationalMass*(0.5*tau*tau);
-      static const double c2=normalizedMass*tau;
-      static const double c3=normalizedRotationalMass*tau;
+      static const double c0=(0.5*tau*tau)/normalizedMass;
+      static const double c1=(0.5*tau*tau)/normalizedRotationalMass;
+      static const double c2=tau/normalizedMass;
+      static const double c3=tau/normalizedRotationalMass;
       
       double dt;
       double ct0;
@@ -80,8 +125,8 @@ namespace tommas
       dtRemain=dt-dtFloor;
       
       ct0=0.5*dtRemain*dtRemain;
-      ct1=normalizedRotationalMass*ct0;
-      ct0*=normalizedMass;
+      ct1=ct0/normalizedRotationalMass;
+      ct0/=normalizedMass;
       
       pose.p[0]=x[dkFloor]+dtRemain*xRate[dkFloor]+ct0*fx[dkFloor];
       pose.p[1]=y[dkFloor]+dtRemain*yRate[dkFloor]+ct0*fy[dkFloor];
@@ -109,6 +154,7 @@ namespace tommas
       }
       
       evaluateGeneral(time,pose,dkFloor,dtRemain,halfAngle);
+      transformPose(pose);
       
       return;
     }
@@ -132,8 +178,8 @@ namespace tommas
       evaluateGeneral(time,tangentPose,dkFloor,dtRemain,halfAngle);
       
       ct2=dtRemain;
-      ct3=normalizedRotationalMass*ct2;
-      ct2*=normalizedMass;
+      ct3=ct2/normalizedRotationalMass;
+      ct2/=normalizedMass;
       
       tangentPose.r[0]=xRate[dkFloor]+ct2*fx[dkFloor];
       tangentPose.r[1]=yRate[dkFloor]+ct2*fy[dkFloor];
@@ -143,6 +189,8 @@ namespace tommas
       tangentPose.s[1]=0.0;
       tangentPose.s[2]=0.0;
       tangentPose.s[3]=cos(halfAngle)*halfAngleRate;
+      
+      transformTangentPose(tangentPose);
       
       return;
     }
