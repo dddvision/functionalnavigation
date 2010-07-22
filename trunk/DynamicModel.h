@@ -4,7 +4,17 @@
 #include <map>
 #include <string>
 #include <vector>
+
+// define uint32_t
+#ifdef _MSC_VER
+#if (_MSC_VER < 1300)
+typedef unsigned int uint32_t;
+#else
+typedef unsigned __int32 uint32_t;
+#endif
+#else
 #include <stdint.h>
+#endif
 
 #include "WorldTime.h"
 #include "TimeInterval.h"
