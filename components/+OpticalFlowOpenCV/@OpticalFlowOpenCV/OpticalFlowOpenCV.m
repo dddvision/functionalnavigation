@@ -15,7 +15,8 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
         % Locate OpenCV libraries
         userPath=path;
         userWarnState=warning('off','all'); % see MATLAB Solution ID 1-5JUPSQ
-        addpath(getenv('PATH'));
+        addpath(getenv('LD_LIBRARY_PATH','-END'));
+        addpath(getenv('PATH','-END'));
         warning(userWarnState);
         if(ispc)
           libdir=fileparts(which('cv200.lib'));
@@ -41,7 +42,8 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
           details=err.message;
           details=[details,' Failed to compile against local OpenCV libraries.'];
           details=[details,' Please see the Readme file distributed with OpenCV.'];
-          details=[details,' The following files must be in the system path:'];
+          details=[details,' The following files must be either in the system PATH'];
+          details=[details,' or LD_LIBRARY_PATH:'];
           if(ispc)
             details=[details,' cv200.lib cv200.dll cxcore200.lib cxcore200.dll'];
           elseif(ismac)
