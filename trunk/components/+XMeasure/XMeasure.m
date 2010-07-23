@@ -19,7 +19,9 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            fprintf('\n\nWarning: XMeasure is simulated from a reference trajectory');
+            if(this.verbose)
+              fprintf('\n\nWarning: XMeasure is simulated from a reference trajectory');
+            end
             container=DataContainer.factory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
@@ -58,7 +60,9 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
           this.status=true;
         end
       else
-        fprintf('\n\nWarning: Simulation has run out of reference data');
+        if(this.verbose)
+          fprintf('\n\nWarning: Simulation has run out of reference data');
+        end
       end
     end
 
