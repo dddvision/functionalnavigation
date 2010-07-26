@@ -105,9 +105,9 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
         a=kaMin:kaMax;
       end
       if(kaMax>=kaMin)
-        edgeList=Edge(a,a+uint32(1));
+        edgeList=GraphEdge(a,a+uint32(1));
       else
-        edgeList=repmat(Edge,[0,1]);
+        edgeList=repmat(GraphEdge,[0,1]);
       end
     end
     

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Edge.h"
+#include "GraphEdge.h"
 #include "Trajectory.h"
 #include "Sensor.h"
 
@@ -25,8 +25,8 @@ namespace tommas
     ~Measure(void){}
   
   public:
-    virtual std::vector<Edge> findEdges(const unsigned,const unsigned) = 0;
-    virtual double computeEdgeCost(const Trajectory&,const Edge) = 0;
+    virtual std::vector<GraphEdge> findEdges(const unsigned,const unsigned) = 0;
+    virtual double computeEdgeCost(const Trajectory&,const GraphEdge) = 0;
     
     static std::string frameworkClass(void) { return std::string("Measure"); }
     static Measure* factory(const std::string measureName, const std::string uri)

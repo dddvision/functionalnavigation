@@ -1,11 +1,11 @@
 % This class represents edges that determine the adjacency of nodes in a cost graph
-classdef Edge
+classdef GraphEdge
   properties (SetAccess=public,GetAccess=public)
     first=uint32(0); % lower node index for this edge, uint32 scalar
     second=uint32(0);  % upper node index for this edge, uint32 scalar
   end
   methods (Access=public)
-    function this=Edge(A,B)
+    function this=GraphEdge(A,B)
       if(nargin==1)
         assert(isa(A(1).first,'uint32'));
         N=numel(A);

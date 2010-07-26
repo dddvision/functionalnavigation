@@ -67,7 +67,7 @@ classdef Measure < Sensor
     % kbSpan = maximum difference between upper node index and last node index, uint32 scalar
     %
     % OUTPUT
-    % edgeList = list of edges, Edge N-by-1
+    % edgeList = list of edges, GraphEdge N-by-1
     %
     % NOTES
     % The number of edges returned is bounded:
@@ -82,7 +82,7 @@ classdef Measure < Sensor
     %
     % INPUT
     % x = trajectory to evaluate, Trajectory scalar
-    % edge = an edge in the cost graph returned by findEdges, Edge scalar
+    % edge = an edge in the cost graph returned by findEdges, GraphEdge scalar
     %
     % OUTPUT
     % cost = non-negative measure in the interval [0,1], double scalar
