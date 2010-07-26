@@ -95,15 +95,15 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
         node=kMin:kMax;
       end
       if(kMax>=kMin)
-        edgeList=Edge(node,node);
+        edgeList=GraphEdge(node,node);
       else
-        edgeList=repmat(Edge,[0,1]);
+        edgeList=repmat(GraphEdge,[0,1]);
       end
     end
 
     function cost=computeEdgeCost(this,x,edge)
       assert(isa(x,'Trajectory'));
-      assert(isa(edge,'Edge'));
+      assert(isa(edge,'GraphEdge'));
       assert(numel(x)==1);
       assert(numel(edge)==1);
       assert(this.status);

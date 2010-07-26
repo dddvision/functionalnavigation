@@ -32,7 +32,7 @@ void convert(const mxArray* array, tommas::TimeInterval& value)
   return;
 }
 
-void convert(const mxArray* array, tommas::Edge& value)
+void convert(const mxArray* array, tommas::GraphEdge& value)
 {
   value.first=(*static_cast<uint32_t*>(mxGetData(mxGetProperty(array,0,"first"))));
   value.second=(*static_cast<uint32_t*>(mxGetData(mxGetProperty(array,0,"second"))));
@@ -143,7 +143,7 @@ void convert(const std::vector<tommas::WorldTime>& time, mxArray*& array)
   return;
 }
 
-void convert(const std::vector<tommas::Edge>& edge, const mxArray*& source, mxArray*& array)
+void convert(const std::vector<tommas::GraphEdge>& edge, const mxArray*& source, mxArray*& array)
 {
   mxArray* prhs[2];
   mxArray* sz;
@@ -319,7 +319,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     case computeEdgeCost:
     {
       TrajectoryBridge x;
-      tommas::Edge edge;
+      tommas::GraphEdge edge;
       convert(prhs[2],edge);
       convert(instance[handle]->computeEdgeCost(x,edge),plhs[0]);
       break;
