@@ -1,76 +1,100 @@
 function DynamicModelTest(packageName,initialTime,uri)
+  fprintf('\npackagename =');
   assert(isa(packageName,'char'));
-  fprintf('\npackagename = ''%s''\n',packageName);
+  fprintf(' ''%s''',packageName);
 
+  fprintf('\ninitialTime =');
   assert(isa(initialTime,'WorldTime')); 
-  fprintf('\ninitialTime = %f\n',double(initialTime));
+  fprintf(' %f',double(initialTime));
 
+  fprintf('\nuri =');
   assert(isa(uri,'char'));
-  fprintf('\nuri = ''%s''\n',uri);
+  fprintf(' ''%s''',uri);
   
+  fprintf('\nfactory =');
   dynamicModel=DynamicModel.factory(packageName,initialTime,uri);
   assert(isa(dynamicModel,'DynamicModel'));
+  fprintf(' ok');
   
-  initialLogical=numInitialLogical(dynamicModel);
-  assert(isa(initialLogical,'uint32'));
-  fprintf('\ninitialLogical = %d',initialLogical);
-  
-  initialUint32=numInitialUint32(dynamicModel);
-  assert(isa(initialUint32,'uint32'));
-  fprintf('\ninitialUint32 = %d',initialUint32);  
-  
-  extensionLogical=numExtensionLogical(dynamicModel);
-  assert(isa(extensionLogical,'uint32'));
-  fprintf('\nextensionLogical = %d',extensionLogical); 
-  
-  extensionUint32=numExtensionUint32(dynamicModel);
-  assert(isa(extensionUint32,'uint32'));
-  fprintf('\nextensionUint32 = %d\n',extensionUint32);
-  
-  testCurrentState(dynamicModel);
-  
-  % TODO: test ability to set and retrieve parameters
-  % TODO: test that output is deterministic
+  fprintf('\ndomain =');
   interval=domain(dynamicModel);
+  assert(isa(interval,'TimeInterval'));
   assert(interval.first==initialTime);
-  assert(interval.second==initialTime);
+  fprintf(' ok');
   
+  fprintf('\nnumInitialLogical =');
+  nIL=numInitialLogical(dynamicModel);
+  assert(isa(nIL,'uint32'));
+  fprintf(' %d',nIL);
+  
+  fprintf('\nnumInitialUint32 =');
+  nIU=numInitialUint32(dynamicModel);
+  assert(isa(nIU,'uint32'));
+  fprintf(' %d',nIU);  
+  
+  fprintf('\nnumExtensionLogical =');
+  nEL=numExtensionLogical(dynamicModel);
+  assert(isa(nEL,'uint32'));
+  fprintf(' %d',nEL); 
+  
+  fprintf('\nnumExtensionUint32 =');
+  nEU=numExtensionUint32(dynamicModel);
+  assert(isa(nEU,'uint32'));
+  fprintf(' %d',nEU);
+  
+  fprintf('\ngetInitialLogical =');
+  vIL=false(nIL,1);
+  for p=uint32(1):nIL
+    v=getInitialLogical(dynamicModel,p-uint32(1));
+    assert(isa(v,'logical'));
+    fprintf(' %d',v);
+    vIL(p)=v;
+  end
+  
+  fprintf('\ngetInitialUint32 =');
+  vIU=zeros(nIU,1,'uint32');
+  for p=uint32(1):nIU
+    v=getInitialUint32(dynamicModel,p-uint32(1));
+    assert(isa(v,'uint32'));
+    fprintf(' %d',v);
+    vIU(p)=v;
+  end
+  
+  testState(dynamicModel,interval.first);
+
+  % TODO: test that output is deterministic
   v=uint32(5);
   
-  for b=uint32(0:3)
-    fprintf('\nextend');
-    extend(dynamicModel);
-    for p=uint32(0:(extensionUint32-1))
-      setExtensionUint32(dynamicModel,b,p,v);
+  if(~isinf(interval.second))
+    for b=uint32(0:3)
+      fprintf('\nextend');
+      extend(dynamicModel);
+      for p=uint32(0:(nEU-1))
+        setExtensionUint32(dynamicModel,b,p,v);
+      end
+      time=WorldTime(interval.second);
+      testState(dynamicModel,time);
+      time=WorldTime(this.alpha*interval.first+(1-this.alpha)*interval.second);
+      testState(dynamicModel,time);
     end
-    testCurrentState(dynamicModel);
   end
 end
 
-function testCurrentState(dynamicModel)
+function testState(dynamicModel,time)
+  fprintf('\n\ntime = %f',double(time));
+
   numBlocks=numExtensionBlocks(dynamicModel);
   assert(isa(numBlocks,'uint32'));
-  fprintf('\nnumBlocks = %d\n',numBlocks);
+  fprintf('\nnumBlocks = %d',numBlocks);
   
   interval=domain(dynamicModel);
-  assert(isa(interval,'TimeInterval'));
   display(interval);
   
-  alpha=10*eps;
-  
-  pose=evaluate(dynamicModel,interval.second);
-  assert(isa(pose,'Pose'));
-  display(pose);
-  
-  pose=evaluate(dynamicModel,WorldTime(alpha*interval.first+(1-alpha)*interval.second));
+  pose=evaluate(dynamicModel,time);
   assert(isa(pose,'Pose'));
   display(pose); 
   
-  tangentPose=tangent(dynamicModel,interval.second);
-  assert(isa(tangentPose,'TangentPose'));
-  display(tangentPose);
-  
-  tangentPose=tangent(dynamicModel,WorldTime(alpha*interval.first+(1-alpha)*interval.second));
+  tangentPose=tangent(dynamicModel,time);
   assert(isa(tangentPose,'TangentPose'));
   display(tangentPose);
 end

@@ -31,7 +31,9 @@ classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            fprintf('\n\nWarning: XDynamics is simulated from a reference trajectory');
+            if(this.verbose)
+              fprintf('\n\nWarning: XDynamics is simulated from a reference trajectory');
+            end
             container=DataContainer.factory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);

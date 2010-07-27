@@ -56,7 +56,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     end
     
     function num=numExtensionBlocks(this)
-      num=numel(this.block);
+      num=uint32(numel(this.block));
     end
     
     function v=getInitialLogical(this,p)
@@ -135,7 +135,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
         tangentPose(n).p=substate(1:3)+this.initialPosition;
         tangentPose(n).q=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
         tangentPose(n).r=substate(7:9)+this.initialPositionRate;
-        tangentPose(n).s=0.5*Quat2Homo(pose.q(:,n))*([0;this.initialOmega+substate(10:12)]);
+        tangentPose(n).s=0.5*Quat2Homo(tangentPose.q(:,n))*([0;this.initialOmega+substate(10:12)]);
       end
     end
   end

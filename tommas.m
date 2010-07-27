@@ -21,8 +21,10 @@ warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwar
 
 % add component repository to the path
 componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
-addpath(componentPath);
-fprintf('\npath added: %s',componentPath);
-
+if(isempty(findstr(componentPath,path)))
+  addpath(componentPath);
+  fprintf('\npath added: %s',componentPath);
+end
+  
 % initialize the default pseudorandom number generator
 reset(RandStream.getDefaultStream);
