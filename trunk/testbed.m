@@ -10,7 +10,7 @@ config=TestbedConfig;
 
 switch(config.frameworkClass)
   case 'DynamicModel'
-    DynamicModelTest(config.pkg,WorldTime(0),'uri');
+    DynamicModelTest(config.pkg,config.initialTime,config.uri);
     break;
   case 'Measure'
     fprintf('\nThere are no tests defined for the Measure class');
