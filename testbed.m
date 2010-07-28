@@ -13,7 +13,7 @@ switch(config.frameworkClass)
     DynamicModelTest(config.pkg,config.initialTime,config.uri);
     break;
   case 'Measure'
-    fprintf('\nThere are no tests defined for the Measure class');
+    MeasureTest(config.pkg,config.uri);
     break;
   case 'Optimizer'
     fprintf('\nThere are no tests defined for the Optimizer class');
