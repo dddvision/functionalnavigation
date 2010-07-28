@@ -1,5 +1,5 @@
 function DynamicModelTest(packageName,initialTime,uri)
-  fprintf('\npackagename =');
+  fprintf('\npackageName =');
   assert(isa(packageName,'char'));
   fprintf(' ''%s''',packageName);
 
