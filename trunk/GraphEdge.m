@@ -36,7 +36,9 @@ classdef GraphEdge
       end
     end
     function display(this)
-      fprintf('\n%s = [%d,%d]\n',inputname(1),this.first,this.second);
+      for n=1:numel(this)
+        fprintf('\n%s = [%d,%d]\n',inputname(1),this(n).first,this(n).second);
+      end
     end
   end
 end

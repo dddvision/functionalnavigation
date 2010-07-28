@@ -60,7 +60,7 @@ classdef DynamicModel < Trajectory
   end
   
   methods (Abstract=true,Access=public)
-    % Get number of parameters in each block
+    % Get number of parameters in each initial block
     %
     % OUTPUT
     % num = number of parameters in each block, const uint32 scalar
