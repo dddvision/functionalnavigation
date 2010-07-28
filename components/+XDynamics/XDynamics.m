@@ -156,11 +156,11 @@ classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
     end
     
     function pose=evaluate(this,t)
-      pose=evaluate(this.xRef,t);
       interval=domain(this.xRef);
       tmax=double(interval.second);
       t=double(t);
       t(t>tmax)=tmax;
+      pose=evaluate(this.xRef,t);
       z=initialBlock2deviation(this);
       t0=double(this.initialTime);
       c1=this.positionOffset-this.positionDeviation*z(1);
@@ -171,11 +171,11 @@ classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
     end
    
     function tangentPose=tangent(this,t)
-      tangentPose=tangent(this.xRef,t);
       interval=domain(this.xRef);
       tmax=double(interval.second);
       t=double(t);
       t(t>tmax)=tmax;
+      tangentPose=tangent(this.xRef,t);
       z=initialBlock2deviation(this);
       t0=double(this.initialTime);
       c1=this.positionOffset-this.positionDeviation*z(1);
