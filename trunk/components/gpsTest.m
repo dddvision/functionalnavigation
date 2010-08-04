@@ -7,19 +7,19 @@ function gpsTest(gpsHandle,refTraj)
     error('GPS is not ready');
   end
   
-  ka=first(gpsHandle);
-  kb=last(gpsHandle);
-  assert(isa(ka,'uint32'));
-  assert(isa(kb,'uint32'));
+  na=first(gpsHandle);
+  nb=last(gpsHandle);
+  assert(isa(na,'uint32'));
+  assert(isa(nb,'uint32'));
   
-  K=1+kb-ka;
+  K=1+nb-na;
   gpsLonLatAlt=zeros(3,K);
   trueECEF=zeros(3,K);
   for indx = 1:K
     currTime = getTime(gpsHandle,indx);
     pose = evaluate(refTraj,currTime);
     trueECEF(:,indx) = cat(2,pose.p);
-    [gpsLonLatAlt(1,indx),gpsLonLatAlt(2,indx),gpsLonLatAlt(3,indx)] = getGlobalPosition(gpsHandle,ka+indx-1);
+    [gpsLonLatAlt(1,indx),gpsLonLatAlt(2,indx),gpsLonLatAlt(3,indx)] = getGlobalPosition(gpsHandle,na+indx-1);
   end
   trueLonLatAlt = ecef2lolah(trueECEF);
   errLonLatAlt = gpsLonLatAlt-trueLonLatAlt;

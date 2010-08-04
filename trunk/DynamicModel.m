@@ -105,9 +105,8 @@ classdef DynamicModel < Trajectory
     %
     % NOTE
     % A block with zero parameters returns zero cost
-    % For a normal distribution
-    %   Cost is the negative natural log likelihood of the distribution
-    %   Typical costs are in the range [0,4.5]
+    % Cost is the negative natural log of the probability mass function normalized by its peak value
+    %   Typical costs are in the range [0,4.5] for a normal distribution
     cost=computeInitialBlockCost(this);
     cost=computeExtensionBlockCost(this,blockIndex);
     

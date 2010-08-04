@@ -8,9 +8,6 @@ classdef InertialSixDoF < AccelerometerArray & GyroscopeArray
   methods (Abstract=true)
     % Get sensor frame position and orientation relative to the body frame
     %
-    % INPUT
-    % k = data index, uint32 scalar
-    %
     % OUTPUT
     % p = position of sensor origin in the body frame, double 3-by-1
     % q = orientation of sensor frame in the body frame as a quaternion, double 4-by-1

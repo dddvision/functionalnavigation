@@ -1,7 +1,7 @@
 classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   
   properties (Constant=true,GetAccess=private)
-    ka=uint32(1);
+    na=uint32(1);
     numSteps=120;
     numStrides=160;
     layers='rgb';
@@ -14,7 +14,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   end
   
   properties (Access=private)
-    kb
+    nb
     focal
     refTime
     initialTime
@@ -75,17 +75,17 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       this.rate=etime(t2,t1);
       this.initialTime=etime(t1,this.clockBase)-this.rate;
       this.refTime=t1;
-      this.kb=uint32(2);
+      this.nb=uint32(2);
     end
 
     function refresh(this)
-      kRef=this.kb;
-      while(isValid(this,this.kb+uint32(1)))
+      kRef=this.nb;
+      while(isValid(this,this.nb+uint32(1)))
         time=clock;
-        this.kb=this.kb+uint32(1);
+        this.nb=this.nb+uint32(1);
       end
-      if(this.kb>kRef)
-        numImages=double(this.kb-this.ka+uint32(1)); % adds 1 to account for isValid
+      if(this.nb>kRef)
+        numImages=double(this.nb-this.na+uint32(1)); % adds 1 to account for isValid
         this.rate=etime(time,this.refTime)/numImages; 
       end
     end
@@ -94,36 +94,36 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       flag=this.ready;
     end
     
-    function ka=first(this)
-      ka=this.ka;
+    function na=first(this)
+      na=this.na;
     end
 
-    function kb=last(this)
-      kb=this.kb;
+    function nb=last(this)
+      nb=this.nb;
     end
     
-    function time=getTime(this,k)
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      time=this.initialTime+this.rate*double(k-this.ka);
+    function time=getTime(this,n)
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      time=this.initialTime+this.rate*double(n-this.na);
     end
 
     function str=interpretLayers(this,varargin)
       str=this.layers;
     end
     
-    function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)
-      assert(k>=this.ka);
-      assert(k<=this.kb);
+    function [numStrides,numSteps,numLayers]=getImageSize(this,n,varargin)
+      assert(n>=this.na);
+      assert(n<=this.nb);
       numStrides=this.numStrides;
       numSteps=this.numSteps;
       numLayers=length(this.layers);
     end
     
-    function im=getImage(this,k,varargin)
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      num=this.ka+this.cameraIncrement*k;
+    function im=getImage(this,n,varargin)
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      num=this.na+this.cameraIncrement*n;
       im=imread(fullfile(this.localCache,sprintf(this.fileFormat,num)));
     end
     
@@ -131,9 +131,9 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       flag=this.frameDynamic;
     end
     
-    function [p,q]=getFrame(this,k,varargin)
-      assert(k>=this.ka);
-      assert(k<=this.kb);
+    function [p,q]=getFrame(this,n,varargin)
+      assert(n>=this.na);
+      assert(n<=this.nb);
       p=this.cameraPositionOffset;
       q=this.cameraRotationOffset;
     end
@@ -192,8 +192,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   
   methods (Access=private)
     % the next image must exist for flag to be true
-    function flag=isValid(this,k)
-      num=this.ka+this.cameraIncrement*(k+1); % adds one
+    function flag=isValid(this,n)
+      num=this.na+this.cameraIncrement*(n+1); % adds one
       fname=fullfile(this.localCache,sprintf(this.fileFormat,num));
       flag=exist(fname,'file');
     end

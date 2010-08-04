@@ -12,13 +12,13 @@ classdef Camera < CameraArray
   methods (Abstract=true)
     % These redefined methods do not require the 'view' argument
     str=interpretLayers(this,varargin);
-    [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin);
-    im=getImage(this,k,varargin);
+    [numStrides,numSteps,numLayers]=getImageSize(this,n,varargin);
+    im=getImage(this,n,varargin);
     flag=isFrameDynamic(this,varargin);
-    [p,q]=getFrame(this,k,varargin);
+    [p,q]=getFrame(this,n,varargin);
     flag=isProjectionDynamic(this,varargin);
-    pix=projection(this,ray,k,varargin);
-    ray=inverseProjection(this,pix,k,varargin);
+    pix=projection(this,ray,n,varargin);
+    ray=inverseProjection(this,pix,n,varargin);
   end
  
 end

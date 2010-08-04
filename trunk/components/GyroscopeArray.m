@@ -5,7 +5,7 @@ classdef GyroscopeArray < InertialArray
     % Get raw gyroscope data
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % n = data index, uint32 scalar
     % ax = zero-based axis index, uint32 scalar
     %
     % OUTPUT
@@ -18,7 +18,7 @@ classdef GyroscopeArray < InertialArray
     %
     % NOTES
     % Throws an exception if either input index is out of range
-    angularRate=getAngularRate(this,k,ax);
+    angularRate=getAngularRate(this,n,ax);
   end
   
 end

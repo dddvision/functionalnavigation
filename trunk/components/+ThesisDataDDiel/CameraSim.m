@@ -2,9 +2,9 @@ classdef CameraSim < Camera
   
   properties (SetAccess=private,GetAccess=private)
     localCache
-    ka
-    kb
-    tk
+    na
+    nb
+    tn
     imsize
     cameraType
     layers
@@ -23,15 +23,15 @@ classdef CameraSim < Camera
         this.ready=false;
       else
         S=load(fullfile(localCache,'workspace.mat'),'T_cam','CAMERA_TYPE','CAMERA_OFFSET');
-        this.ka=uint32(str2double(fnames(1,6:11)));
-        this.kb=uint32(str2double(fnames(end,6:11)));
-        this.tk=WorldTime(S.T_cam);
+        this.na=uint32(str2double(fnames(1,6:11)));
+        this.nb=uint32(str2double(fnames(end,6:11)));
+        this.tn=WorldTime(S.T_cam);
         this.cameraType=S.CAMERA_TYPE;
         this.layers='rgb';
         this.frameDynamic=false;
         this.frameOffset=[S.CAMERA_OFFSET;1;0;0;0];
         this.projectionDynamic=false;
-        this.imsize=size(getImage(this,this.ka));
+        this.imsize=size(getImage(this,this.na));
         this.ready=true;
       end
     end
@@ -44,48 +44,48 @@ classdef CameraSim < Camera
       flag=this.ready;
     end
     
-    function ka=first(this)
+    function na=first(this)
       assert(this.ready)
-      ka=this.ka;
+      na=this.na;
     end
 
-    function kb=last(this)
+    function nb=last(this)
       assert(this.ready)
-      kb=this.kb;
+      nb=this.nb;
     end
     
-    function time=getTime(this,k)
+    function time=getTime(this,n)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      time=this.tk(k);
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      time=this.tn(n);
     end
 
     function str=interpretLayers(this,varargin)
       str=this.layers;
     end
     
-    function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)
-      assert(k>=this.ka);
-      assert(k<=this.kb);
+    function [numStrides,numSteps,numLayers]=getImageSize(this,n,varargin)
+      assert(n>=this.na);
+      assert(n<=this.nb);
       numStrides=this.imsize(2);
       numSteps=this.imsize(1);
       numLayers=length(this.layers);
     end
     
-    function im=getImage(this,k,varargin)
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      im=imread([this.localCache,'/color',sprintf('%06d',k),'.png']);
+    function im=getImage(this,n,varargin)
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      im=imread([this.localCache,'/color',sprintf('%06d',n),'.png']);
     end
     
     function flag=isFrameDynamic(this,varargin)
       flag=this.frameDynamic;
     end
     
-    function [p,q]=getFrame(this,k,varargin)
-      assert(k>=this.ka);
-      assert(k<=this.kb);
+    function [p,q]=getFrame(this,n,varargin)
+      assert(n>=this.na);
+      assert(n<=this.nb);
       p=this.frameOffset(1:3);
       q=this.frameOffset(4:7);
     end

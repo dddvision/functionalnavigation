@@ -2,8 +2,8 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
   
   properties
     refData
-    ka
-    kb
+    na
+    nb
     time
     lat
     lon
@@ -32,8 +32,8 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
       this.precisionFlag = true;
       this.offset = [0;0;0];
       N=size(this.noise,2);
-      this.ka = uint32(1);
-      this.kb = uint32(N);
+      this.na = uint32(1);
+      this.nb = uint32(N);
       this.ready = logical(N>0);
     end
     
@@ -45,38 +45,38 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
       flag=this.ready;
     end
     
-    function ka=first(this)
+    function na=first(this)
       assert(this.ready)
-      ka=this.ka;
+      na=this.na;
     end
 
-    function kb=last(this)
+    function nb=last(this)
       assert(this.ready)
-      kb=this.kb;
+      nb=this.nb;
     end
     
-    function time=getTime(this,k)
+    function time=getTime(this,n)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
+      assert(n>=this.na);
+      assert(n<=this.nb);
       interval=domain(this.refTraj);
-      time=Time(interval.first+this.noise(1,k));
+      time=Time(interval.first+this.noise(1,n));
     end
 
-    function [lon,lat,alt]=getGlobalPosition(this,k)
+    function [lon,lat,alt]=getGlobalPosition(this,n)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
+      assert(n>=this.na);
+      assert(n<=this.nb);
       
       % Evaluate the reference trajectory at the measurement time
-      pose=evaluate(this.refTraj,getTime(this,k));
+      pose=evaluate(this.refTraj,getTime(this,n));
       p=cat(2,pose.p);
       [lon,lat,alt] = globalSatData.ecef2lolah(p(1,:),p(2,:),p(3,:));
       
       % Add error based on real Global Sat gps data
-      lon = lon+this.noise(2,k);
-      lat = lat+this.noise(3,k);
-      alt = alt+this.noise(4,k);
+      lon = lon+this.noise(2,n);
+      lat = lat+this.noise(3,n);
+      alt = alt+this.noise(4,n);
     end
     
     function flag = hasPrecision(this)
@@ -84,12 +84,12 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
     end
     
     % Picks the closest vDOP and hDOP in the data to the requested index
-    function [vDOP,hDOP,sigmaR] = getPrecision(this,k)
+    function [vDOP,hDOP,sigmaR] = getPrecision(this,n)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
+      assert(n>=this.na);
+      assert(n<=this.nb);
       
-      timeDiff = abs(getTime(this,k)-this.refData.time);
+      timeDiff = abs(getTime(this,n)-this.refData.time);
       nearestDataIndx = find(timeDiff==min(timeDiff));
       vDOP = this.refData.vDOP(nearestDataIndx);
       hDOP = this.refData.hDOP(nearestDataIndx);

@@ -6,8 +6,8 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
     xRef
     t
     yBar
-    ka
-    kb
+    na
+    nb
     status
   end
   
@@ -36,8 +36,8 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
       end
       this.t=WorldTime([]);
       this.yBar=[];
-      this.ka=uint32([]);
-      this.kb=uint32([]);
+      this.na=uint32([]);
+      this.nb=uint32([]);
       this.status=false;
     end
 
@@ -53,10 +53,10 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
         this.t=[this.t,time];
         this.yBar=[this.yBar,pose.p(1)+this.deviation*randn];
         if(this.status)
-          this.kb=this.kb+uint32(1);
+          this.nb=this.nb+uint32(1);
         else
-          this.ka=uint32(1);
-          this.kb=uint32(1);
+          this.na=uint32(1);
+          this.nb=uint32(1);
           this.status=true;
         end
       else
@@ -70,46 +70,47 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
       flag=this.status;
     end
 
-    function ka=first(this)
+    function na=first(this)
       assert(this.status)
-      ka=this.ka;
+      na=this.na;
     end
     
-    function kb=last(this)
+    function nb=last(this)
       assert(this.status)
-      kb=this.kb;
+      nb=this.nb;
     end
 
-    function time=getTime(this,k)
-      time=WorldTime(this.t(k));
+    function time=getTime(this,n)
+      time=WorldTime(this.t(n));
     end
     
-    function edgeList=findEdges(this,kaSpan,kbSpan)
-      assert(isa(kaSpan,'uint32'));
-      assert(isa(kbSpan,'uint32'));
-      assert(numel(kaSpan)==1);
-      assert(numel(kbSpan)==1);
+    function edgeList=findEdges(this,x,naSpan,nbSpan)
+      assert(isa(x,'Trajectory'));
+      assert(isa(naSpan,'uint32'));
+      assert(isa(nbSpan,'uint32'));
+      assert(numel(naSpan)==1);
+      assert(numel(nbSpan)==1);
       if(this.status)
-        kMin=max([this.ka,this.kb-kaSpan,this.kb-kbSpan]);
-        kMax=this.kb;
-        node=kMin:kMax;
+        nMin=max([this.na,this.nb-naSpan,this.nb-nbSpan]);
+        nMax=this.nb;
+        node=nMin:nMax;
       end
-      if(kMax>=kMin)
+      if(nMax>=nMin)
         edgeList=GraphEdge(node,node);
       else
         edgeList=repmat(GraphEdge,[0,1]);
       end
     end
 
-    function cost=computeEdgeCost(this,x,edge)
+    function cost=computeEdgeCost(this,x,graphEdge)
       assert(isa(x,'Trajectory'));
-      assert(isa(edge,'GraphEdge'));
+      assert(isa(graphEdge,'GraphEdge'));
       assert(numel(x)==1);
-      assert(numel(edge)==1);
+      assert(numel(graphEdge)==1);
       assert(this.status);
-      assert(edge.first==edge.second);
-      pose=evaluate(x,this.t(edge.second));
-      dnorm=(this.yBar(edge.second)-pose.p(1))./this.deviation;
+      assert(graphEdge.first==graphEdge.second);
+      pose=evaluate(x,this.t(graphEdge.second));
+      dnorm=(this.yBar(graphEdge.second)-pose.p(1))./this.deviation;
       cost=0.5*dnorm.*dnorm;
     end
   end

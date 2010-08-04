@@ -6,7 +6,7 @@ classdef InertialArray < Sensor
     % Get number of axes in the array
     %
     % OUTPUT
-    % num = number of axes, uint32 N-by-1
+    % num = number of axes, uint32 scalar
     num=numAxes(this);
 
     % Get axis position and orientation relative to the body frame

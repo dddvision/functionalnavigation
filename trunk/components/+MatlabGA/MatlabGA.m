@@ -11,7 +11,7 @@
 classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   properties (GetAccess=private,SetAccess=private)
-    kSpan
+    nSpan
     objective
     cost
     defaultOptions
@@ -63,7 +63,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       this.stepGAhandle=temp;
       
       % compute span associated with a maximum number of graph edges (edges<=span*(span+1)/2)
-      this.kSpan=uint32(floor(-0.5+sqrt(0.25+2*this.maxEdges)));
+      this.nSpan=uint32(floor(-0.5+sqrt(0.25+2*this.maxEdges)));
       
       % instantiate the default objective
       this.objective=Objective(dynamicModelName,measureNames,uri);
@@ -192,12 +192,65 @@ function bits=uints2bits(uints)
   bits=bits(:);
 end
 
+function cost=computeCostMean(objective,kBest,naSpan,nbSpan)
+  K=numel(objective.input);
+  M=numMeasures(objective);
+  B=double(numExtensionBlocks(objective.input(1)));
+  allGraphs=cell(K,M+1);
+
+  % build cost graph from prior
+  for k=1:K
+    Fk=objective.input(k);
+    cost=sparse([],[],[],B+1,B+1,B+1);
+    cost(1,1)=computeInitialBlockCost(Fk);
+    for b=uint32(1):uint32(B)
+      cost(b,b+1)=computeExtensionBlockCost(Fk,b-1);
+    end
+    allGraphs{k,1}=cost;
+  end
+
+  % build cost graphs from measures
+  numEdges=zeros(1,M);
+  for m=1:M
+    edgeList=findEdges(objective,m,kBest,naSpan,nbSpan);
+    numEdges(m)=numel(edgeList);
+    na=cat(1,edgeList.first);
+    nb=cat(1,edgeList.second);
+    for k=1:K
+      if(numEdges(m))
+        cost=zeros(1,numEdges(m));
+        for graphEdge=1:numEdges(m)
+          cost(graphEdge)=computeEdgeCost(objective,m,k,edgeList(graphEdge));
+        end
+        base=na(1);
+        span=double(nb(end)-base+1);
+        allGraphs{k,1+m}=sparse(double(na-base+1),double(nb-base+1),cost,span,span,numEdges(m));
+      else
+        allGraphs{k,1+m}=0;
+      end
+    end
+  end
+
+  % sum costs across graphs for each individual
+  cost=zeros(K,1);
+  for k=1:K
+    for m=1:(M+1)
+      costkm=allGraphs{k,m};
+      cost(k)=cost(k)+sum(costkm(:));
+    end
+  end
+
+  % normalize costs by total number of blocks and edges
+  cost=cost/(1+B+sum(numEdges));
+end
+
 function varargout=objectiveContainer(varargin)
   persistent this
   bits=varargin{1};
   if(~ischar(bits))
+    kBest=find(this.cost==min(this.cost),1,'first');
     putBits(this.objective,bits);
-    varargout{1}=computeCostMean(this.objective,this.kSpan,this.kSpan);
+    varargout{1}=computeCostMean(this.objective,kBest,this.nSpan,this.nSpan);
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else

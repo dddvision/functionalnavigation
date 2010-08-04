@@ -6,7 +6,7 @@ classdef CameraArray < Sensor
     % Get number of cameras in the array
     %
     % OUTPUT
-    % num = number of views, uint32 N-by-1
+    % num = number of views, uint32 scalar
     num=numViews(this);
     
     % Interpret image layers
@@ -29,7 +29,7 @@ classdef CameraArray < Sensor
     % Get image size
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % n = data index, uint32 scalar
     % view = zero-based view index, uint32 scalar
     %
     % OUTPUT
@@ -39,12 +39,12 @@ classdef CameraArray < Sensor
     %
     % NOTES
     % Throws an exception when either input index is out of range
-    [numStrides,numSteps,numLayers]=getImageSize(this,k,view);
+    [numStrides,numSteps,numLayers]=getImageSize(this,n,view);
     
     % Get an image
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % n = data index, uint32 scalar
     % view = zero-based view index, uint32 scalar
     %
     % OUTPUT
@@ -52,7 +52,7 @@ classdef CameraArray < Sensor
     %
     % NOTES
     % Throws an exception when either input index is out of range
-    im=getImage(this,k,view);
+    im=getImage(this,n,view);
     
     % Check whether the camera frame moves relative to the body frame
     %
@@ -69,7 +69,7 @@ classdef CameraArray < Sensor
     % Get sensor frame position and orientation relative to the body frame
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % n = data index, uint32 scalar
     % view = zero-based view index, uint32 scalar
     %
     % OUTPUT
@@ -79,7 +79,7 @@ classdef CameraArray < Sensor
     % NOTES
     % Camera frame axis order is forward-right-down relative to the body frame
     % Throws an exception when either input index is out of range
-    [p,q]=getFrame(this,k,view);
+    [p,q]=getFrame(this,n,view);
         
     % Check whether the camera projection changes over time
     %
@@ -96,7 +96,7 @@ classdef CameraArray < Sensor
     % Project ray vectors in the camera frame to image points and vice-versa
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % n = data index, uint32 scalar
     % view = zero-based view index, uint32 scalar
     %
     % INPUT/OUTPUT
@@ -111,8 +111,8 @@ classdef CameraArray < Sensor
     % Region masking can be indicated through NaN-valued returns
     % Camera frame origin is coincident with focal point of the projection
     % Throws an exception when either input index is out of range
-    pix=projection(this,ray,k,view);
-    ray=inverseProjection(this,pix,k,view);
+    pix=projection(this,ray,n,view);
+    ray=inverseProjection(this,pix,n,view);
   end
 
 end

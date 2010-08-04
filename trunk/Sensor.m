@@ -20,25 +20,25 @@ classdef Sensor < handle
     % Return index to the first data node
     %
     % INPUT
-    % ka = index to first node, uint32 scalar
+    % na = index to first node, uint32 scalar
     %
     % NOTES
     % Throws an exception if no data is available
-    ka=first(this);
+    na=first(this);
     
     % Return index to the last data node
     %
     % INPUT
-    % ka = index to last node, uint32 scalar
+    % na = index to last node, uint32 scalar
     %
     % NOTES
     % Throws an exception if no data is available
-    kb=last(this);
+    nb=last(this);
 
     % Get time stamp at a node
     %
     % INPUT
-    % k = index, uint32 scalar
+    % n = index, uint32 scalar
     %
     % OUTPUT
     % time = time stamp, WorldTime scalar
@@ -47,7 +47,7 @@ classdef Sensor < handle
     % Time stamps must not decrease with increasing indices
     % Throws an exception if data at the node is invalid
     % Throws an exception if input is of the wrong size
-    time=getTime(this,k);
+    time=getTime(this,n);
   end
   
 end

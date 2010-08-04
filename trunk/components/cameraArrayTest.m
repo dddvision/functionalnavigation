@@ -10,15 +10,15 @@ function testCameraArrayProjection(cam)
   if(~hasData(cam))
     error('camera is not ready');
   end
-  ka=first(cam);
-  kb=last(cam);
-  assert(isa(ka,'uint32'));
-  assert(isa(kb,'uint32'));
+  na=first(cam);
+  nb=last(cam);
+  assert(isa(na,'uint32'));
+  assert(isa(nb,'uint32'));
   
   for view=1:numViews(cam);
 
     % get an image
-    img=getImage(cam,kb,view);
+    img=getImage(cam,nb,view);
 
     % convert to grayscale
     switch interpretLayers(cam,view)
@@ -54,7 +54,7 @@ function testCameraArrayProjection(cam)
       rays=[c1(:)';c2(:)';c3(:)'];
 
       % project these rays to the given camera
-      pix=projection(cam,rays,kb,view);
+      pix=projection(cam,rays,nb,view);
 
       % grab pixels using bilinear interpolation
       bad=isnan(pix(1,:))|isnan(pix(2,:));
@@ -79,15 +79,15 @@ function testCameraArrayProjectionRoundTrip(cam)
   if(~hasData(cam))
     error('camera is not ready');
   end
-  ka=first(cam);
-  kb=last(cam);
-  assert(isa(ka,'uint32'));
-  assert(isa(kb,'uint32'));
+  na=first(cam);
+  nb=last(cam);
+  assert(isa(na,'uint32'));
+  assert(isa(nb,'uint32'));
 
   for view=1:numViews(cam);
 
     % get an image
-    img=getImage(cam,kb,view);
+    img=getImage(cam,nb,view);
 
     % show image
     figure;
@@ -103,7 +103,7 @@ function testCameraArrayProjectionRoundTrip(cam)
     pix=[jj(:)';ii(:)'];
 
     % create ray vectors from pixels
-    ray=inverseProjection(cam,pix,kb,view);
+    ray=inverseProjection(cam,pix,nb,view);
     c1=reshape(ray(1,:),[HEIGHT,WIDTH]);
     c2=reshape(ray(2,:),[HEIGHT,WIDTH]);
     c3=reshape(ray(3,:),[HEIGHT,WIDTH]);
@@ -115,7 +115,7 @@ function testCameraArrayProjectionRoundTrip(cam)
     drawnow;
 
     % reproject the rays to pixel coordinates
-    pixout=projection(cam,ray,kb,view);
+    pixout=projection(cam,ray,nb,view);
     iout=reshape(pixout(2,:),[HEIGHT,WIDTH]);
     jout=reshape(pixout(1,:),[HEIGHT,WIDTH]);
 

@@ -20,27 +20,28 @@ classdef MeasureBridge < Measure
       flag=feval(this.c,this.h,'hasData');
     end
 
-    function ka=first(this)
-      ka=feval(this.c,this.h,'first');
+    function na=first(this)
+      na=feval(this.c,this.h,'first');
     end
     
-    function kb=last(this)
-      kb=feval(this.c,this.h,'last');
+    function nb=last(this)
+      nb=feval(this.c,this.h,'last');
     end
 
-    function time=getTime(this,k)
-      time=feval(this.c,this.h,'getTime',k);
+    function time=getTime(this,n)
+      time=feval(this.c,this.h,'getTime',n);
     end
     
-    function edge=findEdges(this,kaSpan,kbSpan)
+    function graphEdge=findEdges(this,x,naSpan,nbSpan)
       error('MeasureBridge::findEdges has not been implemented')
-      edge=feval(this.c,this.h,'findEdges',kaSpan,kbSpan);
+      assert(isa(x,'Trajectory'));
+      graphEdge=feval(this.c,this.h,'findEdges',x,naSpan,nbSpan);
     end
 
-    function cost=computeEdgeCost(this,x,edge)
+    function cost=computeEdgeCost(this,x,graphEdge)
       % implements a workaround that depends on a Trajectory named 'x'
       assert(isa(x,'Trajectory'));
-      cost=feval(this.c,this.h,'computeEdgeCost',edge);
+      cost=feval(this.c,this.h,'computeEdgeCost',graphEdge);
     end
   end
   

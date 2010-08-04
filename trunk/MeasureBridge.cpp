@@ -143,7 +143,7 @@ void convert(const std::vector<tommas::WorldTime>& time, mxArray*& array)
   return;
 }
 
-void convert(const std::vector<tommas::GraphEdge>& edge, const mxArray*& source, mxArray*& array)
+void convert(const std::vector<tommas::GraphEdge>& graphEdge, const mxArray*& source, mxArray*& array)
 {
   mxArray* prhs[2];
   mxArray* sz;
@@ -154,7 +154,7 @@ void convert(const std::vector<tommas::GraphEdge>& edge, const mxArray*& source,
   double* psecond;
   double* psz;
   unsigned n;
-  unsigned N=edge.size();
+  unsigned N=graphEdge.size();
   singleEdge=mxDuplicateArray(source);
   sz=mxCreateDoubleMatrix(1,2,mxREAL);
   psz=mxGetPr(sz);
@@ -169,8 +169,8 @@ void convert(const std::vector<tommas::GraphEdge>& edge, const mxArray*& source,
     second=mxGetProperty(array,n,"second");
     pfirst=mxGetPr(first);
     psecond=mxGetPr(second);
-    pfirst[0]=edge[n].first;
-    psecond[0]=edge[n].second;
+    pfirst[0]=graphEdge[n].first;
+    psecond[0]=graphEdge[n].second;
   }
   return;
 }
@@ -301,27 +301,29 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       break;
 
     case getTime:
-      uint32_t k;
-      convert(prhs[2],k);
-      convert(instance[handle]->getTime(k),plhs[0]);
+      uint32_t n;
+      convert(prhs[2],n);
+      convert(instance[handle]->getTime(n),plhs[0]);
       break;
 
+    // TODO: implement this bridge function properly
     case findEdges:
     {
-      uint32_t kaSpan;
-      uint32_t kbSpan;
-      convert(prhs[3],kaSpan);
-      convert(prhs[4],kbSpan);
-      convert(instance[handle]->findEdges(kaSpan,kbSpan),prhs[2],plhs[0]);
+      TrajectoryBridge x;
+      uint32_t naSpan;
+      uint32_t nbSpan;
+      convert(prhs[3],naSpan);
+      convert(prhs[4],nbSpan);
+      convert(instance[handle]->findEdges(x,naSpan,nbSpan),prhs[2],plhs[0]);
       break;
     }
 
     case computeEdgeCost:
     {
       TrajectoryBridge x;
-      tommas::GraphEdge edge;
-      convert(prhs[2],edge);
-      convert(instance[handle]->computeEdgeCost(x,edge),plhs[0]);
+      tommas::GraphEdge graphEdge;
+      convert(prhs[2],graphEdge);
+      convert(instance[handle]->computeEdgeCost(x,graphEdge),plhs[0]);
       break;
     }
     }

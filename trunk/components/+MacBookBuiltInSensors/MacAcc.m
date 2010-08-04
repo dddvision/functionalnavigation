@@ -1,7 +1,7 @@
 classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & AccelerometerArray
   
   properties (Constant=true,GetAccess=private)
-    ka=uint32(0);
+    na=uint32(0);
     nAxes=uint32(3);
     smsLib='smslib.m';
     smsCode='smsutil.m';
@@ -17,7 +17,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
   
   properties (Access=private)
     fid
-    kb
+    nb
     ready
     initialTime
   end
@@ -74,36 +74,36 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
       if(~this.ready)
         error(this.timeOutText);
       end
-      this.kb=uint32(1);
+      this.nb=uint32(1);
     end
     
     function refresh(this)
       fseek(this.fid,0,1);
       sz=ftell(this.fid);
-      this.kb=uint32(max(0,floor(sz/this.lineSkip)-1));
+      this.nb=uint32(max(0,floor(sz/this.lineSkip)-1));
     end
     
     function flag=hasData(this)
       flag=this.ready;
     end
     
-    function ka=first(this)
-      ka=this.ka;
+    function na=first(this)
+      na=this.na;
     end
     
-    function kb=last(this)
-      kb=this.kb;
+    function nb=last(this)
+      nb=this.nb;
     end
     
-    function time=getTime(this,k)
-      time=this.initialTime+get(this,k,4);
+    function time=getTime(this,n)
+      time=this.initialTime+get(this,n,4);
     end
     
-    function specificForce=getSpecificForce(this,k,ax)
+    function specificForce=getSpecificForce(this,n,ax)
       if((ax>0)&&(ax>2))
         error(this.indexErrorText);
       end
-      specificForce=get(this,k,ax);
+      specificForce=get(this,n,ax);
     end
     
     function num=numAxes(this)
@@ -130,13 +130,13 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
   end
   
   methods (Access=private)
-    function v=get(this,k,ax)
-      persistent pk pt pax pay paz
-      if(isempty(pk)||(k~=pk))
-        assert(k>=this.ka);
-        assert(k<=this.kb);
-        pk=k;
-        fseek(this.fid,40*k,-1);
+    function v=get(this,n,ax)
+      persistent pn pt pax pay paz
+      if(isempty(pn)||(n~=pn))
+        assert(n>=this.na);
+        assert(n<=this.nb);
+        pn=n;
+        fseek(this.fid,40*n,-1);
         s=fgetl(this.fid);
         pt=str2double(s(1:12));
         pax=str2double(s(14:21));
