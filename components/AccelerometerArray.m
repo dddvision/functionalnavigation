@@ -5,7 +5,7 @@ classdef AccelerometerArray < InertialArray
     % Get raw accelerometer data
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % n = data index, uint32 scalar
     % ax = zero-based axis index, uint32 scalar
     %
     % OUTPUT
@@ -19,7 +19,7 @@ classdef AccelerometerArray < InertialArray
     %
     % NOTES
     % Throws an exception if either input index is out of range
-    specificForce=getSpecificForce(this,k,ax);
+    specificForce=getSpecificForce(this,n,ax);
   end
   
 end

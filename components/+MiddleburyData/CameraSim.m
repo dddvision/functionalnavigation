@@ -4,8 +4,8 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
     ring
     ringsz
     base
-    ka
-    kb
+    na
+    nb
     rho
     frame
     M
@@ -19,14 +19,14 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
   methods (Access=public)
     function this=CameraSim
       this.ringsz=uint32(this.numImages);
-      for k=1:this.ringsz
-        this.ring{k}.time=WorldTime(double(k-1)/this.fps);
-        this.ring{k}.image=getMiddleburyArt(this,k-1);
+      for n=1:this.ringsz
+        this.ring{n}.time=WorldTime(double(n-1)/this.fps);
+        this.ring{n}.image=getMiddleburyArt(this,n-1);
       end
       this.rho=1;
       this.base=uint32(1);
-      this.ka=uint32(1);
-      this.kb=uint32(this.numImages);
+      this.na=uint32(1);
+      this.nb=uint32(this.numImages);
       this.M=uint32(size(this.ring{1}.image,1));
       this.N=uint32(size(this.ring{1}.image,2)); 
       this.layers='rgb';
@@ -44,37 +44,37 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
       flag=this.ready;
     end
     
-    function ka=first(this)
+    function na=first(this)
       assert(this.ready)
-      ka=this.ka;
+      na=this.na;
     end
 
-    function kb=last(this)
+    function nb=last(this)
       assert(this.ready)
-      kb=this.kb;
+      nb=this.nb;
     end
     
-    function time=getTime(this,k)
+    function time=getTime(this,n)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      time=this.ring{ktor(this,k)}.time;
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      time=this.ring{ktor(this,n)}.time;
     end
     
-    function [numStrides,numSteps,numLayers]=getImageSize(this,k,varargin)
+    function [numStrides,numSteps,numLayers]=getImageSize(this,n,varargin)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
+      assert(n>=this.na);
+      assert(n<=this.nb);
       numStrides=this.N;
       numSteps=this.M;
       numLayers=length(this.layers);
     end
     
-    function im=getImage(this,k,varargin)
+    function im=getImage(this,n,varargin)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      im=this.ring{ktor(this,k)}.image;
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      im=this.ring{ktor(this,n)}.image;
     end
     
     function str=interpretLayers(this,varargin)
@@ -116,7 +116,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
   
   methods (Access=private)
     function r=ktor(this,k)
-      r=mod(this.base+k-this.ka-uint32(1),this.ringsz)+uint32(1);
+      r=mod(this.base+k-this.na-uint32(1),this.ringsz)+uint32(1);
     end
     
     function rgb=getMiddleburyArt(this,num)

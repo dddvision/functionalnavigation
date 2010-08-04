@@ -4,8 +4,8 @@ classdef InertialSim < InertialSixDoF
     pFrame
     qFrame
     time
-    ka
-    kb
+    na
+    nb
     gyro
     accel
     ready
@@ -17,8 +17,8 @@ classdef InertialSim < InertialSixDoF
       this.qFrame=[1;0;0;0];
       [this.time,this.gyro,this.accel]=ReadIMUdat(localCache,'inertia.dat');
       N=numel(this.time);
-      this.ka=uint32(1);
-      this.kb=uint32(N);
+      this.na=uint32(1);
+      this.nb=uint32(N);
       this.ready=logical(N>0);
     end
 
@@ -30,21 +30,21 @@ classdef InertialSim < InertialSixDoF
       flag=this.ready;
     end
     
-    function ka=first(this)
+    function na=first(this)
       assert(this.ready)
-      ka=this.ka;
+      na=this.na;
     end
 
-    function kb=last(this)
+    function nb=last(this)
       assert(this.ready)
-      kb=this.kb;
+      nb=this.nb;
     end
     
-    function time=getTime(this,k)
+    function time=getTime(this,n)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      time=WorldTime(this.time(k));      
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      time=WorldTime(this.time(n));      
     end
     
     function [p,q]=getFrame(this)
@@ -52,18 +52,18 @@ classdef InertialSim < InertialSixDoF
       q=this.qFrame;
     end
 
-    function specificForce=getSpecificForce(this,k,ax)
+    function specificForce=getSpecificForce(this,n,ax)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      specificForce=this.accel(ax+1,k);
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      specificForce=this.accel(ax+1,n);
     end
     
-    function angularRate=getAngularRate(this,k,ax)
+    function angularRate=getAngularRate(this,n,ax)
       assert(this.ready);
-      assert(k>=this.ka);
-      assert(k<=this.kb);
-      angularRate=this.gyro(ax+1,k);
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      angularRate=this.gyro(ax+1,n);
     end
   end
 end

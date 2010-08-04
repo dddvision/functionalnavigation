@@ -59,30 +59,31 @@ classdef Measure < Sensor
     end
   end
   
-  methods (Abstract=true)   
+  methods (Abstract=true)
     % Find a limited set of edges in the adjacency matrix of the cost graph
     %
     % INPUT
-    % kaSpan = maximum difference between lower node index and last node index, uint32 scalar
-    % kbSpan = maximum difference between upper node index and last node index, uint32 scalar
+    % x = trajectory over which to compute the graph structure, Trajectory scalar
+    % naSpan = maximum difference between lower node index and last node index, uint32 scalar
+    % nbSpan = maximum difference between upper node index and last node index, uint32 scalar
     %
     % OUTPUT
     % edgeList = list of edges, GraphEdge N-by-1
     %
     % NOTES
     % The number of edges returned is bounded:
-    %   numel(edges) <= (kaSpan+1)*(kbSpan+1)
+    %   numel(edges) <= (naSpan+1)*(nbSpan+1)
     % If there are no edges, then the outputs are empty
     % Edges are sorted in ascending order of node indices,
     %   first by lower index, then by upper index
     % Throws an exception if any input is of the wrong size
-    edgeList=findEdges(this,kaSpan,kbSpan);
+    edgeList=findEdges(this,x,naSpan,nbSpan);
     
     % Evaluate the cost of a single edge given a trajectory
     %
     % INPUT
     % x = trajectory to evaluate, Trajectory scalar
-    % edge = an edge in the cost graph returned by findEdges, GraphEdge scalar
+    % graphEdge = index of an edge in the cost graph returned by findEdges, GraphEdge scalar
     %
     % OUTPUT
     % cost = non-negative measure in the interval [0,1], double scalar
@@ -92,12 +93,11 @@ classdef Measure < Sensor
     %   to a world frame. If the sensor frame is not coincident with the 
     %   body frame, then the sensor frame offset may need to be 
     %   kinematically composed with the body frame to locate the sensor
-    % For a normal distribution
-    %   Cost is the negative natural log likelihood of the distribution
-    %   Typical costs are in the range [0,4.5]
+    % Cost is the negative natural log of the probability mass function normalized by its peak value
+    %   Typical costs are in the range [0,4.5] for a normal distribution
     % Throws an exception if any input is of the wrong size
     % Throws an exception if node indices do not correspond to an edge
-    cost=computeEdgeCost(this,x,edge);
+    cost=computeEdgeCost(this,x,graphEdge);
   end
   
 end

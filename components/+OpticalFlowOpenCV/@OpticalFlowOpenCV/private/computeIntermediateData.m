@@ -1,7 +1,7 @@
-function data=computeIntermediateData(this,ka,kb)
+function data=computeIntermediateData(this,na,nb)
 
-  ia=getImage(this.sensor,ka);
-  ib=getImage(this.sensor,kb);
+  ia=getImage(this.sensor,na);
+  ib=getImage(this.sensor,nb);
   
   switch( interpretLayers(this.sensor) )
     case {'rgb','rgbi'}

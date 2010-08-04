@@ -51,85 +51,33 @@ classdef Objective < handle
       num=numel(this.measure);
     end
     
-    function edgeList=findEdges(this,m,kaSpan,kbSpan)
-      edgeList=findEdges(this.measure{m},kaSpan,kbSpan);
+    function edgeList=findEdges(this,m,k,naSpan,nbSpan)
+      edgeList=findEdges(this.measure{m},this.input(k),naSpan,nbSpan);
     end
     
-    function cost=computeEdgeCost(this,m,k,edge)
-      cost=computeEdgeCost(this.measure{m},this.input(k),edge);
+    function cost=computeEdgeCost(this,m,k,graphEdge)
+      cost=computeEdgeCost(this.measure{m},this.input(k),graphEdge);
     end
     
     function flag=hasData(this,m)
       flag=hasData(this.measure{m});
     end
     
-    function ka=first(this,m)
-      ka=first(this.measure{m});
+    function na=first(this,m)
+      na=first(this.measure{m});
     end
     
-    function ka=last(this,m)
-      ka=last(this.measure{m});
+    function na=last(this,m)
+      na=last(this.measure{m});
     end
     
-    function time=getTime(this,m,k)
-      time=getTime(this.measure{m},k);
+    function time=getTime(this,m,n)
+      time=getTime(this.measure{m},n);
     end
     
     function refresh(this)
       [ta,tb]=waitForData(this);
       extend(this,tb);
-    end
-    
-    function cost=computeCostMean(this,kaSpan,kbSpan)
-      K=numel(this.input);
-      M=numMeasures(this);
-      B=double(numExtensionBlocks(this.input(1)));
-      allGraphs=cell(K,M+1);
-
-      % build cost graph from prior
-      for k=1:K
-        Fk=this.input(k);
-        cost=sparse([],[],[],B+1,B+1,B+1);
-        cost(1,1)=computeInitialBlockCost(Fk);
-        for b=uint32(1):uint32(B)
-          cost(b,b+1)=computeExtensionBlockCost(Fk,b-1);
-        end
-        allGraphs{k,1}=cost;
-      end
-
-      % build cost graphs from measures
-      numEdges=zeros(1,M);
-      for m=1:M
-        edgeList=findEdges(this,m,kaSpan,kbSpan);
-        numEdges(m)=numel(edgeList);
-        ka=cat(1,edgeList.first);
-        kb=cat(1,edgeList.second);
-        for k=1:K
-          if(numEdges(m))
-            cost=zeros(1,numEdges(m));
-            for edge=1:numEdges(m)
-              cost(edge)=computeEdgeCost(this,m,k,edgeList(edge));
-            end
-            base=ka(1);
-            span=double(kb(end)-base+1);
-            allGraphs{k,1+m}=sparse(double(ka-base+1),double(kb-base+1),cost,span,span,numEdges(m));
-          else
-            allGraphs{k,1+m}=0;
-          end
-        end
-      end
-
-      % sum costs across graphs for each individual
-      cost=zeros(K,1);
-      for k=1:K
-        for m=1:(M+1)
-          costkm=allGraphs{k,m};
-          cost(k)=cost(k)+sum(costkm(:));
-        end
-      end
-
-      % normalize costs by total number of blocks and edges
-      cost=cost/(1+B+sum(numEdges));
     end
   end
   

@@ -11,7 +11,7 @@ classdef GPSReceiver < Sensor
     % Get a position measurement
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % n = data index, uint32 scalar
     %
     % OUTPUT
     % lon = longitude in radians, double scalar
@@ -20,7 +20,7 @@ classdef GPSReceiver < Sensor
     %
     % NOTES
     % Throws an exception if the data index is out of range
-    [lon,lat,alt]=getGlobalPosition(this,k);
+    [lon,lat,alt]=getGlobalPosition(this,n);
  
     % Check whether precision information is available
     % 
@@ -31,7 +31,7 @@ classdef GPSReceiver < Sensor
     % Get precision information
     %
     % INPUT
-    % k = data index, uint32 scalar
+    % n= data index, uint32 scalar
     %
     % OUTPUT 
     % hDop = horizontal dilution of precision (unitless), double scalar
@@ -40,7 +40,7 @@ classdef GPSReceiver < Sensor
     %
     % NOTES
     % Throws an exception if the data index is out of range
-    [hDop,vDop,sigmaR]=getPrecision(this,k);
+    [hDop,vDop,sigmaR]=getPrecision(this,n);
   end 
  
 end

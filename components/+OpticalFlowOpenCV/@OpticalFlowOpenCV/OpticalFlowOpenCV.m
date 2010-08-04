@@ -82,29 +82,30 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
       flag=hasData(this.sensor);
     end
     
-    function ka=first(this)
-      ka=first(this.sensor);
+    function na=first(this)
+      na=first(this.sensor);
     end
     
-    function ka=last(this)
-      ka=last(this.sensor);
+    function na=last(this)
+      na=last(this.sensor);
     end
     
-    function time=getTime(this,k)
-      time=getTime(this.sensor,k);
+    function time=getTime(this,n)
+      time=getTime(this.sensor,n);
     end
     
-    function edgeList=findEdges(this,kaSpan,kbSpan)
-      assert(numel(kaSpan)==1);
-      assert(numel(kbSpan)==1);
+    function edgeList=findEdges(this,x,naSpan,nbSpan)
+      assert(isa(x,'Trajectory'));
+      assert(numel(naSpan)==1);
+      assert(numel(nbSpan)==1);
       if(hasData(this.sensor))
-        kaMin=last(this.sensor)-kaSpan;
-        kbMin=last(this.sensor)-kbSpan;
-        kaMin=max([first(this.sensor),kaMin,kbMin-uint32(1)]);
-        kaMax=last(this.sensor)-uint32(1);
-        a=kaMin:kaMax;
+        naMin=last(this.sensor)-naSpan;
+        nbMin=last(this.sensor)-nbSpan;
+        naMin=max([first(this.sensor),naMin,nbMin-uint32(1)]);
+        naMax=last(this.sensor)-uint32(1);
+        a=naMin:naMax;
       end
-      if(kaMax>=kaMin)
+      if(naMax>=naMin)
         edgeList=GraphEdge(a,a+uint32(1));
       else
         edgeList=repmat(GraphEdge,[0,1]);
@@ -115,11 +116,11 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
       assert(numel(x)==1);
       assert(numel(edge)==1);
       assert(hasData(this.sensor));
-      ka=first(this.sensor);
-      kb=last(this.sensor);
+      na=first(this.sensor);
+      nb=last(this.sensor);
       a=edge.first;
       b=edge.second;
-      assert((b>a)&&(a>=ka)&&(b<=kb));
+      assert((b>a)&&(a>=na)&&(b<=nb));
       
       ta=getTime(this.sensor,a);
       tb=getTime(this.sensor,b);
