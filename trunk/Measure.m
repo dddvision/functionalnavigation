@@ -63,7 +63,7 @@ classdef Measure < Sensor
     % Find a limited set of graph edges in the adjacency matrix of the cost graph
     %
     % INPUT
-    % x = trajectory that can be used to compute the graph structure, Trajectory scalar
+    % x = predicted trajectory that can be used to compute the graph structure, Trajectory scalar
     % naSpan = maximum difference between lower node index and last node index, uint32 scalar
     % nbSpan = maximum difference between upper node index and last node index, uint32 scalar
     %
