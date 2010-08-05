@@ -7,11 +7,15 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
   methods (Access=public)
     function this=OpticalFlowOpenCV(uri)
       this=this@Measure(uri);
-      fprintf('\nInitializing %s\n',class(this));
-      
-      if(~exist('mexOpticalFlowOpenCV','file'))
-        fprintf('\nCompiling mex wrapper for OpenCV...');
+      if(this.verbose)
+        fprintf('\nInitializing %s\n',class(this));
+      end
         
+      if(~exist('mexOpticalFlowOpenCV','file'))
+        if(this.verbose)
+          fprintf('\nCompiling mex wrapper for OpenCV...');
+        end
+          
         % Locate OpenCV libraries
         userPath=path;
         userWarnState=warning('off','all'); % see MATLAB Solution ID 1-5JUPSQ
@@ -55,7 +59,9 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
           error(details);
         end
         cd(userDirectory);
-        fprintf('done');
+        if(this.verbose)
+          fprintf('done');
+        end
       end
       
       try
