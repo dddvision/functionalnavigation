@@ -96,8 +96,6 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
     
     function edgeList=findEdges(this,x,naSpan,nbSpan)
       assert(isa(x,'Trajectory'));
-      assert(numel(naSpan)==1);
-      assert(numel(nbSpan)==1);
       if(hasData(this.sensor))
         naMin=last(this.sensor)-naSpan;
         nbMin=last(this.sensor)-nbSpan;
@@ -113,8 +111,6 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
     end
     
     function cost=computeEdgeCost(this,x,edge)
-      assert(numel(x)==1);
-      assert(numel(edge)==1);
       assert(hasData(this.sensor));
       na=first(this.sensor);
       nb=last(this.sensor);

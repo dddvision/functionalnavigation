@@ -51,10 +51,8 @@ classdef DynamicModel < Trajectory
     % NOTES
     % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@DynamicModel(initialTime,uri);
-    % Throws an exception if any input is of the wrong size
     function this=DynamicModel(initialTime,uri)
       assert(isa(initialTime,'double'));
-      assert(numel(initialTime)==1);
       assert(isa(uri,'char'));
     end
   end
@@ -105,8 +103,8 @@ classdef DynamicModel < Trajectory
     %
     % NOTE
     % A block with zero parameters returns zero cost
-    % Cost is the negative natural log of the probability mass function normalized by its peak value
-    %   Typical costs are in the range [0,4.5] for a normal distribution
+    % Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
+    % Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
     cost=computeInitialBlockCost(this);
     cost=computeExtensionBlockCost(this,blockIndex);
     
