@@ -46,7 +46,6 @@ classdef Sensor < handle
     % NOTES
     % Time stamps must not decrease with increasing indices
     % Throws an exception if data at the node is invalid
-    % Throws an exception if input is of the wrong size
     time=getTime(this,n);
   end
   

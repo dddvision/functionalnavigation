@@ -88,8 +88,6 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
       assert(isa(x,'Trajectory'));
       assert(isa(naSpan,'uint32'));
       assert(isa(nbSpan,'uint32'));
-      assert(numel(naSpan)==1);
-      assert(numel(nbSpan)==1);
       if(this.status)
         nMin=max([this.na,this.nb-naSpan,this.nb-nbSpan]);
         nMax=this.nb;
@@ -105,8 +103,6 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
     function cost=computeEdgeCost(this,x,graphEdge)
       assert(isa(x,'Trajectory'));
       assert(isa(graphEdge,'GraphEdge'));
-      assert(numel(x)==1);
-      assert(numel(graphEdge)==1);
       assert(this.status);
       assert(graphEdge.first==graphEdge.second);
       pose=evaluate(x,this.t(graphEdge.second));
