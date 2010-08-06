@@ -25,7 +25,9 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
   methods (Access=public)
     function this=MacAcc
       this=this@AccelerometerArray;
-      fprintf('\nInitializing %s\n',class(this));
+      if(this.verbose)
+        fprintf('\nInitializing %s\n',class(this));
+      end
       
       thisPath=fileparts(mfilename('fullpath'));
       smsLibPath=fullfile(thisPath,this.smsLib);
@@ -124,7 +126,9 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
       try
         fclose(this.fid);
       catch err
-        fprintf('%s',err.message);
+        if(this.verbose)
+          fprintf('%s',err.message);
+        end
       end
     end
   end

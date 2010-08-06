@@ -25,8 +25,10 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   methods (Access=public)
     function this=MacCam
       this=this@Camera;
-      fprintf('\nInitializing %s\n',class(this));
-      
+      if(this.verbose)
+        fprintf('\nInitializing %s\n',class(this));
+      end
+        
       this.focal=this.numStrides*cot(this.cameraFieldOfView/2);
       
       if(~exist(this.localCache,'dir'))

@@ -20,9 +20,13 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & DataContainer
         zipName=[dataSetName,'.zip'];
         localZip=[localDir,'/',zipName];
         url=[repository,zipName];
-        fprintf('\ncaching: %s',url);
+        if(this.verbose)
+          fprintf('\ncaching: %s',url);
+        end
         urlwrite(url,localZip);
-        fprintf('\nunzipping: %s',localZip);
+        if(this.verbose)
+          fprintf('\nunzipping: %s',localZip);
+        end
         unzip(localZip,localDir);
         delete(localZip);
       end

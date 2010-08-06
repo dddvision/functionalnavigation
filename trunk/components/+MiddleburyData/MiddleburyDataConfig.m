@@ -7,5 +7,6 @@ classdef MiddleburyDataConfig  < handle
     exposure = 'Exp1'; % 'Exp0', 'Exp1', 'Exp2'
     fps = 3; % (3) frames per second
     numImages = 7; % (7) number of images
+    verbose = false; % (false) display warnings and other diagnostic information
   end
 end
