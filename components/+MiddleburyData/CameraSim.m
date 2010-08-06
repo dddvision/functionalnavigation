@@ -132,7 +132,9 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
       end
       if(~exist(fcache,'file'))
         url=[repository,subdir,view];
-        fprintf('\ncaching: %s',url);
+        if(this.verbose)
+          fprintf('\ncaching: %s',url);
+        end
         urlwrite(url,fcache);
       end
       rgb=imread(fcache);
