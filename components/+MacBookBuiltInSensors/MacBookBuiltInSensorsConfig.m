@@ -24,7 +24,7 @@ classdef MacBookBuiltInSensorsConfig < handle
     % Maximum time in seconds to wait for individual sensor initialization (10)
     timeOut=10;
     
-    % display warnings and other diagnostic information (false)
-    verbose=false; 
+    % display warnings and other diagnostic information (true)
+    verbose=true; 
   end
 end

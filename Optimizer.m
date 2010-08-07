@@ -43,12 +43,12 @@ classdef Optimizer < handle
     % uri = (see Measure constructor)
     %
     % NOTES
+    % Uses the system time as a reference when no measures are given
     % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@Optimizer(dynamicModelName,measureNames,uri);
     function this=Optimizer(dynamicModelName,measureNames,uri)
       assert(isa(dynamicModelName,'char'));
       assert(isa(measureNames,'cell'));
-      assert(isa(measureNames{1},'char'));
       assert(isa(uri,'char'));
     end
   end
