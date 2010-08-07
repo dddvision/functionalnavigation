@@ -66,12 +66,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       this.nSpan=uint32(floor(-0.5+sqrt(0.25+2*this.maxEdges)));
       
       % instantiate the default objective
-      this.objective=Objective(dynamicModelName,measureNames,uri);
-      
-      % add inputs to the objective
-      for k=numel(this.objective.input):this.PopulationSize
-        addInput(this.objective);
-      end
+      this.objective=Objective(dynamicModelName,measureNames,uri,this.PopulationSize);
       
       % determine initial costs
       bits=getBits(this.objective);
@@ -104,23 +99,23 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   end
 end
 
-function [K,B,n1,n2,n3,n4]=analyzeStructure(objective)
+function [K,B,nIL,nIU,nEL,nEU]=analyzeStructure(objective)
   x=objective.input(1);
   K=numel(objective.input);
   B=numExtensionBlocks(x);
-  n1=numInitialLogical(x);
-  n2=numInitialUint32(x);
-  n3=numExtensionLogical(x);
-  n4=numExtensionUint32(x);
+  nIL=numInitialLogical(x);
+  nIU=numInitialUint32(x);
+  nEL=numExtensionLogical(x);
+  nEU=numExtensionUint32(x);
 end
 
 function bits=getBits(objective)
-  [K,B,n1,n2,n3,n4]=analyzeStructure(objective);
-  bits=false(K,n1+n2+B*(n3+n4));
-  p1=uint32(1):n1;
-  p2=uint32(1):n2;
-  p3=uint32(1):n3;
-  p4=uint32(1):n4;
+  [K,B,nIL,nIU,nEL,nEU]=analyzeStructure(objective);
+  bits=false(K,nIL+nIU+B*(nEL+nEU));
+  p1=uint32(1):nIL;
+  p2=uint32(1):nIU;
+  p3=uint32(1):nEL;
+  p4=uint32(1):nEU;
   pU=uint32(1):uint32(32);
   bB=uint32(1):uint32(B);
   for k=1:K
@@ -129,7 +124,7 @@ function bits=getBits(objective)
     for p=p1
       bits(k,base+p)=getInitialLogical(Fk,p-1);
     end
-    base=base+n1;
+    base=base+nIL;
     for p=p2
       bits(k,base+pU)=uints2bits(getInitialUint32(Fk,p-1));
       base=base+uint32(32);
@@ -138,7 +133,7 @@ function bits=getBits(objective)
       for p=p3
         bits(k,base+p)=getExtensionLogical(Fk,b-1,p-1);
       end
-      base=base+n3;
+      base=base+nEL;
       for p=p4
         bits(k,base+pU)=uints2bits(getExtensionUint32(Fk,b-1,p-1));
         base=base+uint32(32);
@@ -148,11 +143,11 @@ function bits=getBits(objective)
 end
 
 function putBits(objective,bits)
-  [K,B,n1,n2,n3,n4]=analyzeStructure(objective);
-  p1=uint32(1):n1;
-  p2=uint32(1):n2;
-  p3=uint32(1):n3;
-  p4=uint32(1):n4;
+  [K,B,nIL,nIU,nEL,nEU]=analyzeStructure(objective);
+  p1=uint32(1):nIL;
+  p2=uint32(1):nIU;
+  p3=uint32(1):nEL;
+  p4=uint32(1):nEU;
   pU=uint32(1):uint32(32);
   bB=uint32(1):uint32(B);
   for k=1:K
@@ -161,7 +156,7 @@ function putBits(objective,bits)
     for p=p1
       setInitialLogical(Fk,p-1,bits(k,base+p));
     end
-    base=base+n1;
+    base=base+nIL;
     for p=p2
       setInitialUint32(Fk,p-1,bits2uints(bits(k,base+pU)));
       base=base+uint32(32);
@@ -170,7 +165,7 @@ function putBits(objective,bits)
       for p=p3
         setExtensionLogical(Fk,b-1,p-1,bits(k,base+p));
       end
-      base=base+n3;
+      base=base+nEL;
       for p=p4
         setExtensionUint32(Fk,b-1,p-1,bits2uints(bits(k,base+pU)));
         base=base+uint32(32);
@@ -194,7 +189,7 @@ end
 
 function cost=computeCostMean(objective,kBest,naSpan,nbSpan)
   K=numel(objective.input);
-  M=numMeasures(objective);
+  M=numel(objective.measure);
   B=double(numExtensionBlocks(objective.input(1)));
   allGraphs=cell(K,M+1);
 
@@ -212,7 +207,7 @@ function cost=computeCostMean(objective,kBest,naSpan,nbSpan)
   % build cost graphs from measures
   numEdges=zeros(1,M);
   for m=1:M
-    edgeList=findEdges(objective,m,kBest,naSpan,nbSpan);
+    edgeList=findEdges(objective.measure{m},objective.input(kBest),naSpan,nbSpan);
     numEdges(m)=numel(edgeList);
     na=cat(1,edgeList.first);
     nb=cat(1,edgeList.second);
@@ -220,7 +215,7 @@ function cost=computeCostMean(objective,kBest,naSpan,nbSpan)
       if(numEdges(m))
         cost=zeros(1,numEdges(m));
         for graphEdge=1:numEdges(m)
-          cost(graphEdge)=computeEdgeCost(objective,m,k,edgeList(graphEdge));
+          cost(graphEdge)=computeEdgeCost(objective.measure{m},objective.input(k),edgeList(graphEdge));
         end
         base=na(1);
         span=double(nb(end)-base+1);

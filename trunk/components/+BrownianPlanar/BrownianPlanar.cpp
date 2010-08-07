@@ -35,7 +35,7 @@ namespace tommas
     std::vector<double> aRate;
     
     TimeInterval interval;
-    unsigned firstNewBlock;
+    uint32_t firstNewBlock;
     
     static double paramToForce(uint32_t p)
     {
@@ -89,7 +89,7 @@ namespace tommas
     }
     
     void evaluateGeneral(const WorldTime& time, Pose& pose,
-                         unsigned& dkFloor, double& dtRemain, double& halfAngle)
+                         uint32_t& dkFloor, double& dtRemain, double& halfAngle)
     {
       // position and velocity A=[1,tau;0,1] B=[0.5*tau*tau;tau]
       static const double tau=1/rate;
@@ -103,12 +103,12 @@ namespace tommas
       double ct1;
       double dk;
       double dtFloor;
-      unsigned K;
-      unsigned k;
+      uint32_t K;
+      uint32_t k;
       
       dt=time-interval.first;
       dk=dt*rate;
-      K=static_cast<unsigned>(ceil(dk));
+      K=static_cast<uint32_t>(ceil(dk));
       for( k=firstNewBlock; k<K; ++k )
       {
         x[k+1]=x[k]+tau*xRate[k]+c0*fx[k];
@@ -120,7 +120,7 @@ namespace tommas
       }
       firstNewBlock=K;
       
-      dkFloor=static_cast<unsigned>(floor(dk));    
+      dkFloor=static_cast<uint32_t>(floor(dk));    
       dtFloor=static_cast<double>(dkFloor)/rate;
       dtRemain=dt-dtFloor;
       
@@ -143,7 +143,7 @@ namespace tommas
     void evaluatePose(const WorldTime& time, Pose& pose)
     {
       static const Pose nullPose;
-      unsigned dkFloor;
+      uint32_t dkFloor;
       double dtRemain;
       double halfAngle;
       
@@ -162,7 +162,7 @@ namespace tommas
     void evaluateTangentPose(const WorldTime& time, TangentPose& tangentPose)
     {
       static const TangentPose nullTangentPose;
-      unsigned dkFloor;
+      uint32_t dkFloor;
       double dtRemain;
       double halfAngle;
       double halfAngleRate;
@@ -235,35 +235,35 @@ namespace tommas
       return;
     }
 
-    unsigned numInitialLogical(void) const {return(0);}
-    unsigned numInitialUint32(void) const {return(0);}
-    unsigned numExtensionLogical(void) const {return(0);}
-    unsigned numExtensionUint32(void) const {return(3);}
+    uint32_t numInitialLogical(void) const {return(0);}
+    uint32_t numInitialUint32(void) const {return(0);}
+    uint32_t numExtensionLogical(void) const {return(0);}
+    uint32_t numExtensionUint32(void) const {return(3);}
 
-    unsigned numExtensionBlocks(void)
+    uint32_t numExtensionBlocks(void)
     {
-      return(px.size());
+      return(static_cast<uint32_t>(px.size()));
     }
 
-    bool getInitialLogical(unsigned parameterIndex)
+    bool getInitialLogical(uint32_t parameterIndex)
     {
       throw("BrownianPlanar: has no initial logical parameters");
       return(false);
     }
 
-    uint32_t getInitialUint32(unsigned parameterIndex)
+    uint32_t getInitialUint32(uint32_t parameterIndex)
     {
       throw("BrownianPlanar: has no initial integer parameters");
       return(0);
     }
 
-    bool getExtensionLogical(unsigned blockIndex, unsigned parameterIndex)
+    bool getExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex)
     {
       throw("BrownianPlanar: has no extension logical parameters");
       return(false);
     }
 
-    uint32_t getExtensionUint32(unsigned blockIndex, unsigned parameterIndex)
+    uint32_t getExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex)
     {
       if(blockIndex>=numExtensionBlocks())
       {
@@ -283,25 +283,25 @@ namespace tommas
       }
     }
 
-    void setInitialLogical(unsigned parameterIndex, bool value)
+    void setInitialLogical(uint32_t parameterIndex, bool value)
     {
       throw("BrownianPlanar: has no initial logical parameters");
       return;
     }
 
-    void setInitialUint32(unsigned parameterIndex, uint32_t value)
+    void setInitialUint32(uint32_t parameterIndex, uint32_t value)
     {
       throw("BrownianPlanar: has no initial integer parameters");
       return;
     }
 
-    void setExtensionLogical(unsigned blockIndex, unsigned parameterIndex, bool value)
+    void setExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex, bool value)
     {
       throw("BrownianPlanar: has no extension logical parameters");
       return;
     }
 
-    void setExtensionUint32(unsigned blockIndex, unsigned parameterIndex, uint32_t value)
+    void setExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex, uint32_t value)
     {
       if(blockIndex>=numExtensionBlocks())
       {
@@ -329,7 +329,7 @@ namespace tommas
 
     double computeInitialBlockCost(void) {return(0.0);}
 
-    double computeExtensionBlockCost(unsigned blockIndex)
+    double computeExtensionBlockCost(uint32_t blockIndex)
     {
       double f0,f1,f2;
       double cost;

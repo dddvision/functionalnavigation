@@ -6,7 +6,7 @@ classdef ThesisDataDDielConfig  < handle
     % repository URL including ending '/'
     repository='http://people.csail.mit.edu/ddiel/archive/';
     
-    % display warnings and other diagnostic information (false)
-    verbose=false; 
+    % display warnings and other diagnostic information (true)
+    verbose=true;
   end
 end

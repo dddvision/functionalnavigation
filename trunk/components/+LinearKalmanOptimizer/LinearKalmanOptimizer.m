@@ -12,18 +12,14 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
       this=this@Optimizer(dynamicModelName,measureNames,uri);
       
       % instantiate the default objective
-      this.objective=Objective(dynamicModelName,measureNames,uri);
+      this.objective=Objective(dynamicModelName,measureNames,uri,1);
       
       % display warning
       if(this.verbose)
-        fprintf('\n\nWarning: LinearKalmanOptimizer currently only uses the last on-diagonal element of any measure');
-      end
-
-      % handle dynamic model initial block description
-      if(numInitialLogical(this.objective.input)>0)
-        if(this.verbose)
-          fprintf('\n\nWarning: LinearKalmanOptimizer sets all logical parameters to false');
-        end
+        fprintf('\n\nWarning: LinearKalmanOptimizer only optimizes over');
+        fprintf('\ninitial Uint32 parameters. All logical parameters will');
+        fprintf('\nbe set to false. In addition, only the last on-diagonal');
+        fprintf('\nelement of each measure will be used.');
       end
       
       % set initial state (assuming its range is the interval [0,1])
@@ -146,10 +142,10 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     function y=measurementCost(this,v)
       y=0;
       putParam(this,v);
-      for m=1:numMeasures(this.objective)
-        edgeList=findEdges(this.objective,m,uint32(1),uint32(0),uint32(0)); % returns zero or one edges
+      for m=1:numel(this.objective.measure)
+        edgeList=findEdges(this.objective.measure{m},this.objective.input(1),uint32(0),uint32(0)); % zero or one edges
         if(~isempty(edgeList))
-          y=y+computeEdgeCost(this.objective,m,uint32(1),edgeList);
+          y=y+computeEdgeCost(this.objective.measure{m},this.objective.input(1),edgeList);
         end
       end
     end

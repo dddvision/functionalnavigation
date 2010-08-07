@@ -1,8 +1,8 @@
 classdef DemoConfig < handle
   properties (Constant=true,GetAccess=public)
     uri = 'matlab:MiddleburyData'; % ('matlab:MiddleburyData') select hardware resource or data container
-    dynamicModelName = 'XDynamics'; % ('XDynamics') select dynamic model
-    measureNames = {'XMeasure'}; % ({'XMeasure'}) select measures
+    dynamicModelName = 'XDynamics'; % ('XDynamics') dynamic model selection
+    measureNames = {'XMeasure'}; % ({'XMeasure'}) list of measures that can be empty
     optimizerName = 'LinearKalmanOptimizer'; % ('LinearKalmanOptimizer') optimizer selection
     numSteps = uint32(1E9); % (uint32(1E9)) number of optimization steps until termination
     textOnly = false; % (true) show text output only

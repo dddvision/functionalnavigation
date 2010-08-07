@@ -3,7 +3,7 @@
 
 namespace tommas
 {
-  typedef std::pair<unsigned,unsigned> GraphEdge;
+  typedef std::pair<uint32_t,uint32_t> GraphEdge;
 }
 
 #endif

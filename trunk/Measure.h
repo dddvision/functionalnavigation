@@ -25,7 +25,7 @@ namespace tommas
     ~Measure(void){}
   
   public:
-    virtual std::vector<GraphEdge> findEdges(const Trajectory&,const unsigned,const unsigned) = 0;
+    virtual std::vector<GraphEdge> findEdges(const Trajectory&,const uint32_t,const uint32_t) = 0;
     virtual double computeEdgeCost(const Trajectory&,const GraphEdge) = 0;
     
     static std::string frameworkClass(void) { return std::string("Measure"); }
