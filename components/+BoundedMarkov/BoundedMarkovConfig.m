@@ -13,8 +13,8 @@ classdef BoundedMarkovConfig < handle
     
     % forcing matrix
 %     B=sparse([zeros(6);diag([1;1;1;0.1;0.1;0.1])]); % 6-DOF
-    B=sparse([zeros(6);diag([1,1,0,0,0,0.1])]); % 3-DOF (X,Y,Theta)
-%     B=sparse([zeros(6);diag([1,1,1,0,0,0])]); % 3-DOF (X,Y,Z)
+%     B=sparse([zeros(6);diag([1,1,0,0,0,0.1])]); % 3-DOF (X,Y,Theta)
+    B=sparse([zeros(6);diag([1,1,1,0,0,0])]); % 3-DOF (X,Y,Z)
 %     B=sparse([zeros(6);diag([1,1,0,0,0,0])]); % 2-DOF (X,Y)
 
     % Fixed initial state

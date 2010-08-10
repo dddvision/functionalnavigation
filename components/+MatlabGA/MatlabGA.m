@@ -12,16 +12,27 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   properties (GetAccess=private,SetAccess=private)
     nSpan
-    objective
+    nIL
+    nIU
+    nEL
+    nEU
+    iIL
+    iIU
+    iEL
+    iEU
+    iU
+    dynamicModel
+    measure
     cost
     defaultOptions
     stepGAhandle
   end
   
   methods (Access=public)
-    function this=MatlabGA(dynamicModelName,measureNames,uri)
-      this=this@Optimizer(dynamicModelName,measureNames,uri);
-            
+    function this=MatlabGA(dynamicModel,measure)
+      this=this@Optimizer(dynamicModel,measure);
+          
+      % set initial options for the GADS toolbox
       if(~license('test','gads_toolbox'))
         error('Requires license for GADS toolbox -- see MatlabGA configuration options');
       end
@@ -41,7 +52,6 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       this.defaultOptions.Vectorized = 'on';
       this.defaultOptions.LinearConstr.type = 'unconstrained';
       this.defaultOptions.EliteCount = 1+floor(this.PopulationSize/12);
-
       this.defaultOptions.PopulationSize = this.PopulationSize;
       this.defaultOptions.CrossoverFraction = this.CrossoverFraction;
       this.defaultOptions.CreationFcn = this.CreationFcn;
@@ -64,22 +74,50 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       
       % compute span associated with a maximum number of graph edges (edges<=span*(span+1)/2)
       this.nSpan=uint32(floor(-0.5+sqrt(0.25+2*this.maxEdges)));
+ 
+      % copy input arguments
+      this.dynamicModel=dynamicModel;
+      this.measure=measure;
       
-      % instantiate the default objective
-      this.objective=Objective(dynamicModelName,measureNames,uri,this.PopulationSize);
+      % get parameter structure
+      this.nIL=numInitialLogical(this.dynamicModel(1));
+      this.nIU=numInitialUint32(this.dynamicModel(1));
+      this.nEL=numExtensionLogical(this.dynamicModel(1));
+      this.nEU=numExtensionUint32(this.dynamicModel(1));
+      this.iIL=uint32(1):this.nIL;
+      this.iIU=uint32(1):this.nIU;
+      this.iEL=uint32(1):this.nEL;
+      this.iEU=uint32(1):this.nEU;
+      this.iU=uint32(1):uint32(32);
+
+      % randomize initial parameters
+      for k=1:numel(this.dynamicModel)
+        L=randLogical(this.nIL);
+        for p=this.iIL
+          setInitialLogical(this.dynamicModel(k),p-uint32(1),L(p));
+        end
+        U=randUint32(this.nIU);
+        for p=this.iIU
+          setInitialUint32(this.dynamicModel(k),p-uint32(1),U(p));
+        end
+      end
+      
+      % refresh and extend
+      refreshAllMeasures(this);
+      extendToCover(this);
       
       % determine initial costs
-      bits=getBits(this.objective);
+      bits=getBits(this);
       objectiveContainer('put',this);
       this.cost=feval(@objectiveContainer,bits);
     end
     
     function num=numResults(this)
-      num=numel(this.objective.input);
+      num=numel(this.dynamicModel);
     end
        
     function xEst=getTrajectory(this,k)
-      xEst=this.objective.input(k+1);
+      xEst=this.dynamicModel(k+1);
     end
     
     function cEst=getCost(this,k)
@@ -87,90 +125,162 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     end
     
     function step(this)
-      refresh(this.objective);
-      bits=getBits(this.objective);
+      refreshAllMeasures(this);
+      extendToCover(this);
+      bits=getBits(this);
       nvars=size(bits,2);
       nullstate=struct('FunEval',0);
       objectiveContainer('put',this);
       [this.cost,bits]=feval(this.stepGAhandle,this.cost,bits,...
         this.defaultOptions,nullstate,nvars,@objectiveContainer);
-      putBits(this.objective,bits);
+      putBits(this,bits);
     end
   end
-end
+  
+  methods (Access=private)
+    function bits=getBits(this)
+      K=numel(this.dynamicModel);
+      B=numExtensionBlocks(this.dynamicModel(1));
+      bits=false(K,this.nIL+this.nIU+B*(this.nEL+this.nEU));
+      iB=uint32(1):uint32(B);
+      for k=1:K
+        Fk=this.dynamicModel(k);
+        base=uint32(0);
+        for p=this.iIL
+          bits(k,base+p)=getInitialLogical(Fk,p-1);
+        end
+        base=base+this.nIL;
+        for p=this.iIU
+          bits(k,base+this.iU)=uints2bits(getInitialUint32(Fk,p-1));
+          base=base+uint32(32);
+        end
+        for b=iB
+          for p=this.iEL
+            bits(k,base+p)=getExtensionLogical(Fk,b-1,p-1);
+          end
+          base=base+this.nEL;
+          for p=this.iEU
+            bits(k,base+this.iU)=uints2bits(getExtensionUint32(Fk,b-1,p-1));
+            base=base+uint32(32);
+          end
+        end
+      end
+    end
+    
+    function putBits(this,bits)
+      K=numel(this.dynamicModel);
+      B=numExtensionBlocks(this.dynamicModel(1));
+      iB=uint32(1):uint32(B);
+      for k=1:K
+        Fk=this.dynamicModel(k);
+        base=uint32(0);
+        for p=this.iIL
+          setInitialLogical(Fk,p-1,bits(k,base+p));
+        end
+        base=base+this.nIL;
+        for p=this.iIU
+          setInitialUint32(Fk,p-1,bits2uints(bits(k,base+this.iU)));
+          base=base+uint32(32);
+        end
+        for b=iB
+          for p=this.iEL
+            setExtensionLogical(Fk,b-1,p-1,bits(k,base+p));
+          end
+          base=base+this.nEL;
+          for p=this.iEU
+            setExtensionUint32(Fk,b-1,p-1,bits2uints(bits(k,base+this.iU)));
+            base=base+uint32(32);
+          end
+        end
+      end
+    end
+    
+    function cost=computeCostMean(this,kBest,naSpan,nbSpan)
+      K=numel(this.dynamicModel);
+      M=numel(this.measure);
+      B=double(numExtensionBlocks(this.dynamicModel(1)));
+      allGraphs=cell(K,M+1);
 
-function [K,B,nIL,nIU,nEL,nEU]=analyzeStructure(objective)
-  x=objective.input(1);
-  K=numel(objective.input);
-  B=numExtensionBlocks(x);
-  nIL=numInitialLogical(x);
-  nIU=numInitialUint32(x);
-  nEL=numExtensionLogical(x);
-  nEU=numExtensionUint32(x);
-end
+      % build cost graph from prior
+      for k=1:K
+        Fk=this.dynamicModel(k);
+        cost=sparse([],[],[],B+1,B+1,B+1);
+        cost(1,1)=computeInitialBlockCost(Fk);
+        for b=uint32(1):uint32(B)
+          cost(b,b+1)=computeExtensionBlockCost(Fk,b-1);
+        end
+        allGraphs{k,1}=cost;
+      end
 
-function bits=getBits(objective)
-  [K,B,nIL,nIU,nEL,nEU]=analyzeStructure(objective);
-  bits=false(K,nIL+nIU+B*(nEL+nEU));
-  p1=uint32(1):nIL;
-  p2=uint32(1):nIU;
-  p3=uint32(1):nEL;
-  p4=uint32(1):nEU;
-  pU=uint32(1):uint32(32);
-  bB=uint32(1):uint32(B);
-  for k=1:K
-    Fk=objective.input(k);
-    base=uint32(0);
-    for p=p1
-      bits(k,base+p)=getInitialLogical(Fk,p-1);
-    end
-    base=base+nIL;
-    for p=p2
-      bits(k,base+pU)=uints2bits(getInitialUint32(Fk,p-1));
-      base=base+uint32(32);
-    end
-    for b=bB
-      for p=p3
-        bits(k,base+p)=getExtensionLogical(Fk,b-1,p-1);
+      % build cost graphs from measures
+      numEdges=zeros(1,M);
+      for m=1:M
+        edgeList=findEdges(this.measure{m},this.dynamicModel(kBest),naSpan,nbSpan);
+        numEdges(m)=numel(edgeList);
+        na=cat(1,edgeList.first);
+        nb=cat(1,edgeList.second);
+        for k=1:K
+          if(numEdges(m))
+            cost=zeros(1,numEdges(m));
+            for graphEdge=1:numEdges(m)
+              cost(graphEdge)=computeEdgeCost(this.measure{m},this.dynamicModel(k),edgeList(graphEdge));
+            end
+            base=na(1);
+            span=double(nb(end)-base+1);
+            allGraphs{k,1+m}=sparse(double(na-base+1),double(nb-base+1),cost,span,span,numEdges(m));
+          else
+            allGraphs{k,1+m}=0;
+          end
+        end
       end
-      base=base+nEL;
-      for p=p4
-        bits(k,base+pU)=uints2bits(getExtensionUint32(Fk,b-1,p-1));
-        base=base+uint32(32);
-      end
-    end
-  end
-end
 
-function putBits(objective,bits)
-  [K,B,nIL,nIU,nEL,nEU]=analyzeStructure(objective);
-  p1=uint32(1):nIL;
-  p2=uint32(1):nIU;
-  p3=uint32(1):nEL;
-  p4=uint32(1):nEU;
-  pU=uint32(1):uint32(32);
-  bB=uint32(1):uint32(B);
-  for k=1:K
-    Fk=objective.input(k);
-    base=uint32(0);
-    for p=p1
-      setInitialLogical(Fk,p-1,bits(k,base+p));
-    end
-    base=base+nIL;
-    for p=p2
-      setInitialUint32(Fk,p-1,bits2uints(bits(k,base+pU)));
-      base=base+uint32(32);
-    end
-    for b=bB
-      for p=p3
-        setExtensionLogical(Fk,b-1,p-1,bits(k,base+p));
+      % sum costs across graphs for each individual
+      cost=zeros(K,1);
+      for k=1:K
+        for m=1:(M+1)
+          costkm=allGraphs{k,m};
+          cost(k)=cost(k)+sum(costkm(:));
+        end
       end
-      base=base+nEL;
-      for p=p4
-        setExtensionUint32(Fk,b-1,p-1,bits2uints(bits(k,base+pU)));
-        base=base+uint32(32);
+
+      % normalize costs by total number of blocks and edges
+      cost=cost/(1+B+sum(numEdges));
+    end
+    
+    function refreshAllMeasures(this)
+      for m=1:numel(this.measure)
+        refresh(this.measure{m});
       end
     end
+
+    % extends all trajectories to cover the last sensor data
+    % should do nothing if there are no measures
+    function extendToCover(this)
+      tb=WorldTime(-Inf);
+      for m=1:numel(this.measure)
+        if(hasData(this.measure{m}))
+          tb=WorldTime(max(tb,getTime(this.measure{m},last(this.measure{m}))));
+        end
+      end
+      interval=domain(this.dynamicModel(1));
+      while(interval.second<tb)
+        for k=1:numel(this.dynamicModel)
+          Fk=this.dynamicModel(k);
+          extend(Fk);
+          b=numExtensionBlocks(Fk);
+          L=randLogical(this.nEL);
+          for p=this.iEL
+            setExtensionLogical(Fk,b-uint32(1),p-uint32(1),L(p));
+          end
+          U=randUint32(this.nEU);
+          for p=this.iEU
+            setExtensionUint32(Fk,b-uint32(1),p-uint32(1),U(p));
+          end
+        end
+        interval=domain(Fk);
+      end
+    end
+    
   end
 end
 
@@ -187,56 +297,12 @@ function bits=uints2bits(uints)
   bits=bits(:);
 end
 
-function cost=computeCostMean(objective,kBest,naSpan,nbSpan)
-  K=numel(objective.input);
-  M=numel(objective.measure);
-  B=double(numExtensionBlocks(objective.input(1)));
-  allGraphs=cell(K,M+1);
+function v=randLogical(num)
+  v=logical(rand(1,num)>0.5);
+end
 
-  % build cost graph from prior
-  for k=1:K
-    Fk=objective.input(k);
-    cost=sparse([],[],[],B+1,B+1,B+1);
-    cost(1,1)=computeInitialBlockCost(Fk);
-    for b=uint32(1):uint32(B)
-      cost(b,b+1)=computeExtensionBlockCost(Fk,b-1);
-    end
-    allGraphs{k,1}=cost;
-  end
-
-  % build cost graphs from measures
-  numEdges=zeros(1,M);
-  for m=1:M
-    edgeList=findEdges(objective.measure{m},objective.input(kBest),naSpan,nbSpan);
-    numEdges(m)=numel(edgeList);
-    na=cat(1,edgeList.first);
-    nb=cat(1,edgeList.second);
-    for k=1:K
-      if(numEdges(m))
-        cost=zeros(1,numEdges(m));
-        for graphEdge=1:numEdges(m)
-          cost(graphEdge)=computeEdgeCost(objective.measure{m},objective.input(k),edgeList(graphEdge));
-        end
-        base=na(1);
-        span=double(nb(end)-base+1);
-        allGraphs{k,1+m}=sparse(double(na-base+1),double(nb-base+1),cost,span,span,numEdges(m));
-      else
-        allGraphs{k,1+m}=0;
-      end
-    end
-  end
-
-  % sum costs across graphs for each individual
-  cost=zeros(K,1);
-  for k=1:K
-    for m=1:(M+1)
-      costkm=allGraphs{k,m};
-      cost(k)=cost(k)+sum(costkm(:));
-    end
-  end
-
-  % normalize costs by total number of blocks and edges
-  cost=cost/(1+B+sum(numEdges));
+function v=randUint32(num)
+  v=randi([0,4294967295],1,num,'uint32');
 end
 
 function varargout=objectiveContainer(varargin)
@@ -244,8 +310,8 @@ function varargout=objectiveContainer(varargin)
   bits=varargin{1};
   if(~ischar(bits))
     kBest=find(this.cost==min(this.cost),1,'first');
-    putBits(this.objective,bits);
-    varargout{1}=computeCostMean(this.objective,kBest,this.nSpan,this.nSpan);
+    putBits(this,bits);
+    varargout{1}=computeCostMean(this,kBest,this.nSpan,this.nSpan);
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else

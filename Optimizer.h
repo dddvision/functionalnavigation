@@ -5,12 +5,13 @@
 #include <string>
 #include <vector>
 
-#include "Trajectory.h"
+#include "DynamicModel.h"
+#include "Measure.h"
 
 namespace tommas
 {
   class Optimizer;
-  typedef Optimizer* (*OptimizerFactory)(std::string,std::vector<std::string>,std::string);
+  typedef Optimizer* (*OptimizerFactory)(std::vector<DynamicModel&>&,std::vector<Measure&>&);
   extern std::map<const std::string,OptimizerFactory> optimizerList;
   
   class Optimizer
@@ -24,18 +25,18 @@ namespace tommas
 
   public:
     virtual unsigned numResults(void) = 0;
-    virtual Trajectory* getTrajectory(const unsigned) = 0;
+    virtual DynamicModel* getTrajectory(const unsigned) = 0;
     virtual double getCost(const unsigned) = 0;
     virtual void step(void) = 0;
     
     static std::string frameworkClass(void) { return std::string("Optimizer"); }
-    static Optimizer* factory(std::string optimizerName,std::string dynamicModelName,
-      std::vector<std::string> measureNames,std::string uri)
+    static Optimizer* factory(std::string optimizerName,
+      std::vector<DynamicModel&> &dynamicModel, std::vector<Measure&> &measure)
     {
       Optimizer* obj;
       if(optimizerList.find(optimizerName) != optimizerList.end())
       {
-        obj=optimizerList[optimizerName](dynamicModelName,measureNames,uri);
+        obj=optimizerList[optimizerName](dynamicModel,measure);
       }
       return obj;
     }
