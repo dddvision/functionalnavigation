@@ -10,8 +10,35 @@ tommas;
 % get configuration
 config=DemoConfig;
 
+% initialize multiple measures
+M=numel(config.measureNames);
+measure=cell(M,1);
+for m=1:M
+  measure{m}=Measure.factory(config.measureNames{m},config.uri);
+end
+
+% determine initial time based on first available data node
+initialTime=WorldTime(Inf);
+for m=1:M
+  refresh(measure{m});
+  if(hasData(measure{m}))
+    initialTime=WorldTime(min(initialTime,getTime(measure{m},first(measure{m}))));
+  end
+end
+
+% use default initial time when no data is available
+if(isinf(initialTime))
+  initialTime=config.defaultInitialTime;
+end
+  
+% initialize multiple dynamic models
+dynamicModel=DynamicModel.factory(config.dynamicModelName,initialTime,config.uri);
+for k=2:config.numTrajectories
+  dynamicModel(k)=DynamicModel.factory(config.dynamicModelName,initialTime,config.uri);
+end
+
 % instantiate an optimizer
-optimizer=Optimizer.factory(config.optimizerName,config.dynamicModelName,config.measureNames,config.uri);
+optimizer=Optimizer.factory(config.optimizerName,dynamicModel,measure);
 
 % instantiate the graphical display
 gui=DemoDisplay(config.uri);

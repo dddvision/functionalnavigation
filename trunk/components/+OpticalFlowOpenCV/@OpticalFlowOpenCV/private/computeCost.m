@@ -1,4 +1,4 @@
- function cost=computeCost(Vx_OF,Vy_OF,uvr,uvt)
+ function cost=computeCost(this,Vx_OF,Vy_OF,uvr,uvt)
   % Seperate flow components
   Vxr=uvr(1,:);
   Vyr=uvr(2,:);
@@ -35,6 +35,6 @@
 %   ErrorMag=abs(acos(Vx_OFTD.*Vxt+Vy_OFTD.*Vyt));
 %   upperBound=pi*numel(Vx_OF);
   
-  cost=sum(ErrorMag(:))/upperBound;
+  cost=sum(ErrorMag(:))*(this.maxCost/upperBound);
  end
  

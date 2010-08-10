@@ -23,12 +23,12 @@ classdef Optimizer < handle
     % Do not shadow this function
     % The package directory must in the environment path
     % (MATLAB) Omit the '+' prefix when identifying package names
-    function obj=factory(pkg,dynamicModelName,measureNames,uri)
+    function obj=factory(pkg,dynamicModel,measure)
       subclass=[pkg,'.',pkg];
       if(exist(subclass,'class'))
-        obj=feval(subclass,dynamicModelName,measureNames,uri);
+        obj=feval(subclass,dynamicModel,measure);
       else
-        obj=OptimizerBridge(pkg,dynamicModelName,measureNames,uri);
+        obj=OptimizerBridge(pkg,dynamicModel,measure);
       end
       assert(isa(obj,'Optimizer'));
     end
@@ -38,18 +38,18 @@ classdef Optimizer < handle
     % Protected method to construct an Optimizer
     %
     % INPUT
-    % dynamicModelName = name of a DynamicModel subclass, string
-    % measureNames = list of names of Measure subclasses, cell array of strings
-    % uri = (see Measure constructor)
+    % dynamicModel = multiple instances of a single DynamicModel subclass, DynamicModel K-by-1
+    % measureNames = multiple instances of different Measure subclasses, cell M-by-1
     %
     % NOTES
-    % Uses the system time as a reference when no measures are given
     % Each subclass constructor must pass identical arguments to this 
-    %   constructor using the syntax this=this@Optimizer(dynamicModelName,measureNames,uri);
-    function this=Optimizer(dynamicModelName,measureNames,uri)
-      assert(isa(dynamicModelName,'char'));
-      assert(isa(measureNames,'cell'));
-      assert(isa(uri,'char'));
+    %   constructor using the syntax this=this@Optimizer(dynamicModel,measure);
+    function this=Optimizer(dynamicModel,measure)
+      assert(isa(dynamicModel,'DynamicModel'));
+      assert(isa(measure,'cell'));
+      for m=1:numel(measure)
+        assert(isa(measure{m},'Measure'));
+      end
     end
   end
   
@@ -60,13 +60,13 @@ classdef Optimizer < handle
     % num = number of results, uint32 scalar
     num=numResults(this);
     
-    % Get the most recent trajectory estimate
+    % Get the most recent trajectory estimate in the form of a dynamic model
     %
     % INPUT
     % k = zero based result index, uint32 scalar
     %
     % OUTPUT
-    % xEst = trajectory instance, Trajectory scalar
+    % xEst = trajectory instance in the form of a dynamic model, DynamicModel scalar
     %
     % NOTES
     % This function returns initial conditions if called before the first optimization step occurrs
