@@ -51,8 +51,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       this.defaultOptions.TolCon = 0;
       this.defaultOptions.Vectorized = 'on';
       this.defaultOptions.LinearConstr.type = 'unconstrained';
-      this.defaultOptions.EliteCount = 1+floor(this.PopulationSize/12);
-      this.defaultOptions.PopulationSize = this.PopulationSize;
+      this.defaultOptions.EliteCount = 1+floor(numel(dynamicModel)/12);
+      this.defaultOptions.PopulationSize = numel(dynamicModel);
       this.defaultOptions.CrossoverFraction = this.CrossoverFraction;
       this.defaultOptions.CreationFcn = this.CreationFcn;
       this.defaultOptions.CreationFcnArgs = this.CreationFcnArgs;
@@ -74,22 +74,22 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
       
       % compute span associated with a maximum number of graph edges (edges<=span*(span+1)/2)
       this.nSpan=uint32(floor(-0.5+sqrt(0.25+2*this.maxEdges)));
- 
-      % copy input arguments
+
+      % copy input argument handles
       this.dynamicModel=dynamicModel;
       this.measure=measure;
       
       % get parameter structure
-      this.nIL=numInitialLogical(this.dynamicModel(1));
-      this.nIU=numInitialUint32(this.dynamicModel(1));
-      this.nEL=numExtensionLogical(this.dynamicModel(1));
-      this.nEU=numExtensionUint32(this.dynamicModel(1));
+      this.nIL=numInitialLogical(dynamicModel(1));
+      this.nIU=numInitialUint32(dynamicModel(1));
+      this.nEL=numExtensionLogical(dynamicModel(1));
+      this.nEU=numExtensionUint32(dynamicModel(1));
       this.iIL=uint32(1):this.nIL;
       this.iIU=uint32(1):this.nIU;
       this.iEL=uint32(1):this.nEL;
       this.iEU=uint32(1):this.nEU;
       this.iU=uint32(1):uint32(32);
-
+      
       % randomize initial parameters
       for k=1:numel(this.dynamicModel)
         L=randLogical(this.nIL);
