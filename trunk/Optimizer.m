@@ -39,9 +39,10 @@ classdef Optimizer < handle
     %
     % INPUT
     % dynamicModel = multiple instances of a single DynamicModel subclass, DynamicModel K-by-1
-    % measureNames = multiple instances of different Measure subclasses, cell M-by-1
+    % measure = multiple instances of different Measure subclasses, cell M-by-1
     %
     % NOTES
+    % No assumptions should be made about the initial state of the input objects
     % Each subclass constructor must pass identical arguments to this 
     %   constructor using the syntax this=this@Optimizer(dynamicModel,measure);
     function this=Optimizer(dynamicModel,measure)
