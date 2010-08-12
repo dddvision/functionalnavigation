@@ -5,6 +5,13 @@ help(mfilename);
 % initialize tommas
 tommas;
 
+% add component repository to the path
+componentPath=fullfile(fileparts(mfilename('fullpath')),'testbed');
+if(isempty(findstr(testbedPath,path)))
+  addpath(testbedPath);
+  fprintf('\npath added: %s',testbedPath);
+end
+
 % get configuration
 config=TestbedConfig;
 
