@@ -5,8 +5,8 @@ help(mfilename);
 % initialize tommas
 tommas;
 
-% add component repository to the path
-componentPath=fullfile(fileparts(mfilename('fullpath')),'testbed');
+% add testbed repository to the path
+testbedPath=fullfile(fileparts(mfilename('fullpath')),'testbed');
 if(isempty(findstr(testbedPath,path)))
   addpath(testbedPath);
   fprintf('\npath added: %s',testbedPath);
