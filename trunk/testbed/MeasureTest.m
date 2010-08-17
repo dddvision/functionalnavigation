@@ -29,8 +29,9 @@ classdef MeasureTest < handle
         % Cost (maybe smoothed around ground truth)
         % Jacobian (sensitivity of cost to pertrubation from ground truth)
         % Hessian (eigenvalues and consistency of their ratios, eigenvectors)
-        % Time to evaluate initially
-        % Time to evaluate repeated
+        % Time to run findEdges
+        % Time to run evaluateEdgeCost initially
+        % Time to run evaluateEdgeCost repeated
     end
   end
   
