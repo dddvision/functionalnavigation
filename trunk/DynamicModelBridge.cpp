@@ -1,5 +1,5 @@
 #include "mex.h"
-#include "tommas.h"
+#include "DynamicModel.h"
 
 enum DynamicModelMember
 {

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "tommas.h"
+#include "DynamicModel.h"
 
 int main()
 { 

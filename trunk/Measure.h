@@ -28,7 +28,6 @@ namespace tommas
     virtual std::vector<GraphEdge> findEdges(const Trajectory&,const uint32_t,const uint32_t) = 0;
     virtual double computeEdgeCost(const Trajectory&,const GraphEdge) = 0;
     
-    static std::string frameworkClass(void) { return std::string("Measure"); }
     static Measure* factory(const std::string measureName, const std::string uri)
     {
       Measure* obj=NULL;
