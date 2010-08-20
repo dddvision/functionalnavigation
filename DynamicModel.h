@@ -24,20 +24,57 @@ typedef unsigned __int32 uint32_t;
 
 namespace tommas
 {
-  class DynamicModel;
-  typedef DynamicModel* (*DynamicModelFactory)(const WorldTime,const std::string);
-  extern std::map<const std::string,DynamicModelFactory> dynamicModelList;
-  
   class DynamicModel : public Trajectory
   {
   private:
+    typedef DynamicModel* (*DynamicModelFactory)(const WorldTime, const std::string);
+
     DynamicModel(const DynamicModel&){}  
+
+    static std::map<std::string,std::string>* _pDescriptionList(void)
+    {
+      static std::map<std::string,std::string> descriptionList;
+      return &descriptionList;
+    }
+
+    static std::map<std::string,DynamicModelFactory>* _pFactoryList(void)
+    {
+      static std::map<std::string,DynamicModelFactory> factoryList;
+      return &factoryList;
+    }
 
   protected:
     DynamicModel(const WorldTime,const std::string){}
     ~DynamicModel(void){}
     
   public:
+    static std::string description(const std::string name)
+    {
+      std::string str="";
+      if(_pDescriptionList()->find(name) != _pDescriptionList()->end())
+      {
+        str=(*_pDescriptionList())[name];
+      }
+      return str;
+    }
+
+    static DynamicModel* factory(const std::string name, const WorldTime initialTime, const std::string uri)
+    {
+      DynamicModel* obj=NULL;
+      if(_pFactoryList()->find(name) != _pFactoryList()->end())
+      {
+        obj=(*_pFactoryList())[name](initialTime,uri);
+      }
+      return obj;
+    }
+
+    static void associate(const std::string name, const std::string description, const DynamicModelFactory componentFactory)
+    {
+      (*_pDescriptionList())[name]=description;
+      (*_pFactoryList())[name]=componentFactory;
+      return;
+    }
+
     virtual uint32_t numInitialLogical(void) const = 0;
     virtual uint32_t numInitialUint32(void) const = 0;
     virtual uint32_t numExtensionLogical(void) const = 0;
@@ -58,18 +95,6 @@ namespace tommas
     virtual double computeExtensionBlockCost(uint32_t) = 0;
 
     virtual void extend(void) = 0;
-    
-  public:
-    static std::string frameworkClass(void) { return std::string("DynamicModel"); }
-    static DynamicModel* factory(const std::string dynamicModelName,const WorldTime initialTime,const std::string uri)
-    {
-      DynamicModel* obj=NULL;
-      if(dynamicModelList.find(dynamicModelName) != dynamicModelList.end())
-      {
-        obj=dynamicModelList[dynamicModelName](initialTime,uri);
-      }
-      return obj;
-    }
   };
 }
 

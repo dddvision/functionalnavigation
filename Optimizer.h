@@ -29,7 +29,6 @@ namespace tommas
     virtual double getCost(const unsigned) = 0;
     virtual void step(void) = 0;
     
-    static std::string frameworkClass(void) { return std::string("Optimizer"); }
     static Optimizer* factory(std::string optimizerName,
       std::vector<DynamicModel&> &dynamicModel, std::vector<Measure&> &measure)
     {

@@ -389,8 +389,18 @@ namespace tommas
     }
   };
   
-  DynamicModel* BrownianPlanarFactory(const WorldTime initialTime,const std::string uri)
-  { return(new BrownianPlanar(initialTime,uri)); }
+  class BrownianPlanarInitializer
+  {
+  public:
+    static DynamicModel* factory(const WorldTime initialTime, const std::string uri)
+    { return(new BrownianPlanar(initialTime, uri)); }
+    
+    BrownianPlanarInitializer(void)
+    {
+      DynamicModel::associate("BrownianPlanar", "Description of BrownianPlanar", factory);
+    }
+  } _BrownianPlanarInitializer;
+
 }
 
 #include "BrownianPlanarConfig.cpp"
