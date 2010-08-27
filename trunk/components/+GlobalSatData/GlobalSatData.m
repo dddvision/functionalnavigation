@@ -1,24 +1,27 @@
 classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & DataContainer
 
   properties (GetAccess=private,SetAccess=private)
-    description
     sensor
     sensorDescription
     hasRef
     bodyRef
   end
 
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text='Simulated GPS data based on the GlobalSat BU-xxx GPS sensor.';
+      end
+      DataContainer.connect(name,@componentDescription,@GlobalSatData.GlobalSatData);
+    end
+  end
+  
   methods (Access=public)
     function this=GlobalSatData
-      this.description='Simulated GPS data';
       this.sensor{1}=GlobalSatData.GpsSim;
       this.sensorDescription{1}='GlobalSat BU-xxx GPS sensor';
       this.hasRef=true;
       this.bodyRef=GlobalSatData.BodyReference;
-    end
-    
-    function text=getDescription(this)
-      text=this.description;
     end
     
     function list=listSensors(this,type)

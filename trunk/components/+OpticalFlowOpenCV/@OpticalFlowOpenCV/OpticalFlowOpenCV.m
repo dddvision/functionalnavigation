@@ -4,6 +4,17 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
     sensor
   end
   
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text=['Implements a trajectory measure based on the computation of optical flow between image pairs. ',...
+          'Depends on the OpenCV library.',...
+          'Depends on a MATLAB DataContainer that has at least one Camera object.'];
+      end
+      Measure.connect(name,@componentDescription,@OpticalFlowOpenCV.OpticalFlowOpenCV);
+    end
+  end
+  
   methods (Access=public)
     function this=OpticalFlowOpenCV(uri)
       this=this@Measure(uri);

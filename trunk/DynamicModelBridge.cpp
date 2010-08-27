@@ -214,7 +214,6 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
   if(!initialized)
   {
-    tommas::tommas();
     memberMap["numInitialLogical"]=numInitialLogical;
     memberMap["numInitialUint32"]=numInitialUint32;
     memberMap["numExtensionLogical"]=numExtensionLogical;
@@ -240,17 +239,17 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   argcheck(nrhs,2);
   if(mxIsChar(prhs[0]))
   {
-    std::string pkg;
+    std::string name;
     std::string uri;
     tommas::DynamicModel* obj;
     tommas::WorldTime initialTime;
     uint32_t numInstances = instance.size();
 
     argcheck(nrhs,3);
-    convert(prhs[0],pkg);
+    convert(prhs[0],name);
     convert(prhs[1],initialTime);
     convert(prhs[2],uri);
-    obj = tommas::DynamicModel::factory(pkg,initialTime,uri);
+    obj = tommas::DynamicModel::factory(name,initialTime,uri);
     if(obj==NULL)
     {
       mexErrMsgTxt("DynamicModelBridge: failed to instantiate subclass");

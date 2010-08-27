@@ -27,17 +27,17 @@ namespace tommas
   class DynamicModel : public Trajectory
   {
   private:
-    typedef DynamicModel* (*DynamicModelFactory)(const WorldTime, const std::string);
+    DynamicModel(const DynamicModel&){}
 
-    DynamicModel(const DynamicModel&){}  
-
-    static std::map<std::string,std::string>* _pDescriptionList(void)
+    typedef std::string (*DynamicModelDescription)(void);
+    static std::map<std::string,DynamicModelDescription>* pDescriptionList(void)
     {
-      static std::map<std::string,std::string> descriptionList;
+      static std::map<std::string,DynamicModelDescription> descriptionList;
       return &descriptionList;
     }
 
-    static std::map<std::string,DynamicModelFactory>* _pFactoryList(void)
+    typedef DynamicModel* (*DynamicModelFactory)(const WorldTime, const std::string);
+    static std::map<std::string,DynamicModelFactory>* pFactoryList(void)
     {
       static std::map<std::string,DynamicModelFactory> factoryList;
       return &factoryList;
@@ -46,33 +46,45 @@ namespace tommas
   protected:
     DynamicModel(const WorldTime,const std::string){}
     ~DynamicModel(void){}
-    
+
+    static void connect(const std::string name, const DynamicModelDescription cD, const DynamicModelFactory cF)
+    {
+      if(!((cD==NULL)|(cF==NULL)))
+      {
+        (*pDescriptionList())[name]=cD;
+        (*pFactoryList())[name]=cF;
+      }
+      return;
+    }    
+
   public:
+    static bool isConnected(const std::string name)
+    {
+      return(pFactoryList()->find(name) != pFactoryList()->end());
+    }
+
     static std::string description(const std::string name)
     {
       std::string str="";
-      if(_pDescriptionList()->find(name) != _pDescriptionList()->end())
+      if(isConnected(name))
       {
-        str=(*_pDescriptionList())[name];
+        str=(*pDescriptionList())[name]();
       }
-      return str;
+      return(str);
     }
 
     static DynamicModel* factory(const std::string name, const WorldTime initialTime, const std::string uri)
     {
       DynamicModel* obj=NULL;
-      if(_pFactoryList()->find(name) != _pFactoryList()->end())
+      if(isConnected(name))
       {
-        obj=(*_pFactoryList())[name](initialTime,uri);
+        obj=(*pFactoryList())[name](initialTime,uri);
       }
-      return obj;
-    }
-
-    static void associate(const std::string name, const std::string description, const DynamicModelFactory componentFactory)
-    {
-      (*_pDescriptionList())[name]=description;
-      (*_pFactoryList())[name]=componentFactory;
-      return;
+      else
+      {
+        throw("DynamicModel is not connected to the requested component");
+      }
+      return(obj);
     }
 
     virtual uint32_t numInitialLogical(void) const = 0;

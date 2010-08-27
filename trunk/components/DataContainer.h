@@ -11,40 +11,77 @@
 
 namespace tommas
 {
-  class DataContainer;
-  typedef DataContainer* (*DataContainerFactory)(void);
-  extern std::map<std::string,DataContainerFactory> dataContainerList;
-  
   class DataContainer
   {
   private:
-    DataContainer(const DataContainer&){}
-    
+    DataContainer(const DataContainer&){} 
+
+    typedef std::string (*DataContainerDescription)(void);
+    static std::map<std::string,DataContainerDescription>* pDescriptionList(void)
+    {
+      static std::map<std::string,DataContainerDescription> descriptionList;
+      return &descriptionList;
+    }
+
+    typedef DataContainer* (*DataContainerFactory)(void);
+    static std::map<std::string,DataContainerFactory>* pFactoryList(void)
+    {
+      static std::map<std::string,DataContainerFactory> factoryList;
+      return &factoryList;
+    }
+
   protected:
     DataContainer(void){}
     ~DataContainer(void){}
     
   public:
-    virtual std::string getDescription(void) = 0;
+    static void connect(const std::string name, const DataContainerDescription cD, const DataContainerFactory cF)
+    {
+      if(!((cD==NULL)|(cF==NULL)))
+      {
+        (*pDescriptionList())[name]=cD;
+        (*pFactoryList())[name]=cF;
+      }
+      return;
+    }
+    
+    static bool isConnected(const std::string name)
+    {
+      return(pFactoryList()->find(name) != pFactoryList()->end());
+    }
+
+    static std::string description(const std::string name)
+    {
+      std::string str="";
+      if(isConnected(name))
+      {
+        str=(*pDescriptionList())[name]();
+      }
+      return(str);
+    }
+
+    static DataContainer* factory(const std::string name)
+    {
+      static DataContainer* singleton = NULL;
+      if(singleton==NULL)
+      {
+        if(isConnected(name))
+        {
+          singleton=(*pFactoryList())[name]();
+        }
+        else
+        {
+          throw("DataContainer is not connected to the requested component");
+        }
+      }
+      return(singleton);
+    }
+
     virtual std::vector<SensorIndex> listSensors(const std::string) = 0;
     virtual std::string getSensorDescription(SensorIndex) = 0;  
     virtual Sensor& getSensor(SensorIndex) = 0;
     virtual bool hasReferenceTrajectory(void) = 0;
     virtual Trajectory& getReferenceTrajectory(void) = 0;
-    
-    static std::string frameworkClass(void) { return std::string("DataContainer"); }
-    static DataContainer* factory(const std::string dataContainerName)
-    {
-      static DataContainer* singleton = NULL;
-      if(!singleton)
-      {
-        if(dataContainerList.find(dataContainerName) != dataContainerList.end())
-        {
-          singleton=dataContainerList[dataContainerName]();
-        }
-      }
-      return singleton;
-    }
   };
 }
 

@@ -6,10 +6,10 @@ classdef MeasureBridge < Measure
   end
   
   methods (Access=public)
-    function this=MeasureBridge(pkg,uri)
+    function this=MeasureBridge(name,uri)
       this=this@Measure(uri);
-      this.c=[pkg,'.',pkg];
-      this.h=feval(this.c,pkg,uri);
+      this.c=[name,'.',name];
+      this.h=feval(this.c,name,uri);
     end
 
     function refresh(this)

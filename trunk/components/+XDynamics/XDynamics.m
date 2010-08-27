@@ -1,5 +1,3 @@
-% This class simulates body dynamics by evaluating a reference trajectory and adding perturbation 
-%   sampled from a normal distribution to the initial ECEF X positon and velocity
 classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
@@ -20,6 +18,16 @@ classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
     xRef
   end
   
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text=['Evaluates a reference trajectory and adds perturbation to initial ECEF X positon and velocity. ',...
+          'Perturbation is simulated by sampling from a normal distribution.'];
+      end
+      DynamicModel.connect(name,@componentDescription,@XDynamics.XDynamics);
+    end
+  end
+  
   methods (Access=public)
     function this=XDynamics(initialTime,uri)
       this=this@DynamicModel(initialTime,uri);
@@ -31,9 +39,6 @@ classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            if(this.verbose)
-              fprintf('\n\nWarning: XDynamics is simulated from a reference trajectory');
-            end
             container=DataContainer.factory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);

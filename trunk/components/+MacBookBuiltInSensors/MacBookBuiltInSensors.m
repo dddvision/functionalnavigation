@@ -4,8 +4,6 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
     bodyRef=[];
     noRefText='MacBook cannot supply a reference trajectory';
     notMacText='This data source depends on MacBook or MacBook Pro laptop hardware';
-    description=['Provides data from the built-in camera and three-axis accelerometer ',...
-      'available in most MacBook and MacBook Pro laptops.'];
     camDescription=['MacBook builtin iSight camera in low resolution mode. ',...
         'Depends on VLC for access. Clear the sensor instance to stop recording.'];
     accDescription=['MacBook Sudden Motion Sensor (SMS) three-axis accelerometer. ',...
@@ -15,6 +13,16 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
   properties (Access=private)
     sensors
     sensorDescription
+  end
+  
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text=['Provides data from the built-in camera and three-axis accelerometer ',...
+        'available in most MacBook and MacBook Pro laptops.'];
+      end
+      DataContainer.connect(name,@componentDescription,@MacBookBuiltInSensors.MacBookBuiltInSensors);
+    end
   end
   
   methods (Access=public)
@@ -31,10 +39,6 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
       this.sensorDescription{2}=this.accDescription;
       this.sensors{1}=MacBookBuiltInSensors.MacCam;
       this.sensors{2}=MacBookBuiltInSensors.MacAcc;
-    end
-    
-    function text=getDescription(this)
-      text=this.description;
     end
     
     function list=listSensors(this,type)

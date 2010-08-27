@@ -1,65 +1,120 @@
 % This class defines a uniform interface to sensor data and ground truth
 classdef DataContainer < handle
   
-  methods (Static=true,Access=public)
-    % Framework class identifier
-    %
-    % OUTPUT
-    % text = name of the framework class, string
-    function text=frameworkClass
-      text='DataContainer';
-    end
-    
-    % Public method to construct a singleton DataContainer
-    %
-    % INPUT
-    % pkg = package identifier, string
-    %
-    % OUTPUT
-    % this = object instance, DataContainer scalar
-    %
-    % NOTES
-    % Do not shadow this function
-    % The package directory must in the environment path
-    % (MATLAB) Omit the '+' prefix when identifying package names
-    % (MATLAB) The singleton design pattern is implemented by deriving from
-    %   the handle class and using persistence to keep a unique instance
-    function this=factory(pkg)
-      persistent singleton
-      subclass=[pkg,'.',pkg];
-      if(isempty(singleton))
-        this=feval(subclass);
-        assert(isa(this,'DataContainer'));
-        singleton=this;
-      elseif(isa(singleton,subclass))
-        this=singleton;
-      else
-        error('Cannot change subclass of singleton data container after instantiation');
-      end
-    end
-  end
-  
-  methods (Access=protected)
-    % Protected method to construct a singleton DataContainer
+  methods (Access=protected,Static=true)
+    % Protected method to construct a singleton component
     %
     % NOTES
     % Each subclass constructor must explicitly call this constructor 
     %   using the syntax this=this@DataContainer;
     function this=DataContainer
     end
-  end
-
-  methods (Abstract=true)
-    % Get container description
+    
+    % Establish connection between framework class and component
     %
-    % OUTPUT
-    % text = user friendly sensor description, string
+    % INPUT
+    % name = component identifier, string
+    % cD = function that returns a user friendly description, function handle
+    % cF = function that can instantiate the subclass, function handle
     %
     % NOTES
-    % Description may be truncated after a few hundred characters when displayed
-    % Avoid using line feed or return characters
-    text=getDescription(this);    
+    % The description may be truncated after a few hundred characters when displayed
+    % The description should not contain line feed or return characters
+    % A component can connect to multiple framework classes
+    % (C++) Call this function prior to the invocation of main() using an initializer class
+    % (MATLAB) Call this function from initialize()
+    function connect(name,cD,cF)
+      if(isa(cD,'function_handle')&&...
+         isa(cF,'function_handle'))
+         pDescriptionList(name,cD);
+         pFactoryList(name,cF);
+      end
+    end
+  end
+      
+  methods (Access=public,Static=true)
+    % Check if a named subclass is connected with this base class
+    %
+    % INPUT
+    % name = component identifier, string
+    %
+    % OUTPUT
+    % flag = true if the subclass exists and is connected to this base class, logical scalar
+    %
+    % NOTES
+    % Do not shadow this function
+    % A package directory identifying the component must in the environment path
+    % Omit the '+' prefix when identifying package names
+    function flag=isConnected(name)
+      flag=false;
+      if(exist([name,'.',name],'class'))
+        try
+          feval([name,'.',name,'.initialize'],name);
+        catch err
+          err.message;
+        end  
+        if(isfield(pFactoryList(name),name))
+          flag=true;
+        end
+      end
+    end
     
+    % Get user friendly description of a component
+    %
+    % INPUT
+    % name = component identifier, string
+    %
+    % OUTPUT
+    % text = user friendly description, string
+    %
+    % NOTES
+    % Do not shadow this function
+    % If the component is not connected then the output is an empty string
+    function text=description(name)
+      text='';
+      if(DataContainer.isConnected(name))
+        dL=pDescriptionList(name);
+        text=dL.(name)();
+      end
+    end
+    
+    % Public method to construct a singleton component
+    %
+    % INPUT
+    % name = package identifier, string
+    %
+    % OUTPUT
+    % this = singleton object instance, DataContainer scalar
+    %
+    % NOTES
+    % Do not shadow this function
+    % Throws an error if the component is not connected
+    function obj=factory(name)
+      persistent singleton
+      if(DataContainer.isConnected(name))
+        if(isempty(singleton))
+          cF=pFactoryList(name);
+          obj=cF.(name)();
+          assert(isa(obj,'DataContainer'));
+          singleton=obj;
+        else
+          obj=singleton;
+        end
+      else
+        error('DataContainer is not connected tothe requested component');
+      end
+    end
+  end
+  
+  methods (Abstract=true,Access=protected,Static=true)
+    % (MATLAB) Initializes connections between a component and one or more framework classes
+    %
+    % INPUT
+    % name = component identifier, string
+    initialize(name);
+  end
+  
+  methods (Abstract=true,Access=public,Static=false)
     % List available sensors of a given class
     %
     % INPUT
@@ -118,4 +173,24 @@ classdef DataContainer < handle
     x=getReferenceTrajectory(this);
   end
   
+end
+
+% Storage for component descriptions
+function dL=pDescriptionList(name,cD)
+  persistent descriptionList
+  if(nargin==2)
+    descriptionList.(name)=cD;
+  else
+    dL=descriptionList;
+  end
+end
+
+% Storage for component factories
+function fL=pFactoryList(name,cF)
+  persistent factoryList
+  if(nargin==2)
+    factoryList.(name)=cF;
+  else
+    fL=factoryList;
+  end
 end

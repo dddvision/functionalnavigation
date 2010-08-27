@@ -1,4 +1,4 @@
-namespace tommas
+namespace BrownianPlanar
 {
   const double BrownianPlanar::rate=5.0; // strictly positive
   const double BrownianPlanar::initialPosition[3]={0,0,0}; // initial position in ECEF

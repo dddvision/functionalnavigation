@@ -236,7 +236,6 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
   if(!initialized)
   {
-    tommas::tommas();
     memberMap["refresh"]=refresh;
     memberMap["hasData"]=hasData;
     memberMap["first"]=first;
@@ -250,14 +249,14 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   mxAssert(nrhs>=2,"function requires at least 2 arguments");
   if(mxIsChar(prhs[0]))
   {
-    std::string pkg;
+    std::string name;
     std::string uri;
     tommas::Measure* obj;
     uint32_t numInstances = instance.size();
 
-    convert(prhs[0],pkg);
+    convert(prhs[0],name);
     convert(prhs[1],uri);
-    obj = tommas::Measure::factory(pkg,uri);
+    obj = tommas::Measure::factory(name,uri);
     if(obj==NULL)
     {
       mexErrMsgTxt("failed to instantiate the specified Measure");

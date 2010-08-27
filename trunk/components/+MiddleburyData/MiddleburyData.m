@@ -2,27 +2,30 @@ classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & DataContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensor
-    description
     sensorDescription
     hasRef
     bodyRef
   end
   
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text=['Image data simulating pure translation from the Middlebury stereo dataset. ',...
+          'Reference: H. Hirschmuller and D. Scharstein. Evaluation of cost functions for ',...
+          'stereo matching. In IEEE Computer Society Conference on Computer Vision ',...
+          'and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.'];
+      end
+      DataContainer.connect(name,@componentDescription,@MiddleburyData.MiddleburyData);
+    end
+  end
+  
   methods (Access=public)
     function this=MiddleburyData
       this=this@DataContainer;
-      this.description=['Image data simulating pure translation from the Middlebury stereo dataset. ',...
-        'Reference: H. Hirschmuller and D. Scharstein. Evaluation of cost functions for ',...
-        'stereo matching. In IEEE Computer Society Conference on Computer Vision ',...
-        'and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.'];
       this.sensor{1}=MiddleburyData.CameraSim;
       this.sensorDescription{1}='Forward facing monocular perspective camera fixed at the body origin';
       this.hasRef=true;
       this.bodyRef=MiddleburyData.BodyReference;
-    end
-    
-    function text=getDescription(this)
-      text=this.description;
     end
     
     function list=listSensors(this,type)
