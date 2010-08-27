@@ -1,7 +1,7 @@
 classdef DynamicModelTest
   properties (Constant=true)
-    tau=0.5+0.5*sind(-90:0.1:90); % irregular time steps normalized in the range [0,1]
-    infinity = 1000; % (1000) replaces infinity as a time domain upper bound
+    tau=0.5+0.5*sin(-pi/2:0.01:pi/2); % irregular time steps normalized in the range [0,1]
+    infinity=1000; % (1000) replaces infinity as a time domain upper bound
   end
   
   properties (Access=private)
@@ -13,31 +13,24 @@ classdef DynamicModelTest
   end
   
   methods (Access=public)
-    function this=DynamicModelTest(packageName,initialTime,uri)
-      fprintf('\npackageName =');
-      assert(isa(packageName,'char'));
-      fprintf(' ''%s''',packageName);
+    function this=DynamicModelTest(name,initialTime,uri)
+      fprintf('\n\nDynamicModel.description =');
+      text=DynamicModel.description(name);
+      assert(isa(text,'char'));
+      fprintf(' %s',text);
 
-      fprintf('\ninitialTime =');
-      assert(isa(initialTime,'WorldTime')); 
-      fprintf(' %f',double(initialTime));
-
-      fprintf('\nuri =');
-      assert(isa(uri,'char'));
-      fprintf(' ''%s''',uri);
-
-      fprintf('\nfactory =');
-      this.dynamicModel=DynamicModel.factory(packageName,initialTime,uri);
+      fprintf('\n\nDynamicModel.factory =');
+      this.dynamicModel=DynamicModel.factory(name,initialTime,uri);
       assert(isa(this.dynamicModel,'DynamicModel'));
       fprintf(' ok');
 
-      fprintf('\ndomain =');
+      fprintf('\n\ndomain =');
       interval=domain(this.dynamicModel);
       assert(isa(interval,'TimeInterval'));
       assert(interval.first==initialTime);
       fprintf(' ok');
 
-      fprintf('\nnumInitialLogical =');
+      fprintf('\n\nnumInitialLogical =');
       this.nIL=numInitialLogical(this.dynamicModel);
       assert(isa(this.nIL,'uint32'));
       fprintf(' %d',this.nIL);
@@ -57,40 +50,75 @@ classdef DynamicModelTest
       assert(isa(this.nEU,'uint32'));
       fprintf(' %d',this.nEU);
 
-      fprintf('\ngetInitialLogical =');
+      fprintf('\n\ngetInitialLogical = [');
       vIL=false(this.nIL,1);
       for p=uint32(1):this.nIL
         v=getInitialLogical(this.dynamicModel,p-uint32(1));
         assert(isa(v,'logical'));
-        fprintf(' %d',v);
+        if(p~=uint32(1))
+          fprintf(',');
+        end
+        fprintf('%d',v);
         vIL(p)=v;
       end
+      fprintf(']');
 
-      fprintf('\ngetInitialUint32 =');
+      fprintf('\ngetInitialUint32 = [');
       vIU=zeros(this.nIU,1,'uint32');
       for p=uint32(1):this.nIU
         v=getInitialUint32(this.dynamicModel,p-uint32(1));
         assert(isa(v,'uint32'));
-        fprintf(' %d',v);
+        if(p~=uint32(1))
+          fprintf(',');
+        end
+        fprintf('%d',v);
         vIU(p)=v;
       end
+      fprintf(']');
       
       DMTTrajectory(this);
       for b=uint32(0:2)
         fprintf('\nextend');
         extend(this.dynamicModel);
+        
+        fprintf('\nnumBlocks =');
+        numBlocks=numExtensionBlocks(this.dynamicModel);
+        assert(isa(numBlocks,'uint32'));
+        fprintf(' %d',numBlocks);
+        
+        fprintf('\n\ngetExtensionLogical(%d) = [',b);
+        vEL=false(this.nEL,1);
+        for p=uint32(1):this.nEL
+          v=getExtensionLogical(this.dynamicModel,b,p-uint32(1));
+          assert(isa(v,'logical'));
+          if(p~=uint32(1))
+            fprintf(',');
+          end
+          fprintf('%d',v);
+          vEL(p)=v;
+        end
+        fprintf(']');
+
+        fprintf('\ngetExtensionUint32(%d) = [',b);
+        vEU=zeros(this.nEU,1,'uint32');
+        for p=uint32(1):this.nEU
+          v=getExtensionUint32(this.dynamicModel,b,p-uint32(1));
+          assert(isa(v,'uint32'));
+          if(p~=uint32(1))
+            fprintf(',');
+          end
+          fprintf('%d',v);
+          vEU(p)=v;
+        end
+        fprintf(']');
+        
         DMTTrajectory(this);
       end
     end
   end
   
   methods (Access=private)
-    function DMTTrajectory(this)
-      fprintf('\n\nnumBlocks =');
-      numBlocks=numExtensionBlocks(this.dynamicModel);
-      assert(isa(numBlocks,'uint32'));
-      fprintf(' %d',numBlocks);
-      
+    function DMTTrajectory(this)   
       interval=domain(this.dynamicModel);
       display(interval);
       
@@ -119,6 +147,16 @@ classdef DynamicModelTest
         r(:,n)=tangentPose.r;
         s(:,n)=tangentPose.s;
       end
+
+      fprintf('\ntime = %f',double(time(end)));
+      
+      pose=evaluate(this.dynamicModel,time(end));
+      assert(isa(pose,'Pose'));
+      display(pose); 
+
+      tangentPose=tangent(this.dynamicModel,time(end));
+      assert(isa(tangentPose,'TangentPose'));
+      display(tangentPose);
       
       figure(1);
       for d=1:3
@@ -147,15 +185,6 @@ classdef DynamicModelTest
       end
       drawnow;
       
-      fprintf('\ntime = %f',double(time(end)));
-      
-      pose=evaluate(this.dynamicModel,time(end));
-      assert(isa(pose,'Pose'));
-      display(pose); 
-
-      tangentPose=tangent(this.dynamicModel,time(end));
-      assert(isa(tangentPose,'TangentPose'));
-      display(tangentPose);
     end
   end
 end

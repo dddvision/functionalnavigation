@@ -1,6 +1,6 @@
 classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConfig & Optimizer
   
- properties (GetAccess=private,SetAccess=private)
+  properties (GetAccess=private,SetAccess=private)
     dynamicModel
     measure
     state
@@ -8,17 +8,21 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     cost
   end
   
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text=['Applies a linear Kalman filter algorithm to optimize over initial Uint32 parameters only. ',...
+          'All logical parameters are set to false. ',...
+          'Extension blocks are ignored. ',...
+          'Only the last on-diagonal element of each measure is evaluated after each refresh.'];
+      end
+      Optimizer.connect(name,@componentDescription,@LinearKalmanOptimizer.LinearKalmanOptimizer);
+    end
+  end
+ 
   methods (Access=public)
     function this=LinearKalmanOptimizer(dynamicModel,measure)
       this=this@Optimizer(dynamicModel,measure);
-           
-      % display warning
-      if(this.verbose)
-        fprintf('\n\nWarning: LinearKalmanOptimizer only optimizes over');
-        fprintf('\ninitial Uint32 parameters. All logical parameters will');
-        fprintf('\nbe set to false. In addition, only the last on-diagonal');
-        fprintf('\nelement of each measure will be used.');
-      end
       
       % copy input arguments
       this.dynamicModel=dynamicModel;

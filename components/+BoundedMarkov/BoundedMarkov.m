@@ -1,4 +1,3 @@
-% This class represents the integration of linear Markov motion model with a bounded forcing function
 classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
   
   properties (Constant=true,GetAccess=private)
@@ -21,6 +20,15 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     Ad % discrete version of state space A matrix
     Bd % discrete version of state space A matrix
     ABZ % intermediate formulation of A and B matrices with zeros appended
+  end
+  
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text='Represents the integration of linear Markov motion model with a bounded forcing function.';
+      end
+      DynamicModel.connect(name,@componentDescription,@BoundedMarkov.BoundedMarkov);
+    end
   end
   
   methods (Access=public)

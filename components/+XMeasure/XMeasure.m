@@ -1,5 +1,3 @@
-% This measure simulates a sensor that measures the ECEF X coordinate of a reference trajectory
-%   and adds error sampled from a normal distribution
 classdef XMeasure < XMeasure.XMeasureConfig & Measure
 
   properties (SetAccess=private,GetAccess=private)
@@ -11,6 +9,16 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
     status
   end
   
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text=['Evaluates a reference trajectory and simulates measurement of initial ECEF X positon with error. ',...
+          'Error is simulated by sampling from a normal distribution.'];
+      end
+      Measure.connect(name,@componentDescription,@XMeasure.XMeasure);
+    end
+  end
+  
   methods (Access=public)
     function this=XMeasure(uri)
       this=this@Measure(uri);
@@ -19,9 +27,6 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            if(this.verbose)
-              fprintf('\n\nWarning: XMeasure is simulated from a reference trajectory');
-            end
             container=DataContainer.factory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);

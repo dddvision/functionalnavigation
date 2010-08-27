@@ -1,8 +1,9 @@
 classdef TestbedConfig < handle
   properties (Constant=true,GetAccess=public)
-    frameworkClass='DynamicModel'; % name of the abstract framework class to test
-    pkg='BoundedMarkov'; % name of the specific component to test
-    initialTime=WorldTime(0); % finite lower bound of trajectory time domain
-    uri='matlab:MiddleburyData'; % data resource identifier
+    name='BrownianPlanar'; % name of the component to test
+    initialTime=WorldTime(0); % default finite lower bound of trajectory time domain
+    uri='matlab:MiddleburyData'; % default data resource identifier
+    dynamicModelName='XDynamics'; % default dynamic model name
+    measureName='XMeasure'; % default measure name
   end
 end

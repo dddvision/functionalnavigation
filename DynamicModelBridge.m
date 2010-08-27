@@ -5,21 +5,32 @@ classdef DynamicModelBridge < DynamicModel
     h % handle to instantiated C++ object
   end
   
-  methods (Access=public)
-    function this=DynamicModelBridge(pkg,initialTime,uri)
-      this=this@DynamicModel(initialTime,uri);
-      this.c=[pkg,'.',pkg];
-      base=fullfile(['+',pkg],pkg);
-      if(~exist(base,'file'))
-        basecpp=[base,'.cpp'];
-        cpp=which(basecpp);
-        mex('-I"."','DynamicModelBridge.cpp',cpp,'-output',cpp(1:(end-4)));
+  methods (Access=protected,Static=true)
+    function initialize(name)
+      assert(isa(name,'char'));
+      compileOnDemand(name);
+      function text=componentDescription
+        text='Getting static descriptions through the bridge is not yet implemented.';
       end
-      assert(isa(initialTime,'WorldTime'));
-      initialTime=double(initialTime); % workaround avoids array duplication
-      this.h=feval(this.c,pkg,initialTime,uri);
+      function obj=componentFactory(initialTime,uri)
+        obj=DynamicModelBridge(name,initialTime,uri);
+      end        
+      DynamicModel.connect(name,@componentDescription,@componentFactory);
     end
 
+    function this=DynamicModelBridge(name,initialTime,uri)
+      this=this@DynamicModel(initialTime,uri);
+      assert(isa(name,'char'));
+      assert(isa(initialTime,'WorldTime'));
+      assert(isa(uri,'char'));
+      compileOnDemand(name);
+      this.c=[name,'.',name,'Bridge'];
+      initialTime=double(initialTime); % workaround avoids array duplication
+      this.h=feval(this.c,name,initialTime,uri);
+    end
+  end
+    
+  methods (Access=public,Static=false)
     function num=numInitialLogical(this)
       num=feval(this.c,this.h,'numInitialLogical');
     end
@@ -103,4 +114,13 @@ classdef DynamicModelBridge < DynamicModel
     end
   end
   
+end
+
+function compileOnDemand(name)
+  base=fullfile(['+',name],name);
+  if(~exist([base,'Bridge'],'file'))
+    basecpp=[base,'.cpp'];
+    cpp=which(basecpp);
+    mex('-I"."','DynamicModelBridge.cpp',cpp,'-output',[cpp(1:(end-4)),'Bridge']);
+  end
 end

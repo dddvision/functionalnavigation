@@ -1,22 +1,17 @@
 classdef MeasureTest < handle
   
   methods (Access=public)
-    function this=MeasureTest(packageName,uri)
-      fprintf('\npackageName =');
-      assert(isa(packageName,'char'));
-      fprintf(' ''%s''',packageName);
-
-      fprintf('\nuri =');
-      assert(isa(uri,'char'));
-      fprintf(' ''%s''',uri);
-
-      fprintf('\nfactory =');
-      measure=Measure.factory(packageName,uri);
+    function this=MeasureTest(name,uri)
+      fprintf('\n\nMeasure.description =');
+      text=Measure.description(name);
+      assert(isa(text,'char'));
+      fprintf(' %s',text);
+      
+      fprintf('\nMeasure.factory =');
+      measure=Measure.factory(name,uri);
       assert(isa(measure,'Measure'));
       fprintf(' ok');
 
-      % Call copy constructor?
-      % Call destructor?
       % Call all interface functions
       % Check exception handling
       

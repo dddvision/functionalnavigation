@@ -7,42 +7,9 @@
 % Each uint32 parameter may be treated as range-bounded double via static casting
 % The range of uint32 is [0,4294967295]
 classdef DynamicModel < Trajectory
-  
-  methods (Static=true,Access=public)
-    % Framework class identifier
-    %
-    % OUTPUT
-    % text = name of the framework class, string
-    function text=frameworkClass
-      text='DynamicModel';
-    end
     
-    % Public method to construct a DynamicModel
-    %
-    % INPUT
-    % pkg = package identifier, string
-    % (see constructor argument list)
-    %
-    % OUTPUT
-    % obj = object instance, DynamicModel scalar
-    %
-    % NOTES
-    % Do not shadow this function
-    % The package directory must in the environment path
-    % (MATLAB) Omit the '+' prefix when identifying package names
-    function obj=factory(pkg,initialTime,uri)
-      subclass=[pkg,'.',pkg];
-      if(exist(subclass,'class'))
-        obj=feval(subclass,initialTime,uri);
-      else
-        obj=DynamicModelBridge(pkg,initialTime,uri);
-      end
-      assert(isa(obj,'DynamicModel'));
-    end
-  end
-  
-  methods (Access=protected)
-    % Protected method to construct a DynamicModel
+  methods (Access=protected,Static=true)
+    % Protected method to construct a component
     %
     % INPUT
     % initialTime = finite lower bound of the trajectory time domain, double scalar
@@ -55,9 +22,107 @@ classdef DynamicModel < Trajectory
       assert(isa(initialTime,'double'));
       assert(isa(uri,'char'));
     end
+    
+    % Establish connection between framework class and component
+    %
+    % INPUT
+    % name = component identifier, string
+    % cD = function that returns a user friendly description, function handle
+    % cF = function that can instantiate the subclass, function handle
+    %
+    % NOTES
+    % The description may be truncated after a few hundred characters when displayed
+    % The description should not contain line feed or return characters
+    % A component can connect to multiple framework classes
+    % (C++) Call this function prior to the invocation of main() using an initializer class
+    % (MATLAB) Call this function from initialize()
+    function connect(name,cD,cF)
+      if(isa(cD,'function_handle')&&...
+         isa(cF,'function_handle'))
+         pDescriptionList(name,cD);
+         pFactoryList(name,cF);
+      end
+    end
+  end
+      
+  methods (Access=public,Static=true)
+    % Check if a named subclass is connected with this base class
+    %
+    % INPUT
+    % name = component identifier, string
+    %
+    % OUTPUT
+    % flag = true if the subclass exists and is connected to this base class, logical scalar
+    %
+    % NOTES
+    % Do not shadow this function
+    % A package directory identifying the component must in the environment path
+    % Omit the '+' prefix when identifying package names
+    function flag=isConnected(name)
+      flag=false;
+      if(exist([name,'.',name],'class'))
+        try
+          feval([name,'.',name,'.initialize'],name);
+        catch err
+          err.message;
+        end  
+        if(isfield(pFactoryList(name),name))
+          flag=true;
+        end
+      end
+    end
+    
+    % Get user friendly description of a component
+    %
+    % INPUT
+    % name = component identifier, string
+    %
+    % OUTPUT
+    % text = user friendly description, string
+    %
+    % NOTES
+    % Do not shadow this function
+    % If the component is not connected then the output is an empty string
+    function text=description(name)
+      text='';
+      if(DynamicModel.isConnected(name))
+        dL=pDescriptionList(name);
+        text=dL.(name)();
+      end
+    end
+    
+    % Public method to construct a component
+    %
+    % INPUT
+    % name = component identifier, string
+    % (see constructor argument list)
+    %
+    % OUTPUT
+    % obj = object instance, DynamicModel scalar
+    %
+    % NOTES
+    % Do not shadow this function
+    % Throws an error if the component is not connected
+    function obj=factory(name,initialTime,uri)
+      if(DynamicModel.isConnected(name))
+        cF=pFactoryList(name);
+        obj=cF.(name)(initialTime,uri);
+        assert(isa(obj,'DynamicModel'));
+      else
+        error('DynamicModel is not connected to the requested component');
+      end
+    end
   end
   
-  methods (Abstract=true,Access=public)
+  methods (Abstract=true,Access=protected,Static=true)
+    % (MATLAB) Initializes connections between a component and one or more framework classes
+    %
+    % INPUT
+    % name = component identifier, string
+    initialize(name);
+  end
+  
+  methods (Abstract=true,Access=public,Static=false)
     % Get number of parameters in each initial block
     %
     % OUTPUT
@@ -115,4 +180,24 @@ classdef DynamicModel < Trajectory
     extend(this);
   end
     
+end
+
+% Storage for component descriptions
+function dL=pDescriptionList(name,cD)
+  persistent descriptionList
+  if(nargin==2)
+    descriptionList.(name)=cD;
+  else
+    dL=descriptionList;
+  end
+end
+
+% Storage for component factories
+function fL=pFactoryList(name,cF)
+  persistent factoryList
+  if(nargin==2)
+    factoryList.(name)=cF;
+  else
+    fL=factoryList;
+  end
 end

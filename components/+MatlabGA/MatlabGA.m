@@ -1,13 +1,3 @@
-% NOTES
-% The MATLAB Genetic Algorithm converts between blocks and bit strings
-% Each bit string is packed in the following order:
-%   initial logical
-%   initial uint32
-%   extension 1 logical
-%   extension 1 uint32
-%   extension 2 logical
-%   extension 2 uint32
-%   ...
 classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   
   properties (GetAccess=private,SetAccess=private)
@@ -26,6 +16,17 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     cost
     defaultOptions
     stepGAhandle
+  end
+  
+  methods (Static=true,Access=protected)
+    function initialize(name)
+      function text=componentDescription
+        text=['Applies the MATLAB Genetic Algorithm using a straightforward but slow process. ',...
+          'Converts all dynamic model parameters between blocks and bit strings as needed. ',...
+          'Optimizes over all parameters at each time step'];
+      end
+      Optimizer.connect(name,@componentDescription,@MatlabGA.MatlabGA);
+    end
   end
   
   methods (Access=public)
@@ -138,6 +139,14 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
   end
   
   methods (Access=private)
+    % Each bit string is packed in the following order:
+    %   initial logical
+    %   initial uint32
+    %   extension 1 logical
+    %   extension 1 uint32
+    %   extension 2 logical
+    %   extension 2 uint32
+    %   ...   
     function bits=getBits(this)
       K=numel(this.dynamicModel);
       B=numExtensionBlocks(this.dynamicModel(1));
