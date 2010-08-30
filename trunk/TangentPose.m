@@ -1,12 +1,10 @@
-% This class represents a Pose and its time derivatives
-%
-% NOTES
-% The initial undefined tangent pose is represented by NaN values for all parameters
 classdef TangentPose < Pose
+  
   properties (SetAccess=public,GetAccess=public)
-    r=nan(3,1); % time derivative of body position, double 3-by-1
-    s=nan(4,1); % time derivative of body orientation, double 4-by-1 
+    r=nan(3,1);
+    s=nan(4,1);
   end
+  
   methods (Access=public)
     function this=TangentPose(S)
       if(nargin)
@@ -20,6 +18,7 @@ classdef TangentPose < Pose
         end
       end
     end
+    
     function display(this)
       name=inputname(1);
       for n=1:numel(this)
@@ -30,4 +29,5 @@ classdef TangentPose < Pose
       end
     end
   end
+  
 end

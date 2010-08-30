@@ -1,4 +1,5 @@
 classdef DemoConfig < handle
+  
   properties (Constant=true,GetAccess=public)
     uri = 'matlab:MiddleburyData'; % ('matlab:MiddleburyData') select hardware resource or data container
     dynamicModelName = 'XDynamics'; % ('XDynamics') dynamic model selection
@@ -21,4 +22,5 @@ classdef DemoConfig < handle
     colorHighlight = [1,0,0]; % ([1,0,0]) color of objects to emphasize
     colorReference = [0,1,0]; % ([0,1,0]) color of reference objects
   end
+  
 end

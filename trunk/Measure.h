@@ -56,7 +56,7 @@ namespace tom
     /**
      * Protected method to construct a component
      *
-     * @param[in] (@see tom::Measure)
+     * @param[in] uri (@see tom::Measure)
      *
      * NOTES
      * The URI should identify a hardware resource or DataContainer
@@ -157,7 +157,7 @@ namespace tom
     /**
      * Initializes connections between a component and one or more framework classes
      *
-     * @param[in] component identifier
+     * @param[in] name component identifier
      *
      * NOTES
      * (C++) Does nothing and does not require implementation
@@ -171,7 +171,7 @@ namespace tom
      * @param[in] x      predicted trajectory that can be used to compute the graph structure
      * @param[in] naSpan maximum difference between lower node index and last node index
      * @param[in] nbSpan maximum difference between upper node index and last node index
-     * @return           list of edges, N-by-1
+     * @return           list of edges (MATLAB: N-by-1)
      *
      * NOTES
      * Only finds graph edges that are within the domain of the input trajectory,

@@ -1,9 +1,10 @@
-% This class represents an interval of time by its upper and lower bounds
 classdef TimeInterval
+  
   properties (SetAccess=public,GetAccess=public)
-    first=WorldTime(0); % time lower bound, WorldTime scalar
-    second=WorldTime(0); % time upper bound, WorldTime scalar
+    first=WorldTime(0);
+    second=WorldTime(0);
   end
+  
   methods (Access=public)
     function this=TimeInterval(A,B)
       if(nargin==1)
@@ -35,10 +36,12 @@ classdef TimeInterval
         end
       end
     end
+    
     function display(this)
       for n=1:numel(this)
         fprintf('\n%s = [%f,%f]\n',inputname(1),double(this(n).first),double(this(n).second));
       end
     end
   end
+  
 end

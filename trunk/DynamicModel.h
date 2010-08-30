@@ -105,8 +105,8 @@ namespace tom
     /**
      * Check if a named subclass is connected with this base class
      *
-     * @param[in]  name component identifier
-     * @return          true if the subclass exists and is connected to this base class
+     * @param[in] name component identifier
+     * @return         true if the subclass exists and is connected to this base class
      *
      * NOTES
      * Do not shadow this function
