@@ -26,7 +26,7 @@ General coding guidelines for all components including those that are hosted ext
 Additional coding guidelines for all code hosted in this repository:
   * RULE: Only upload plain text, C++, or MATLAB files ({{{makefile, .c, .cpp, .h, .m, .txt}}})
   * RULE: Do not upload binaries ({{{.jpg, .png, .dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32}}})
-  * RULE: Bugs in components should be noted using {{{TODO:}}} statements within code or in a {{{TODO.txt}}} file that accompanies the component.
+  * RULE: Bugs in components should be noted using {{{TODO}}} statements within code or in a {{{TODO.txt}}} file that accompanies the component.
   * RULE: Use two spaces for each indentation level.
   * RULE: At least one blank line should separate functions in files that define multiple functions.
   * RULE: Don't put an empty comment on a line by itself unless it separates other comments.
@@ -81,6 +81,18 @@ myFunction (void); // bad
   * RULE: Use whitespace consistently.
 {{{
 this =  is +bad;
+}}}
+
+  * RULE (C++): Use unsnuggled braces as follows
+{{{
+void correct(void)
+{
+  /* implementation */
+}
+
+void incorrect(void) {
+  /* implementation */
+}
 }}}
 
   * RULE (C++): Use long descriptive variable names or very short ones coupled with detailed descriptions.
