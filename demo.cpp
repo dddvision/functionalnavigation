@@ -8,9 +8,9 @@ int main()
     << "and a graphical display, and then alternately optimizes and displays " << std::endl
     << "trajectories in an infinite loop. See DemoConfig for options." << std::endl;
   
-  tommas::DynamicModel* dynamicModel = tommas::DynamicModel::factory("BrownianPlanar",0.0,"uri");
+  tom::DynamicModel* dynamicModel = tom::DynamicModel::factory("BrownianPlanar",0.0,"uri");
   std::cout << dynamicModel->numExtensionBlocks() << std::endl;
-//  tommas::Measure* measure = tommas::Measure::factory("OpticalFlowOpenCV", "uri");
+//  tom::Measure* measure = tom::Measure::factory("OpticalFlowOpenCV", "uri");
 //  measure->refresh();
   return(0);
 }

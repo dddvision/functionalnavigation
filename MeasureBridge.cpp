@@ -25,27 +25,27 @@ void convert(const mxArray* array, std::string& cppString)
   return;
 }
 
-void convert(const mxArray* array, tommas::TimeInterval& value)
+void convert(const mxArray* array, tom::TimeInterval& value)
 {
   value.first=mxGetScalar(mxGetProperty(array,0,"first"));
   value.second=mxGetScalar(mxGetProperty(array,0,"second"));
   return;
 }
 
-void convert(const mxArray* array, tommas::GraphEdge& value)
+void convert(const mxArray* array, tom::GraphEdge& value)
 {
   value.first=(*static_cast<uint32_t*>(mxGetData(mxGetProperty(array,0,"first"))));
   value.second=(*static_cast<uint32_t*>(mxGetData(mxGetProperty(array,0,"second"))));
   return;
 }
 
-void convert(const mxArray* array, std::vector<tommas::Pose>& pose)
+void convert(const mxArray* array, std::vector<tom::Pose>& pose)
 {
   mxArray* p;
   mxArray* q;
   double* pp;
   double* pq;
-  tommas::Pose* pPose;
+  tom::Pose* pPose;
   unsigned n;
   unsigned N=mxGetNumberOfElements(array);
   pose.resize(N);
@@ -67,7 +67,7 @@ void convert(const mxArray* array, std::vector<tommas::Pose>& pose)
   return;
 }
 
-void convert(const mxArray* array, std::vector<tommas::TangentPose>& tangentPose)
+void convert(const mxArray* array, std::vector<tom::TangentPose>& tangentPose)
 {
   mxArray* p;
   mxArray* q;
@@ -77,7 +77,7 @@ void convert(const mxArray* array, std::vector<tommas::TangentPose>& tangentPose
   double* pq;
   double* pr;
   double* ps;
-  tommas::TangentPose* pTangentPose;
+  tom::TangentPose* pTangentPose;
   unsigned n;
   unsigned N=mxGetNumberOfElements(array);
   tangentPose.resize(N);
@@ -129,7 +129,7 @@ void convert(const bool value, mxArray*& array)
   return;
 }
 
-void convert(const std::vector<tommas::WorldTime>& time, mxArray*& array)
+void convert(const std::vector<tom::WorldTime>& time, mxArray*& array)
 {
   double* pTime;
   unsigned n;
@@ -138,12 +138,12 @@ void convert(const std::vector<tommas::WorldTime>& time, mxArray*& array)
   pTime=mxGetPr(array);
   for( n=0 ; n<N ; ++n )
   {
-    pTime[n]=static_cast<tommas::WorldTime>(time[n]);
+    pTime[n]=static_cast<tom::WorldTime>(time[n]);
   }
   return;
 }
 
-void convert(const std::vector<tommas::GraphEdge>& graphEdge, const mxArray*& source, mxArray*& array)
+void convert(const std::vector<tom::GraphEdge>& graphEdge, const mxArray*& source, mxArray*& array)
 {
   mxArray* prhs[2];
   mxArray* sz;
@@ -175,13 +175,13 @@ void convert(const std::vector<tommas::GraphEdge>& graphEdge, const mxArray*& so
   return;
 }
 
-class TrajectoryBridge : public tommas::Trajectory
+class TrajectoryBridge : public tom::Trajectory
 {
   public:
-    tommas::TimeInterval domain(void)
+    tom::TimeInterval domain(void)
     {
       mxArray* lhs;
-      tommas::TimeInterval timeInterval;
+      tom::TimeInterval timeInterval;
       mexEvalString("interval=domain(x);"); // depends on Trajectory named 'x' in MATLAB workspace
       lhs=mexGetVariable("caller","interval");
       convert(lhs,timeInterval);
@@ -189,7 +189,7 @@ class TrajectoryBridge : public tommas::Trajectory
       return timeInterval;
     }
     
-    void evaluate(const std::vector<tommas::WorldTime>& time,std::vector<tommas::Pose>& pose)
+    void evaluate(const std::vector<tom::WorldTime>& time,std::vector<tom::Pose>& pose)
     {
       mxArray* rhs;
       mxArray* lhs;
@@ -202,7 +202,7 @@ class TrajectoryBridge : public tommas::Trajectory
       return;
     }
 
-    void tangent(const std::vector<tommas::WorldTime>& time,std::vector<tommas::TangentPose>& tangentPose)
+    void tangent(const std::vector<tom::WorldTime>& time,std::vector<tom::TangentPose>& tangentPose)
     {
       mxArray* rhs;
       mxArray* lhs;
@@ -231,7 +231,7 @@ enum MeasureMember
 void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
 {
   static std::map<std::string,MeasureMember> memberMap;
-  static std::vector<tommas::Measure*> instance;
+  static std::vector<tom::Measure*> instance;
   static bool initialized=false;
 
   if(!initialized)
@@ -251,12 +251,12 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   {
     std::string name;
     std::string uri;
-    tommas::Measure* obj;
+    tom::Measure* obj;
     uint32_t numInstances = instance.size();
 
     convert(prhs[0],name);
     convert(prhs[1],uri);
-    obj = tommas::Measure::factory(name,uri);
+    obj = tom::Measure::factory(name,uri);
     if(obj==NULL)
     {
       mexErrMsgTxt("failed to instantiate the specified Measure");
@@ -320,7 +320,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     case computeEdgeCost:
     {
       TrajectoryBridge x;
-      tommas::GraphEdge graphEdge;
+      tom::GraphEdge graphEdge;
       convert(prhs[2],graphEdge);
       convert(instance[handle]->computeEdgeCost(x,graphEdge),plhs[0]);
       break;

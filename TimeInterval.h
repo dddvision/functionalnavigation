@@ -3,7 +3,7 @@
 
 #include "WorldTime.h"
 
-namespace tommas
+namespace tom
 {
   typedef std::pair<WorldTime,WorldTime> TimeInterval;
 }

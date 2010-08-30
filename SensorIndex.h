@@ -1,7 +1,7 @@
 #ifndef SENSORINDEX_H
 #define SENSORINDEX_H
 
-namespace tommas
+namespace tom
 {
   typedef unsigned SensorIndex;
 }

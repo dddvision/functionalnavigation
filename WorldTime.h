@@ -1,7 +1,7 @@
 #ifndef WORLDTIME_H
 #define WORLDTIME_H
 
-namespace tommas
+namespace tom
 {
   typedef double WorldTime;
 }

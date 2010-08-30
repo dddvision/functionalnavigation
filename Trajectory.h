@@ -8,7 +8,7 @@
 #include "Pose.h"
 #include "TangentPose.h"
 
-namespace tommas
+namespace tom
 {
   class Trajectory
   {
