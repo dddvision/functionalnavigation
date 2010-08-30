@@ -6,7 +6,7 @@
 
 namespace BrownianPlanar
 {
-  class BrownianPlanar : public tommas::DynamicModel
+  class BrownianPlanar : public tom::DynamicModel
   {  
   private:
     static const double rate;
@@ -35,7 +35,7 @@ namespace BrownianPlanar
     std::vector<double> yRate;
     std::vector<double> aRate;
     
-    tommas::TimeInterval interval;
+    tom::TimeInterval interval;
     uint32_t firstNewBlock;
     
     static double paramToForce(uint32_t p)
@@ -44,7 +44,7 @@ namespace BrownianPlanar
       return(static_cast<double>(p)/sixthIntMax-3.0);
     }
     
-    void transformPose(tommas::Pose& pose)
+    void transformPose(tom::Pose& pose)
     {
       double i0=initialQuaternion[0];
       double i1=initialQuaternion[1];
@@ -68,7 +68,7 @@ namespace BrownianPlanar
       return;
     }
     
-    void transformTangentPose(tommas::TangentPose& tangentPose)
+    void transformTangentPose(tom::TangentPose& tangentPose)
     {
       double i0=initialQuaternion[0];
       double i1=initialQuaternion[1];
@@ -89,7 +89,7 @@ namespace BrownianPlanar
       return;
     }
     
-    void evaluateGeneral(const tommas::WorldTime& time, tommas::Pose& pose,
+    void evaluateGeneral(const tom::WorldTime& time, tom::Pose& pose,
                          uint32_t& dkFloor, double& dtRemain, double& halfAngle)
     {
       // position and velocity A=[1,tau;0,1] B=[0.5*tau*tau;tau]
@@ -141,9 +141,9 @@ namespace BrownianPlanar
       return;
     }
     
-    void evaluatePose(const tommas::WorldTime& time, tommas::Pose& pose)
+    void evaluatePose(const tom::WorldTime& time, tom::Pose& pose)
     {
-      static const tommas::Pose nullPose;
+      static const tom::Pose nullPose;
       uint32_t dkFloor;
       double dtRemain;
       double halfAngle;
@@ -160,9 +160,9 @@ namespace BrownianPlanar
       return;
     }
     
-    void evaluateTangentPose(const tommas::WorldTime& time, tommas::TangentPose& tangentPose)
+    void evaluateTangentPose(const tom::WorldTime& time, tom::TangentPose& tangentPose)
     {
-      static const tommas::TangentPose nullTangentPose;
+      static const tom::TangentPose nullTangentPose;
       uint32_t dkFloor;
       double dtRemain;
       double halfAngle;
@@ -197,7 +197,7 @@ namespace BrownianPlanar
     }
 
   public:
-    BrownianPlanar(const tommas::WorldTime initialTime,const std::string uri) : tommas::DynamicModel(initialTime, uri)
+    BrownianPlanar(const tom::WorldTime initialTime,const std::string uri) : tom::DynamicModel(initialTime, uri)
     {
       const unsigned reserve=1024;
       interval.first=initialTime;
@@ -363,9 +363,9 @@ namespace BrownianPlanar
       return;
     }
 
-    tommas::TimeInterval domain(void) { return(interval); }
+    tom::TimeInterval domain(void) { return(interval); }
 
-    void evaluate(const std::vector<tommas::WorldTime>& time, std::vector<tommas::Pose>& pose)
+    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
     {
       unsigned k;
       unsigned K=time.size();
@@ -377,7 +377,7 @@ namespace BrownianPlanar
       return;    
     }
 
-    void tangent(const std::vector<tommas::WorldTime>& time, std::vector<tommas::TangentPose>& tangentPose)
+    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
     {
       unsigned k;
       unsigned K=time.size();
@@ -393,7 +393,7 @@ namespace BrownianPlanar
     static std::string componentDescription(void)
     { return("Planar motion model of a rigid body with unit inertia that undergoes Brownian forcing."); }
     
-    static tommas::DynamicModel* componentFactory(const tommas::WorldTime initialTime, const std::string uri)
+    static tom::DynamicModel* componentFactory(const tom::WorldTime initialTime, const std::string uri)
     { return(new BrownianPlanar(initialTime, uri)); }
 
   protected:

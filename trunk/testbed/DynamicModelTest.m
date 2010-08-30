@@ -25,35 +25,35 @@ classdef DynamicModelTest
       fprintf(' ok');
 
       fprintf('\n\ndomain =');
-      interval=domain(this.dynamicModel);
+      interval=this.dynamicModel.domain();
       assert(isa(interval,'TimeInterval'));
       assert(interval.first==initialTime);
       fprintf(' ok');
 
       fprintf('\n\nnumInitialLogical =');
-      this.nIL=numInitialLogical(this.dynamicModel);
+      this.nIL=this.dynamicModel.numInitialLogical();
       assert(isa(this.nIL,'uint32'));
       fprintf(' %d',this.nIL);
 
       fprintf('\nnumInitialUint32 =');
-      this.nIU=numInitialUint32(this.dynamicModel);
+      this.nIU=this.dynamicModel.numInitialUint32();
       assert(isa(this.nIU,'uint32'));
       fprintf(' %d',this.nIU);  
 
       fprintf('\nnumExtensionLogical =');
-      this.nEL=numExtensionLogical(this.dynamicModel);
+      this.nEL=this.dynamicModel.numExtensionLogical();
       assert(isa(this.nEL,'uint32'));
       fprintf(' %d',this.nEL); 
 
       fprintf('\nnumExtensionUint32 =');
-      this.nEU=numExtensionUint32(this.dynamicModel);
+      this.nEU=this.dynamicModel.numExtensionUint32();
       assert(isa(this.nEU,'uint32'));
       fprintf(' %d',this.nEU);
 
       fprintf('\n\ngetInitialLogical = [');
       vIL=false(this.nIL,1);
       for p=uint32(1):this.nIL
-        v=getInitialLogical(this.dynamicModel,p-uint32(1));
+        v=this.dynamicModel.getInitialLogical(p-uint32(1));
         assert(isa(v,'logical'));
         if(p~=uint32(1))
           fprintf(',');
@@ -66,7 +66,7 @@ classdef DynamicModelTest
       fprintf('\ngetInitialUint32 = [');
       vIU=zeros(this.nIU,1,'uint32');
       for p=uint32(1):this.nIU
-        v=getInitialUint32(this.dynamicModel,p-uint32(1));
+        v=this.dynamicModel.getInitialUint32(p-uint32(1));
         assert(isa(v,'uint32'));
         if(p~=uint32(1))
           fprintf(',');
@@ -79,17 +79,17 @@ classdef DynamicModelTest
       DMTTrajectory(this);
       for b=uint32(0:2)
         fprintf('\nextend');
-        extend(this.dynamicModel);
+        this.dynamicModel.extend();
         
         fprintf('\nnumBlocks =');
-        numBlocks=numExtensionBlocks(this.dynamicModel);
+        numBlocks=this.dynamicModel.numExtensionBlocks();
         assert(isa(numBlocks,'uint32'));
         fprintf(' %d',numBlocks);
         
         fprintf('\n\ngetExtensionLogical(%d) = [',b);
         vEL=false(this.nEL,1);
         for p=uint32(1):this.nEL
-          v=getExtensionLogical(this.dynamicModel,b,p-uint32(1));
+          v=this.dynamicModel.getExtensionLogical(b,p-uint32(1));
           assert(isa(v,'logical'));
           if(p~=uint32(1))
             fprintf(',');
@@ -102,7 +102,7 @@ classdef DynamicModelTest
         fprintf('\ngetExtensionUint32(%d) = [',b);
         vEU=zeros(this.nEU,1,'uint32');
         for p=uint32(1):this.nEU
-          v=getExtensionUint32(this.dynamicModel,b,p-uint32(1));
+          v=this.dynamicModel.getExtensionUint32(b,p-uint32(1));
           assert(isa(v,'uint32'));
           if(p~=uint32(1))
             fprintf(',');
@@ -119,20 +119,20 @@ classdef DynamicModelTest
   
   methods (Access=private)
     function DMTTrajectory(this)   
-      interval=domain(this.dynamicModel);
-      display(interval);
+      interval=this.dynamicModel.domain();
+      interval.display();
       
       time=WorldTime(interval.first+this.tau*(min(interval.second,this.infinity)-interval.first));
 
       fprintf('\ntime = %f',double(time(1)));
       
-      pose=evaluate(this.dynamicModel,time(1));
+      pose=this.dynamicModel.evaluate(time(1));
       assert(isa(pose,'Pose'));
-      display(pose); 
+      pose.display(); 
 
-      tangentPose=tangent(this.dynamicModel,time(1));
+      tangentPose=this.dynamicModel.tangent(time(1));
       assert(isa(tangentPose,'TangentPose'));
-      display(tangentPose);
+      tangentPose.display();
       
       N=numel(time);
       p=zeros(3,N);
@@ -140,23 +140,23 @@ classdef DynamicModelTest
       r=zeros(3,N);
       s=zeros(4,N);
       for n=1:N
-        pose=evaluate(this.dynamicModel,time(n));
+        pose=this.dynamicModel.evaluate(time(n));
         p(:,n)=pose.p;
         q(:,n)=pose.q;
-        tangentPose=tangent(this.dynamicModel,time(n));
+        tangentPose=this.dynamicModel.tangent(time(n));
         r(:,n)=tangentPose.r;
         s(:,n)=tangentPose.s;
       end
 
       fprintf('\ntime = %f',double(time(end)));
       
-      pose=evaluate(this.dynamicModel,time(end));
+      pose=this.dynamicModel.evaluate(time(end));
       assert(isa(pose,'Pose'));
-      display(pose); 
+      pose.display(); 
 
-      tangentPose=tangent(this.dynamicModel,time(end));
+      tangentPose=this.dynamicModel.tangent(time(end));
       assert(isa(tangentPose,'TangentPose'));
-      display(tangentPose);
+      tangentPose.display();
       
       figure(1);
       for d=1:3

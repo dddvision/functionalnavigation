@@ -6,7 +6,7 @@
 static const double NAN=sqrt(static_cast<double>(-1));
 #endif
 
-namespace tommas
+namespace tom
 {
   class Pose
   {

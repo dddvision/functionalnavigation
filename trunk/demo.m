@@ -4,8 +4,37 @@
 %   trajectories in an infinite loop. See DemoConfig for options.
 help(mfilename);
 
-% initialize tommas
-tommas;
+% check MATLAB version
+try
+  matlabVersion=version('-release');
+catch err
+  error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB',err.message);
+end
+if(str2double(matlabVersion(1:4))<2009)
+  error('\nTOMMAS requires MATLAB version 2009a or greater');
+end
+
+% close figures and clear everything except breakpoints
+close('all');
+breakpoints=dbstatus('-completenames');
+save('breakpoints','breakpoints');
+clear('classes');
+load('breakpoints');
+dbstop(breakpoints);
+
+% set the warning state
+warning('on','all');
+warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
+
+% add component repository to the path
+componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
+if(isempty(findstr(componentPath,path)))
+  addpath(componentPath);
+  fprintf('\npath added: %s',componentPath);
+end
+  
+% initialize the default pseudorandom number generator
+reset(RandStream.getDefaultStream);
 
 % get configuration
 config=DemoConfig;
@@ -20,9 +49,9 @@ end
 % determine initial time based on first available data node
 initialTime=WorldTime(Inf);
 for m=1:M
-  refresh(measure{m});
-  if(hasData(measure{m}))
-    initialTime=WorldTime(min(initialTime,getTime(measure{m},first(measure{m}))));
+  measure{m}.refresh();
+  if(measure{m}.hasData())
+    initialTime=WorldTime(min(initialTime,measure{m}.getTime(measure{m}.first())));
   end
 end
 
@@ -46,22 +75,22 @@ gui=DemoDisplay(config.uri);
 % optimize for a number of steps
 for index=uint32(0):config.numSteps
   % check number of results
-  K=numResults(optimizer);
+  K=optimizer.numResults();
   
   % if there are any results
   if(K>uint32(0))
     % get all trajectory and cost estimates
-    trajectory=getTrajectory(optimizer,uint32(0));
-    cost=getCost(optimizer,uint32(0));
+    trajectory=optimizer.getTrajectory(uint32(0));
+    cost=optimizer.getCost(uint32(0));
     for k=uint32(1):(K-uint32(1))
-      trajectory(k,1)=getTrajectory(optimizer,k);
-      cost(k,1)=getCost(optimizer,k);
+      trajectory(k,1)=optimizer.getTrajectory(k);
+      cost(k,1)=optimizer.getCost(k);
     end
     
     % update graphical display
-    put(gui,trajectory,cost,index);
+    gui.put(trajectory,cost,index);
   end
     
   % take an optimization step
-  step(optimizer);
+  optimizer.step();
 end

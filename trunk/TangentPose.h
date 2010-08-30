@@ -3,7 +3,7 @@
 
 #include "Pose.h"
 
-namespace tommas
+namespace tom
 {
   class TangentPose : public Pose
   {

@@ -4,6 +4,9 @@
 enum DynamicModelMember
 {
   undefined,
+  DynamicModelIsConnected,
+  DynamicModelDescription,
+  DynamicModelFactory,
   numInitialLogical,
   numInitialUint32,
   numExtensionLogical,
@@ -29,7 +32,7 @@ void argcheck(int& narg,int n)
 {
   if(n>narg)
   {
-    mexErrMsgTxt("DynamicModelBridge: too few input arguments");
+    throw("DynamicModelBridge: too few input arguments");
   }
   return;
 }
@@ -38,7 +41,7 @@ void convert(const mxArray*& array, double& value)
 {
   if(mxGetClassID(array)!=mxDOUBLE_CLASS)
   {
-    mexErrMsgTxt("DynamicModelBridge: array must be double");
+    throw("DynamicModelBridge: array must be double");
   }
   value=(*static_cast<double*>(mxGetData(array)));
   return;
@@ -48,7 +51,7 @@ void convert(const mxArray*& array, uint32_t& value)
 {
   if(mxGetClassID(array)!=mxUINT32_CLASS)
   {
-    mexErrMsgTxt("DynamicModelBridge: array must be uint32");
+    throw("DynamicModelBridge: array must be uint32");
   }
   value=(*static_cast<uint32_t*>(mxGetData(array)));
   return;
@@ -58,7 +61,7 @@ void convert(const mxArray*& array, bool& value)
 {
   if(mxGetClassID(array)!=mxLOGICAL_CLASS)
   {
-    mexErrMsgTxt("DynamicModelBridge: array must be logical");
+    throw("DynamicModelBridge: array must be logical");
   }
   value=(*static_cast<bool*>(mxGetLogicals(array)));
   return;
@@ -70,7 +73,7 @@ void convert(const mxArray*& array, std::string& cppString)
   char *cString = new char[N];
   if(mxGetClassID(array)!=mxCHAR_CLASS)
   {
-    mexErrMsgTxt("DynamicModelBridge: array must be char");
+    throw("DynamicModelBridge: array must be char");
   }
   mxGetString(array,cString,N);
   cppString = cString;
@@ -78,7 +81,7 @@ void convert(const mxArray*& array, std::string& cppString)
   return;
 }
 
-void convert(const mxArray*& array, std::vector<tommas::WorldTime>& cppTime)
+void convert(const mxArray*& array, std::vector<tom::WorldTime>& cppTime)
 {
   double* mTime;
   unsigned n;
@@ -111,7 +114,13 @@ void convert(const bool& value, mxArray*& array)
   return;
 }
 
-void convert(const tommas::TimeInterval& timeInterval, mxArray*& array)
+void convert(std::string str, mxArray*& array)
+{
+  array=mxCreateString(str.c_str());
+  return;
+}
+
+void convert(const tom::TimeInterval& timeInterval, mxArray*& array)
 {
   mxArray* first;
   mxArray* second;
@@ -133,7 +142,7 @@ void convert(const tommas::TimeInterval& timeInterval, mxArray*& array)
   return;
 }
 
-void convert(const std::vector<tommas::Pose>& pose, const mxArray*& source, mxArray*& array)
+void convert(const std::vector<tom::Pose>& pose, const mxArray*& source, mxArray*& array)
 {
   mxArray* p;
   mxArray* q;
@@ -161,7 +170,7 @@ void convert(const std::vector<tommas::Pose>& pose, const mxArray*& source, mxAr
   return;
 }
 
-void convert(const std::vector<tommas::TangentPose>& tangentPose, const mxArray*& source, mxArray*& array)
+void convert(const std::vector<tom::TangentPose>& tangentPose, const mxArray*& source, mxArray*& array)
 {
   mxArray* p;
   mxArray* q;
@@ -209,11 +218,14 @@ void convert(const std::vector<tommas::TangentPose>& tangentPose, const mxArray*
 void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
 {
   static std::map<std::string,DynamicModelMember> memberMap;
-  static std::vector<tommas::DynamicModel*> instance;
+  static std::vector<tom::DynamicModel*> instance;
   static bool initialized=false;
 
   if(!initialized)
   {
+    memberMap["DynamicModelIsConnected"]=DynamicModelIsConnected;
+    memberMap["DynamicModelDescription"]=DynamicModelDescription;
+    memberMap["DynamicModelFactory"]=DynamicModelFactory;
     memberMap["numInitialLogical"]=numInitialLogical;
     memberMap["numInitialUint32"]=numInitialUint32;
     memberMap["numExtensionLogical"]=numExtensionLogical;
@@ -236,198 +248,231 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     initialized=true;
   }
   
-  argcheck(nrhs,2);
-  if(mxIsChar(prhs[0]))
+  argcheck(nrhs,1);
+  if(mxIsChar(prhs[0])) // call static function or constructor
   {
-    std::string name;
-    std::string uri;
-    tommas::DynamicModel* obj;
-    tommas::WorldTime initialTime;
-    uint32_t numInstances = instance.size();
-
-    argcheck(nrhs,3);
-    convert(prhs[0],name);
-    convert(prhs[1],initialTime);
-    convert(prhs[2],uri);
-    obj = tommas::DynamicModel::factory(name,initialTime,uri);
-    if(obj==NULL)
+    std::string functionName;
+    
+    convert(prhs[0],functionName); 
+    switch(memberMap[functionName])
     {
-      mexErrMsgTxt("DynamicModelBridge: failed to instantiate subclass");
+      case DynamicModelIsConnected:
+      {
+        std::string name;
+        
+        argcheck(nrhs,2);
+        convert(prhs[1],name);
+        convert(tom::DynamicModel::isConnected(name),plhs[0]);
+        break;
+      }  
+      case DynamicModelDescription:
+      {
+        std::string name;
+        
+        argcheck(nrhs,2);
+        convert(prhs[1],name);
+        convert(tom::DynamicModel::description(name),plhs[0]);
+        break;
+      }  
+      case DynamicModelFactory:
+      {
+        std::string name;
+        tom::WorldTime initialTime;
+        std::string uri;
+        tom::DynamicModel* obj;
+        uint32_t numInstances = instance.size();
+        
+        argcheck(nrhs,4);
+        convert(prhs[1],name);
+        convert(prhs[2],initialTime);
+        convert(prhs[3],uri);
+        obj = tom::DynamicModel::factory(name,initialTime,uri);
+        instance.resize(numInstances+1);
+        instance[numInstances] = obj;
+        convert(numInstances,plhs[0]);
+        break;
+      }
+      default:
+      {
+        throw("DynamicModelBridge: invalid function call");
+      } 
     }
-    instance.resize(numInstances+1);
-    instance[numInstances] = obj;
-    convert(numInstances,plhs[0]);
   }
-  else
+  else // call non-static member funciton
   {
     uint32_t handle;
-    std::string memberName;
+    std::string functionName;
 
+    argcheck(nrhs,2);
     convert(prhs[0],handle);
-    convert(prhs[1],memberName);
+    convert(prhs[1],functionName);
 
     if(handle>=instance.size())
     {
-      mexErrMsgTxt("DynamicModelBridge: invalid instance handle");
+      throw("DynamicModelBridge: invalid function call");
     }
-    switch(memberMap[memberName])
+    switch(memberMap[functionName])
     {
-    case undefined:
-      mexErrMsgTxt("DynamicModelBridge: invalid member function");
-      break;
-      
-    case numInitialLogical:
-      convert(instance[handle]->numInitialLogical(),plhs[0]);
-      break;
-    
-    case numInitialUint32:
-      convert(instance[handle]->numInitialUint32(),plhs[0]);
-      break;
+      case undefined:
+        throw("DynamicModelBridge: invalid function call");
+        break;
 
-    case numExtensionLogical:
-      convert(instance[handle]->numExtensionLogical(),plhs[0]);
-      break;
+      case numInitialLogical:
+        convert(instance[handle]->numInitialLogical(),plhs[0]);
+        break;
 
-    case numExtensionUint32:
-      convert(instance[handle]->numExtensionUint32(),plhs[0]);
-      break;
-      
-    case numExtensionBlocks:
-      convert(instance[handle]->numExtensionBlocks(),plhs[0]);
-      break;
-      
-    case getInitialLogical:
-    {
-      uint32_t p;
-      argcheck(nrhs,3);
-      convert(prhs[2],p);
-      convert(instance[handle]->getInitialLogical(p),plhs[0]);
-      break;
-    }
+      case numInitialUint32:
+        convert(instance[handle]->numInitialUint32(),plhs[0]);
+        break;
 
-    case getInitialUint32:
-    {
-      uint32_t p;
-      argcheck(nrhs,3);
-      convert(prhs[2],p);
-      convert(instance[handle]->getInitialUint32(p),plhs[0]);
-      break;
-    }
-  
-    case getExtensionLogical:
-    {
-      uint32_t b;
-      uint32_t p;
-      argcheck(nrhs,4);
-      convert(prhs[2],b);
-      convert(prhs[3],p);
-      convert(instance[handle]->getExtensionLogical(b,p),plhs[0]);
-      break;
-    }
-  
-    case getExtensionUint32:
-    {
-      uint32_t b;
-      uint32_t p;
-      argcheck(nrhs,4);
-      convert(prhs[2],b);
-      convert(prhs[3],p);
-      convert(instance[handle]->getExtensionUint32(b,p),plhs[0]);
-      break;
-    }
+      case numExtensionLogical:
+        convert(instance[handle]->numExtensionLogical(),plhs[0]);
+        break;
 
-    case setInitialLogical:
-    {
-      uint32_t p;
-      bool v;
-      argcheck(nrhs,4);
-      convert(prhs[2],p);
-      convert(prhs[3],v);
-      instance[handle]->setInitialLogical(p,v);
-      break;
-    }
+      case numExtensionUint32:
+        convert(instance[handle]->numExtensionUint32(),plhs[0]);
+        break;
 
-    case setInitialUint32:
-    {
-      uint32_t p;
-      uint32_t v;
-      argcheck(nrhs,4);
-      convert(prhs[2],p);
-      convert(prhs[3],v);
-      instance[handle]->setInitialUint32(p,v);
-      break;
-    }
+      case numExtensionBlocks:
+        convert(instance[handle]->numExtensionBlocks(),plhs[0]);
+        break;
 
-    case setExtensionLogical:
-    {
-      uint32_t b;
-      uint32_t p;
-      bool v;
-      argcheck(nrhs,5);
-      convert(prhs[2],b);
-      convert(prhs[3],p);
-      convert(prhs[4],v);
-      instance[handle]->setExtensionLogical(b,p,v);
-      break;
-    }
+      case getInitialLogical:
+      {
+        uint32_t p;
+        argcheck(nrhs,3);
+        convert(prhs[2],p);
+        convert(instance[handle]->getInitialLogical(p),plhs[0]);
+        break;
+      }
 
-    case setExtensionUint32:
-    {
-      uint32_t b;
-      uint32_t p;
-      uint32_t v;
-      argcheck(nrhs,5);
-      convert(prhs[2],b);
-      convert(prhs[3],p);
-      convert(prhs[4],v);
-      instance[handle]->setExtensionUint32(b,p,v);
-      break;
-    }
+      case getInitialUint32:
+      {
+        uint32_t p;
+        argcheck(nrhs,3);
+        convert(prhs[2],p);
+        convert(instance[handle]->getInitialUint32(p),plhs[0]);
+        break;
+      }
 
-    case computeInitialBlockCost:
-      convert(instance[handle]->computeInitialBlockCost(),plhs[0]);
-      break;
-      
-    case computeExtensionBlockCost:
-    {
-      uint32_t b;
-      argcheck(nrhs,3);
-      convert(prhs[2],b);
-      convert(instance[handle]->computeExtensionBlockCost(b),plhs[0]);
-      break;
-    }
+      case getExtensionLogical:
+      {
+        uint32_t b;
+        uint32_t p;
+        argcheck(nrhs,4);
+        convert(prhs[2],b);
+        convert(prhs[3],p);
+        convert(instance[handle]->getExtensionLogical(b,p),plhs[0]);
+        break;
+      }
 
-    case extend:
-    {
-      instance[handle]->extend();
-      break;
-    }
+      case getExtensionUint32:
+      {
+        uint32_t b;
+        uint32_t p;
+        argcheck(nrhs,4);
+        convert(prhs[2],b);
+        convert(prhs[3],p);
+        convert(instance[handle]->getExtensionUint32(b,p),plhs[0]);
+        break;
+      }
 
-    case domain:
-      convert(instance[handle]->domain(),plhs[0]);
-      break;
-      
-    case evaluate:
-    {
-      std::vector<tommas::WorldTime> time;
-      std::vector<tommas::Pose> pose;
-      argcheck(nrhs,4);
-      convert(prhs[3],time);
-      instance[handle]->evaluate(time,pose);
-      convert(pose,prhs[2],plhs[0]);
-      break;
-    }
+      case setInitialLogical:
+      {
+        uint32_t p;
+        bool v;
+        argcheck(nrhs,4);
+        convert(prhs[2],p);
+        convert(prhs[3],v);
+        instance[handle]->setInitialLogical(p,v);
+        break;
+      }
 
-    case tangent:
-    {
-      std::vector<tommas::WorldTime> time;
-      std::vector<tommas::TangentPose> tangentPose;
-      argcheck(nrhs,4);
-      convert(prhs[3],time);
-      instance[handle]->tangent(time,tangentPose);
-      convert(tangentPose,prhs[2],plhs[0]);
-      break;
-    }
+      case setInitialUint32:
+      {
+        uint32_t p;
+        uint32_t v;
+        argcheck(nrhs,4);
+        convert(prhs[2],p);
+        convert(prhs[3],v);
+        instance[handle]->setInitialUint32(p,v);
+        break;
+      }
+
+      case setExtensionLogical:
+      {
+        uint32_t b;
+        uint32_t p;
+        bool v;
+        argcheck(nrhs,5);
+        convert(prhs[2],b);
+        convert(prhs[3],p);
+        convert(prhs[4],v);
+        instance[handle]->setExtensionLogical(b,p,v);
+        break;
+      }
+
+      case setExtensionUint32:
+      {
+        uint32_t b;
+        uint32_t p;
+        uint32_t v;
+        argcheck(nrhs,5);
+        convert(prhs[2],b);
+        convert(prhs[3],p);
+        convert(prhs[4],v);
+        instance[handle]->setExtensionUint32(b,p,v);
+        break;
+      }
+
+      case computeInitialBlockCost:
+        convert(instance[handle]->computeInitialBlockCost(),plhs[0]);
+        break;
+
+      case computeExtensionBlockCost:
+      {
+        uint32_t b;
+        argcheck(nrhs,3);
+        convert(prhs[2],b);
+        convert(instance[handle]->computeExtensionBlockCost(b),plhs[0]);
+        break;
+      }
+
+      case extend:
+      {
+        instance[handle]->extend();
+        break;
+      }
+
+      case domain:
+        convert(instance[handle]->domain(),plhs[0]);
+        break;
+
+      case evaluate:
+      {
+        std::vector<tom::WorldTime> time;
+        std::vector<tom::Pose> pose;
+        argcheck(nrhs,4);
+        convert(prhs[3],time);
+        instance[handle]->evaluate(time,pose);
+        convert(pose,prhs[2],plhs[0]);
+        break;
+      }
+
+      case tangent:
+      {
+        std::vector<tom::WorldTime> time;
+        std::vector<tom::TangentPose> tangentPose;
+        argcheck(nrhs,4);
+        convert(prhs[3],time);
+        instance[handle]->tangent(time,tangentPose);
+        convert(tangentPose,prhs[2],plhs[0]);
+        break;
+      }
+      default:
+      {
+        throw("DynamicModelBridge: invalid function call");
+      } 
     }
   }
   return;
