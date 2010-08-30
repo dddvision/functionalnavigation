@@ -80,15 +80,20 @@ myFunction (void); // bad
 this =  is +bad;
 }}}
 
-  * RULE (C++): Use unsnuggled braces as follows
+  * RULE (C++): Use unsnuggled braces to align code on equal indentation levels.
 {{{
-void snuggled(void) {
-  /* hard to match braces */
-}
-
 void unsnuggled(void)
 {
-  /* preferred because it is easier to match braces */
+  while(a)
+  { 
+    /* unsnuggled braces are easy to match */
+  }
+}
+
+void snuggled(void) {
+  while(a) {
+    /* snuggled braces are harder to match */
+  }
 }
 }}}
 
@@ -118,16 +123,6 @@ int k;
 int a = 0;
 double **matrix = NULL;
 double point[2] = {0,0};
-}}}
-  * RULE (C++): Scope brackets should align on equal indentation levels.
-{{{
-if(a)
-{
-  for( i=0 ; i<iMax ; i++ )
-  {
-    b[i]=c[i];
-  }
-}
 }}}
 
 External references for good coding practices and tips:
