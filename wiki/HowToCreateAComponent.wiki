@@ -44,9 +44,9 @@ Additional coding guidelines for all code hosted in this repository:
 {{{
 // Description of C++ function
 //
-// @param[in]     aa description of input and units
-// @param[in,out] bb description of another input and units
-// @return        description of output argument or return value and units
+// @param[in]     aa description of input argument and units
+// @param[in,out] bb description of input/output argument and units
+// @return           description of return value and units
 //
 // NOTES
 // Here is extra information
