@@ -105,7 +105,7 @@ namespace tom
      * Get user friendly description of a component
      *
      * @param[in] name component identifier
-     * @return         user friendly description, string
+     * @return         user friendly description
      *
      * NOTES
      * Do not shadow this function
@@ -170,7 +170,7 @@ namespace tom
      * Get the most recent trajectory estimate in the form of a dynamic model
      *
      * @param[in]  k    zero based result index
-     * @return          trajectory instance in the form of a dynamic model
+     * @return          dynamic model instance that is also a trajectory
      *
      * NOTES
      * This function returns initial conditions if called before the first optimization step occurrs
@@ -188,7 +188,7 @@ namespace tom
      * This function returns initial conditions if called before the first optimization step occurrs
      * Throws an exception if index is out of range
      */
-    virtual double getCost(const unsigned) = 0;
+    virtual double getCost(const unsigned k) = 0;
     
     /**
      * Execute one step of the optimizer to evolve parameters toward lower cost

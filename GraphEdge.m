@@ -1,9 +1,10 @@
-% This class represents edges that determine the adjacency of nodes in a cost graph
 classdef GraphEdge
+  
   properties (SetAccess=public,GetAccess=public)
-    first=uint32(0); % lower node index for this edge, uint32 scalar
-    second=uint32(0);  % upper node index for this edge, uint32 scalar
+    first=uint32(0);
+    second=uint32(0);
   end
+  
   methods (Access=public)
     function this=GraphEdge(A,B)
       if(nargin==1)
@@ -35,10 +36,12 @@ classdef GraphEdge
         end
       end
     end
+    
     function display(this)
       for n=1:numel(this)
         fprintf('\n%s = [%d,%d]\n',inputname(1),this(n).first,this(n).second);
       end
     end
   end
+  
 end
