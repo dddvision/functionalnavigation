@@ -85,13 +85,13 @@ this =  is +bad;
 
   * RULE (C++): Use unsnuggled braces as follows
 {{{
-void correct(void)
-{
-  /* implementation */
+void snuggled(void) {
+  /* hard to match braces */
 }
 
-void incorrect(void) {
-  /* implementation */
+void unsnuggled(void)
+{
+  /* preferred because it is easier to match braces */
 }
 }}}
 
