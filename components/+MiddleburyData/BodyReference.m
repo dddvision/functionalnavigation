@@ -1,4 +1,4 @@
-classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
+classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
   
   properties (SetAccess=private,GetAccess=private)
     interval
@@ -6,7 +6,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
   
   methods (Access=public)
     function this=BodyReference
-      this.interval=TimeInterval(WorldTime(0),WorldTime((this.numImages-1)/this.fps));
+      this.interval=tom.TimeInterval(tom.WorldTime(0),tom.WorldTime((this.numImages-1)/this.fps));
     end
 
     function interval=domain(this)
@@ -14,7 +14,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
     end
 
     function pose=evaluate(this,t)
-      pose(1,numel(t))=Pose;
+      pose(1,numel(t))=tom.Pose;
       t=double(t);
       tmin=double(this.interval.first);
       tmax=double(this.interval.second);
@@ -26,7 +26,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & Trajectory
     end
     
     function tangentPose=tangent(this,t)
-      tangentPose(1,numel(t))=TangentPose;
+      tangentPose(1,numel(t))=tom.TangentPose;
       t=double(t);
       tmin=double(this.interval.first);
       tmax=double(this.interval.second);

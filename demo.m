@@ -43,15 +43,15 @@ config=DemoConfig;
 M=numel(config.measureNames);
 measure=cell(M,1);
 for m=1:M
-  measure{m}=Measure.factory(config.measureNames{m},config.uri);
+  measure{m}=tom.Measure.factory(config.measureNames{m},config.uri);
 end
 
 % determine initial time based on first available data node
-initialTime=WorldTime(Inf);
+initialTime=tom.WorldTime(Inf);
 for m=1:M
   measure{m}.refresh();
   if(measure{m}.hasData())
-    initialTime=WorldTime(min(initialTime,measure{m}.getTime(measure{m}.first())));
+    initialTime=tom.WorldTime(min(initialTime,measure{m}.getTime(measure{m}.first())));
   end
 end
 
@@ -61,13 +61,13 @@ if(isinf(initialTime))
 end
   
 % initialize multiple dynamic models
-dynamicModel=DynamicModel.factory(config.dynamicModelName,initialTime,config.uri);
+dynamicModel=tom.DynamicModel.factory(config.dynamicModelName,initialTime,config.uri);
 for k=2:config.numTrajectories
-  dynamicModel(k)=DynamicModel.factory(config.dynamicModelName,initialTime,config.uri);
+  dynamicModel(k)=tom.DynamicModel.factory(config.dynamicModelName,initialTime,config.uri);
 end
 
 % instantiate an optimizer
-optimizer=Optimizer.factory(config.optimizerName,dynamicModel,measure);
+optimizer=tom.Optimizer.factory(config.optimizerName,dynamicModel,measure);
 
 % instantiate the graphical display
 gui=DemoDisplay(config.uri);

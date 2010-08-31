@@ -1,4 +1,4 @@
-classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & DataContainer
+classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & tom.DataContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensor
@@ -15,13 +15,13 @@ classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & DataContainer
           'stereo matching. In IEEE Computer Society Conference on Computer Vision ',...
           'and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.'];
       end
-      DataContainer.connect(name,@componentDescription,@MiddleburyData.MiddleburyData);
+      tom.DataContainer.connect(name,@componentDescription,@MiddleburyData.MiddleburyData);
     end
   end
   
   methods (Access=public)
     function this=MiddleburyData
-      this=this@DataContainer;
+      this=this@tom.DataContainer;
       this.sensor{1}=MiddleburyData.CameraSim;
       this.sensorDescription{1}='Forward facing monocular perspective camera fixed at the body origin';
       this.hasRef=true;
@@ -36,7 +36,7 @@ classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & DataContainer
           flag(k)=true;
         end
       end
-      list=SensorIndex(find(flag)-1);
+      list=tom.SensorIndex(find(flag)-1);
     end
     
     function text=getSensorDescription(this,id)

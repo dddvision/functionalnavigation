@@ -1,4 +1,4 @@
-classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
+classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
   
   properties (GetAccess=private,SetAccess=private)
     nSpan
@@ -25,13 +25,13 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
           'Converts all dynamic model parameters between blocks and bit strings as needed. ',...
           'Optimizes over all parameters at each time step'];
       end
-      Optimizer.connect(name,@componentDescription,@MatlabGA.MatlabGA);
+      tom.Optimizer.connect(name,@componentDescription,@MatlabGA.MatlabGA);
     end
   end
   
   methods (Access=public)
     function this=MatlabGA(dynamicModel,measure)
-      this=this@Optimizer(dynamicModel,measure);
+      this=this@tom.Optimizer(dynamicModel,measure);
           
       % set initial options for the GADS toolbox
       if(~license('test','gads_toolbox'))
@@ -265,10 +265,10 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & Optimizer
     % extends all trajectories to cover the last sensor data
     % should do nothing if there are no measures
     function extendToCover(this)
-      tb=WorldTime(-Inf);
+      tb=tom.WorldTime(-Inf);
       for m=1:numel(this.measure)
         if(hasData(this.measure{m}))
-          tb=WorldTime(max(tb,getTime(this.measure{m},last(this.measure{m}))));
+          tb=tom.WorldTime(max(tb,getTime(this.measure{m},last(this.measure{m}))));
         end
       end
       interval=domain(this.dynamicModel(1));

@@ -25,7 +25,7 @@ classdef CameraSim < Camera
         S=load(fullfile(localCache,'workspace.mat'),'T_cam','CAMERA_TYPE','CAMERA_OFFSET');
         this.na=uint32(str2double(fnames(1,6:11)));
         this.nb=uint32(str2double(fnames(end,6:11)));
-        this.tn=WorldTime(S.T_cam);
+        this.tn=tom.WorldTime(S.T_cam);
         this.cameraType=S.CAMERA_TYPE;
         this.layers='rgb';
         this.frameDynamic=false;

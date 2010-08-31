@@ -48,7 +48,7 @@ assert(isa(config.name,'char'));
 fprintf(' ''%s''',config.name);
 
 fprintf('\ninitialTime =');
-assert(isa(config.initialTime,'WorldTime')); 
+assert(isa(config.initialTime,'tom.WorldTime')); 
 fprintf(' %f',double(config.initialTime));
 
 fprintf('\nuri =');
@@ -63,43 +63,43 @@ fprintf('\nmeasureName =');
 assert(isa(config.measureName,'char'));
 fprintf(' ''%s''',config.measureName);
 
-fprintf('\n\nDynamicModel.isConnected = ')
-if(DynamicModel.isConnected(config.name))
+fprintf('\n\ntom.DynamicModel.isConnected = ')
+if(tom.DynamicModel.isConnected(config.name))
   fprintf('yes');
 else
   fprintf('no');
 end
-fprintf('\nMeasure.isConnected = ')
-if(Measure.isConnected(config.name))
+fprintf('\ntom.Measure.isConnected = ')
+if(tom.Measure.isConnected(config.name))
   fprintf('yes');
 else
   fprintf('no');
 end
-fprintf('\nOptimizer.isConnected = ')
-if(Optimizer.isConnected(config.name))
+fprintf('\ntom.Optimizer.isConnected = ')
+if(tom.Optimizer.isConnected(config.name))
   fprintf('yes');
 else
   fprintf('no');
 end
-fprintf('\nDataContainer.isConnected = ')
-if(DataContainer.isConnected(config.name))
+fprintf('\ntom.DataContainer.isConnected = ')
+if(tom.DataContainer.isConnected(config.name))
   fprintf('yes');
 else
   fprintf('no');
 end
 
-if(DynamicModel.isConnected(config.name))
+if(tom.DynamicModel.isConnected(config.name))
   DynamicModelTest(config.name,config.initialTime,config.uri);
 end
-if(Measure.isConnected(config.name))
+if(tom.Measure.isConnected(config.name))
   MeasureTest(config.name,config.uri);
 end
-if(Optimizer.isConnected(config.name))
-  dynamicModel=DynamicModel.factory(config.dynamicModelName,config.initialTime,config.uri);
-  measure{1}=Measure.factory(config.measureName,config.uri);
+if(tom.Optimizer.isConnected(config.name))
+  dynamicModel=tom.DynamicModel.factory(config.dynamicModelName,config.initialTime,config.uri);
+  measure{1}=tom.Measure.factory(config.measureName,config.uri);
   OptimizerTest(config.name,dynamicModel,measure);
 end
-if(DataContainer.isConnected(config.name))
+if(tom.DataContainer.isConnected(config.name))
   DataContainerTest(config.name);
 end
 

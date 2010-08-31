@@ -1,4 +1,4 @@
-classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConfig & Optimizer
+classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConfig & tom.Optimizer
   
   properties (GetAccess=private,SetAccess=private)
     dynamicModel
@@ -16,13 +16,13 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
           'Extension blocks are ignored. ',...
           'Only the last on-diagonal element of each measure is evaluated after each refresh.'];
       end
-      Optimizer.connect(name,@componentDescription,@LinearKalmanOptimizer.LinearKalmanOptimizer);
+      tom.Optimizer.connect(name,@componentDescription,@LinearKalmanOptimizer.LinearKalmanOptimizer);
     end
   end
  
   methods (Access=public)
     function this=LinearKalmanOptimizer(dynamicModel,measure)
-      this=this@Optimizer(dynamicModel,measure);
+      this=this@tom.Optimizer(dynamicModel,measure);
       
       % copy input arguments
       this.dynamicModel=dynamicModel;

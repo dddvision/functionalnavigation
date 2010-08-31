@@ -20,7 +20,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
     function this=CameraSim
       this.ringsz=uint32(this.numImages);
       for n=1:this.ringsz
-        this.ring{n}.time=WorldTime(double(n-1)/this.fps);
+        this.ring{n}.time=tom.WorldTime(double(n-1)/this.fps);
         this.ring{n}.image=getMiddleburyArt(this,n-1);
       end
       this.rho=1;

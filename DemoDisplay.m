@@ -41,7 +41,7 @@ classdef DemoDisplay < DemoConfig & handle
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         if(strcmp(scheme,'matlab'))
-          container=DataContainer.factory(resource);
+          container=tom.DataContainer.factory(resource);
           if(hasReferenceTrajectory(container))
             xRef=getReferenceTrajectory(container);
             this.tRef=generateSampleTimes(this,xRef);
@@ -56,7 +56,7 @@ classdef DemoDisplay < DemoConfig & handle
     % Visualize a set of trajectories with optional transparency
     %
     % INPUT
-    % x = trajectory instances, Trajectory N-by-1
+    % x = trajectory instances, tom.Trajectory N-by-1
     % c = costs, double N-by-1
     % index = plot index, double scalar
     function put(this,x,c,index)
@@ -169,10 +169,10 @@ classdef DemoDisplay < DemoConfig & handle
         tmax=min(tmax,this.tRef(end));
       end
       if(tmin==tmax)
-        t=WorldTime(repmat(tmin,[1,this.bigSteps*this.subSteps+1]));
+        t=tom.WorldTime(repmat(tmin,[1,this.bigSteps*this.subSteps+1]));
       else
         tmax(isinf(tmax))=this.infinity; % prevent NaN
-        t=WorldTime(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
+        t=tom.WorldTime(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
       end
     end
     

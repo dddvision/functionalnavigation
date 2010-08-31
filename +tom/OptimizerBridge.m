@@ -1,4 +1,4 @@
-classdef OptimizerBridge < Optimizer
+classdef OptimizerBridge < tom.Optimizer
 
   properties (SetAccess=private,GetAccess=private)
     m % class name
@@ -7,14 +7,14 @@ classdef OptimizerBridge < Optimizer
   
   methods (Static=true,Access=public)
     function text=description(name)
-      error('\n\nOptimizerBridge has not been implemented');
+      error('\n\ntom.OptimizerBridge has not been implemented');
     end
   end
   
   methods (Access=public)
     function this=OptimizerBridge(name,dynamicModelName,measureNames,uri)
-      this=this@Optimizer(dynamicModelName,measureNames,uri);
-      error('\n\nOptimizerBridge has not been implemented');
+      this=this@tom.Optimizer(dynamicModelName,measureNames,uri);
+      error('\n\ntom.OptimizerBridge has not been implemented');
 %      this.m=[name,'.',name];
 %      this.h=feval(this.m,name,dynamicModelName,measureNames,uri);
     end

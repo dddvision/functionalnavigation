@@ -1,6 +1,6 @@
 % This class defines a synchronously time-stamped array of inertial sensors
 %   rigidly attached to a body with different positions and orientations
-classdef InertialArray < Sensor
+classdef InertialArray < tom.Sensor
 
   methods (Abstract)
     % Get number of axes in the array

@@ -1,4 +1,4 @@
-classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
+classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
   
   properties (Constant=true,GetAccess=private)
     initialNumLogical=uint32(0);
@@ -27,17 +27,17 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
       function text=componentDescription
         text='Represents the integration of linear Markov motion model with a bounded forcing function.';
       end
-      DynamicModel.connect(name,@componentDescription,@BoundedMarkov.BoundedMarkov);
+      tom.DynamicModel.connect(name,@componentDescription,@BoundedMarkov.BoundedMarkov);
     end
   end
   
   methods (Access=public)
     function this=BoundedMarkov(initialTime,uri)
-      this=this@DynamicModel(initialTime,uri);
+      this=this@tom.DynamicModel(initialTime,uri);
       this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
         'uint32',zeros(1,this.initialNumUint32,'uint32'));
       this.firstNewBlock=1;
-      this.interval=TimeInterval(initialTime,initialTime);
+      this.interval=tom.TimeInterval(initialTime,initialTime);
       this.block=struct('logical',{},'uint32',{});
       this.numInputs=size(this.B,2);
       this.state=zeros(this.numStates,this.chunkSize);
@@ -127,7 +127,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
    
     function pose=evaluate(this,t)
       [goodList,dkFloor,dtRemain]=preEvaluate(this,t);
-      pose(1,numel(t))=Pose;
+      pose(1,numel(t))=tom.Pose;
       for n=goodList
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
         pose(n).p=substate(1:3)+this.initialPosition;
@@ -137,7 +137,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & DynamicModel
     
     function tangentPose=tangent(this,t)
       [goodList,dkFloor,dtRemain]=preEvaluate(this,t);
-      tangentPose(1,numel(t))=TangentPose;
+      tangentPose(1,numel(t))=tom.TangentPose;
       for n=goodList
         substate=subIntegrate(this,dkFloor(n),dtRemain(n));
         tangentPose(n).p=substate(1:3)+this.initialPosition;

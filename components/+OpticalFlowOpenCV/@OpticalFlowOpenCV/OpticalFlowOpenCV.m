@@ -1,4 +1,4 @@
-classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
+classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
@@ -9,15 +9,15 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
       function text=componentDescription
         text=['Implements a trajectory measure based on the computation of optical flow between image pairs. ',...
           'Depends on the OpenCV library.',...
-          'Depends on a MATLAB DataContainer that has at least one Camera object.'];
+          'Depends on a tom.DataContainer that has at least one Camera object.'];
       end
-      Measure.connect(name,@componentDescription,@OpticalFlowOpenCV.OpticalFlowOpenCV);
+      tom.Measure.connect(name,@componentDescription,@OpticalFlowOpenCV.OpticalFlowOpenCV);
     end
   end
   
   methods (Access=public)
     function this=OpticalFlowOpenCV(uri)
-      this=this@Measure(uri);
+      this=this@tom.Measure(uri);
       if(this.verbose)
         fprintf('\nInitializing %s\n',class(this));
       end
@@ -80,7 +80,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=DataContainer.factory(resource);
+            container=tom.DataContainer.factory(resource);
             list=listSensors(container,'Camera');
             this.sensor=getSensor(container,list(1));
           otherwise
@@ -112,7 +112,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
     end
     
     function edgeList=findEdges(this,x,naSpan,nbSpan)
-      assert(isa(x,'Trajectory'));
+      assert(isa(x,'tom.Trajectory'));
       if(hasData(this.sensor))
         naMin=last(this.sensor)-naSpan;
         nbMin=last(this.sensor)-nbSpan;
@@ -121,9 +121,9 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & Measure
         a=naMin:naMax;
       end
       if(naMax>=naMin)
-        edgeList=GraphEdge(a,a+uint32(1));
+        edgeList=tom.GraphEdge(a,a+uint32(1));
       else
-        edgeList=repmat(GraphEdge,[0,1]);
+        edgeList=repmat(tom.GraphEdge,[0,1]);
       end
     end
     
