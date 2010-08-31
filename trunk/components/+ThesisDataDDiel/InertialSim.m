@@ -44,7 +44,7 @@ classdef InertialSim < InertialSixDoF
       assert(this.ready);
       assert(n>=this.na);
       assert(n<=this.nb);
-      time=WorldTime(this.time(n));      
+      time=tom.WorldTime(this.time(n));      
     end
     
     function [p,q]=getFrame(this)

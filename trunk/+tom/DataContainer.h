@@ -52,8 +52,8 @@ namespace tom
      * Protected method to construct a singleton component
      *
      * NOTES
-     * Each subclass constructor must explicitly call this constructor 
-     *   using the syntax this=this@DataContainer;
+     * Each subclass constructor should initialize this base class
+     * (MATLAB) Initialize by calling this=this@tom.DataContainer;
      */
     DataContainer(void){}
     

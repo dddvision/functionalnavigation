@@ -14,19 +14,19 @@ classdef DynamicModelTest
   
   methods (Access=public)
     function this=DynamicModelTest(name,initialTime,uri)
-      fprintf('\n\nDynamicModel.description =');
-      text=DynamicModel.description(name);
+      fprintf('\n\ntom.DynamicModel.description =');
+      text=tom.DynamicModel.description(name);
       assert(isa(text,'char'));
       fprintf(' %s',text);
 
-      fprintf('\n\nDynamicModel.factory =');
-      this.dynamicModel=DynamicModel.factory(name,initialTime,uri);
-      assert(isa(this.dynamicModel,'DynamicModel'));
+      fprintf('\n\ntom.DynamicModel.factory =');
+      this.dynamicModel=tom.DynamicModel.factory(name,initialTime,uri);
+      assert(isa(this.dynamicModel,'tom.DynamicModel'));
       fprintf(' ok');
 
       fprintf('\n\ndomain =');
       interval=this.dynamicModel.domain();
-      assert(isa(interval,'TimeInterval'));
+      assert(isa(interval,'tom.TimeInterval'));
       assert(interval.first==initialTime);
       fprintf(' ok');
 
@@ -122,16 +122,16 @@ classdef DynamicModelTest
       interval=this.dynamicModel.domain();
       interval.display();
       
-      time=WorldTime(interval.first+this.tau*(min(interval.second,this.infinity)-interval.first));
+      time=tom.WorldTime(interval.first+this.tau*(min(interval.second,this.infinity)-interval.first));
 
       fprintf('\ntime = %f',double(time(1)));
       
       pose=this.dynamicModel.evaluate(time(1));
-      assert(isa(pose,'Pose'));
+      assert(isa(pose,'tom.Pose'));
       pose.display(); 
 
       tangentPose=this.dynamicModel.tangent(time(1));
-      assert(isa(tangentPose,'TangentPose'));
+      assert(isa(tangentPose,'tom.TangentPose'));
       tangentPose.display();
       
       N=numel(time);
@@ -151,11 +151,11 @@ classdef DynamicModelTest
       fprintf('\ntime = %f',double(time(end)));
       
       pose=this.dynamicModel.evaluate(time(end));
-      assert(isa(pose,'Pose'));
+      assert(isa(pose,'tom.Pose'));
       pose.display(); 
 
       tangentPose=this.dynamicModel.tangent(time(end));
-      assert(isa(tangentPose,'TangentPose'));
+      assert(isa(tangentPose,'tom.TangentPose'));
       tangentPose.display();
       
       figure(1);

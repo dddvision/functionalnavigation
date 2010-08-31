@@ -1,4 +1,4 @@
-classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & DataContainer
+classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & tom.DataContainer
   properties (Constant=true,GetAccess=private)
     hasRef=false;
     bodyRef=[];
@@ -21,13 +21,13 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
         text=['Provides data from the built-in camera and three-axis accelerometer ',...
         'available in most MacBook and MacBook Pro laptops.'];
       end
-      DataContainer.connect(name,@componentDescription,@MacBookBuiltInSensors.MacBookBuiltInSensors);
+      tom.DataContainer.connect(name,@componentDescription,@MacBookBuiltInSensors.MacBookBuiltInSensors);
     end
   end
   
   methods (Access=public)
     function this=MacBookBuiltInSensors
-      this=this@DataContainer;
+      this=this@tom.DataContainer;
       if(this.verbose)
         fprintf('\nInitializing %s\n',class(this));
       end
@@ -49,7 +49,7 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
           flag(k)=true;
         end
       end
-      list=SensorIndex(find(flag)-1);
+      list=tom.SensorIndex(find(flag)-1);
     end
     
     function text=getSensorDescription(this,id)

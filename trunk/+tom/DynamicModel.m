@@ -1,4 +1,4 @@
-classdef DynamicModel < Trajectory
+classdef DynamicModel < tom.Trajectory
     
   methods (Access=private,Static=true)
     function dL=pDescriptionList(name,cD)
@@ -29,8 +29,8 @@ classdef DynamicModel < Trajectory
     function connect(name,cD,cF)
       if(isa(cD,'function_handle')&&...
          isa(cF,'function_handle'))
-         DynamicModel.pDescriptionList(name,cD);
-         DynamicModel.pFactoryList(name,cF);
+         tom.DynamicModel.pDescriptionList(name,cD);
+         tom.DynamicModel.pFactoryList(name,cF);
       end
     end
   end
@@ -40,7 +40,7 @@ classdef DynamicModel < Trajectory
       flag=false;
       if(exist([name,'.',name],'class'))
         feval([name,'.',name,'.initialize'],name); 
-        if(isfield(DynamicModel.pFactoryList(name),name))
+        if(isfield(tom.DynamicModel.pFactoryList(name),name))
           flag=true;
         end
       end
@@ -48,19 +48,19 @@ classdef DynamicModel < Trajectory
     
     function text=description(name)
       text='';
-      if(DynamicModel.isConnected(name))
-        dL=DynamicModel.pDescriptionList(name);
+      if(tom.DynamicModel.isConnected(name))
+        dL=tom.DynamicModel.pDescriptionList(name);
         text=dL.(name)();
       end
     end
     
     function obj=factory(name,initialTime,uri)
-      if(DynamicModel.isConnected(name))
-        cF=DynamicModel.pFactoryList(name);
+      if(tom.DynamicModel.isConnected(name))
+        cF=tom.DynamicModel.pFactoryList(name);
         obj=cF.(name)(initialTime,uri);
-        assert(isa(obj,'DynamicModel'));
+        assert(isa(obj,'tom.DynamicModel'));
       else
-        error('DynamicModel is not connected to the requested component');
+        error('The requested component is not connected');
       end
     end
   end

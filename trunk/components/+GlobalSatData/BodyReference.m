@@ -1,4 +1,4 @@
-classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
+classdef BodyReference < GlobalSatData.GlobalSatDataConfig & tom.Trajectory
     
   properties (SetAccess=private, GetAccess=private)
     pts
@@ -16,11 +16,11 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
     end
     
     function interval=domain(this)
-      interval=TimeInterval(WorldTime(this.gpsTime(1)),WorldTime(this.gpsTime(end)));
+      interval=tom.TimeInterval(tom.WorldTime(this.gpsTime(1)),tom.WorldTime(this.gpsTime(end)));
     end
     
     function pose=evaluate(this,t)
-      pose(1,numel(t))=Pose;
+      pose(1,numel(t))=tom.Pose;
       p=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0); 
       interval=domain(this);
       for k=find((t>=interval.first)&(t<=interval.second))
@@ -30,7 +30,7 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & Trajectory
     end
     
     function tangentPose=tangent(this,t)
-      tangentPose(1,numel(t))=TangentPose;
+      tangentPose(1,numel(t))=tom.TangentPose;
       [p,r]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension,0); 
       interval=domain(this);
       for k=find((t>=interval.first)&(t<=interval.second))

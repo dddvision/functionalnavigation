@@ -59,13 +59,12 @@ namespace tom
      * @param[in] uri (@see tom::Measure)
      *
      * NOTES
-     * The URI should identify a hardware resource or DataContainer
+     * The URI may identify a hardware resource or DataContainer
      * URI examples:
      *   'file://dev/camera0'
      *   'matlab:middleburyData'
-     * Each subclass constructor must pass identical arguments to this 
-     *   constructor using the syntax this=this@Measure(uri);
-     * Non-subclasses should instantiate this class using its factory method
+     * Each subclass constructor should initialize this base class
+     * (MATLAB) Initialize by calling this=this@tom.Measure(uri);
      */
     Measure(const std::string uri){}
     

@@ -130,11 +130,11 @@ void convert(const tom::TimeInterval& timeInterval, mxArray*& array)
   
   first=mxCreateDoubleScalar(timeInterval.first);
   second=mxCreateDoubleScalar(timeInterval.second);
-  mexCallMATLAB(1,&firstWT,1,&first,"WorldTime");
-  mexCallMATLAB(1,&secondWT,1,&second,"WorldTime");
+  mexCallMATLAB(1,&firstWT,1,&first,"tom.WorldTime");
+  mexCallMATLAB(1,&secondWT,1,&second,"tom.WorldTime");
   interval[0]=firstWT;
   interval[1]=secondWT;
-  mexCallMATLAB(1,&array,2,interval,"TimeInterval");
+  mexCallMATLAB(1,&array,2,interval,"tom.TimeInterval");
   mxDestroyArray(first);
   mxDestroyArray(second);
   mxDestroyArray(firstWT);

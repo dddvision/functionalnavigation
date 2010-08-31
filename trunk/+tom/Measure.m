@@ -1,5 +1,5 @@
-classdef DataContainer < handle
-  
+classdef Measure < tom.Sensor
+
   methods (Access=private,Static=true)
     function dL=pDescriptionList(name,cD)
       persistent descriptionList
@@ -21,14 +21,15 @@ classdef DataContainer < handle
   end
   
   methods (Access=protected,Static=true)
-    function this=DataContainer
+    function this=Measure(uri)
+      assert(isa(uri,'char'));
     end
     
     function connect(name,cD,cF)
       if(isa(cD,'function_handle')&&...
          isa(cF,'function_handle'))
-         DataContainer.pDescriptionList(name,cD);
-         DataContainer.pFactoryList(name,cF);
+         tom.Measure.pDescriptionList(name,cD);
+         tom.Measure.pFactoryList(name,cF);
       end
     end
   end
@@ -42,7 +43,7 @@ classdef DataContainer < handle
         catch err
           err.message;
         end  
-        if(isfield(DataContainer.pFactoryList(name),name))
+        if(isfield(tom.Measure.pFactoryList(name),name))
           flag=true;
         end
       end
@@ -50,25 +51,19 @@ classdef DataContainer < handle
     
     function text=description(name)
       text='';
-      if(DataContainer.isConnected(name))
-        dL=DataContainer.pDescriptionList(name);
+      if(tom.Measure.isConnected(name))
+        dL=tom.Measure.pDescriptionList(name);
         text=dL.(name)();
       end
     end
     
-    function obj=factory(name)
-      persistent singleton
-      if(DataContainer.isConnected(name))
-        if(isempty(singleton))
-          cF=DataContainer.pFactoryList(name);
-          obj=cF.(name)();
-          assert(isa(obj,'DataContainer'));
-          singleton=obj;
-        else
-          obj=singleton;
-        end
+    function obj=factory(name,uri)
+      if(tom.Measure.isConnected(name))
+        cF=tom.Measure.pFactoryList(name);
+        obj=cF.(name)(uri);
+        assert(isa(obj,'tom.Measure'));
       else
-        error('DataContainer is not connected to the requested component');
+        error('The requested component is not connected');
       end
     end
   end
@@ -78,11 +73,8 @@ classdef DataContainer < handle
   end
   
   methods (Abstract=true,Access=public,Static=false)
-    list=listSensors(this,type); 
-    text=getSensorDescription(this,id);
-    obj=getSensor(this,id);
-    flag=hasReferenceTrajectory(this);
-    x=getReferenceTrajectory(this);
+    edgeList=findEdges(this,x,naSpan,nbSpan);
+    cost=computeEdgeCost(this,x,graphEdge);
   end
   
 end

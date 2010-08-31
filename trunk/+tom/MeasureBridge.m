@@ -1,4 +1,4 @@
-classdef MeasureBridge < Measure
+classdef MeasureBridge < tom.Measure
 
   properties (SetAccess=private,GetAccess=private)
     m % class name
@@ -7,7 +7,7 @@ classdef MeasureBridge < Measure
   
   methods (Access=public)
     function this=MeasureBridge(name,uri)
-      this=this@Measure(uri);
+      this=this@tom.Measure(uri);
       this.m=[name,'.',name];
       this.h=feval(this.m,name,uri);
     end
@@ -33,14 +33,14 @@ classdef MeasureBridge < Measure
     end
     
     function graphEdge=findEdges(this,x,naSpan,nbSpan)
-      error('MeasureBridge::findEdges has not been implemented')
-      assert(isa(x,'Trajectory'));
+      error('tom.MeasureBridge::findEdges has not been implemented')
+      assert(isa(x,'tom.Trajectory'));
       graphEdge=feval(this.m,this.h,'findEdges',x,naSpan,nbSpan);
     end
 
     function cost=computeEdgeCost(this,x,graphEdge)
       % implements a workaround that depends on a Trajectory named 'x'
-      assert(isa(x,'Trajectory'));
+      assert(isa(x,'tom.Trajectory'));
       cost=feval(this.m,this.h,'computeEdgeCost',graphEdge);
     end
   end

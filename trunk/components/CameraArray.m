@@ -1,6 +1,6 @@
 % This class defines a synchronously time-stamped array of cameras
 %   rigidly attached to a body with different positions and orientations
-classdef CameraArray < Sensor
+classdef CameraArray < tom.Sensor
   
   methods (Abstract=true)
     % Get number of cameras in the array

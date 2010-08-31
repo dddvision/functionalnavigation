@@ -1,4 +1,4 @@
-classdef TangentPose < Pose
+classdef TangentPose < tom.Pose
   
   properties (SetAccess=public,GetAccess=public)
     r=nan(3,1);

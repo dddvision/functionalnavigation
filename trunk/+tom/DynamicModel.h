@@ -73,8 +73,8 @@ namespace tom
      * @param[in] uri         (@see tom::Measure)
      *
      * NOTES
-     * Each subclass constructor must pass identical arguments to this 
-     *   constructor using the syntax this=this@DynamicModel(initialTime,uri);
+     * Each subclass constructor should initialize this base class
+     * (MATLAB) Initialize by calling this=this@tom.DynamicModel(initialTime,uri);
      */
     DynamicModel(const WorldTime initialTime,const std::string uri){}
 

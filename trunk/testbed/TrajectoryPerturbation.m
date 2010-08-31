@@ -1,4 +1,4 @@
-classdef TrajectoryPerturbation < Trajectory
+classdef TrajectoryPerturbation < tom.Trajectory
 
   methods (Access=public)
     function TrajectoryPerturbation(uri)

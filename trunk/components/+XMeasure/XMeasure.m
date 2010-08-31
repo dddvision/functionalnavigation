@@ -1,4 +1,4 @@
-classdef XMeasure < XMeasure.XMeasureConfig & Measure
+classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
 
   properties (SetAccess=private,GetAccess=private)
     xRef
@@ -15,19 +15,19 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
         text=['Evaluates a reference trajectory and simulates measurement of initial ECEF X positon with error. ',...
           'Error is simulated by sampling from a normal distribution.'];
       end
-      Measure.connect(name,@componentDescription,@XMeasure.XMeasure);
+      tom.Measure.connect(name,@componentDescription,@XMeasure.XMeasure);
     end
   end
   
   methods (Access=public)
     function this=XMeasure(uri)
-      this=this@Measure(uri);
+      this=this@tom.Measure(uri);
       try
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=DataContainer.factory(resource);
+            container=tom.DataContainer.factory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
@@ -39,7 +39,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
       catch err
         error('Failed to open data resource: %s',err.message);
       end
-      this.t=WorldTime([]);
+      this.t=tom.WorldTime([]);
       this.yBar=[];
       this.na=uint32([]);
       this.nb=uint32([]);
@@ -48,7 +48,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
 
     function refresh(this)
       if(this.status)
-        time=WorldTime(this.t(end)+this.dt);
+        time=tom.WorldTime(this.t(end)+this.dt);
       else
         interval=domain(this.xRef);
         time=interval.first;
@@ -86,11 +86,11 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
     end
 
     function time=getTime(this,n)
-      time=WorldTime(this.t(n));
+      time=tom.WorldTime(this.t(n));
     end
     
     function edgeList=findEdges(this,x,naSpan,nbSpan)
-      assert(isa(x,'Trajectory'));
+      assert(isa(x,'tom.Trajectory'));
       assert(isa(naSpan,'uint32'));
       assert(isa(nbSpan,'uint32'));
       if(this.status)
@@ -99,15 +99,15 @@ classdef XMeasure < XMeasure.XMeasureConfig & Measure
         node=nMin:nMax;
       end
       if(nMax>=nMin)
-        edgeList=GraphEdge(node,node);
+        edgeList=tom.GraphEdge(node,node);
       else
-        edgeList=repmat(GraphEdge,[0,1]);
+        edgeList=repmat(tom.GraphEdge,[0,1]);
       end
     end
 
     function cost=computeEdgeCost(this,x,graphEdge)
-      assert(isa(x,'Trajectory'));
-      assert(isa(graphEdge,'GraphEdge'));
+      assert(isa(x,'tom.Trajectory'));
+      assert(isa(graphEdge,'tom.GraphEdge'));
       assert(this.status);
       assert(graphEdge.first==graphEdge.second);
       pose=evaluate(x,this.t(graphEdge.second));

@@ -1,4 +1,4 @@
-classdef DynamicModelBridge < DynamicModel
+classdef DynamicModelBridge < tom.DynamicModel
 
   properties (SetAccess=private,GetAccess=private)
     m % mex name without extension
@@ -14,17 +14,17 @@ classdef DynamicModelBridge < DynamicModel
         text=feval(mName,'DynamicModelDescription',name);
       end
       function obj=componentFactory(initialTime,uri)
-        obj=DynamicModelBridge(name,initialTime,uri);
+        obj=tom.DynamicModelBridge(name,initialTime,uri);
       end
       if(feval(mName,'DynamicModelIsConnected',name))
-        DynamicModel.connect(name,@componentDescription,@componentFactory);
+        tom.DynamicModel.connect(name,@componentDescription,@componentFactory);
       end
     end
 
     function this=DynamicModelBridge(name,initialTime,uri)
-      this=this@DynamicModel(initialTime,uri);
+      this=this@tom.DynamicModel(initialTime,uri);
       assert(isa(name,'char'));
-      assert(isa(initialTime,'WorldTime'));
+      assert(isa(initialTime,'tom.WorldTime'));
       assert(isa(uri,'char'));
       compileOnDemand(name);
       this.m=[name,'.',name,'Bridge'];
@@ -103,16 +103,16 @@ classdef DynamicModelBridge < DynamicModel
     end
    
     function pose=evaluate(this,t)
-      assert(isa(t,'WorldTime'));
+      assert(isa(t,'tom.WorldTime'));
       t=double(t); % workaround avoids array duplication
-      pose(1,numel(t))=Pose; % workaround creates object externally
+      pose(1,numel(t))=tom.Pose; % workaround creates object externally
       pose=feval(this.m,this.h,'evaluate',pose,t);
     end
     
     function tangentPose=tangent(this,t)
-      assert(isa(t,'WorldTime'));
+      assert(isa(t,'tom.WorldTime'));
       t=double(t); % workaround avoids array duplication
-      tangentPose(1,numel(t))=TangentPose; % workaround creates object externally
+      tangentPose(1,numel(t))=tom.TangentPose; % workaround creates object externally
       tangentPose=feval(this.m,this.h,'tangent',tangentPose,t);
     end
   end
@@ -120,10 +120,13 @@ classdef DynamicModelBridge < DynamicModel
 end
 
 function compileOnDemand(name)
+  bridge=mfilename('fullpath');
+  bridgecpp=[bridge,'.cpp'];
+  include=fileparts(bridge);
   base=fullfile(['+',name],name);
   if(~exist([base,'Bridge'],'file'))
     basecpp=[base,'.cpp'];
     cpp=which(basecpp);
-    mex('-I"."','DynamicModelBridge.cpp',cpp,'-output',[cpp(1:(end-4)),'Bridge']);
+    mex(['-I"',include,'"'],bridgecpp,cpp,'-output',[cpp(1:(end-4)),'Bridge']);
   end
 end

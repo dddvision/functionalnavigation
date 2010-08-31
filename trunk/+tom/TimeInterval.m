@@ -1,14 +1,14 @@
 classdef TimeInterval
   
   properties (SetAccess=public,GetAccess=public)
-    first=WorldTime(0);
-    second=WorldTime(0);
+    first=tom.WorldTime(0);
+    second=tom.WorldTime(0);
   end
   
   methods (Access=public)
     function this=TimeInterval(A,B)
       if(nargin==1)
-        assert(isa(A(1).first,'WorldTime'));
+        assert(isa(A(1).first,'tom.WorldTime'));
         N=numel(A);
         if(N==1)
           this.first=A.first;
@@ -21,8 +21,8 @@ classdef TimeInterval
           end
         end
       elseif(nargin==2)
-        assert(isa(A,'WorldTime'));
-        assert(isa(B,'WorldTime'));
+        assert(isa(A,'tom.WorldTime'));
+        assert(isa(B,'tom.WorldTime'));
         N=numel(A);
         if(N==1)
           this.first=A;

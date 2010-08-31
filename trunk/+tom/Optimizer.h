@@ -56,8 +56,8 @@ namespace tom
      *
      * NOTES
      * No assumptions should be made about the initial state of the input objects
-     * Each subclass constructor must pass identical arguments to this 
-     *   constructor using the syntax this=this@Optimizer(dynamicModel,measure);
+     * Each subclass constructor should initialize this base class
+     * (MATLAB) Initialize by calling this=this@tom.Optimizer(dynamicModel,measure);
      */
     Optimizer(const std::vector<DynamicModel*>& dynamicModel, const std::vector<Measure*>& measure){}
     

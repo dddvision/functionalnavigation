@@ -1,4 +1,4 @@
-classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & DataContainer
+classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.DataContainer
 
   properties (GetAccess=private,SetAccess=private)
     sensor
@@ -12,12 +12,13 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & DataContainer
       function text=componentDescription
         text='Simulated GPS data based on the GlobalSat BU-xxx GPS sensor.';
       end
-      DataContainer.connect(name,@componentDescription,@GlobalSatData.GlobalSatData);
+      tom.DataContainer.connect(name,@componentDescription,@GlobalSatData.GlobalSatData);
     end
   end
   
   methods (Access=public)
     function this=GlobalSatData
+      this=this@tom.DataContainer;
       this.sensor{1}=GlobalSatData.GpsSim;
       this.sensorDescription{1}='GlobalSat BU-xxx GPS sensor';
       this.hasRef=true;
@@ -32,7 +33,7 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & DataContainer
           flag(k)=true;
         end
       end
-      list=SensorIndex(find(flag)-1);
+      list=tom.SensorIndex(find(flag)-1);
     end
     
     function text=getSensorDescription(this,id)

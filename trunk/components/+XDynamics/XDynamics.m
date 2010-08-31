@@ -1,4 +1,4 @@
-classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
+classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
   
   properties (Constant=true,GetAccess=private)
     initialNumLogical=uint32(0);
@@ -24,13 +24,13 @@ classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
         text=['Evaluates a reference trajectory and adds perturbation to initial ECEF X positon and velocity. ',...
           'Perturbation is simulated by sampling from a normal distribution.'];
       end
-      DynamicModel.connect(name,@componentDescription,@XDynamics.XDynamics);
+      tom.DynamicModel.connect(name,@componentDescription,@XDynamics.XDynamics);
     end
   end
   
   methods (Access=public)
     function this=XDynamics(initialTime,uri)
-      this=this@DynamicModel(initialTime,uri);
+      this=this@tom.DynamicModel(initialTime,uri);
       this.initialTime=initialTime;
       this.initialUint32=zeros(1,this.initialNumUint32,'uint32');
 
@@ -39,7 +39,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=DataContainer.factory(resource);
+            container=tom.DataContainer.factory(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
@@ -153,11 +153,11 @@ classdef XDynamics < XDynamics.XDynamicsConfig & DynamicModel
     end
     
     function extend(this)
-      assert(isa(this,'DynamicModel'));
+      assert(isa(this,'tom.DynamicModel'));
     end
      
     function interval=domain(this)
-      interval=TimeInterval(this.initialTime,WorldTime(inf));
+      interval=tom.TimeInterval(this.initialTime,tom.WorldTime(inf));
     end
     
     function pose=evaluate(this,t)

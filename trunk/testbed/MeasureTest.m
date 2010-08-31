@@ -2,14 +2,14 @@ classdef MeasureTest < handle
   
   methods (Access=public)
     function this=MeasureTest(name,uri)
-      fprintf('\n\nMeasure.description =');
-      text=Measure.description(name);
+      fprintf('\n\ntom.Measure.description =');
+      text=tom.Measure.description(name);
       assert(isa(text,'char'));
       fprintf(' %s',text);
       
-      fprintf('\nMeasure.factory =');
-      measure=Measure.factory(name,uri);
-      assert(isa(measure,'Measure'));
+      fprintf('\ntom.Measure.factory =');
+      measure=tom.Measure.factory(name,uri);
+      assert(isa(measure,'tom.Measure'));
       fprintf(' ok');
 
       % Call all interface functions
