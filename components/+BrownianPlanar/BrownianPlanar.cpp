@@ -41,7 +41,7 @@ namespace BrownianPlanar
     static double paramToForce(uint32_t p)
     {
       static const double sixthIntMax = 4294967295.0/6.0;
-      return (static_cast<double> (p)/sixthIntMax-3.0);
+      return (static_cast<double>(p)/sixthIntMax-3.0);
     }
 
     void transformPose(tom::Pose& pose)
@@ -109,7 +109,7 @@ namespace BrownianPlanar
 
       dt = time-interval.first;
       dk = dt*rate;
-      K = static_cast<uint32_t> (ceil(dk));
+      K = static_cast<uint32_t>(ceil(dk));
       for(k = firstNewBlock; k<K; ++k)
       {
         x[k+1] = x[k]+tau*xRate[k]+c0*fx[k];
@@ -121,8 +121,8 @@ namespace BrownianPlanar
       }
       firstNewBlock = K;
 
-      dkFloor = static_cast<uint32_t> (floor(dk));
-      dtFloor = static_cast<double> (dkFloor)/rate;
+      dkFloor = static_cast<uint32_t>(floor(dk));
+      dtFloor = static_cast<double>(dkFloor)/rate;
       dtRemain = dt-dtFloor;
 
       ct0 = 0.5*dtRemain*dtRemain;
@@ -256,7 +256,29 @@ namespace BrownianPlanar
 
     uint32_t numExtensionBlocks(void)
     {
-      return (static_cast<uint32_t> (px.size()));
+      return (static_cast<uint32_t>(px.size()));
+    }
+
+    void extend(void)
+    {
+      static const uint32_t halfIntMax = floor(4294967295.0/2.0);
+      static const double force = paramToForce(halfIntMax);
+      unsigned oldSize = x.size();
+      unsigned newSize = oldSize+1;
+      px.resize(oldSize, halfIntMax);
+      py.resize(oldSize, halfIntMax);
+      pa.resize(oldSize, halfIntMax);
+      fx.resize(oldSize, force);
+      fy.resize(oldSize, force);
+      fa.resize(oldSize, force);
+      x.resize(newSize);
+      y.resize(newSize);
+      a.resize(newSize);
+      xRate.resize(newSize);
+      yRate.resize(newSize);
+      aRate.resize(newSize);
+      interval.second = interval.first+static_cast<double>(oldSize)/rate;
+      return;
     }
 
     bool getInitialLogical(uint32_t parameterIndex)
@@ -355,28 +377,6 @@ namespace BrownianPlanar
       f2 = fa[blockIndex];
       cost = 0.5*(f0*f0+f1*f1+f2*f2);
       return (cost);
-    }
-
-    void extend(void)
-    {
-      static const uint32_t halfIntMax = floor(4294967295.0/2.0);
-      static const double force = paramToForce(halfIntMax);
-      unsigned oldSize = x.size();
-      unsigned newSize = oldSize+1;
-      px.resize(oldSize, halfIntMax);
-      py.resize(oldSize, halfIntMax);
-      pa.resize(oldSize, halfIntMax);
-      fx.resize(oldSize, force);
-      fy.resize(oldSize, force);
-      fa.resize(oldSize, force);
-      x.resize(newSize);
-      y.resize(newSize);
-      a.resize(newSize);
-      xRate.resize(newSize);
-      yRate.resize(newSize);
-      aRate.resize(newSize);
-      interval.second = interval.first+static_cast<double> (oldSize)/rate;
-      return;
     }
 
     tom::TimeInterval domain(void)

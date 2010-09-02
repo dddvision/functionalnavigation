@@ -43,7 +43,7 @@ void convert(const mxArray*& array, double& value)
   {
     throw("DynamicModelBridge: array must be double");
   }
-  value = (*static_cast<double*> (mxGetData(array)));
+  value = (*static_cast<double*>(mxGetData(array)));
   return;
 }
 
@@ -53,7 +53,7 @@ void convert(const mxArray*& array, uint32_t& value)
   {
     throw("DynamicModelBridge: array must be uint32");
   }
-  value = (*static_cast<uint32_t*> (mxGetData(array)));
+  value = (*static_cast<uint32_t*>(mxGetData(array)));
   return;
 }
 
@@ -63,7 +63,7 @@ void convert(const mxArray*& array, bool& value)
   {
     throw("DynamicModelBridge: array must be logical");
   }
-  value = (*static_cast<bool*> (mxGetLogicals(array)));
+  value = (*static_cast<bool*>(mxGetLogicals(array)));
   return;
 }
 
@@ -104,7 +104,7 @@ void convert(const double& value, mxArray*& array)
 void convert(const uint32_t& value, mxArray*& array)
 {
   array = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
-  (*static_cast<uint32_t*> (mxGetData(array))) = value;
+  (*static_cast<uint32_t*>(mxGetData(array))) = value;
   return;
 }
 

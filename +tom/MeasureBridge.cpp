@@ -7,7 +7,7 @@ void convert(const mxArray* array, uint32_t& value)
   {
     mexErrMsgTxt("input array must be uint32");
   }
-  value = (*static_cast<uint32_t*> (mxGetData(array)));
+  value = (*static_cast<uint32_t*>(mxGetData(array)));
   return;
 }
 
@@ -34,8 +34,8 @@ void convert(const mxArray* array, tom::TimeInterval& value)
 
 void convert(const mxArray* array, tom::GraphEdge& value)
 {
-  value.first = (*static_cast<uint32_t*> (mxGetData(mxGetProperty(array, 0, "first"))));
-  value.second = (*static_cast<uint32_t*> (mxGetData(mxGetProperty(array, 0, "second"))));
+  value.first = (*static_cast<uint32_t*>(mxGetData(mxGetProperty(array, 0, "first"))));
+  value.second = (*static_cast<uint32_t*>(mxGetData(mxGetProperty(array, 0, "second"))));
   return;
 }
 
@@ -119,7 +119,7 @@ void convert(const double value, mxArray*& array)
 void convert(const uint32_t value, mxArray*& array)
 {
   array = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
-  (*static_cast<uint32_t*> (mxGetData(array))) = value;
+  (*static_cast<uint32_t*>(mxGetData(array))) = value;
   return;
 }
 
@@ -138,7 +138,7 @@ void convert(const std::vector<tom::WorldTime>& time, mxArray*& array)
   pTime = mxGetPr(array);
   for(n = 0; n<N; ++n)
   {
-    pTime[n] = static_cast<tom::WorldTime> (time[n]);
+    pTime[n] = static_cast<tom::WorldTime>(time[n]);
   }
   return;
 }
