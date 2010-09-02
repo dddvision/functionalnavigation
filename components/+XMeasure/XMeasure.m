@@ -9,7 +9,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
     status
   end
   
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text=['Evaluates a reference trajectory and simulates measurement of initial ECEF X positon with error. ',...

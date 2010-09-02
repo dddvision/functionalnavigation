@@ -73,7 +73,7 @@ classdef DataContainer < handle
     end
   end
   
-  methods (Abstract=true,Access=protected,Static=true)
+  methods (Abstract=true,Access=public,Static=true)
     initialize(name);
   end
   

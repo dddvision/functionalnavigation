@@ -8,7 +8,7 @@ classdef LinearKalmanOptimizer < LinearKalmanOptimizer.LinearKalmanOptimizerConf
     cost
   end
   
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text=['Applies a linear Kalman filter algorithm to optimize over initial Uint32 parameters only. ',...

@@ -22,7 +22,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
     ABZ % intermediate formulation of A and B matrices with zeros appended
   end
   
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text='Represents the integration of linear Markov motion model with a bounded forcing function.';

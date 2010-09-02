@@ -7,7 +7,7 @@ classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & tom.DataContaine
     bodyRef
   end
   
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text=['Image data simulating pure translation from the Middlebury stereo dataset. ',...

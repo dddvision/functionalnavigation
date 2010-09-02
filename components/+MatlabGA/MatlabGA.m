@@ -18,7 +18,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     stepGAhandle
   end
   
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text=['Applies the MATLAB Genetic Algorithm using a straightforward but slow process. ',...
