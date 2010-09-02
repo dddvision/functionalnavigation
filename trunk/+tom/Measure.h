@@ -26,10 +26,14 @@ namespace tom
   {
   private:
     /**
-     * Prevents deep copying or assignment
+     * Prevents deep copying
      */
     Measure(const Measure&)
     {}
+
+    /**
+     * Prevents assignment
+     */
     Measure& operator=(const Measure&)
     {}
 

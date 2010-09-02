@@ -21,10 +21,14 @@ namespace tom
   {
   private:
     /**
-     * Prevents deep copying or assignment
+     * Prevents deep copying
      */
     DataContainer(const DataContainer&)
     {}
+
+    /**
+     * Prevents assignment
+     */
     DataContainer& operator=(const DataContainer&)
     {}
 

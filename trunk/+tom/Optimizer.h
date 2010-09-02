@@ -20,10 +20,14 @@ namespace tom
   {
   private:
     /**
-     * Prevents deep copying or assignment
+     * Prevents deep copying
      */
     Optimizer(const Optimizer&)
     {}
+
+    /**
+     * Prevents assignment
+     */
     Optimizer& operator=(const Optimizer&)
     {}
 

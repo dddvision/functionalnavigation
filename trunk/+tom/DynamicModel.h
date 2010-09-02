@@ -39,10 +39,14 @@ namespace tom
   {
   private:
     /**
-     * Prevents deep copying or assignment
+     * Prevents deep copying
      */
     DynamicModel(const DynamicModel&)
     {}
+
+    /**
+     * Prevents assignment
+     */
     DynamicModel& operator=(const DynamicModel&)
     {}
 
@@ -181,24 +185,75 @@ namespace tom
     {}
 
     /**
-     * Get number of parameters in each block
+     * Get number of logical parameters in the initial block
      *
-     * @return number of parameters in each block
+     * @return number of parameters
      */
     virtual uint32_t numInitialLogical(void) const = 0;
+
+    /**
+     * Get number of integer parameters in the initial block
+     *
+     * @return number of parameters
+     */
     virtual uint32_t numInitialUint32(void) const = 0;
+
+    /**
+     * Get number of logical parameters in each extension
+     *
+     * @return number of parameters
+     */
     virtual uint32_t numExtensionLogical(void) const = 0;
+
+    /**
+     * Get number of integer parameters in each extension block
+     *
+     * @return number of parameters
+     */
     virtual uint32_t numExtensionUint32(void) const = 0;
 
     /**
      * Get the number of extension blocks
      *
      * @return number of extension blocks
+     *
+     * NOTES
+     * The return value increments by one when extend() is called
      */
     virtual uint32_t numExtensionBlocks(void) = 0;
 
     /**
-     * Get parameters
+     * Extend the time domain by incrementing the number of extension blocks by one
+     *
+     * NOTES
+     * Has no effect if the upper bound of the domain is infinite
+     */
+    virtual void extend(void) = 0;
+
+    /**
+     * Get a logical parameter from the initial block
+     *
+     * @param[in] parameterIndex zero-based parameter index within each block
+     * @return                   parameter value
+     *
+     * NOTES
+     * Throws an exception if any index is outside of the range specified by other member functions
+     */
+    virtual bool getInitialLogical(uint32_t parameterIndex) = 0;
+
+    /**
+     * Get an integer parameter from the initial block
+     *
+     * @param[in] parameterIndex zero-based parameter index within each block
+     * @return                   parameter value
+     *
+     * NOTES
+     * Throws an exception if any index is outside of the range specified by other member functions
+     */
+    virtual uint32_t getInitialUint32(uint32_t parameterIndex) = 0;
+
+    /**
+     * Get a logical parameter from an extension block
      *
      * @param[in] blockIndex     zero-based block index
      * @param[in] parameterIndex zero-based parameter index within each block
@@ -207,13 +262,44 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual bool getInitialLogical(uint32_t parameterIndex) = 0;
-    virtual uint32_t getInitialUint32(uint32_t parameterIndex) = 0;
     virtual bool getExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex) = 0;
+
+    /**
+     * Get an integer parameter from an extension block
+     *
+     * @param[in] blockIndex     zero-based block index
+     * @param[in] parameterIndex zero-based parameter index within each block
+     * @return                   parameter value
+     *
+     * NOTES
+     * Throws an exception if any index is outside of the range specified by other member functions
+     */
     virtual uint32_t getExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex) = 0;
 
     /**
-     * Set parameters
+     * Set a logical parameter in the initial block
+     *
+     * @param[in] parameterIndex zero-based parameter index within each block
+     * @param[in] parameter      value
+     *
+     * NOTES
+     * Throws an exception if any index is outside of the range specified by other member functions
+     */
+    virtual void setInitialLogical(uint32_t parameterIndex, bool value) = 0;
+
+    /**
+     * Set an integer parameter in the initial block
+     *
+     * @param[in] parameterIndex zero-based parameter index within each block
+     * @param[in] parameter      value
+     *
+     * NOTES
+     * Throws an exception if any index is outside of the range specified by other member functions
+     */
+    virtual void setInitialUint32(uint32_t parameterIndex, uint32_t value) = 0;
+
+    /**
+     * Set a logical parameter in an extension block
      *
      * @param[in] blockIndex     zero-based block index
      * @param[in] parameterIndex zero-based parameter index within each block
@@ -222,13 +308,34 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual void setInitialLogical(uint32_t parameterIndex, bool value) = 0;
-    virtual void setInitialUint32(uint32_t parameterIndex, uint32_t value) = 0;
     virtual void setExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex, bool value) = 0;
+
+    /**
+     * Set an integer parameter in an extension block
+     *
+     * @param[in] blockIndex     zero-based block index
+     * @param[in] parameterIndex zero-based parameter index within each block
+     * @param[in] parameter      value
+     *
+     * NOTES
+     * Throws an exception if any index is outside of the range specified by other member functions
+     */
     virtual void setExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex, uint32_t value) = 0;
 
     /**
-     * Compute the cost associated with a block
+     * Compute the cost associated with an initial block
+     *
+     * @return non-negative cost associated with each block
+     *
+     * NOTES
+     * A block with zero parameters returns zero cost
+     * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
+     * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
+     */
+    virtual double computeInitialBlockCost(void) = 0;
+
+    /**
+     * Compute the cost associated with an extension block
      *
      * @param[in] blockIndex zero-based block index
      * @return               non-negative cost associated with each block
@@ -238,16 +345,7 @@ namespace tom
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
      */
-    virtual double computeInitialBlockCost(void) = 0;
     virtual double computeExtensionBlockCost(uint32_t blockIndex) = 0;
-
-    /**
-     * Extend the time domain by appending one extension block
-     *
-     * NOTES
-     * Has no effect if the upper bound of the domain is infinite
-     */
-    virtual void extend(void) = 0;
   };
 }
 
