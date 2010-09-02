@@ -50,12 +50,6 @@ namespace tom
 
   protected:
     /**
-     * Prevents deletion via the base class pointer
-     */
-    ~DataContainer(void)
-    {}
-
-    /**
      * Protected method to construct a singleton component
      *
      * NOTES
@@ -130,7 +124,7 @@ namespace tom
      *
      * INPUT
      * @param[in] name component identifier
-     * @return         singleton object instance
+     * @return         singleton object instance that should not be deleted
      *
      * NOTES
      * Do not shadow this function
@@ -221,6 +215,12 @@ namespace tom
      * Throws an exception if trajectory is not available
      */
     virtual Trajectory& getReferenceTrajectory(void) = 0;
+    
+    /**
+     * Virtual base class destructor
+     */
+    virtual ~DataContainer(void)
+    {}
   };
 }
 

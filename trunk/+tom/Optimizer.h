@@ -49,12 +49,6 @@ namespace tom
 
   protected:
     /**
-     * Prevents deletion via the base class pointer
-     */
-    ~Optimizer(void)
-    {}
-
-    /**
      * Protected method to construct a component
      *
      * INPUT
@@ -135,7 +129,7 @@ namespace tom
      * @param[in] name component identifier
      * @param[in] dynamicModel   (@see tom::Optimizer)
      * @param[in] measure        (@see tom::Measure)
-     * @return                   object instance
+     * @return                   new object instance that must be deleted by the caller
      *
      * NOTES
      * Do not shadow this function
@@ -212,6 +206,12 @@ namespace tom
      *   single evaluation per step is preferred
      */
     virtual void step(void) = 0;
+    
+    /**
+     * Virtual base class destructor
+     */
+    virtual ~Optimizer(void)
+    {}
   };
 }
 

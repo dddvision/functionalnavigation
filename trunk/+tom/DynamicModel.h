@@ -68,12 +68,6 @@ namespace tom
 
   protected:
     /**
-     * Prevents deletion via the base class pointer
-     */
-    ~DynamicModel(void)
-    {}
-
-    /**
      * Protected method to construct a component
      *
      * @param[in] initialTime finite lower bound of the trajectory time domain
@@ -152,7 +146,7 @@ namespace tom
      * @param[in] name        component identifier
      * @param[in] initialTime finite lower bound of the trajectory time domain
      * @param[in] uri         (@see tom::Measure)
-     * @return                object instance
+     * @return                new object instance that must be deleted by the caller
      *
      * NOTES
      * Do not shadow this function
@@ -346,6 +340,12 @@ namespace tom
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
      */
     virtual double computeExtensionBlockCost(uint32_t blockIndex) = 0;
+    
+    /**
+     * Virtual base class destructor
+     */
+    virtual ~DynamicModel(void)
+    {}
   };
 }
 

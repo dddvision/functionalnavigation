@@ -55,12 +55,6 @@ namespace tom
 
   protected:
     /**
-     * Prevents deletion via the base class pointer
-     */
-    ~Measure(void)
-    {}
-
-    /**
      * Protected method to construct a component
      *
      * @param[in] uri (@see tom::Measure)
@@ -141,7 +135,7 @@ namespace tom
      *
      * @param[in] name component identifier
      * @param[in] uri  (@see tom::Measure)
-     * @return         object instance
+     * @return         new object instance that must be deleted by the caller
      *
      * NOTES
      * Do not shadow this function
@@ -213,6 +207,12 @@ namespace tom
      * Throws an exception if node indices do not correspond to an edge
      */
     virtual double computeEdgeCost(const Trajectory& x, const GraphEdge graphEdge) = 0;
+    
+    /**
+     * Virtual base class destructor
+     */
+    virtual ~Measure(void)
+    {}
   };
 }
 
