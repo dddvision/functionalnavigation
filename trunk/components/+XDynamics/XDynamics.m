@@ -18,7 +18,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
     xRef
   end
   
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text=['Evaluates a reference trajectory and adds perturbation to initial ECEF X positon and velocity. ',...

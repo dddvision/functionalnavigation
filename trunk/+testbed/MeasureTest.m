@@ -2,6 +2,10 @@ classdef MeasureTest < handle
   
   methods (Access=public)
     function this=MeasureTest(name,uri)
+      fprintf('\n\nuri =');
+      assert(isa(uri,'char'));
+      fprintf(' ''%s''',uri);
+      
       fprintf('\n\ntom.Measure.description =');
       text=tom.Measure.description(name);
       assert(isa(text,'char'));

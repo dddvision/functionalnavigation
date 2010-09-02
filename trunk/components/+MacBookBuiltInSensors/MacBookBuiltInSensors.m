@@ -15,7 +15,7 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
     sensorDescription
   end
   
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text=['Provides data from the built-in camera and three-axis accelerometer ',...

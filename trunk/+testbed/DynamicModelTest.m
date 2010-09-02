@@ -14,6 +14,14 @@ classdef DynamicModelTest
   
   methods (Access=public)
     function this=DynamicModelTest(name,initialTime,uri)
+      fprintf('\n\ninitialTime =');
+      assert(isa(initialTime,'tom.WorldTime')); 
+      fprintf(' %f',double(initialTime));
+
+      fprintf('\nuri =');
+      assert(isa(uri,'char'));
+      fprintf(' ''%s''',uri);
+      
       fprintf('\n\ntom.DynamicModel.description =');
       text=tom.DynamicModel.description(name);
       assert(isa(text,'char'));

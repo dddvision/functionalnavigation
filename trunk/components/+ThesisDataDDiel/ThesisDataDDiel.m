@@ -7,7 +7,7 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataConta
     sensorDescription
   end
   
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text=['Real and simulated visual and inertial data undergoing mixed motion. Reference: ',...

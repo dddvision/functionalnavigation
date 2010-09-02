@@ -17,9 +17,9 @@ end
 % close figures and clear everything except breakpoints
 close('all');
 breakpoints=dbstatus('-completenames');
-save('breakpoints','breakpoints');
+save('temp.mat','breakpoints');
 clear('classes');
-load('breakpoints');
+load('temp.mat');
 dbstop(breakpoints);
 
 % set the warning state

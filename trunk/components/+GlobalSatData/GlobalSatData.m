@@ -7,7 +7,7 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.DataContainer
     bodyRef
   end
 
-  methods (Static=true,Access=protected)
+  methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text='Simulated GPS data based on the GlobalSat BU-xxx GPS sensor.';
