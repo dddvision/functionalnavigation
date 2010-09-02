@@ -16,7 +16,7 @@ namespace tom
   public:
     double r[3]; /// time derivative of body position
     double s[4]; /// time derivative of body orientation
-    
+
     /**
      * Construct a tangent pose initialized to NaN
      */
@@ -30,7 +30,7 @@ namespace tom
       s[2] = NAN;
       s[3] = NAN;
     }
-    
+
     /**
      * Copy a tangent pose
      */
@@ -39,21 +39,21 @@ namespace tom
       TangentPose::operator=(tangentPose);
       return;
     }
-    
+
     /**
      * Assign a tangent pose
      */
     TangentPose& operator=(const TangentPose& tangentPose)
     {
       Pose::operator=(tangentPose);
-      this->r[0]=tangentPose.r[0];
-      this->r[1]=tangentPose.r[1];
-      this->r[2]=tangentPose.r[2];
-      this->s[0]=tangentPose.s[0];
-      this->s[1]=tangentPose.s[1];
-      this->s[2]=tangentPose.s[2];
-      this->s[3]=tangentPose.s[3];
-      return(*this);
+      this->r[0] = tangentPose.r[0];
+      this->r[1] = tangentPose.r[1];
+      this->r[2] = tangentPose.r[2];
+      this->s[0] = tangentPose.s[0];
+      this->s[1] = tangentPose.s[1];
+      this->s[2] = tangentPose.s[2];
+      this->s[3] = tangentPose.s[3];
+      return (*this);
     }
   };
 }

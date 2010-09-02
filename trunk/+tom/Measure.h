@@ -28,22 +28,24 @@ namespace tom
     /**
      * Prevents deep copying or assignment
      */
-    Measure(const Measure&){}
-    Measure& operator=(const Measure&){}
+    Measure(const Measure&)
+    {}
+    Measure& operator=(const Measure&)
+    {}
 
     /* Storage for component descriptions */
     typedef std::string (*MeasureDescription)(void);
-    static std::map<std::string,MeasureDescription>* pDescriptionList(void)
+    static std::map<std::string, MeasureDescription>* pDescriptionList(void)
     {
-      static std::map<std::string,MeasureDescription> descriptionList;
+      static std::map<std::string, MeasureDescription> descriptionList;
       return &descriptionList;
     }
 
     /* Storage for component factories */
     typedef Measure* (*MeasureFactory)(const std::string);
-    static std::map<std::string,MeasureFactory>* pFactoryList(void)
+    static std::map<std::string, MeasureFactory>* pFactoryList(void)
     {
-      static std::map<std::string,MeasureFactory> factoryList;
+      static std::map<std::string, MeasureFactory> factoryList;
       return &factoryList;
     }
 
@@ -51,8 +53,9 @@ namespace tom
     /**
      * Prevents deletion via the base class pointer
      */
-    ~Measure(void){}
-    
+    ~Measure(void)
+    {}
+
     /**
      * Protected method to construct a component
      *
@@ -66,8 +69,9 @@ namespace tom
      * Each subclass constructor should initialize this base class
      * (MATLAB) Initialize by calling this=this@tom.Measure(uri);
      */
-    Measure(const std::string uri){}
-    
+    Measure(const std::string uri)
+    {}
+
     /**
      * Establish connection between framework class and component
      *
@@ -85,8 +89,8 @@ namespace tom
     {
       if(!((cD==NULL)|(cF==NULL)))
       {
-        (*pDescriptionList())[name]=cD;
-        (*pFactoryList())[name]=cF;
+        (*pDescriptionList())[name] = cD;
+        (*pFactoryList())[name] = cF;
       }
       return;
     }
@@ -105,7 +109,7 @@ namespace tom
      */
     static bool isConnected(const std::string name)
     {
-      return(pFactoryList()->find(name) != pFactoryList()->end());
+      return (pFactoryList()->find(name)!=pFactoryList()->end());
     }
 
     /**
@@ -120,12 +124,12 @@ namespace tom
      */
     static std::string description(const std::string name)
     {
-      std::string str="";
+      std::string str = "";
       if(isConnected(name))
       {
-        str=(*pDescriptionList())[name]();
+        str = (*pDescriptionList())[name]();
       }
-      return(str);
+      return (str);
     }
 
     /**
@@ -141,18 +145,18 @@ namespace tom
      */
     static Measure* factory(const std::string name, const std::string uri)
     {
-      Measure* obj=NULL;
+      Measure* obj = NULL;
       if(isConnected(name))
       {
-        obj=(*pFactoryList())[name](uri);
+        obj = (*pFactoryList())[name](uri);
       }
       else
       {
         throw("Measure is not connected to the requested component");
       }
-      return(obj);
+      return (obj);
     }
-    
+
     /**
      * Initializes connections between a component and one or more framework classes
      *
@@ -162,7 +166,9 @@ namespace tom
      * (C++) Does nothing and does not require implementation
      * (MATLAB) Implement this as a static function that calls connect()
      */
-    static void initialize(std::string name){};
+    static void initialize(std::string name)
+    {}
+    ;
 
     /**
      * Find a limited set of graph edges in the adjacency matrix of the cost graph
@@ -179,13 +185,13 @@ namespace tom
      * The number of returned graph edges is bounded as follows:
      *   numel(edgeList) <= (naSpan+1)*(nbSpan+1)
      * All information from this measure regarding a unique pair of nodes must be grouped such that
-     *   there are no duplicate graph edges in the output 
+     *   there are no duplicate graph edges in the output
      * Edges are sorted in ascending order of node indices,
      *   first by lower index, then by upper index
      * If there are no graph edges, then the output is an empty vector
      */
     virtual std::vector<GraphEdge> findEdges(const Trajectory& x, const uint32_t naSpan, const uint32_t nbSpan) = 0;
-    
+
     /**
      * Evaluate the cost of a single graph edge given a trajectory
      *
@@ -194,9 +200,9 @@ namespace tom
      * @return              non-negative cost associated with the graph edge
      *
      * NOTES
-     * The input trajectory represents the motion of the body frame relative 
-     *   to a world frame. If the sensor frame is not coincident with the 
-     *   body frame, then the sensor frame offset may need to be 
+     * The input trajectory represents the motion of the body frame relative
+     *   to a world frame. If the sensor frame is not coincident with the
+     *   body frame, then the sensor frame offset may need to be
      *   kinematically composed with the body frame to locate the sensor
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9

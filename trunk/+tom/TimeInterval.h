@@ -11,7 +11,7 @@ namespace tom
    * @param[in,out] first  time lower bound
    * @param[in,out] second time upper bound, WorldTime scalar
    */
-  typedef std::pair<WorldTime,WorldTime> TimeInterval;
+  typedef std::pair<WorldTime, WorldTime> TimeInterval;
 }
 
 #endif

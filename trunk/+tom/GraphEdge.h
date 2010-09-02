@@ -9,7 +9,7 @@ namespace tom
    * @param[in,out] first  lower node index for this edge
    * @param[in,out] second upper node index for this edge
    */
-  typedef std::pair<uint32_t,uint32_t> GraphEdge;
+  typedef std::pair<uint32_t, uint32_t> GraphEdge;
 }
 
 #endif
