@@ -5,7 +5,7 @@ classdef DynamicModelBridge < tom.DynamicModel
     h % handle to instantiated C++ object
   end
   
-  methods (Access=protected,Static=true)
+  methods (Access=public,Static=true)
     function initialize(name)
       assert(isa(name,'char'));
       compileOnDemand(name);
