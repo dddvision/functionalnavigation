@@ -39,6 +39,7 @@ Additional coding guidelines for all code hosted in this repository:
 
   * RULE (C++): Code must compile using "{{{g++ -Wall -Werror -pedantic}}}"
   * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
+  * RULE (C++): Use EclipseFormatter.xml to format code before submission.
 
   * RULE: Place a description above each function that identifies input and output parameters (using dOxygen syntax in C++) and has a NOTES section when applicable.
 {{{
@@ -70,33 +71,6 @@ myVariable
 isPrime
 computeSVD
 }}}
-  * RULE: No space between function identifier and the opening parenthesis.
-{{{
-myFunction(void); // good
-myFunction (void); // bad
-}}}
-  * RULE: Use whitespace consistently.
-{{{
-this =  is +bad;
-}}}
-
-  * RULE (C++): Use unsnuggled braces to align code on equal indentation levels.
-{{{
-void unsnuggled(void)
-{
-  while(a)
-  { 
-    /* unsnuggled braces are easy to match */
-  }
-}
-
-void snuggled(void) {
-  while(a) {
-    /* snuggled braces are harder to match */
-  }
-}
-}}}
-
   * RULE (C++): Use long descriptive variable names or very short ones coupled with detailed descriptions.
 {{{
 int triangleVertices = 3;
@@ -118,7 +92,7 @@ int i;
 int j;
 int k;
 }}}
-  * RULE (C++): Whenever possible, initialize variables on the same line as their declaration.
+  * RULE (C++): Whenever possible, initialize variables when they are declared.
 {{{
 int a = 0;
 double **matrix = NULL;
