@@ -3,7 +3,7 @@
 
 #include <math.h>
 #ifndef NAN
-static const double NAN=sqrt(static_cast<double>(-1));
+static const double NAN = sqrt(static_cast<double> (-1));
 #endif
 
 namespace tom
@@ -28,7 +28,7 @@ namespace tom
   public:
     double p[3]; /// position of the body frame
     double q[4]; /// orientation of the body frame as a quaternion in scalar-first format
-    
+
     /**
      * Construct a pose initialized to NaN
      */
@@ -42,7 +42,7 @@ namespace tom
       q[2] = NAN;
       q[3] = NAN;
     }
-    
+
     /**
      * Copy a pose
      */
@@ -51,20 +51,20 @@ namespace tom
       Pose::operator=(pose);
       return;
     }
-    
+
     /**
      * Assign a pose
      */
     Pose& operator=(const Pose& pose)
     {
-      this->p[0]=pose.p[0];
-      this->p[1]=pose.p[1];
-      this->p[2]=pose.p[2];
-      this->q[0]=pose.q[0];
-      this->q[1]=pose.q[1];
-      this->q[2]=pose.q[2];
-      this->q[3]=pose.q[3];
-      return(*this);
+      this->p[0] = pose.p[0];
+      this->p[1] = pose.p[1];
+      this->p[2] = pose.p[2];
+      this->q[0] = pose.q[0];
+      this->q[1] = pose.q[1];
+      this->q[2] = pose.q[2];
+      this->q[3] = pose.q[3];
+      return (*this);
     }
   };
 }

@@ -21,14 +21,14 @@ namespace tom
      * Does not block or wait for hardware events
      */
     virtual void refresh(void) = 0;
-         
+
     /**
      * Check whether data is available
      *
      * @return true if any data is available and false otherwise
      */
     virtual bool hasData(void) = 0;
-              
+
     /**
      * Return index to the first data node
      *
@@ -38,7 +38,7 @@ namespace tom
      * Throws an exception if no data is available
      */
     virtual unsigned first(void) = 0;
-    
+
     /**
      * Return index to the last data node
      *
@@ -48,7 +48,7 @@ namespace tom
      * Throws an exception if no data is available
      */
     virtual unsigned last(void) = 0;
-         
+
     /**
      * Get time stamp at a node
      *

@@ -23,22 +23,24 @@ namespace tom
     /**
      * Prevents deep copying or assignment
      */
-    DataContainer(const DataContainer&){}
-    DataContainer& operator=(const DataContainer&){}
+    DataContainer(const DataContainer&)
+    {}
+    DataContainer& operator=(const DataContainer&)
+    {}
 
     /* Storage for component descriptions */
     typedef std::string (*DataContainerDescription)(void);
-    static std::map<std::string,DataContainerDescription>* pDescriptionList(void)
+    static std::map<std::string, DataContainerDescription>* pDescriptionList(void)
     {
-      static std::map<std::string,DataContainerDescription> descriptionList;
+      static std::map<std::string, DataContainerDescription> descriptionList;
       return &descriptionList;
     }
 
     /* Storage for component factories */
     typedef DataContainer* (*DataContainerFactory)(void);
-    static std::map<std::string,DataContainerFactory>* pFactoryList(void)
+    static std::map<std::string, DataContainerFactory>* pFactoryList(void)
     {
-      static std::map<std::string,DataContainerFactory> factoryList;
+      static std::map<std::string, DataContainerFactory> factoryList;
       return &factoryList;
     }
 
@@ -46,8 +48,9 @@ namespace tom
     /**
      * Prevents deletion via the base class pointer
      */
-    ~DataContainer(void){}
-        
+    ~DataContainer(void)
+    {}
+
     /**
      * Protected method to construct a singleton component
      *
@@ -55,8 +58,9 @@ namespace tom
      * Each subclass constructor should initialize this base class
      * (MATLAB) Initialize by calling this=this@tom.DataContainer;
      */
-    DataContainer(void){}
-    
+    DataContainer(void)
+    {}
+
     /**
      * Establish connection between framework class and component
      *
@@ -74,12 +78,12 @@ namespace tom
     {
       if(!((cD==NULL)|(cF==NULL)))
       {
-        (*pDescriptionList())[name]=cD;
-        (*pFactoryList())[name]=cF;
+        (*pDescriptionList())[name] = cD;
+        (*pFactoryList())[name] = cF;
       }
       return;
     }
-    
+
   public:
     /**
      * Check if a named subclass is connected with this base class
@@ -94,7 +98,7 @@ namespace tom
      */
     static bool isConnected(const std::string name)
     {
-      return(pFactoryList()->find(name) != pFactoryList()->end());
+      return (pFactoryList()->find(name)!=pFactoryList()->end());
     }
 
     /**
@@ -109,12 +113,12 @@ namespace tom
      */
     static std::string description(const std::string name)
     {
-      std::string str="";
+      std::string str = "";
       if(isConnected(name))
       {
-        str=(*pDescriptionList())[name]();
+        str = (*pDescriptionList())[name]();
       }
-      return(str);
+      return (str);
     }
 
     /**
@@ -135,14 +139,14 @@ namespace tom
       {
         if(isConnected(name))
         {
-          singleton=(*pFactoryList())[name]();
+          singleton = (*pFactoryList())[name]();
         }
         else
         {
           throw("DataContainer is not connected to the requested component");
         }
       }
-      return(singleton);
+      return (singleton);
     }
 
     /**
@@ -154,8 +158,10 @@ namespace tom
      * (C++) Does nothing and does not require implementation
      * (MATLAB) Implement this as a static function that calls connect()
      */
-    static void initialize(std::string name){};
-    
+    static void initialize(std::string name)
+    {}
+    ;
+
     /**
      * List available sensors of a given class
      *
@@ -167,7 +173,7 @@ namespace tom
      * To list all, use type='Sensor'
      */
     virtual std::vector<SensorIndex> listSensors(const std::string type) = 0;
-        
+
     /**
      * Get sensor description
      *
@@ -181,7 +187,7 @@ namespace tom
      * Throws an exception if input index is out of range
      */
     virtual std::string getSensorDescription(SensorIndex) = 0;
-           
+
     /**
      * Get instance of a Sensor
      *
@@ -193,14 +199,14 @@ namespace tom
      * Throws an exception if input index is out of range
      */
     virtual Sensor& getSensor(SensorIndex) = 0;
-               
+
     /**
      * Check whether a refernce trajectory is available
      *
      * @return true if available and false otherwise
      */
     virtual bool hasReferenceTrajectory(void) = 0;
-                   
+
     /**
      * Get reference trajectory
      *

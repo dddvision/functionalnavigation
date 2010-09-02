@@ -32,8 +32,8 @@ namespace tom
      * NOTES
      * Evaluation outside of the domain returns NaN in corresponding outputs
      */
-    virtual void evaluate(const std::vector<WorldTime>& time,std::vector<Pose>& pose) = 0;
-    
+    virtual void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose) = 0;
+
     /**
      * Evaluate a single trajectory and its time derivatives at multiple time instants
      *
@@ -43,7 +43,7 @@ namespace tom
      * NOTES
      * Evaluation outside of the domain returns NaN in corresponding outputs
      */
-    virtual void tangent(const std::vector<WorldTime>& time,std::vector<TangentPose>& tangentPose) = 0;
+    virtual void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose) = 0;
   };
 }
 

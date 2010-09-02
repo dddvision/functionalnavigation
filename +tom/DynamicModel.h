@@ -5,7 +5,11 @@
 #include <string>
 #include <vector>
 
-/* define uint32_t if necessary */
+#include "WorldTime.h"
+#include "TimeInterval.h"
+#include "Trajectory.h"
+
+// define uint32_t if necessary
 #ifndef uint32_t
 #ifdef _MSC_VER
 #if (_MSC_VER < 1300)
@@ -18,15 +22,11 @@ typedef unsigned __int32 uint32_t;
 #endif
 #endif
 
-#include "WorldTime.h"
-#include "TimeInterval.h"
-#include "Trajectory.h"
-
 namespace tom
 {
   /**
    * This class augments a Trajectory with generic parameter inputs
-   * 
+   *
    * @see tom::Trajectory
    * A component can connect to multiple framework classes
    * Several member functions interact with groups of parameters called blocks
@@ -41,22 +41,24 @@ namespace tom
     /**
      * Prevents deep copying or assignment
      */
-    DynamicModel(const DynamicModel&){}
-    DynamicModel& operator=(const DynamicModel&){}
+    DynamicModel(const DynamicModel&)
+    {}
+    DynamicModel& operator=(const DynamicModel&)
+    {}
 
     /* Storage for component descriptions */
     typedef std::string (*DynamicModelDescription)(void);
-    static std::map<std::string,DynamicModelDescription>* pDescriptionList(void)
+    static std::map<std::string, DynamicModelDescription>* pDescriptionList(void)
     {
-      static std::map<std::string,DynamicModelDescription> descriptionList;
+      static std::map<std::string, DynamicModelDescription> descriptionList;
       return &descriptionList;
     }
 
     /* Storage for component factories */
     typedef DynamicModel* (*DynamicModelFactory)(const WorldTime, const std::string);
-    static std::map<std::string,DynamicModelFactory>* pFactoryList(void)
+    static std::map<std::string, DynamicModelFactory>* pFactoryList(void)
     {
-      static std::map<std::string,DynamicModelFactory> factoryList;
+      static std::map<std::string, DynamicModelFactory> factoryList;
       return &factoryList;
     }
 
@@ -64,8 +66,9 @@ namespace tom
     /**
      * Prevents deletion via the base class pointer
      */
-    ~DynamicModel(void){}
-    
+    ~DynamicModel(void)
+    {}
+
     /**
      * Protected method to construct a component
      *
@@ -76,7 +79,8 @@ namespace tom
      * Each subclass constructor should initialize this base class
      * (MATLAB) Initialize by calling this=this@tom.DynamicModel(initialTime,uri);
      */
-    DynamicModel(const WorldTime initialTime,const std::string uri){}
+    DynamicModel(const WorldTime initialTime, const std::string uri)
+    {}
 
     /**
      * Establish connection between framework class and component
@@ -95,11 +99,11 @@ namespace tom
     {
       if(!((cD==NULL)|(cF==NULL)))
       {
-        (*pDescriptionList())[name]=cD;
-        (*pFactoryList())[name]=cF;
+        (*pDescriptionList())[name] = cD;
+        (*pFactoryList())[name] = cF;
       }
       return;
-    }    
+    }
 
   public:
     /**
@@ -115,7 +119,7 @@ namespace tom
      */
     static bool isConnected(const std::string name)
     {
-      return(pFactoryList()->find(name) != pFactoryList()->end());
+      return (pFactoryList()->find(name)!=pFactoryList()->end());
     }
 
     /**
@@ -130,12 +134,12 @@ namespace tom
      */
     static std::string description(const std::string name)
     {
-      std::string str="";
+      std::string str = "";
       if(isConnected(name))
       {
-        str=(*pDescriptionList())[name]();
+        str = (*pDescriptionList())[name]();
       }
-      return(str);
+      return (str);
     }
 
     /**
@@ -152,16 +156,16 @@ namespace tom
      */
     static DynamicModel* factory(const std::string name, const WorldTime initialTime, const std::string uri)
     {
-      DynamicModel* obj=NULL;
+      DynamicModel* obj = NULL;
       if(isConnected(name))
       {
-        obj=(*pFactoryList())[name](initialTime,uri);
+        obj = (*pFactoryList())[name](initialTime, uri);
       }
       else
       {
         throw("DynamicModel is not connected to the requested component");
       }
-      return(obj);
+      return (obj);
     }
 
     /**
@@ -173,8 +177,9 @@ namespace tom
      * (C++) Does nothing and does not require implementation
      * (MATLAB) Implement this as a static function that calls connect()
      */
-    static void initialize(std::string name){};
-    
+    static void initialize(std::string name)
+    {}
+
     /**
      * Get number of parameters in each block
      *
@@ -184,14 +189,14 @@ namespace tom
     virtual uint32_t numInitialUint32(void) const = 0;
     virtual uint32_t numExtensionLogical(void) const = 0;
     virtual uint32_t numExtensionUint32(void) const = 0;
-    
+
     /**
      * Get the number of extension blocks
      *
      * @return number of extension blocks
      */
     virtual uint32_t numExtensionBlocks(void) = 0;
-    
+
     /**
      * Get parameters
      *
@@ -206,7 +211,7 @@ namespace tom
     virtual uint32_t getInitialUint32(uint32_t parameterIndex) = 0;
     virtual bool getExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex) = 0;
     virtual uint32_t getExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex) = 0;
-    
+
     /**
      * Set parameters
      *

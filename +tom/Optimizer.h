@@ -22,22 +22,24 @@ namespace tom
     /**
      * Prevents deep copying or assignment
      */
-    Optimizer(const Optimizer&){}
-    Optimizer& operator=(const Optimizer&){}
+    Optimizer(const Optimizer&)
+    {}
+    Optimizer& operator=(const Optimizer&)
+    {}
 
     /* Storage for component descriptions */
     typedef std::string (*OptimizerDescription)(void);
-    static std::map<std::string,OptimizerDescription>* pDescriptionList(void)
+    static std::map<std::string, OptimizerDescription>* pDescriptionList(void)
     {
-      static std::map<std::string,OptimizerDescription> descriptionList;
+      static std::map<std::string, OptimizerDescription> descriptionList;
       return &descriptionList;
     }
 
     /* Storage for component factories */
     typedef Optimizer* (*OptimizerFactory)(const std::vector<DynamicModel*>&, const std::vector<Measure*>&);
-    static std::map<std::string,OptimizerFactory>* pFactoryList(void)
+    static std::map<std::string, OptimizerFactory>* pFactoryList(void)
     {
-      static std::map<std::string,OptimizerFactory> factoryList;
+      static std::map<std::string, OptimizerFactory> factoryList;
       return &factoryList;
     }
 
@@ -45,8 +47,9 @@ namespace tom
     /**
      * Prevents deletion via the base class pointer
      */
-    ~Optimizer(void){}
-    
+    ~Optimizer(void)
+    {}
+
     /**
      * Protected method to construct a component
      *
@@ -59,8 +62,9 @@ namespace tom
      * Each subclass constructor should initialize this base class
      * (MATLAB) Initialize by calling this=this@tom.Optimizer(dynamicModel,measure);
      */
-    Optimizer(const std::vector<DynamicModel*>& dynamicModel, const std::vector<Measure*>& measure){}
-    
+    Optimizer(const std::vector<DynamicModel*>& dynamicModel, const std::vector<Measure*>& measure)
+    {}
+
     /**
      * Establish connection between framework class and component
      *
@@ -78,8 +82,8 @@ namespace tom
     {
       if(!((cD==NULL)|(cF==NULL)))
       {
-        (*pDescriptionList())[name]=cD;
-        (*pFactoryList())[name]=cF;
+        (*pDescriptionList())[name] = cD;
+        (*pFactoryList())[name] = cF;
       }
       return;
     }
@@ -98,7 +102,7 @@ namespace tom
      */
     static bool isConnected(const std::string name)
     {
-      return(pFactoryList()->find(name) != pFactoryList()->end());
+      return (pFactoryList()->find(name)!=pFactoryList()->end());
     }
 
     /**
@@ -113,12 +117,12 @@ namespace tom
      */
     static std::string description(const std::string name)
     {
-      std::string str="";
+      std::string str = "";
       if(isConnected(name))
       {
-        str=(*pDescriptionList())[name]();
+        str = (*pDescriptionList())[name]();
       }
-      return(str);
+      return (str);
     }
 
     /**
@@ -133,19 +137,19 @@ namespace tom
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
-    static Optimizer* factory(const std::string name,
-      std::vector<DynamicModel*> &dynamicModel, std::vector<Measure*> &measure)
+    static Optimizer* factory(const std::string name, std::vector<DynamicModel*> &dynamicModel,
+      std::vector<Measure*> &measure)
     {
-      Optimizer* obj=NULL;
+      Optimizer* obj = NULL;
       if(isConnected(name))
       {
-        obj=(*pFactoryList())[name](dynamicModel,measure);
+        obj = (*pFactoryList())[name](dynamicModel, measure);
       }
       else
       {
         throw("Optimizer is not connected to the requested component");
       }
-      return(obj);
+      return (obj);
     }
 
     /**
@@ -157,15 +161,17 @@ namespace tom
      * (C++) Does nothing and does not require implementation
      * (MATLAB) Implement this as a static function that calls connect()
      */
-    static void initialize(std::string name){};
-    
+    static void initialize(std::string name)
+    {}
+    ;
+
     /**
      * Get the number of results
      *
      * @return number of results
      */
     virtual unsigned numResults(void) = 0;
-    
+
     /**
      * Get the most recent trajectory estimate in the form of a dynamic model
      *
@@ -177,7 +183,7 @@ namespace tom
      * Throws an exception if index is out of range
      */
     virtual DynamicModel* getTrajectory(const unsigned k) = 0;
-    
+
     /**
      * Get the most recent cost estimate
      *
@@ -189,12 +195,12 @@ namespace tom
      * Throws an exception if index is out of range
      */
     virtual double getCost(const unsigned k) = 0;
-    
+
     /**
      * Execute one step of the optimizer to evolve parameters toward lower cost
      *
      * NOTES
-     * This function refreshes the objective and determines the current 
+     * This function refreshes the objective and determines the current
      *   number of input parameter blocks and output costs
      * The optimizer may learn about the objective function over multiple
      *   calls by maintaining state using class properties

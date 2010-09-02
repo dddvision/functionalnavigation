@@ -7,7 +7,7 @@ void convert(const mxArray* array, uint32_t& value)
   {
     mexErrMsgTxt("input array must be uint32");
   }
-  value=(*static_cast<uint32_t*>(mxGetData(array)));
+  value = (*static_cast<uint32_t*> (mxGetData(array)));
   return;
 }
 
@@ -19,7 +19,7 @@ void convert(const mxArray* array, std::string& cppString)
   {
     mexErrMsgTxt("input array must be char");
   }
-  mxGetString(array,cString,N);
+  mxGetString(array, cString, N);
   cppString = cString;
   delete[] cString;
   return;
@@ -27,15 +27,15 @@ void convert(const mxArray* array, std::string& cppString)
 
 void convert(const mxArray* array, tom::TimeInterval& value)
 {
-  value.first=mxGetScalar(mxGetProperty(array,0,"first"));
-  value.second=mxGetScalar(mxGetProperty(array,0,"second"));
+  value.first = mxGetScalar(mxGetProperty(array, 0, "first"));
+  value.second = mxGetScalar(mxGetProperty(array, 0, "second"));
   return;
 }
 
 void convert(const mxArray* array, tom::GraphEdge& value)
 {
-  value.first=(*static_cast<uint32_t*>(mxGetData(mxGetProperty(array,0,"first"))));
-  value.second=(*static_cast<uint32_t*>(mxGetData(mxGetProperty(array,0,"second"))));
+  value.first = (*static_cast<uint32_t*> (mxGetData(mxGetProperty(array, 0, "first"))));
+  value.second = (*static_cast<uint32_t*> (mxGetData(mxGetProperty(array, 0, "second"))));
   return;
 }
 
@@ -47,22 +47,22 @@ void convert(const mxArray* array, std::vector<tom::Pose>& pose)
   double* pq;
   tom::Pose* pPose;
   unsigned n;
-  unsigned N=mxGetNumberOfElements(array);
+  unsigned N = mxGetNumberOfElements(array);
   pose.resize(N);
-  for( n=0 ; n<N ; ++n )
+  for(n = 0; n<N; ++n)
   {
-    p=mxGetProperty(array,n,"p");
-    q=mxGetProperty(array,n,"q");
-    pp=mxGetPr(p);
-    pq=mxGetPr(q);
-    pPose=&pose[n];
-    pPose->p[0]=pp[0];
-    pPose->p[1]=pp[1];
-    pPose->p[2]=pp[2];
-    pPose->q[0]=pq[0];
-    pPose->q[1]=pq[1];
-    pPose->q[2]=pq[2];
-    pPose->q[3]=pq[3];
+    p = mxGetProperty(array, n, "p");
+    q = mxGetProperty(array, n, "q");
+    pp = mxGetPr(p);
+    pq = mxGetPr(q);
+    pPose = &pose[n];
+    pPose->p[0] = pp[0];
+    pPose->p[1] = pp[1];
+    pPose->p[2] = pp[2];
+    pPose->q[0] = pq[0];
+    pPose->q[1] = pq[1];
+    pPose->q[2] = pq[2];
+    pPose->q[3] = pq[3];
   }
   return;
 }
@@ -79,53 +79,53 @@ void convert(const mxArray* array, std::vector<tom::TangentPose>& tangentPose)
   double* ps;
   tom::TangentPose* pTangentPose;
   unsigned n;
-  unsigned N=mxGetNumberOfElements(array);
+  unsigned N = mxGetNumberOfElements(array);
   tangentPose.resize(N);
-  for( n=0 ; n<N ; ++n )
+  for(n = 0; n<N; ++n)
   {
-    p=mxGetProperty(array,n,"p");
-    q=mxGetProperty(array,n,"q");
-    r=mxGetProperty(array,n,"r");
-    s=mxGetProperty(array,n,"s");
-    pp=mxGetPr(p);
-    pq=mxGetPr(q);
-    pr=mxGetPr(r);
-    ps=mxGetPr(s);
-    pTangentPose=&tangentPose[n];
-    pTangentPose->p[0]=pp[0];
-    pTangentPose->p[1]=pp[1];
-    pTangentPose->p[2]=pp[2];
-    pTangentPose->q[0]=pq[0];
-    pTangentPose->q[1]=pq[1];
-    pTangentPose->q[2]=pq[2];
-    pTangentPose->q[3]=pq[3];
-    pTangentPose->r[0]=pr[0];
-    pTangentPose->r[1]=pr[1];
-    pTangentPose->r[2]=pr[2];
-    pTangentPose->s[0]=ps[0];
-    pTangentPose->s[1]=ps[1];
-    pTangentPose->s[2]=ps[2];
-    pTangentPose->s[3]=ps[3];
+    p = mxGetProperty(array, n, "p");
+    q = mxGetProperty(array, n, "q");
+    r = mxGetProperty(array, n, "r");
+    s = mxGetProperty(array, n, "s");
+    pp = mxGetPr(p);
+    pq = mxGetPr(q);
+    pr = mxGetPr(r);
+    ps = mxGetPr(s);
+    pTangentPose = &tangentPose[n];
+    pTangentPose->p[0] = pp[0];
+    pTangentPose->p[1] = pp[1];
+    pTangentPose->p[2] = pp[2];
+    pTangentPose->q[0] = pq[0];
+    pTangentPose->q[1] = pq[1];
+    pTangentPose->q[2] = pq[2];
+    pTangentPose->q[3] = pq[3];
+    pTangentPose->r[0] = pr[0];
+    pTangentPose->r[1] = pr[1];
+    pTangentPose->r[2] = pr[2];
+    pTangentPose->s[0] = ps[0];
+    pTangentPose->s[1] = ps[1];
+    pTangentPose->s[2] = ps[2];
+    pTangentPose->s[3] = ps[3];
   }
   return;
 }
 
 void convert(const double value, mxArray*& array)
 {
-  array=mxCreateDoubleScalar(value);
+  array = mxCreateDoubleScalar(value);
   return;
 }
 
 void convert(const uint32_t value, mxArray*& array)
 {
-  array=mxCreateNumericMatrix(1,1,mxUINT32_CLASS,mxREAL);
-  (*static_cast<uint32_t*>(mxGetData(array)))=value;
+  array = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
+  (*static_cast<uint32_t*> (mxGetData(array))) = value;
   return;
 }
 
 void convert(const bool value, mxArray*& array)
 {
-  array=mxCreateLogicalScalar(value);
+  array = mxCreateLogicalScalar(value);
   return;
 }
 
@@ -133,12 +133,12 @@ void convert(const std::vector<tom::WorldTime>& time, mxArray*& array)
 {
   double* pTime;
   unsigned n;
-  unsigned N=time.size();
-  array=mxCreateDoubleMatrix(1,N,mxREAL);
-  pTime=mxGetPr(array);
-  for( n=0 ; n<N ; ++n )
+  unsigned N = time.size();
+  array = mxCreateDoubleMatrix(1, N, mxREAL);
+  pTime = mxGetPr(array);
+  for(n = 0; n<N; ++n)
   {
-    pTime[n]=static_cast<tom::WorldTime>(time[n]);
+    pTime[n] = static_cast<tom::WorldTime> (time[n]);
   }
   return;
 }
@@ -154,99 +154,99 @@ void convert(const std::vector<tom::GraphEdge>& graphEdge, const mxArray*& sourc
   double* psecond;
   double* psz;
   unsigned n;
-  unsigned N=graphEdge.size();
-  singleEdge=mxDuplicateArray(source);
-  sz=mxCreateDoubleMatrix(1,2,mxREAL);
-  psz=mxGetPr(sz);
-  psz[0]=1;
-  psz[1]=N;
-  prhs[0]=singleEdge;
-  prhs[1]=sz;
-  mexCallMATLAB(1,&array,2,prhs,"repmat");
-  for( n=0 ; n<N ; ++n )
+  unsigned N = graphEdge.size();
+  singleEdge = mxDuplicateArray(source);
+  sz = mxCreateDoubleMatrix(1, 2, mxREAL);
+  psz = mxGetPr(sz);
+  psz[0] = 1;
+  psz[1] = N;
+  prhs[0] = singleEdge;
+  prhs[1] = sz;
+  mexCallMATLAB(1, &array, 2, prhs, "repmat");
+  for(n = 0; n<N; ++n)
   {
-    first=mxGetProperty(array,n,"first");
-    second=mxGetProperty(array,n,"second");
-    pfirst=mxGetPr(first);
-    psecond=mxGetPr(second);
-    pfirst[0]=graphEdge[n].first;
-    psecond[0]=graphEdge[n].second;
+    first = mxGetProperty(array, n, "first");
+    second = mxGetProperty(array, n, "second");
+    pfirst = mxGetPr(first);
+    psecond = mxGetPr(second);
+    pfirst[0] = graphEdge[n].first;
+    psecond[0] = graphEdge[n].second;
   }
   return;
 }
 
 class TrajectoryBridge : public tom::Trajectory
 {
-  public:
-    tom::TimeInterval domain(void)
-    {
-      mxArray* lhs;
-      tom::TimeInterval timeInterval;
-      mexEvalString("interval=domain(x);"); // depends on Trajectory named 'x' in MATLAB workspace
-      lhs=mexGetVariable("caller","interval");
-      convert(lhs,timeInterval);
-      mxDestroyArray(lhs);
-      return timeInterval;
-    }
-    
-    void evaluate(const std::vector<tom::WorldTime>& time,std::vector<tom::Pose>& pose)
-    {
-      mxArray* rhs;
-      mxArray* lhs;
-      convert(time,rhs);
-      mexPutVariable("caller","t",rhs);
-      mexEvalString("pose=evaluate(x,t);"); // depends on Trajectory named 'x' in MATLAB workspace
-      lhs=mexGetVariable("caller","pose");
-      convert(lhs,pose);
-      mxDestroyArray(lhs);
-      return;
-    }
+public:
+  tom::TimeInterval domain(void)
+  {
+    mxArray* lhs;
+    tom::TimeInterval timeInterval;
+    mexEvalString("interval=domain(x);"); // depends on Trajectory named 'x' in MATLAB workspace
+    lhs = mexGetVariable("caller", "interval");
+    convert(lhs, timeInterval);
+    mxDestroyArray(lhs);
+    return timeInterval;
+  }
 
-    void tangent(const std::vector<tom::WorldTime>& time,std::vector<tom::TangentPose>& tangentPose)
-    {
-      mxArray* rhs;
-      mxArray* lhs;
-      convert(time,rhs);
-      mexPutVariable("caller","t",rhs);
-      mexEvalString("tangentPose=tangent(x,t);"); // depends on Trajectory named 'x' in MATLAB workspace
-      lhs=mexGetVariable("caller","tangentPose");
-      convert(lhs,tangentPose);
-      mxDestroyArray(lhs);
-      return;
-    }
+  void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
+  {
+    mxArray* rhs;
+    mxArray* lhs;
+    convert(time, rhs);
+    mexPutVariable("caller", "t", rhs);
+    mexEvalString("pose=evaluate(x,t);"); // depends on Trajectory named 'x' in MATLAB workspace
+    lhs = mexGetVariable("caller", "pose");
+    convert(lhs, pose);
+    mxDestroyArray(lhs);
+    return;
+  }
+
+  void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
+  {
+    mxArray* rhs;
+    mxArray* lhs;
+    convert(time, rhs);
+    mexPutVariable("caller", "t", rhs);
+    mexEvalString("tangentPose=tangent(x,t);"); // depends on Trajectory named 'x' in MATLAB workspace
+    lhs = mexGetVariable("caller", "tangentPose");
+    convert(lhs, tangentPose);
+    mxDestroyArray(lhs);
+    return;
+  }
 };
 
 enum MeasureMember
 {
-  undefined,
-  refresh,
-  hasData,
-  first,
-  last,
-  getTime,
-  findEdges,
-  computeEdgeCost
+    undefined,
+    refresh,
+    hasData,
+    first,
+    last,
+    getTime,
+    findEdges,
+    computeEdgeCost
 };
 
 void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
 {
-  static std::map<std::string,MeasureMember> memberMap;
+  static std::map<std::string, MeasureMember> memberMap;
   static std::vector<tom::Measure*> instance;
-  static bool initialized=false;
+  static bool initialized = false;
 
   if(!initialized)
   {
-    memberMap["refresh"]=refresh;
-    memberMap["hasData"]=hasData;
-    memberMap["first"]=first;
-    memberMap["last"]=last;
-    memberMap["getTime"]=getTime;
-    memberMap["findEdges"]=findEdges;
-    memberMap["computeEdgeCost"]=computeEdgeCost;
-    initialized=true;
+    memberMap["refresh"] = refresh;
+    memberMap["hasData"] = hasData;
+    memberMap["first"] = first;
+    memberMap["last"] = last;
+    memberMap["getTime"] = getTime;
+    memberMap["findEdges"] = findEdges;
+    memberMap["computeEdgeCost"] = computeEdgeCost;
+    initialized = true;
   }
 
-  mxAssert(nrhs>=2,"function requires at least 2 arguments");
+  mxAssert(nrhs>=2, "function requires at least 2 arguments");
   if(mxIsChar(prhs[0]))
   {
     std::string name;
@@ -254,24 +254,24 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     tom::Measure* obj;
     uint32_t numInstances = instance.size();
 
-    convert(prhs[0],name);
-    convert(prhs[1],uri);
-    obj = tom::Measure::factory(name,uri);
+    convert(prhs[0], name);
+    convert(prhs[1], uri);
+    obj = tom::Measure::factory(name, uri);
     if(obj==NULL)
     {
       mexErrMsgTxt("failed to instantiate the specified Measure");
     }
     instance.resize(numInstances+1);
     instance[numInstances] = obj;
-    convert(numInstances,plhs[0]);
+    convert(numInstances, plhs[0]);
   }
   else
   {
     uint32_t handle;
     std::string memberName;
 
-    convert(prhs[0],handle);
-    convert(prhs[1],memberName);
+    convert(prhs[0], handle);
+    convert(prhs[1], memberName);
 
     if(handle<instance.size())
     {
@@ -279,52 +279,52 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     }
     switch(memberMap[memberName])
     {
-    case undefined:
-      mexErrMsgTxt("unrecognized member function in call to Measure");
-      break;
-      
-    case refresh:
-      instance[handle]->refresh();
-      break;
+      case undefined:
+        mexErrMsgTxt("unrecognized member function in call to Measure");
+        break;
 
-    case hasData:
-      convert(instance[handle]->hasData(),plhs[0]);
-      break;
+      case refresh:
+        instance[handle]->refresh();
+        break;
 
-    case first:
-      convert(instance[handle]->first(),plhs[0]);
-      break;
-      
-    case last:
-      convert(instance[handle]->last(),plhs[0]);
-      break;
+      case hasData:
+        convert(instance[handle]->hasData(), plhs[0]);
+        break;
 
-    case getTime:
-      uint32_t n;
-      convert(prhs[2],n);
-      convert(instance[handle]->getTime(n),plhs[0]);
-      break;
+      case first:
+        convert(instance[handle]->first(), plhs[0]);
+        break;
 
-    // TODO: implement this bridge function properly
-    case findEdges:
-    {
-      TrajectoryBridge x;
-      uint32_t naSpan;
-      uint32_t nbSpan;
-      convert(prhs[3],naSpan);
-      convert(prhs[4],nbSpan);
-      convert(instance[handle]->findEdges(x,naSpan,nbSpan),prhs[2],plhs[0]);
-      break;
-    }
+      case last:
+        convert(instance[handle]->last(), plhs[0]);
+        break;
 
-    case computeEdgeCost:
-    {
-      TrajectoryBridge x;
-      tom::GraphEdge graphEdge;
-      convert(prhs[2],graphEdge);
-      convert(instance[handle]->computeEdgeCost(x,graphEdge),plhs[0]);
-      break;
-    }
+      case getTime:
+        uint32_t n;
+        convert(prhs[2], n);
+        convert(instance[handle]->getTime(n), plhs[0]);
+        break;
+
+        // TODO: implement this bridge function properly
+      case findEdges:
+      {
+        TrajectoryBridge x;
+        uint32_t naSpan;
+        uint32_t nbSpan;
+        convert(prhs[3], naSpan);
+        convert(prhs[4], nbSpan);
+        convert(instance[handle]->findEdges(x, naSpan, nbSpan), prhs[2], plhs[0]);
+        break;
+      }
+
+      case computeEdgeCost:
+      {
+        TrajectoryBridge x;
+        tom::GraphEdge graphEdge;
+        convert(prhs[2], graphEdge);
+        convert(instance[handle]->computeEdgeCost(x, graphEdge), plhs[0]);
+        break;
+      }
     }
   }
 }
@@ -333,7 +333,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
   try
   {
-    safeMexFunction(nlhs,plhs,nrhs,prhs);
+    safeMexFunction(nlhs, plhs, nrhs, prhs);
   }
   catch(std::exception& e)
   {

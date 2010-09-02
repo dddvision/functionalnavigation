@@ -23,7 +23,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       function text=componentDescription
         text=['Applies the MATLAB Genetic Algorithm using a straightforward but slow process. ',...
           'Converts all dynamic model parameters between blocks and bit strings as needed. ',...
-          'Optimizes over all parameters at each time step'];
+          'Optimizes over all parameters at each time step.'];
       end
       tom.Optimizer.connect(name,@componentDescription,@MatlabGA.MatlabGA);
     end
