@@ -29,7 +29,7 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
     function this=MacBookBuiltInSensors
       this=this@tom.DataContainer;
       if(this.verbose)
-        fprintf('\nInitializing %s\n',class(this));
+        fprintf('\n\nInitializing %s\n',class(this));
       end
       if(~ismac)
         error(this.notMacText);
