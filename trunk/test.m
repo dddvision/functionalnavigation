@@ -30,7 +30,7 @@ function test(name)
   componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
   if(isempty(findstr(componentPath,path)))
     addpath(componentPath);
-    fprintf('\npath added: %s',componentPath);
+    fprintf('\n\npath added: %s',componentPath);
   end
 
   % initialize the default pseudorandom number generator
