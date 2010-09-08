@@ -45,8 +45,12 @@ measure=cell(M,1);
 for m=1:M
   name=config.measureNames{m};
   fprintf('\n\nInitializing Measure: %s',name);
-  fprintf('\n%s',tom.Measure.description(name));
-  measure{m}=tom.Measure.factory(name,config.uri);
+  if(tom.Measure.isConnected(name))
+    fprintf('\n%s',tom.Measure.description(name));
+    measure{m}=tom.Measure.factory(name,config.uri);
+  else
+    error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
+  end
 end
 
 % determine initial time based on first available data node
@@ -66,18 +70,26 @@ end
 % initialize multiple dynamic models
 name=config.dynamicModelName;
 fprintf('\n\nInitializing DynamicModel: %s',name);
-fprintf('\n%s',tom.DynamicModel.description(name));
-dynamicModel=tom.DynamicModel.factory(name,initialTime,config.uri);
-for k=2:config.numTrajectories
-  dynamicModel(k)=tom.DynamicModel.factory(name,initialTime,config.uri);
+if(tom.DynamicModel.isConnected(name))
+  fprintf('\n%s',tom.DynamicModel.description(name));
+  dynamicModel=tom.DynamicModel.factory(name,initialTime,config.uri);
+  for k=2:config.numTrajectories
+    dynamicModel(k)=tom.DynamicModel.factory(name,initialTime,config.uri);
+  end
+else
+  error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
 end
 
 % instantiate an optimizer
 name=config.optimizerName;
 fprintf('\n\nInitializing Optimizer: %s',name);
-fprintf('\n%s',tom.Optimizer.description(name));
-optimizer=tom.Optimizer.factory(name,dynamicModel,measure);
-
+if(tom.Optimizer.isConnected(name))
+  fprintf('\n%s',tom.Optimizer.description(name));
+  optimizer=tom.Optimizer.factory(name,dynamicModel,measure);
+else
+  error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
+end
+  
 % instantiate the graphical display
 gui=DemoDisplay(config.uri);
 

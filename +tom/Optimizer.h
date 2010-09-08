@@ -161,7 +161,6 @@ namespace tom
      */
     static void initialize(std::string name)
     {}
-    ;
 
     /**
      * Get the number of results

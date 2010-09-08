@@ -158,7 +158,6 @@ namespace tom
      */
     static void initialize(std::string name)
     {}
-    ;
 
     /**
      * List available sensors of a given class

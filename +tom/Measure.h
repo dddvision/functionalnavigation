@@ -166,7 +166,6 @@ namespace tom
      */
     static void initialize(std::string name)
     {}
-    ;
 
     /**
      * Find a limited set of graph edges in the adjacency matrix of the cost graph
@@ -204,7 +203,7 @@ namespace tom
      *   kinematically composed with the body frame to locate the sensor
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
-     * Throws an exception if node indices do not correspond to an edge
+     * Throws an exception if node indices do not correspond to an edge whose span is within the trajectory domain
      */
     virtual double computeEdgeCost(const Trajectory& x, const GraphEdge graphEdge) = 0;
     
