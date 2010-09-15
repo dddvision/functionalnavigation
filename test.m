@@ -38,8 +38,8 @@ function test(name)
 
   initialTime=tom.WorldTime(0); % default finite lower bound of trajectory time domain
   uri='matlab:MiddleburyData'; % default data resource identifier
-  dynamicModelName='XDynamics'; % default dynamic model name
-  measureName='XMeasure'; % default measure name
+  dynamicModelName='Default'; % default dynamic model name
+  measureName='Default'; % default measure name
 
   fprintf('\n\nname =');
   assert(isa(name,'char'));
@@ -77,7 +77,7 @@ function test(name)
     testbed.MeasureTest(name,uri);
   end
   if(tom.Optimizer.isConnected(name))
-    testbed.OptimizerTest(name,dynamicModelName,measureName);
+    testbed.OptimizerTest(name,dynamicModelName,measureName,initialTime,uri);
   end
   if(tom.DataContainer.isConnected(name))
     testbed.DataContainerTest(name);

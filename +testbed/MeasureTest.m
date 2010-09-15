@@ -2,6 +2,8 @@ classdef MeasureTest < handle
   
   methods (Access=public)
     function this=MeasureTest(name,uri)
+      fprintf('\n\n*** MeasureTest ***');
+      
       fprintf('\n\nuri =');
       assert(isa(uri,'char'));
       fprintf(' ''%s''',uri);

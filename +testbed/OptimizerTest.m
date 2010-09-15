@@ -1,7 +1,9 @@
 classdef OptimizerTest < handle
   
   methods (Access=public)
-    function this=OptimizerTest(name,dynamicModelName,measureName)
+    function this=OptimizerTest(name,dynamicModelName,measureName,initialTime,uri)
+      fprintf('\n\n*** OptimizerTest ***');
+            
       fprintf('\n\ndynamicModelName =');
       assert(isa(dynamicModelName,'char'));
       fprintf(' ''%s''',dynamicModelName);
@@ -9,6 +11,14 @@ classdef OptimizerTest < handle
       fprintf('\nmeasureName =');
       assert(isa(measureName,'char'));
       fprintf(' ''%s''',measureName);
+      
+      fprintf('\ninitialTime =');
+      assert(isa(initialTime,'tom.WorldTime')); 
+      fprintf(' %f',double(initialTime));
+      
+      fprintf('\nuri =');
+      assert(isa(uri,'char'));
+      fprintf(' ''%s''',uri);
       
       fprintf('\n\ntom.Optimizer.description =');
       text=tom.Optimizer.description(name);
