@@ -2,6 +2,8 @@ classdef DataContainerTest < handle
   
   methods (Access=public)
     function this=DataContainerTest(name)
+      fprintf('\n\n*** DataContainerTest ***');
+            
       fprintf('\n\ntom.DataContainer.description =');
       text=tom.DataContainer.description(name);
       assert(isa(text,'char'));

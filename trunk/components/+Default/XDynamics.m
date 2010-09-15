@@ -1,4 +1,4 @@
-classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
+classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
   
   properties (Constant=true,GetAccess=private)
     initialNumLogical=uint32(0);
@@ -24,7 +24,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
         text=['Evaluates a reference trajectory and adds perturbation to initial ECEF X positon and velocity. ',...
           'Perturbation is simulated by sampling from a normal distribution.'];
       end
-      tom.DynamicModel.connect(name,@componentDescription,@XDynamics.XDynamics);
+      tom.DynamicModel.connect(name,@componentDescription,@Default.XDynamics);
     end
   end
   

@@ -1,4 +1,4 @@
-classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
+classdef XMeasure < Default.DefaultConfig & tom.Measure
 
   properties (SetAccess=private,GetAccess=private)
     xRef
@@ -8,14 +8,14 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
     nb
     status
   end
-  
+
   methods (Static=true,Access=public)
     function initialize(name)
       function text=componentDescription
         text=['Evaluates a reference trajectory and simulates measurement of initial ECEF X positon with error. ',...
           'Error is simulated by sampling from a normal distribution.'];
       end
-      tom.Measure.connect(name,@componentDescription,@XMeasure.XMeasure);
+      tom.Measure.connect(name,@componentDescription,@Default.XMeasure);
     end
   end
   

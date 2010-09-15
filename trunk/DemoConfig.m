@@ -2,9 +2,9 @@ classdef DemoConfig < handle
   
   properties (Constant=true,GetAccess=public)
     uri = 'matlab:MiddleburyData'; % ('matlab:MiddleburyData') select hardware resource or data container
-    dynamicModelName = 'XDynamics'; % ('XDynamics') dynamic model selection
-    measureNames = {'XMeasure'}; % ({'XMeasure'}) list of measures that can be empty
-    optimizerName = 'LinearKalmanOptimizer'; % ('LinearKalmanOptimizer') optimizer selection
+    dynamicModelName = 'Default'; % ('Default') name of a single DynamicModel component
+    measureNames = {'Default'}; % ({'Default'}) cell array of zero or more names of Measure component
+    optimizerName = 'Default'; % ('Default') name of a single Optimizer component
     defaultInitialTime = tom.WorldTime(0); % (tom.WorldTime(0)) default initial time when no data is available
     numTrajectories = 10; % (10) number of trajectories to use for optimization
     numSteps = uint32(1E9); % (uint32(1E9)) number of optimization steps until termination
