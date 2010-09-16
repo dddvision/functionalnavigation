@@ -93,15 +93,14 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
       assert(isa(x,'tom.Trajectory'));
       assert(isa(naSpan,'uint32'));
       assert(isa(nbSpan,'uint32'));
+      edgeList=repmat(tom.GraphEdge,[0,1]);
       if(this.status)
         nMin=max([this.na,this.nb-naSpan,this.nb-nbSpan]);
         nMax=this.nb;
         node=nMin:nMax;
-      end
-      if(nMax>=nMin)
-        edgeList=tom.GraphEdge(node,node);
-      else
-        edgeList=repmat(tom.GraphEdge,[0,1]);
+        if(nMax>=nMin)
+          edgeList=tom.GraphEdge(node,node);
+        end
       end
     end
 

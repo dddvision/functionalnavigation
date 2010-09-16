@@ -176,8 +176,7 @@ namespace tom
      * @return           list of edges (MATLAB: N-by-1)
      *
      * NOTES
-     * Only finds graph edges that are within the domain of the input trajectory,
-     *   which is guaranteed to have a fixed lower bound
+     * Graph edges may extend outside of the domain of the input trajectory
      * Graph edges may be added on successive calls to refresh, but they are never removed
      * The number of returned graph edges is bounded as follows:
      *   numel(edgeList) <= (naSpan+1)*(nbSpan+1)
@@ -203,7 +202,8 @@ namespace tom
      *   kinematically composed with the body frame to locate the sensor
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
-     * Throws an exception if node indices do not correspond to an edge whose span is within the trajectory domain
+     * Throws an exception if the cost cannot be computed for any reason
+     * Throws an exception if the computed cost is NaN
      */
     virtual double computeEdgeCost(const Trajectory& x, const GraphEdge graphEdge) = 0;
     

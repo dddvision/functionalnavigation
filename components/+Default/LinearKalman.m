@@ -151,7 +151,15 @@ classdef LinearKalman < tom.Optimizer
       for m=1:numel(this.measure)
         edgeList=this.measure{m}.findEdges(this.dynamicModel(k),uint32(0),uint32(0)); % zero or one edges
         if(~isempty(edgeList))
-          y=y+this.measure{m}.computeEdgeCost(this.dynamicModel(k),edgeList);
+          try
+            yDiff=this.measure{m}.computeEdgeCost(this.dynamicModel(k),edgeList);
+          catch err
+            if(this.verbose)
+              fprintf(err.message);
+            end
+            yDiff=0;
+          end
+          y=y+yDiff;
         end
       end
     end
@@ -159,6 +167,17 @@ classdef LinearKalman < tom.Optimizer
     function putParam(this,k,v)
       for p=uint32(1):uint32(numel(v))
         this.dynamicModel(k).setInitialUint32(p-1,v(p));
+      end
+    end
+    
+    function extendThrough(this,t)
+      K=numel(this.dynamicModel);
+      interval=this.dynamicModel(1).domain();
+      while(interval.second<t)
+        for k=1:K
+          this.dynamicModel(k).extend();
+        end
+        interval=this.dynamicModel(1).domain();
       end
     end
   end
