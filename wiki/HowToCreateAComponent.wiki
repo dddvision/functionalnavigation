@@ -3,9 +3,7 @@
 
 === Introduction ===
 
-This page will help you create a component that will seamlessly integrate with our trajectory optimization framework. There are an infinite number of ways to represent system dynamics, trajectory measures, and optimization methods. Therefore, we primarily focus on providing clear interface definitions and leave implementation issues to the developers of individual components.
-
-Alternatively, you might want to [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others.
+This page will help you create a component that will seamlessly integrate with our trajectory optimization framework. There are many ways to represent system dynamics, trajectory measures, and optimization methods. Therefore, we primarily focus on providing clear interface definitions and leave implementation to the developers of individual components.
 
 === Interface Control Document ===
 
