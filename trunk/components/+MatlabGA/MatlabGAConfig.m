@@ -14,5 +14,7 @@ classdef MatlabGAConfig < handle
     CrossoverFcnArgs = {};
     MutationFcn = @mutationuniform;
     MutationFcnArgs = {0.02};
+    
+    verbose = true; % (true) enable verbose errors and warnings
   end
 end

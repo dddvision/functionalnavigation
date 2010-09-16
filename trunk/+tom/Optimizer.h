@@ -194,15 +194,15 @@ namespace tom
     virtual double getCost(const unsigned k) = 0;
 
     /**
-     * Execute one step of the optimizer to evolve parameters toward lower cost
+     * Execute one step of the optimizer to evolve dynamic model parameters toward lower cost
      *
      * NOTES
-     * This function refreshes the objective and determines the current
-     *   number of input parameter blocks and output costs
-     * The optimizer may learn about the objective function over multiple
-     *   calls by maintaining state using class properties
-     * This function may evaluate the objective multiple times, though a
-     *   single evaluation per step is preferred
+     * Refreshes all measures
+     * Extends all trajectory domains equally beyond the last measure
+     * Optimizes over all edges that are within the extended domain
+     * Uses as few cost evaluations as possible to accomplish a single optimization step
+     * May learn over multiple calls by maintaining state
+     * Implements a strategy to keep up with the growth of the cost graphs
      */
     virtual void step(void) = 0;
     

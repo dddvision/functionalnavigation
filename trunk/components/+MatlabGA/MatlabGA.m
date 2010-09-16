@@ -104,8 +104,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       end
       
       % refresh and extend
-      refreshAllMeasures(this);
-      extendToCover(this);
+      tb=refreshAllMeasures(this);
+      extendThrough(this,tb);
       
       % determine initial costs
       bits=getBits(this);
@@ -126,8 +126,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function step(this)
-      refreshAllMeasures(this);
-      extendToCover(this);
+      tb=refreshAllMeasures(this);
+      extendThrough(this,tb);
       bits=getBits(this);
       nvars=size(bits,2);
       nullstate=struct('FunEval',0);
@@ -232,7 +232,15 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
           if(numEdges(m))
             cost=zeros(1,numEdges(m));
             for graphEdge=1:numEdges(m)
-              cost(graphEdge)=computeEdgeCost(this.measure{m},this.dynamicModel(k),edgeList(graphEdge));
+              try
+                cost(graphEdge)=computeEdgeCost(this.measure{m},this.dynamicModel(k),edgeList(graphEdge));
+              catch err
+                if(this.verbose)
+                  fprintf(err.message);
+                end
+                cost=zeros(1,numEdges(m));
+                break;
+              end
             end
             base=na(1);
             span=double(nb(end)-base+1);
@@ -256,24 +264,21 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       cost=cost/(1+B+sum(numEdges));
     end
     
-    function refreshAllMeasures(this)
-      for m=1:numel(this.measure)
-        refresh(this.measure{m});
-      end
-    end
-
-    % extends all trajectories to cover the last sensor data
-    % should do nothing if there are no measures
-    function extendToCover(this)
+    function tb=refreshAllMeasures(this)
       tb=tom.WorldTime(-Inf);
       for m=1:numel(this.measure)
+        refresh(this.measure{m});
         if(hasData(this.measure{m}))
           tb=tom.WorldTime(max(tb,getTime(this.measure{m},last(this.measure{m}))));
         end
       end
+    end
+    
+    function extendThrough(this,tb)
+      K=numel(this.dynamicModel);
       interval=domain(this.dynamicModel(1));
       while(interval.second<tb)
-        for k=1:numel(this.dynamicModel)
+        for k=1:K
           Fk=this.dynamicModel(k);
           extend(Fk);
           b=numExtensionBlocks(Fk);
@@ -289,8 +294,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
         interval=domain(Fk);
       end
     end
-    
   end
+  
 end
 
 % bits = logical, 1-by-N
