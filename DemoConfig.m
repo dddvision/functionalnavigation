@@ -6,7 +6,6 @@ classdef DemoConfig < handle
     measureNames = {'Default'}; % ({'Default'}) cell array of zero or more names of Measure component
     optimizerName = 'Default'; % ('Default') name of a single Optimizer component
     defaultInitialTime = tom.WorldTime(0); % (tom.WorldTime(0)) default initial time when no data is available
-    numTrajectories = 10; % (10) number of trajectories to use for optimization
     numSteps = uint32(1E9); % (uint32(1E9)) number of optimization steps until termination
     textOnly = false; % (true) show text output only
     bestOnly = false; % (true) show only the best trajectory

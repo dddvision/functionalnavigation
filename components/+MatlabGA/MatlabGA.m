@@ -30,9 +30,17 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
   end
   
   methods (Access=public)
-    function this=MatlabGA(dynamicModel,measure)
-      this=this@tom.Optimizer(dynamicModel,measure);
-          
+    function this=MatlabGA()
+      this=this@tom.Optimizer();
+    end
+    
+    function num=numInitialConditions(this)
+      num=this.popSize;
+    end
+      
+    function defineProblem(this,dynamicModel,measure)
+      assert(numel(dynamicModel)==this.popSize);
+      
       % set initial options for the GADS toolbox
       if(~license('test','gads_toolbox'))
         error('Requires license for GADS toolbox -- see MatlabGA configuration options');
@@ -52,8 +60,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       this.defaultOptions.TolCon = 0;
       this.defaultOptions.Vectorized = 'on';
       this.defaultOptions.LinearConstr.type = 'unconstrained';
-      this.defaultOptions.EliteCount = 1+floor(numel(dynamicModel)/12);
-      this.defaultOptions.PopulationSize = numel(dynamicModel);
+      this.defaultOptions.EliteCount = 1+floor(this.popSize/12);
+      this.defaultOptions.PopulationSize = this.popSize;
       this.defaultOptions.CrossoverFraction = this.CrossoverFraction;
       this.defaultOptions.CreationFcn = this.CreationFcn;
       this.defaultOptions.CreationFcnArgs = this.CreationFcnArgs;
@@ -92,7 +100,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       this.iU=uint32(1):uint32(32);
       
       % randomize initial parameters
-      for k=1:numel(this.dynamicModel)
+      for k=1:this.popSize
         L=randLogical(this.nIL);
         for p=this.iIL
           setInitialLogical(this.dynamicModel(k),p-uint32(1),L(p));
@@ -103,8 +111,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
         end
       end
       
-      % refresh and extend
-      tb=refreshAllMeasures(this);
+      % extend trajectories
+      tb=getLastTime(this);
       extendThrough(this,tb);
       
       % determine initial costs
@@ -113,11 +121,11 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       this.cost=feval(@objectiveContainer,bits);
     end
     
-    function num=numResults(this)
-      num=numel(this.dynamicModel);
+    function num=numSolutions(this)
+      num=this.popSize;
     end
        
-    function xEst=getTrajectory(this,k)
+    function xEst=getSolution(this,k)
       xEst=this.dynamicModel(k+1);
     end
     
@@ -126,7 +134,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function step(this)
-      tb=refreshAllMeasures(this);
+      tb=getLastTime(this);
       extendThrough(this,tb);
       bits=getBits(this);
       nvars=size(bits,2);
@@ -148,7 +156,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     %   extension 2 uint32
     %   ...   
     function bits=getBits(this)
-      K=numel(this.dynamicModel);
+      K=this.popSize;
       B=numExtensionBlocks(this.dynamicModel(1));
       bits=false(K,this.nIL+this.nIU+B*(this.nEL+this.nEU));
       iB=uint32(1):uint32(B);
@@ -177,7 +185,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function putBits(this,bits)
-      K=numel(this.dynamicModel);
+      K=this.popSize;
       B=numExtensionBlocks(this.dynamicModel(1));
       iB=uint32(1):uint32(B);
       for k=1:K
@@ -205,7 +213,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function cost=computeCostMean(this,kBest,naSpan,nbSpan)
-      K=numel(this.dynamicModel);
+      K=this.popSize;
       M=numel(this.measure);
       B=double(numExtensionBlocks(this.dynamicModel(1)));
       allGraphs=cell(K,M+1);
@@ -264,10 +272,9 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       cost=cost/(1+B+sum(numEdges));
     end
     
-    function tb=refreshAllMeasures(this)
+    function tb=getLastTime(this)
       tb=tom.WorldTime(-Inf);
       for m=1:numel(this.measure)
-        refresh(this.measure{m});
         if(hasData(this.measure{m}))
           tb=tom.WorldTime(max(tb,getTime(this.measure{m},last(this.measure{m}))));
         end
@@ -275,7 +282,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function extendThrough(this,tb)
-      K=numel(this.dynamicModel);
+      K=this.popSize;
       interval=domain(this.dynamicModel(1));
       while(interval.second<tb)
         for k=1:K

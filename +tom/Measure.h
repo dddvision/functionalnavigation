@@ -55,7 +55,7 @@ namespace tom
 
   protected:
     /**
-     * Protected method to construct a component
+     * Protected method to construct a component instance
      *
      * @param[in] uri (@see tom::Measure)
      *
@@ -131,7 +131,7 @@ namespace tom
     }
 
     /**
-     * Public method to construct a component
+     * Public method to construct a component instance
      *
      * @param[in] name component identifier
      * @param[in] uri  (@see tom::Measure)

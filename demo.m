@@ -39,6 +39,19 @@ reset(RandStream.getDefaultStream);
 % get configuration
 config=DemoConfig;
 
+% instantiate the graphical display
+gui=DemoDisplay(config.uri);
+
+% instantiate an optimizer
+name=config.optimizerName;
+fprintf('\n\nInitializing Optimizer: %s',name);
+if(tom.Optimizer.isConnected(name))
+  fprintf('\n%s',tom.Optimizer.description(name));
+  optimizer=tom.Optimizer.factory(name);
+else
+  error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
+end
+
 % initialize multiple measures
 M=numel(config.measureNames);
 measure=cell(M,1);
@@ -73,38 +86,28 @@ fprintf('\n\nInitializing DynamicModel: %s',name);
 if(tom.DynamicModel.isConnected(name))
   fprintf('\n%s',tom.DynamicModel.description(name));
   dynamicModel=tom.DynamicModel.factory(name,initialTime,config.uri);
-  for k=2:config.numTrajectories
+  for k=2:optimizer.numInitialConditions()
     dynamicModel(k)=tom.DynamicModel.factory(name,initialTime,config.uri);
   end
 else
   error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
 end
 
-% instantiate an optimizer
-name=config.optimizerName;
-fprintf('\n\nInitializing Optimizer: %s',name);
-if(tom.Optimizer.isConnected(name))
-  fprintf('\n%s',tom.Optimizer.description(name));
-  optimizer=tom.Optimizer.factory(name,dynamicModel,measure);
-else
-  error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
-end
-  
-% instantiate the graphical display
-gui=DemoDisplay(config.uri);
+% define the problem
+optimizer.defineProblem(dynamicModel,measure);
 
 % optimize for a number of steps
 for index=uint32(0):config.numSteps
-  % check number of results
-  K=optimizer.numResults();
+  % check number of solutions
+  K=optimizer.numSolutions();
   
-  % if there are any results
+  % if there are any solutions
   if(K>uint32(0))
     % get all trajectory and cost estimates
-    trajectory=optimizer.getTrajectory(uint32(0));
+    trajectory=optimizer.getSolution(uint32(0));
     cost=optimizer.getCost(uint32(0));
     for k=uint32(1):(K-uint32(1))
-      trajectory(k,1)=optimizer.getTrajectory(k);
+      trajectory(k,1)=optimizer.getSolution(k);
       cost(k,1)=optimizer.getCost(k);
     end
     
@@ -114,4 +117,9 @@ for index=uint32(0):config.numSteps
     
   % take an optimization step
   optimizer.step();
+  
+  % refresh all measures
+  for m=1:M
+    measure{m}.refresh();
+  end
 end
