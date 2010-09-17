@@ -50,7 +50,7 @@ namespace tom
 
   protected:
     /**
-     * Protected method to construct a singleton component
+     * Protected method to construct a singleton component instance
      *
      * NOTES
      * Each subclass constructor should initialize this base class
@@ -120,9 +120,8 @@ namespace tom
     }
 
     /**
-     * Public method to construct a singleton component
+     * Public method to construct a singleton component instance
      *
-     * INPUT
      * @param[in] name component identifier
      * @return         singleton object instance that should not be deleted
      *

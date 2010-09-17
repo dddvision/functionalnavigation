@@ -1,5 +1,9 @@
 classdef LinearKalman < tom.Optimizer
   
+  properties (GetAccess=private,Constant=true)
+    numIC=uint32(1);
+  end
+  
   properties (GetAccess=private,SetAccess=private)
     dynamicModel
     measure
@@ -14,15 +18,23 @@ classdef LinearKalman < tom.Optimizer
         text=['Applies a linear Kalman filter algorithm to optimize over initial Uint32 parameters only. ',...
           'All logical parameters are set to false. ',...
           'Extension blocks are ignored. ',...
-          'Only the last on-diagonal element of each measure is evaluated after each refresh.'];
+          'Only the last on-diagonal element of each measure is evaluated.'];
       end
       tom.Optimizer.connect(name,@componentDescription,@Default.LinearKalman);
     end
   end
  
   methods (Access=public)
-    function this=LinearKalman(dynamicModel,measure)
-      this=this@tom.Optimizer(dynamicModel,measure);
+    function this=LinearKalman()
+      this=this@tom.Optimizer();
+    end
+    
+    function num=numInitialConditions(this)
+      num=this.numIC;
+    end
+    
+    function defineProblem(this,dynamicModel,measure)
+      assert(numel(dynamicModel)==this.numIC);
       
       % copy input arguments
       this.dynamicModel=dynamicModel;
@@ -39,15 +51,15 @@ classdef LinearKalman < tom.Optimizer
         this.cost{k}=sqrt(trace(this.covariance{k}));
       end
         
-      % incorporate first measurement (includes refresh)
+      % incorporate first measurement
       step(this);
     end
     
-    function num=numResults(this)
+    function num=numSolutions(this)
       num=numel(this.dynamicModel);
     end
     
-    function xEst=getTrajectory(this,k)
+    function xEst=getSolution(this,k)
       xEst=this.dynamicModel(k+1);
     end
 
@@ -55,12 +67,7 @@ classdef LinearKalman < tom.Optimizer
       cEst=this.cost{k+1};
     end
     
-    function step(this)      
-      % refresh all measures
-      for m=1:numel(this.measure)
-        this.measure{m}.refresh();
-      end
-      
+    function step(this)     
       for k=1:numel(this.dynamicModel)
         % compute measurement distribution model
         [jacobian,hessian]=this.computeSecondOrderModel(k,'measurementCost');

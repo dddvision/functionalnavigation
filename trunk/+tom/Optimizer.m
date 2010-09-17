@@ -21,12 +21,7 @@ classdef Optimizer < handle
   end
   
   methods (Access=protected,Static=true)
-    function this=Optimizer(dynamicModel,measure)
-      assert(isa(dynamicModel,'tom.DynamicModel'));
-      assert(isa(measure,'cell'));
-      for m=1:numel(measure)
-        assert(isa(measure{m},'tom.Measure'));
-      end
+    function this=Optimizer()
     end
     
     function connect(name,cD,cF)
@@ -61,10 +56,10 @@ classdef Optimizer < handle
       end
     end
     
-    function obj=factory(name,dynamicModel,measure)
+    function obj=factory(name)
       if(tom.Optimizer.isConnected(name))
         cF=tom.Optimizer.pFactoryList(name);
-        obj=cF.(name)(dynamicModel,measure);
+        obj=cF.(name)();
         assert(isa(obj,'tom.Optimizer'));
       else
         error('The requested component is not connected');
@@ -77,8 +72,10 @@ classdef Optimizer < handle
   end
   
   methods (Abstract=true,Access=public,Static=false)
-    num=numResults(this);
-    xEst=getTrajectory(this,k);
+    num=numInitialConditions(this);
+    defineProblem(dynamicModel,measure);
+    num=numSolutions(this);
+    xEst=getSolution(this,k);
     cEst=getCost(this,k);
     step(this);
   end

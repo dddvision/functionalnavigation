@@ -40,7 +40,7 @@ namespace tom
     }
 
     /* Storage for component factories */
-    typedef Optimizer* (*OptimizerFactory)(const std::vector<DynamicModel*>&, const std::vector<Measure*>&);
+    typedef Optimizer* (*OptimizerFactory)(void);
     static std::map<std::string, OptimizerFactory>* pFactoryList(void)
     {
       static std::map<std::string, OptimizerFactory> factoryList;
@@ -49,18 +49,13 @@ namespace tom
 
   protected:
     /**
-     * Protected method to construct a component
-     *
-     * INPUT
-     * @param[in] dynamicModel multiple instances of a single DynamicModel subclass (MATLAB: K-by-1)
-     * @param[in] measure      multiple instances of different Measure subclasses (MATLAB: cell M-by-1)
+     * Protected method to construct a component instance
      *
      * NOTES
-     * No assumptions should be made about the initial state of the input objects
      * Each subclass constructor should initialize this base class
-     * (MATLAB) Initialize by calling this=this@tom.Optimizer(dynamicModel,measure);
+     * (MATLAB) Initialize by calling this=this@tom.Optimizer();
      */
-    Optimizer(const std::vector<DynamicModel*>& dynamicModel, const std::vector<Measure*>& measure)
+    Optimizer(void)
     {}
 
     /**
@@ -124,24 +119,21 @@ namespace tom
     }
 
     /**
-     * Public method to construct a component
+     * Public method to construct a component instance
      *
      * @param[in] name component identifier
-     * @param[in] dynamicModel   (@see tom::Optimizer)
-     * @param[in] measure        (@see tom::Measure)
-     * @return                   new object instance that must be deleted by the caller
+     * @return         new instance that must be deleted by the caller
      *
      * NOTES
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
-    static Optimizer* factory(const std::string name, std::vector<DynamicModel*> &dynamicModel,
-      std::vector<Measure*> &measure)
+    static Optimizer* factory(const std::string name)
     {
       Optimizer* obj = NULL;
       if(isConnected(name))
       {
-        obj = (*pFactoryList())[name](dynamicModel, measure);
+        obj = (*pFactoryList())[name]();
       }
       else
       {
@@ -161,35 +153,60 @@ namespace tom
      */
     static void initialize(std::string name)
     {}
-
+    
     /**
-     * Get the number of results
+     * Number of initial conditions required to define the problem
      *
-     * @return number of results
+     * @return number of initial conditions
      */
-    virtual unsigned numResults(void) = 0;
+    virtual unsigned numInitialConditions(void) const = 0;
 
     /**
-     * Get the most recent trajectory estimate in the form of a dynamic model
+     * Define an optimization problem and set initial conditions
      *
-     * @param[in]  k    zero based result index
-     * @return          dynamic model instance that is also a trajectory
+     * @param[in] dynamicModel multiple instances of a single DynamicModel subclass (MATLAB: K-by-1)
+     * @param[in] measure      multiple instances of different Measure subclasses (MATLAB: cell M-by-1)
      *
      * NOTES
-     * This function returns initial conditions if called before the first optimization step occurrs
-     * Throws an exception if index is out of range
+     * No assumptions should be made about the initial state of the input objects
+     * The the size of the dynamicModel vector must match the value returned by numInitialConditions()
+     * @see numInitialConditions()
      */
-    virtual DynamicModel* getTrajectory(const unsigned k) = 0;
-
+    virtual void defineProblem(std::vector<DynamicModel*> &dynamicModel, std::vector<Measure*> &measure) = 0;
+    
     /**
-     * Get the most recent cost estimate
+     * Get the number of available solutions
      *
-     * @param[in] k zero based result index
-     * @return      non-negative cost associated with each trajectory instance
+     * @return number of solutions
      *
      * NOTES
-     * This function returns initial conditions if called before the first optimization step occurrs
-     * Throws an exception if index is out of range
+     * The number of solutions must be less than or equal to the number of initial conditions
+     * Returns zero if called before defineProblem()
+     * @see defineProblem()
+     */
+    virtual unsigned numSolutions(void) = 0;
+    
+    /**
+     * Get a solution in the form of a trajectory
+     *
+     * @param[in] k zero-based index of solutions
+     * @return      trajectory instance associated with the index
+     *
+     * NOTES
+     * Throws an exception if index is greater than or equal to the value returned by numSolutions()
+     * @see numSolutions()
+     */
+    virtual Trajectory* getResult(const unsigned k) = 0;
+
+    /**
+     * Get a cost estimate associated with a trajectory
+     *
+     * @param[in] k zero-based index of solutions
+     * @return      non-negative cost associated with the index
+     *
+     * NOTES
+     * Throws an exception if index is greater than or equal to the value returned by numSolutions()
+     * @see numSolutions()
      */
     virtual double getCost(const unsigned k) = 0;
 
@@ -197,12 +214,14 @@ namespace tom
      * Execute one step of the optimizer to evolve dynamic model parameters toward lower cost
      *
      * NOTES
-     * Refreshes all measures
+     * Does not refresh measures
      * Extends all trajectory domains equally beyond the last measure
      * Optimizes over all edges that are within the extended domain
      * Uses as few cost evaluations as possible to accomplish a single optimization step
      * May learn over multiple calls by maintaining state
      * Implements a strategy to keep up with the growth of the cost graphs
+     * Throws an exception if called before defineProblem()
+     * @see defineProblem()
      */
     virtual void step(void) = 0;
     
