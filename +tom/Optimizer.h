@@ -196,7 +196,7 @@ namespace tom
      * Throws an exception if index is greater than or equal to the value returned by numSolutions()
      * @see numSolutions()
      */
-    virtual Trajectory* getResult(const unsigned k) = 0;
+    virtual Trajectory* getSolution(const unsigned k) = 0;
 
     /**
      * Get a cost estimate associated with a trajectory
