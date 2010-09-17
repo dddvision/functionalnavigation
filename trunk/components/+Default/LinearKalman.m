@@ -1,10 +1,7 @@
-classdef LinearKalman < tom.Optimizer
-  
-  properties (GetAccess=private,Constant=true)
-    numIC=uint32(1);
-  end
+classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
   
   properties (GetAccess=private,SetAccess=private)
+    isDefined
     dynamicModel
     measure
     state
@@ -27,32 +24,57 @@ classdef LinearKalman < tom.Optimizer
   methods (Access=public)
     function this=LinearKalman()
       this=this@tom.Optimizer();
+      this.isDefined=false;
     end
     
     function num=numInitialConditions(this)
-      num=this.numIC;
+      num=this.popSize;
     end
     
-    function defineProblem(this,dynamicModel,measure)
-      assert(numel(dynamicModel)==this.numIC);
+    function defineProblem(this,dynamicModel,measure,randomize)
+      % check number of dynamic models
+      assert(numel(dynamicModel)==this.popSize);
       
-      % copy input arguments
+      % store handles to inputs
       this.dynamicModel=dynamicModel;
       this.measure=measure;
       
-      nIU=this.dynamicModel(1).numInitialUint32();
+      % optionally randomize initial parameters
+      if(randomize)
+        nIU=this.dynamicModel(1).numInitialUint32();
+        for k=1:numel(this.dynamicModel)
+          this.state{k}=rand(nIU,1); % range is within the interval [0,1]
+          this.putParam(k,state2param(this.state{k}));
+        end
+      end
+      
+      % compute initial distribution model (assuming non-zero prior uncertainty)
       for k=1:numel(this.dynamicModel)
-        % set initial state (assuming its range is the interval [0,1])
-        this.state{k}=rand(nIU,1);
-
-        % compute initial distribution model (assuming non-zero prior uncertainty)
         [jacobian,hessian]=this.computeSecondOrderModel(k,'initialCost');
         this.covariance{k}=hessian^(-1);
         this.cost{k}=sqrt(trace(this.covariance{k}));
       end
-        
-      % incorporate first measurement
-      step(this);
+      
+      % flag the problem as defined
+      this.isDefined=true;
+    end
+    
+    function refreshProblem(this)
+      assert(this.isDefined);
+      currentTime=tom.WorldTime(-Inf);
+      for m=1:numel(this.measure)
+        this.measure{m}.refresh();
+        if(this.measure{m}.hasData())
+          currentTime=tom.WorldTime(max(currentTime,this.measure{m}.getTime(this.measure{m}.last())));
+        end
+      end
+      interval=this.dynamicModel(1).domain();
+      while(interval.second<currentTime)
+        for k=1:numel(this.dynamicModel)
+          this.dynamicModel(k).extend();
+        end
+        interval=this.dynamicModel(1).domain();
+      end
     end
     
     function num=numSolutions(this)
@@ -67,7 +89,8 @@ classdef LinearKalman < tom.Optimizer
       cEst=this.cost{k+1};
     end
     
-    function step(this)     
+    function step(this)
+      assert(this.isDefined);
       for k=1:numel(this.dynamicModel)
         % compute measurement distribution model
         [jacobian,hessian]=this.computeSecondOrderModel(k,'measurementCost');
@@ -158,15 +181,10 @@ classdef LinearKalman < tom.Optimizer
       for m=1:numel(this.measure)
         edgeList=this.measure{m}.findEdges(this.dynamicModel(k),uint32(0),uint32(0)); % zero or one edges
         if(~isempty(edgeList))
-          try
-            yDiff=this.measure{m}.computeEdgeCost(this.dynamicModel(k),edgeList);
-          catch err
-            if(this.verbose)
-              fprintf(err.message);
-            end
-            yDiff=0;
+          yDiff=this.measure{m}.computeEdgeCost(this.dynamicModel(k),edgeList);
+          if(~isnan(yDiff))
+            y=y+yDiff;
           end
-          y=y+yDiff;
         end
       end
     end
@@ -174,17 +192,6 @@ classdef LinearKalman < tom.Optimizer
     function putParam(this,k,v)
       for p=uint32(1):uint32(numel(v))
         this.dynamicModel(k).setInitialUint32(p-1,v(p));
-      end
-    end
-    
-    function extendThrough(this,t)
-      K=numel(this.dynamicModel);
-      interval=this.dynamicModel(1).domain();
-      while(interval.second<t)
-        for k=1:K
-          this.dynamicModel(k).extend();
-        end
-        interval=this.dynamicModel(1).domain();
       end
     end
   end

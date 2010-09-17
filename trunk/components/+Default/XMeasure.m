@@ -91,8 +91,6 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
     
     function edgeList=findEdges(this,x,naSpan,nbSpan)
       assert(isa(x,'tom.Trajectory'));
-      assert(isa(naSpan,'uint32'));
-      assert(isa(nbSpan,'uint32'));
       edgeList=repmat(tom.GraphEdge,[0,1]);
       if(this.status)
         nMin=max([this.na,this.nb-naSpan,this.nb-nbSpan]);
@@ -105,11 +103,22 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
     end
 
     function cost=computeEdgeCost(this,x,graphEdge)
-      assert(isa(x,'tom.Trajectory'));
-      assert(isa(graphEdge,'tom.GraphEdge'));
+      % throw an exception if the specified edge does not exist in the graph
       assert(this.status);
       assert(graphEdge.first==graphEdge.second);
-      pose=evaluate(x,this.t(graphEdge.second));
+      assert(graphEdge.first>=this.na);
+      assert(graphEdge.second<=this.nb);
+      
+      time=this.t(graphEdge.second);
+      
+      % return NaN if the graph edge extends outside of the trajectory domain
+      interval=domain(x);
+      if((time<interval.first)||(time>interval.second))
+        cost=NaN;
+        return;
+      end
+      
+      pose=evaluate(x,time);
       dnorm=(this.yBar(graphEdge.second)-pose.p(1))./this.deviation;
       cost=0.5*dnorm.*dnorm;
     end
