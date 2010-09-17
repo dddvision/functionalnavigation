@@ -166,13 +166,29 @@ namespace tom
      *
      * @param[in] dynamicModel multiple instances of a single DynamicModel subclass (MATLAB: K-by-1)
      * @param[in] measure      multiple instances of different Measure subclasses (MATLAB: cell M-by-1)
+     * @param[in] randomize    setting this to true causes the optimizer to randomize the input trajectories
      *
      * NOTES
-     * No assumptions should be made about the initial state of the input objects
-     * The the size of the dynamicModel vector must match the value returned by numInitialConditions()
+     * Does not refresh measures or extend trajectories
+     * The the size of the dynamicModel vector must match the number of initial conditions
+     * @see refreshProblem()
      * @see numInitialConditions()
      */
-    virtual void defineProblem(std::vector<DynamicModel*> &dynamicModel, std::vector<Measure*> &measure) = 0;
+    virtual void defineProblem(std::vector<DynamicModel*> &dynamicModel, std::vector<Measure*> &measure,
+      bool randomize) = 0;
+
+    /**
+     * Refresh all measures and extend trajectory domains equally beyond the last measure
+     *
+     * NOTES
+     * Has no effect in the case that no measures have data
+     * Throws an exception if the problem had not been defined
+     * @see defineProblem()
+     * @see tom::Measure::hasData()
+     * @see tom::Measure::refresh()
+     * @see tom::DynamicModel::extend()
+     */
+    virtual void refreshProblem(void) = 0;
     
     /**
      * Get the number of available solutions
@@ -181,7 +197,7 @@ namespace tom
      *
      * NOTES
      * The number of solutions must be less than or equal to the number of initial conditions
-     * Returns zero if called before defineProblem()
+     * Returns zero if called before the problem has been defined
      * @see defineProblem()
      */
     virtual unsigned numSolutions(void) = 0;
@@ -193,7 +209,7 @@ namespace tom
      * @return      trajectory instance associated with the index
      *
      * NOTES
-     * Throws an exception if index is greater than or equal to the value returned by numSolutions()
+     * Throws an exception if index is greater than or equal to the number of solutions
      * @see numSolutions()
      */
     virtual Trajectory* getSolution(const unsigned k) = 0;
@@ -205,7 +221,7 @@ namespace tom
      * @return      non-negative cost associated with the index
      *
      * NOTES
-     * Throws an exception if index is greater than or equal to the value returned by numSolutions()
+     * Throws an exception if index is greater than or equal to the number of solutions
      * @see numSolutions()
      */
     virtual double getCost(const unsigned k) = 0;
@@ -214,14 +230,13 @@ namespace tom
      * Execute one step of the optimizer to evolve dynamic model parameters toward lower cost
      *
      * NOTES
-     * Does not refresh measures
-     * Extends all trajectory domains equally beyond the last measure
-     * Optimizes over all edges that are within the extended domain
-     * Uses as few cost evaluations as possible to accomplish a single optimization step
-     * May learn over multiple calls by maintaining state
-     * Implements a strategy to keep up with the growth of the cost graphs
-     * Throws an exception if called before defineProblem()
+     * Does not refresh measures or extend trajectories
+     * Monitors and responds to the growth of all cost graphs from all measures
+     * Searches for the minimum cost using as few evaluations as possible
+     * May learn about the problem over multiple calls by maintaining state
+     * Throws an exception if called before the problem has been defined
      * @see defineProblem()
+     * @see refreshProblem()
      */
     virtual void step(void) = 0;
     

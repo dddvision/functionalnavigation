@@ -73,7 +73,8 @@ classdef Optimizer < handle
   
   methods (Abstract=true,Access=public,Static=false)
     num=numInitialConditions(this);
-    defineProblem(dynamicModel,measure);
+    defineProblem(dynamicModel,measure,randomize);
+    refreshProblem(this);
     num=numSolutions(this);
     xEst=getSolution(this,k);
     cEst=getCost(this,k);

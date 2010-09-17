@@ -184,7 +184,7 @@ namespace tom
      *   there are no duplicate graph edges in the output
      * Edges are sorted in ascending order of node indices,
      *   first by lower index, then by upper index
-     * If there are no graph edges, then the output is an empty vector
+     * If there are no edges within the selected range then the output is an empty vector
      */
     virtual std::vector<GraphEdge> findEdges(const Trajectory& x, const uint32_t naSpan, const uint32_t nbSpan) = 0;
 
@@ -202,8 +202,8 @@ namespace tom
      *   kinematically composed with the body frame to locate the sensor
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
-     * Throws an exception if the cost cannot be computed for any reason
-     * Throws an exception if the computed cost is NaN
+     * Returns NaN if the graph edge extends outside of the trajectory domain
+     * Throws an exception if the specified edge does not exist in the graph
      */
     virtual double computeEdgeCost(const Trajectory& x, const GraphEdge graphEdge) = 0;
     

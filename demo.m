@@ -94,7 +94,7 @@ else
 end
 
 % define the problem
-optimizer.defineProblem(dynamicModel,measure);
+optimizer.defineProblem(dynamicModel,measure,true);
 
 % optimize for a number of steps
 for index=uint32(0):config.numSteps
@@ -106,20 +106,18 @@ for index=uint32(0):config.numSteps
     % get all trajectory and cost estimates
     trajectory=optimizer.getSolution(uint32(0));
     cost=optimizer.getCost(uint32(0));
-    for k=uint32(1):(K-uint32(1))
-      trajectory(k,1)=optimizer.getSolution(k);
-      cost(k,1)=optimizer.getCost(k);
+    for k=uint32(2):K
+      trajectory(k,1)=optimizer.getSolution(k-uint32(1));
+      cost(k,1)=optimizer.getCost(k-uint32(1));
     end
     
     % update graphical display
     gui.put(trajectory,cost,index);
   end
     
+  % refresh the problem
+  optimizer.refreshProblem();
+  
   % take an optimization step
   optimizer.step();
-  
-  % refresh all measures
-  for m=1:M
-    measure{m}.refresh();
-  end
 end

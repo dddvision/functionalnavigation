@@ -127,37 +127,43 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       end
     end
     
-    function cost=computeEdgeCost(this,x,edge)
+    function cost=computeEdgeCost(this,x,graphEdge)
+      % throw an exception if the specified edge does not exist in the graph
+      assert((graphEdge.first+uint32(1))==graphEdge.second);  
       assert(hasData(this.sensor));
-      na=first(this.sensor);
-      nb=last(this.sensor);
-      a=edge.first;
-      b=edge.second;
-      assert((b>a)&&(a>=na)&&(b<=nb));
+      assert(graphEdge.first>=first(this.sensor));
+      assert(graphEdge.second<=last(this.sensor));
       
-      ta=getTime(this.sensor,a);
-      tb=getTime(this.sensor,b);
+      ta=getTime(this.sensor,graphEdge.first);
+      tb=getTime(this.sensor,graphEdge.second);
       
+      % return NaN if the graph edge extends outside of the trajectory domain
+      interval=domain(x);
+      if((ta<interval.first)||(tb>interval.second))
+        cost=NaN;
+        return;
+      end
+
       poseA=evaluate(x,ta);
       poseB=evaluate(x,tb);
 
-      data=computeIntermediateDataCache(this,a,b);
-      
+      data=computeIntermediateDataCache(this,graphEdge.first,graphEdge.second);
+
       u=transpose(data.pixB(:,1)-data.pixA(:,1));
-	    v=transpose(data.pixB(:,2)-data.pixA(:,2));
-      
+      v=transpose(data.pixB(:,2)-data.pixA(:,2));
+
       Ea=Quat2Euler(poseA.q);
       Eb=Quat2Euler(poseB.q);
-      
- 	    translation=[poseB.p(1)-poseA.p(1);
+
+      translation=[poseB.p(1)-poseA.p(1);
                    poseB.p(2)-poseA.p(2);
                    poseB.p(3)-poseA.p(3)];
       rotation=[Eb(1)-Ea(1);
                 Eb(2)-Ea(2);
                 Eb(3)-Ea(3)];
       [uvr,uvt]=generateFlowSparse(this,translation,rotation,transpose(data.pixA));
-           
-      cost=computeCost(this,u,v,uvr,uvt);     
+
+      cost=computeCost(this,u,v,uvr,uvt);
     end  
   end
   

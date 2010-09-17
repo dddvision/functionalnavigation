@@ -1,6 +1,7 @@
 classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
   
   properties (GetAccess=private,SetAccess=private)
+    isDefined
     nSpan
     nIL
     nIU
@@ -32,13 +33,15 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
   methods (Access=public)
     function this=MatlabGA()
       this=this@tom.Optimizer();
+      this.isDefined=false;
     end
     
     function num=numInitialConditions(this)
       num=this.popSize;
     end
       
-    function defineProblem(this,dynamicModel,measure)
+    function defineProblem(this,dynamicModel,measure,randomize)
+      % check number of dynamic models
       assert(numel(dynamicModel)==this.popSize);
       
       % set initial options for the GADS toolbox
@@ -100,29 +103,57 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       this.iU=uint32(1):uint32(32);
       
       % randomize initial parameters
-      for k=1:this.popSize
-        L=randLogical(this.nIL);
-        for p=this.iIL
-          setInitialLogical(this.dynamicModel(k),p-uint32(1),L(p));
-        end
-        U=randUint32(this.nIU);
-        for p=this.iIU
-          setInitialUint32(this.dynamicModel(k),p-uint32(1),U(p));
+      if(randomize)
+        for k=1:this.popSize
+          L=randLogical(this.nIL);
+          for p=this.iIL
+            setInitialLogical(this.dynamicModel(k),p-uint32(1),L(p));
+          end
+          U=randUint32(this.nIU);
+          for p=this.iIU
+            setInitialUint32(this.dynamicModel(k),p-uint32(1),U(p));
+          end
         end
       end
-      
-      % extend trajectories
-      tb=getLastTime(this);
-      extendThrough(this,tb);
       
       % determine initial costs
       bits=getBits(this);
       objectiveContainer('put',this);
       this.cost=feval(@objectiveContainer,bits);
+      this.isDefined=true;
+    end
+    
+    function refreshProblem(this)
+      assert(this.isDefined);
+      tb=tom.WorldTime(-Inf);
+      for m=1:numel(this.measure)
+        this.measure{m}.refresh();
+        if(hasData(this.measure{m}))
+          tb=tom.WorldTime(max(tb,getTime(this.measure{m},last(this.measure{m}))));
+        end
+      end
+      K=numel(this.dynamicModel);
+      interval=domain(this.dynamicModel(1));
+      while(interval.second<tb)
+        for k=1:K
+          Fk=this.dynamicModel(k);
+          extend(Fk);
+          b=numExtensionBlocks(Fk);
+          L=randLogical(this.nEL);
+          for p=this.iEL
+            setExtensionLogical(Fk,b-uint32(1),p-uint32(1),L(p));
+          end
+          U=randUint32(this.nEU);
+          for p=this.iEU
+            setExtensionUint32(Fk,b-uint32(1),p-uint32(1),U(p));
+          end
+        end
+        interval=domain(Fk);
+      end
     end
     
     function num=numSolutions(this)
-      num=this.popSize;
+      num=numel(this.dynamicModel);
     end
        
     function xEst=getSolution(this,k)
@@ -134,15 +165,17 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function step(this)
-      tb=getLastTime(this);
-      extendThrough(this,tb);
+      assert(this.isDefined);
       bits=getBits(this);
-      nvars=size(bits,2);
-      nullstate=struct('FunEval',0);
-      objectiveContainer('put',this);
-      [this.cost,bits]=feval(this.stepGAhandle,this.cost,bits,...
-        this.defaultOptions,nullstate,nvars,@objectiveContainer);
-      putBits(this,bits);
+      if(~isempty(bits))
+        nvars=size(bits,2);
+        nullstate=struct('FunEval',0);
+        objectiveContainer('put',this);
+        this.cost(this.cost<eps)=eps; % MATLAB GA doesn't like zero cost
+        [this.cost,bits]=feval(this.stepGAhandle,this.cost,bits,...
+          this.defaultOptions,nullstate,nvars,@objectiveContainer);
+        putBits(this,bits);
+      end
     end
   end
   
@@ -156,7 +189,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     %   extension 2 uint32
     %   ...   
     function bits=getBits(this)
-      K=this.popSize;
+      K=numel(this.dynamicModel);
       B=numExtensionBlocks(this.dynamicModel(1));
       bits=false(K,this.nIL+this.nIU+B*(this.nEL+this.nEU));
       iB=uint32(1):uint32(B);
@@ -185,7 +218,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function putBits(this,bits)
-      K=this.popSize;
+      K=numel(this.dynamicModel);
       B=numExtensionBlocks(this.dynamicModel(1));
       iB=uint32(1):uint32(B);
       for k=1:K
@@ -213,7 +246,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function cost=computeCostMean(this,kBest,naSpan,nbSpan)
-      K=this.popSize;
+      K=numel(this.dynamicModel);
       M=numel(this.measure);
       B=double(numExtensionBlocks(this.dynamicModel(1)));
       allGraphs=cell(K,M+1);
@@ -240,14 +273,9 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
           if(numEdges(m))
             cost=zeros(1,numEdges(m));
             for graphEdge=1:numEdges(m)
-              try
-                cost(graphEdge)=computeEdgeCost(this.measure{m},this.dynamicModel(k),edgeList(graphEdge));
-              catch err
-                if(this.verbose)
-                  fprintf(err.message);
-                end
-                cost=zeros(1,numEdges(m));
-                break;
+              edgeCost=computeEdgeCost(this.measure{m},this.dynamicModel(k),edgeList(graphEdge));
+              if(~isnan(edgeCost))
+                cost(graphEdge)=edgeCost;
               end
             end
             base=na(1);
@@ -270,36 +298,6 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
 
       % normalize costs by total number of blocks and edges
       cost=cost/(1+B+sum(numEdges));
-    end
-    
-    function tb=getLastTime(this)
-      tb=tom.WorldTime(-Inf);
-      for m=1:numel(this.measure)
-        if(hasData(this.measure{m}))
-          tb=tom.WorldTime(max(tb,getTime(this.measure{m},last(this.measure{m}))));
-        end
-      end
-    end
-    
-    function extendThrough(this,tb)
-      K=this.popSize;
-      interval=domain(this.dynamicModel(1));
-      while(interval.second<tb)
-        for k=1:K
-          Fk=this.dynamicModel(k);
-          extend(Fk);
-          b=numExtensionBlocks(Fk);
-          L=randLogical(this.nEL);
-          for p=this.iEL
-            setExtensionLogical(Fk,b-uint32(1),p-uint32(1),L(p));
-          end
-          U=randUint32(this.nEU);
-          for p=this.iEU
-            setExtensionUint32(Fk,b-uint32(1),p-uint32(1),U(p));
-          end
-        end
-        interval=domain(Fk);
-      end
     end
   end
   
