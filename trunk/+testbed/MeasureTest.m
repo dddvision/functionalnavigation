@@ -13,8 +13,8 @@ classdef MeasureTest < handle
       assert(isa(text,'char'));
       fprintf(' %s',text);
       
-      fprintf('\ntom.Measure.factory =');
-      measure=tom.Measure.factory(name,uri);
+      fprintf('\ntom.Measure.create =');
+      measure=tom.Measure.create(name,uri);
       assert(isa(measure,'tom.Measure'));
       fprintf(' ok');
 

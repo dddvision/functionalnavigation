@@ -54,7 +54,7 @@ classdef DynamicModel < tom.Trajectory
       end
     end
     
-    function obj=factory(name,initialTime,uri)
+    function obj=create(name,initialTime,uri)
       if(tom.DynamicModel.isConnected(name))
         cF=tom.DynamicModel.pFactoryList(name);
         obj=cF.(name)(initialTime,uri);

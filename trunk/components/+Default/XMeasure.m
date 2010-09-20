@@ -27,7 +27,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=tom.DataContainer.factory(resource);
+            container=tom.DataContainer.create(resource);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else

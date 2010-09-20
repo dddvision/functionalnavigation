@@ -9,8 +9,8 @@ classdef DataContainerTest < handle
       assert(isa(text,'char'));
       fprintf(' %s',text);
       
-      fprintf('\ntom.DataContainer.factory =');
-      dataContainer=tom.DataContainer.factory(name);
+      fprintf('\ntom.DataContainer.create =');
+      dataContainer=tom.DataContainer.create(name);
       assert(isa(dataContainer,'tom.DataContainer'));
       fprintf(' ok');
     end

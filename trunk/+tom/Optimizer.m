@@ -56,7 +56,7 @@ classdef Optimizer < handle
       end
     end
     
-    function obj=factory(name)
+    function obj=create(name)
       if(tom.Optimizer.isConnected(name))
         cF=tom.Optimizer.pFactoryList(name);
         obj=cF.(name)();

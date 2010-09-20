@@ -80,7 +80,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=tom.DataContainer.factory(resource);
+            container=tom.DataContainer.create(resource);
             list=listSensors(container,'Camera');
             this.sensor=getSensor(container,list(1));
           otherwise

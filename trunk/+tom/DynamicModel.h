@@ -152,7 +152,7 @@ namespace tom
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
-    static DynamicModel* factory(const std::string name, const WorldTime initialTime, const std::string uri)
+    static DynamicModel* create(const std::string name, const WorldTime initialTime, const std::string uri)
     {
       DynamicModel* obj = NULL;
       if(isConnected(name))

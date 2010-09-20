@@ -256,7 +256,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
     convert(prhs[0], name);
     convert(prhs[1], uri);
-    obj = tom::Measure::factory(name, uri);
+    obj = tom::Measure::create(name, uri);
     if(obj==NULL)
     {
       mexErrMsgTxt("failed to instantiate the specified Measure");

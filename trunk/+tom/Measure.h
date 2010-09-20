@@ -141,7 +141,7 @@ namespace tom
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
-    static Measure* factory(const std::string name, const std::string uri)
+    static Measure* create(const std::string name, const std::string uri)
     {
       Measure* obj = NULL;
       if(isConnected(name))

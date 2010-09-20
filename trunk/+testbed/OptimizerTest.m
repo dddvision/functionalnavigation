@@ -25,11 +25,12 @@ classdef OptimizerTest < handle
       assert(isa(text,'char'));
       fprintf(' %s',text);
       
-      dynamicModel=tom.DynamicModel.factory(dynamicModelName,initialTime,uri);
-      measure{1}=tom.Measure.factory(measureName,uri);
+      dynamicModel=tom.DynamicModel.create(dynamicModelName,initialTime,uri);
+      measure{1}=tom.Measure.create(measureName,uri);
       
-      fprintf('\ntom.Optimizer.factory =');
-      optimizer=tom.Optimizer.factory(name,dynamicModel,measure);
+      fprintf('\ntom.Optimizer.create =');
+      optimizer=tom.Optimizer.create(name);
+      optimizer.defineProblem(dynamicModel,measure,true);
       assert(isa(optimizer,'tom.Optimizer'));
       fprintf(' ok');
     end
