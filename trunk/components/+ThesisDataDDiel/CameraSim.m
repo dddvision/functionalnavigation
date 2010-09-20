@@ -17,11 +17,12 @@ classdef CameraSim < Camera
   methods (Access=public)
     function this=CameraSim(localCache)
       this.localCache=localCache;
-      info=dir(fullfile(localCache,'/color*'));
-      fnames=sortrows(cat(1,info(:).name));
-      if(isempty(fnames))
-        this.ready=false;
-      else
+      try
+        info=dir(fullfile(localCache,'/color*'));
+        fnames=sortrows(cat(1,info(:).name));
+        if(isempty(fnames))
+          error('no images found in local cache');
+        end
         S=load(fullfile(localCache,'workspace.mat'),'T_cam','CAMERA_TYPE','CAMERA_OFFSET');
         this.na=uint32(str2double(fnames(1,6:11)));
         this.nb=uint32(str2double(fnames(end,6:11)));
@@ -33,6 +34,9 @@ classdef CameraSim < Camera
         this.projectionDynamic=false;
         this.imsize=size(getImage(this,this.na));
         this.ready=true;
+      catch err
+        fprintf(err.message);
+        this.ready=false;
       end
     end
 

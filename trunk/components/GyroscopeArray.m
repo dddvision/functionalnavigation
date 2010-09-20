@@ -19,6 +19,15 @@ classdef GyroscopeArray < InertialArray
     % NOTES
     % Throws an exception if either input index is out of range
     angularRate=getAngularRate(this,n,ax);
+    
+    % Get sensor error model in terms of MKS units and 1-sigma deviations
+    sigma=getGyroBiasTurnOn(this); % radian/sec
+    sigma=getGyroBiasSteadyState(this); % radian/sec
+    tau=getGyroBiasDecay(this); % sec
+    sigma=getGyroScaleTurnOn(this); % unitless
+    sigma=getGyroScaleSteadyState(this); % unitless
+    tau=getGyroScaleDecay(this); % sec
+    sigma=getGyroRandomWalk(this); % radians/sqrt(sec)
   end
   
 end

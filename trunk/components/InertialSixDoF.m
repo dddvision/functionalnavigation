@@ -34,7 +34,7 @@ classdef InertialSixDoF < AccelerometerArray & GyroscopeArray
       q34=q(3)*q(4);
       q14=q(1)*q(4);
       q13=q(1)*q(3);
-      q24=q(2)*q(4);      
+      q24=q(2)*q(4);
       switch ax
         case uint32(0)
           direction = [ q11+q22-q33-q44 ; 2*(q23+q14) ; 2*(q24-q13) ];
