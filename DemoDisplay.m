@@ -41,7 +41,7 @@ classdef DemoDisplay < DemoConfig & handle
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         if(strcmp(scheme,'matlab'))
-          container=tom.DataContainer.factory(resource);
+          container=tom.DataContainer.create(resource);
           if(hasReferenceTrajectory(container))
             xRef=getReferenceTrajectory(container);
             this.tRef=generateSampleTimes(this,xRef);

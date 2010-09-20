@@ -56,7 +56,7 @@ classdef DataContainer < handle
       end
     end
     
-    function obj=factory(name)
+    function obj=create(name)
       persistent singleton
       if(tom.DataContainer.isConnected(name))
         if(isempty(singleton))

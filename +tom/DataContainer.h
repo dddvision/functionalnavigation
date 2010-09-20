@@ -129,7 +129,7 @@ namespace tom
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
-    static DataContainer* factory(const std::string name)
+    static DataContainer* create(const std::string name)
     {
       static DataContainer* singleton = NULL;
       if(singleton==NULL)

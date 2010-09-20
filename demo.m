@@ -47,7 +47,7 @@ name=config.optimizerName;
 fprintf('\n\nInitializing Optimizer: %s',name);
 if(tom.Optimizer.isConnected(name))
   fprintf('\n%s',tom.Optimizer.description(name));
-  optimizer=tom.Optimizer.factory(name);
+  optimizer=tom.Optimizer.create(name);
 else
   error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
 end
@@ -60,7 +60,7 @@ for m=1:M
   fprintf('\n\nInitializing Measure: %s',name);
   if(tom.Measure.isConnected(name))
     fprintf('\n%s',tom.Measure.description(name));
-    measure{m}=tom.Measure.factory(name,config.uri);
+    measure{m}=tom.Measure.create(name,config.uri);
   else
     error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
   end
@@ -85,9 +85,9 @@ name=config.dynamicModelName;
 fprintf('\n\nInitializing DynamicModel: %s',name);
 if(tom.DynamicModel.isConnected(name))
   fprintf('\n%s',tom.DynamicModel.description(name));
-  dynamicModel=tom.DynamicModel.factory(name,initialTime,config.uri);
+  dynamicModel=tom.DynamicModel.create(name,initialTime,config.uri);
   for k=2:optimizer.numInitialConditions()
-    dynamicModel(k)=tom.DynamicModel.factory(name,initialTime,config.uri);
+    dynamicModel(k)=tom.DynamicModel.create(name,initialTime,config.uri);
   end
 else
   error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');

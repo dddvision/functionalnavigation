@@ -1,6 +1,6 @@
 classdef DynamicModelTest
   properties (Constant=true)
-    tau=0.5+0.5*sin(-pi/2:0.01:pi/2); % irregular time steps normalized in the range [0,1]
+    tau=0.5+0.5*sin(pi/2*(-1:1/100:1)); % irregular time steps normalized in the range [0,1]
     infinity=1000; % (1000) replaces infinity as a time domain upper bound
   end
   
@@ -29,8 +29,8 @@ classdef DynamicModelTest
       assert(isa(text,'char'));
       fprintf(' %s',text);
 
-      fprintf('\n\ntom.DynamicModel.factory =');
-      this.dynamicModel=tom.DynamicModel.factory(name,initialTime,uri);
+      fprintf('\n\ntom.DynamicModel.create =');
+      this.dynamicModel=tom.DynamicModel.create(name,initialTime,uri);
       assert(isa(this.dynamicModel,'tom.DynamicModel'));
       fprintf(' ok');
 

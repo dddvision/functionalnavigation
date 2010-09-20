@@ -128,7 +128,7 @@ namespace tom
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
-    static Optimizer* factory(const std::string name)
+    static Optimizer* create(const std::string name)
     {
       Optimizer* obj = NULL;
       if(isConnected(name))

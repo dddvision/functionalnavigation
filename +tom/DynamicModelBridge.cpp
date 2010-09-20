@@ -286,7 +286,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         convert(prhs[1], name);
         convert(prhs[2], initialTime);
         convert(prhs[3], uri);
-        obj = tom::DynamicModel::factory(name, initialTime, uri);
+        obj = tom::DynamicModel::create(name, initialTime, uri);
         instance.resize(numInstances+1);
         instance[numInstances] = obj;
         convert(numInstances, plhs[0]);

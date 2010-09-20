@@ -57,7 +57,7 @@ classdef Measure < tom.Sensor
       end
     end
     
-    function obj=factory(name,uri)
+    function obj=create(name,uri)
       if(tom.Measure.isConnected(name))
         cF=tom.Measure.pFactoryList(name);
         obj=cF.(name)(uri);
