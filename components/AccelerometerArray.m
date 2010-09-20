@@ -20,6 +20,15 @@ classdef AccelerometerArray < InertialArray
     % NOTES
     % Throws an exception if either input index is out of range
     specificForce=getSpecificForce(this,n,ax);
+    
+    % Get sensor error model in terms of MKS units and 1-sigma deviations
+    sigma=getAccelBiasTurnOn(this); % meters/sec^2
+    sigma=getAccelBiasSteadyState(this); % meters/sec^2
+    tau=getAccelBiasDecay(this); % sec
+    sigma=getAccelScaleTurnOn(this); % unitless
+    sigma=getAccelScaleSteadyState(this); % unitless
+    tau=getAccelScaleDecay(this); % sec
+    sigma=getAccelRandomWalk(this); % meters/sec/sqrt(sec)  
   end
   
 end

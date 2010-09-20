@@ -13,6 +13,15 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
     clockBase=[1980,1,6,0,0,0];
     timeOutText='Timeout while waiting for accelerometer initialization';
     indexErrorText='Accelerometer axis index is out of range';
+    
+    % ADXL103 accelerometer model
+    biasTurnOn=(9.8E-3)*25; % meters/sec^2
+    biasSteadyState=(9.8E-3)*3.3; % meters/sec^2
+    biasDecay=60; % sec
+    scaleTurnOn=(1E-6)*3000; % unitless
+    scaleSteadyState=(1E-6)*3000; % unitless
+    scaleDecay=60; % sec
+    randomWalk=(1/sqrt(3600))*0.09; % meters/sec/sqrt(sec)    
   end
   
   properties (Access=private)
@@ -106,6 +115,34 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
         error(this.indexErrorText);
       end
       specificForce=get(this,n,ax);
+    end
+    
+    function sigma=getAccelBiasTurnOn(this)
+      sigma=this.biasTurnOn;
+    end
+    
+    function sigma=getAccelBiasSteadyState(this)
+      sigma=this.biasSteadyState;
+    end
+    
+    function tau=getAccelBiasDecay(this)
+      tau=this.biasDecay;
+    end
+    
+    function sigma=getAccelScaleTurnOn(this)
+      sigma=this.scaleTurnOn;
+    end
+    
+    function sigma=getAccelScaleSteadyState(this)
+      sigma=this.scaleSteadyState;
+    end
+    
+    function tau=getAccelScaleDecay(this)
+      tau=this.scaleDecay;
+    end
+    
+    function sigma=getAccelRandomWalk(this)
+      sigma=this.randomWalk;
     end
     
     function num=numAxes(this)
