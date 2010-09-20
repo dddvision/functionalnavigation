@@ -179,11 +179,15 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
       y=0;
       this.putParam(k,v);
       for m=1:numel(this.measure)
-        edgeList=this.measure{m}.findEdges(this.dynamicModel(k),uint32(0),uint32(0)); % zero or one edges
-        if(~isempty(edgeList))
-          yDiff=this.measure{m}.computeEdgeCost(this.dynamicModel(k),edgeList);
-          if(~isnan(yDiff))
-            y=y+yDiff;
+        gm=this.measure{m};
+        if(gm.hasData())
+          node=gm.last();
+          edgeList=gm.findEdges(this.dynamicModel(k),node,node,node,node); % zero or one edges
+          if(~isempty(edgeList))
+            yDiff=gm.computeEdgeCost(this.dynamicModel(k),edgeList);
+            if(~isnan(yDiff))
+              y=y+yDiff;
+            end
           end
         end
       end
