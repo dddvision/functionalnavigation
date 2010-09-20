@@ -170,40 +170,43 @@ namespace tom
     /**
      * Find a limited set of graph edges in the adjacency matrix of the cost graph
      *
-     * @param[in] x      predicted trajectory that can be used to compute the graph structure
-     * @param[in] naSpan maximum difference between lower node index and last node index
-     * @param[in] nbSpan maximum difference between upper node index and last node index
-     * @return           list of edges (MATLAB: N-by-1)
+     * @param[in] x     predicted trajectory that can be used to compute the graph structure
+     * @param[in] naMin minimum lower node index
+     * @param[in] naMax maximum lower node index
+     * @param[in] nbMin minimum upper node index
+     * @param[in] nbMax maximum upper node index
+     * @return          list of edges (MATLAB: N-by-1)
      *
      * NOTES
+     * The purpose of this function is solely to reduce computation
+     * If adjacency is hard to compute then include the edge
      * Graph edges may extend outside of the domain of the input trajectory
      * Graph edges may be added on successive calls to refresh, but they are never removed
-     * The number of returned graph edges is bounded as follows:
-     *   numel(edgeList) <= (naSpan+1)*(nbSpan+1)
-     * All information from this measure regarding a unique pair of nodes must be grouped such that
-     *   there are no duplicate graph edges in the output
-     * Edges are sorted in ascending order of node indices,
-     *   first by lower index, then by upper index
+     * The number of returned edges is bounded as follows:
+     *   numel(edgeList) <= (nbMax-naMmin+1)*(nbMax-naMin+2)/2
+     * All information regarding a unique pair of nodes is grouped such that no duplicate edges are returned
+     * Edges are sorted in ascending order of node indices, first by lower index, then by upper index
      * If there are no edges within the selected range then the output is an empty vector
      */
-    virtual std::vector<GraphEdge> findEdges(const Trajectory& x, const uint32_t naSpan, const uint32_t nbSpan) = 0;
+    virtual std::vector<GraphEdge> findEdges(const Trajectory& x, const uint32_t naMin, const uint32_t naMax,
+      const uint32_t nbMin, const uint32_t nbMax) = 0;
 
     /**
      * Evaluate the cost of a single graph edge given a trajectory
      *
      * @param[in] x         trajectory to evaluate
-     * @param[in] graphEdge index of a graph edge in the cost graph returned by findEdges()
-     * @return              non-negative cost associated with the graph edge
+     * @param[in] graphEdge index of an edge in the cost graph
+     * @return              non-negative cost associated with the edge
      *
      * NOTES
-     * The input trajectory represents the motion of the body frame relative
-     *   to a world frame. If the sensor frame is not coincident with the
-     *   body frame, then the sensor frame offset may need to be
-     *   kinematically composed with the body frame to locate the sensor
+     * The input trajectory represents the motion of the body frame relative to a world frame. If the sensor frame is 
+     *   not coincident with the body frame, then the sensor frame offset may need to be kinematically composed with the
+     *   body frame in order to locate the sensor frame and compute the cost
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
+     * Returns 0 if the specified edge is not found in the graph
      * Returns NaN if the graph edge extends outside of the trajectory domain
-     * Throws an exception if the specified edge does not exist in the graph
+     * @see findEdges()
      */
     virtual double computeEdgeCost(const Trajectory& x, const GraphEdge graphEdge) = 0;
     

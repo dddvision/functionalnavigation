@@ -311,9 +311,11 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         TrajectoryBridge x;
         uint32_t naSpan;
         uint32_t nbSpan;
-        convert(prhs[3], naSpan);
-        convert(prhs[4], nbSpan);
-        convert(instance[handle]->findEdges(x, naSpan, nbSpan), prhs[2], plhs[0]);
+        convert(prhs[3], naMin);
+        convert(prhs[4], naMax);
+        convert(prhs[5], nbMin);
+        convert(prhs[6], nbMax);
+        convert(instance[handle]->findEdges(x, naMin, naMax, nbMin, nbMax), prhs[2], plhs[0]);
         break;
       }
 

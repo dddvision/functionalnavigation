@@ -32,10 +32,10 @@ classdef MeasureBridge < tom.Measure
       time=feval(this.m,this.h,'getTime',n);
     end
     
-    function graphEdge=findEdges(this,x,naSpan,nbSpan)
+    function graphEdge=findEdges(this,x,naMin,naMax,nbMin,nbMax)
       error('tom.MeasureBridge::findEdges has not been implemented')
       assert(isa(x,'tom.Trajectory'));
-      graphEdge=feval(this.m,this.h,'findEdges',x,naSpan,nbSpan);
+      graphEdge=feval(this.m,this.h,'findEdges',x,naMin,naMax,nbMin,nbMax);
     end
 
     function cost=computeEdgeCost(this,x,graphEdge)

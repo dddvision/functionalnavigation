@@ -89,12 +89,12 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
       time=tom.WorldTime(this.t(n));
     end
     
-    function edgeList=findEdges(this,x,naSpan,nbSpan)
+    function edgeList=findEdges(this,x,naMin,naMax,nbMin,nbMax)
       assert(isa(x,'tom.Trajectory'));
       edgeList=repmat(tom.GraphEdge,[0,1]);
       if(this.status)
-        nMin=max([this.na,this.nb-naSpan,this.nb-nbSpan]);
-        nMax=this.nb;
+        nMin=max([this.na,naMin,nbMin]);
+        nMax=min([this.nb,naMax,nbMax]);
         node=nMin:nMax;
         if(nMax>=nMin)
           edgeList=tom.GraphEdge(node,node);
@@ -103,15 +103,18 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
     end
 
     function cost=computeEdgeCost(this,x,graphEdge)
-      % throw an exception if the specified edge does not exist in the graph
-      assert(this.status);
-      assert(graphEdge.first==graphEdge.second);
-      assert(graphEdge.first>=this.na);
-      assert(graphEdge.second<=this.nb);
-      
-      time=this.t(graphEdge.second);
-      
+      % return 0 if the specified edge is not found in the graph
+      isAdjacent = this.status && ...
+        (graphEdge.first==graphEdge.second) && ...
+        (graphEdge.first>=this.na) && ...
+        (graphEdge.second<=this.nb);
+      if(~isAdjacent)
+        cost=0;
+        return;
+      end
+         
       % return NaN if the graph edge extends outside of the trajectory domain
+      time=this.t(graphEdge.second);
       interval=domain(x);
       if((time<interval.first)||(time>interval.second))
         cost=NaN;

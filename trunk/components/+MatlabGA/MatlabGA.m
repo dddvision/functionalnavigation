@@ -245,7 +245,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       end
     end
     
-    function cost=computeCostMean(this,kBest,naSpan,nbSpan)
+    function cost=computeCostMean(this,kBest,nSpan)
       K=numel(this.dynamicModel);
       M=numel(this.measure);
       B=double(numExtensionBlocks(this.dynamicModel(1)));
@@ -265,23 +265,32 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       % build cost graphs from measures
       numEdges=zeros(1,M);
       for m=1:M
-        edgeList=findEdges(this.measure{m},this.dynamicModel(kBest),naSpan,nbSpan);
-        numEdges(m)=numel(edgeList);
-        na=cat(1,edgeList.first);
-        nb=cat(1,edgeList.second);
-        for k=1:K
-          if(numEdges(m))
-            cost=zeros(1,numEdges(m));
-            for graphEdge=1:numEdges(m)
-              edgeCost=computeEdgeCost(this.measure{m},this.dynamicModel(k),edgeList(graphEdge));
-              if(~isnan(edgeCost))
-                cost(graphEdge)=edgeCost;
+        gm=this.measure{m};
+        if(gm.hasData())
+          nMax=gm.last();
+          nMin=nMax-nSpan+uint32(1);
+          edgeList=findEdges(gm,this.dynamicModel(kBest),nMin,nMax,nMin,nMax);
+          numEdges(m)=numel(edgeList);
+          na=cat(1,edgeList.first);
+          nb=cat(1,edgeList.second);
+          for k=1:K
+            if(numEdges(m))
+              cost=zeros(1,numEdges(m));
+              for graphEdge=1:numEdges(m)
+                edgeCost=computeEdgeCost(gm,this.dynamicModel(k),edgeList(graphEdge));
+                if(~isnan(edgeCost))
+                  cost(graphEdge)=edgeCost;
+                end
               end
+              base=na(1);
+              span=double(nb(end)-base+1);
+              allGraphs{k,1+m}=sparse(double(na-base+1),double(nb-base+1),cost,span,span,numEdges(m));
+            else
+              allGraphs{k,1+m}=0;
             end
-            base=na(1);
-            span=double(nb(end)-base+1);
-            allGraphs{k,1+m}=sparse(double(na-base+1),double(nb-base+1),cost,span,span,numEdges(m));
-          else
+          end
+        else
+          for k=1:K
             allGraphs{k,1+m}=0;
           end
         end
@@ -330,7 +339,7 @@ function varargout=objectiveContainer(varargin)
   if(~ischar(bits))
     kBest=find(this.cost==min(this.cost),1,'first');
     putBits(this,bits);
-    varargout{1}=computeCostMean(this,kBest,this.nSpan,this.nSpan);
+    varargout{1}=computeCostMean(this,kBest,this.nSpan);
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else

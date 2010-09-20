@@ -111,33 +111,33 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       time=getTime(this.sensor,n);
     end
     
-    function edgeList=findEdges(this,x,naSpan,nbSpan)
+    function edgeList=findEdges(this,x,naMin,naMax,nbMin,nbMax)
       assert(isa(x,'tom.Trajectory'));
+      edgeList=repmat(tom.GraphEdge,[0,1]);
       if(hasData(this.sensor))
-        naMin=last(this.sensor)-naSpan;
-        nbMin=last(this.sensor)-nbSpan;
-        naMin=max([first(this.sensor),naMin,nbMin-uint32(1)]);
-        naMax=last(this.sensor)-uint32(1);
+        naMin=max([naMin,first(this.sensor),nbMin-uint32(1)]);
+        naMax=min([naMax,last(this.sensor)-uint32(1),nbMax-uint32(1)]);
         a=naMin:naMax;
-      end
-      if(naMax>=naMin)
-        edgeList=tom.GraphEdge(a,a+uint32(1));
-      else
-        edgeList=repmat(tom.GraphEdge,[0,1]);
+        if(naMax>=naMin)
+          edgeList=tom.GraphEdge(a,a+uint32(1));
+        end
       end
     end
     
     function cost=computeEdgeCost(this,x,graphEdge)
-      % throw an exception if the specified edge does not exist in the graph
-      assert((graphEdge.first+uint32(1))==graphEdge.second);  
-      assert(hasData(this.sensor));
-      assert(graphEdge.first>=first(this.sensor));
-      assert(graphEdge.second<=last(this.sensor));
-      
+      % return 0 if the specified edge is not found in the graph
+      isAdjacent = ((graphEdge.first+uint32(1))==graphEdge.second) && ...
+        hasData(this.sensor) && ...
+        (graphEdge.first>=first(this.sensor)) && ...
+        (graphEdge.second<=last(this.sensor));
+      if(~isAdjacent)
+        cost=0;
+        return;
+      end
+
+      % return NaN if the graph edge extends outside of the trajectory domain
       ta=getTime(this.sensor,graphEdge.first);
       tb=getTime(this.sensor,graphEdge.second);
-      
-      % return NaN if the graph edge extends outside of the trajectory domain
       interval=domain(x);
       if((ta<interval.first)||(tb>interval.second))
         cost=NaN;
