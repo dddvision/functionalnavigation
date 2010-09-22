@@ -1,6 +1,5 @@
 #include <malloc.h>
 #include <math.h>
-#include <stdio.h>
 
 #include "mex.h"
 
@@ -9,133 +8,41 @@
 #define  SMALL_DET       0.00005
 #define  DELTA_THRESH    0.1
 
-/*** helper function prototypes ***/
-bool OutOfBounds(int, int, int, int, int);
-void trackFeatures(double*, double*, double*, double, double, double*, double*, double*, double, double, double,
-  double*, double*, int, int, int, double);
-
-/*
- MATLAB function [xb,yb]=MEXtrackFeaturesKLT(Ia,gxa,gya,xa,ya,Ib,gxb,gyb,xbe,ybe,L,win,RESIDUE_THRESH)
- % coordinates are defined in sub-element matrix notation
- %
- % ARGUMENTS:
- % Ia,Ib = first and second images (m-by-n)
- % gxa,gya,gxb,gyb = gradients of first and second images (m-by-n)
- % xa,ya = sub-pixel feature positions in the first image, feature skipped if NaN (K-by-1) or (1-by-K)
- % xbe,ybe = estimates of feature positions in the second image, feature skipped if NaN (K-by-1) or (1-by-K)
- % L = pyramid level on which to reinterperet coordinates
- % win = tracking window size
- %
- % RETURNS:
- % xb,yb = sub-pixel tracked feature positions in the second image
- % returns NaN coordinates if tracker goes out of bounds
- */
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+/* bounds checking */
+bool OutOfBounds(int x, int y, int m, int n, int radius)
 {
-  int k, m, n, K;
-  int cnt;
-  double *Ia, *gxa, *gya, *xa, *ya, *Ib, *gxb, *gyb, *xbe, *ybe, *xb, *yb;
-  double L, win, RESIDUE_THRESH;
-  int outdims[2];
-
-  /* check for proper number of inputs */
-  if(nrhs!=13)
-  {
-    mexErrMsgTxt("[xb,yb]=MEXtrackFeatures(Ia,gxa,gya,xa,ya,Ib,gxb,gyb,xbe,ybe,L,win,RESIDUE_THRESH);");
-  }
-  else if(nlhs>2)
-  {
-    mexErrMsgTxt("Too many output arguments");
-  }
-
-  /* the inputs must be of the correct type */
-  for(cnt = 0; cnt<12; cnt++)
-  {
-    if(mxIsComplex(prhs[cnt])||!mxIsDouble(prhs[cnt]))
-    {
-      mexErrMsgTxt("Inputs must real double.");
-    }
-  }
-
-  /* extract array sizes */
-  m = mxGetM(prhs[0]);
-  n = mxGetN(prhs[0]);
-
-  /* check all other images for same size */
-  if((mxGetM(prhs[1])!=m)||(mxGetN(prhs[1])!=n)||(mxGetM(prhs[2])!=m)||(mxGetN(prhs[2])!=n)||(mxGetM(prhs[5])!=m)
-      ||(mxGetN(prhs[6])!=n)||(mxGetM(prhs[6])!=m)||(mxGetN(prhs[6])!=n)||(mxGetM(prhs[7])!=m)||(mxGetN(prhs[7])!=n))
-  {
-    mexErrMsgTxt("All input images must be of the same size.");
-  }
-
-  /* check list lengths */
-  k = mxGetM(prhs[3]);
-  K = mxGetN(prhs[3]);
-
-  if((mxGetM(prhs[4])!=k)||(mxGetN(prhs[4])!=K)||(mxGetM(prhs[8])!=k)||(mxGetN(prhs[8])!=K)||(mxGetM(prhs[9])!=k)
-      ||(mxGetN(prhs[9])!=K))
-  {
-    mexErrMsgTxt("Coordinate lists must be the same size.");
-  }
-
-  /* check last few arguments */
-  if((mxGetM(prhs[10])!=1)||(mxGetN(prhs[10])!=1)||(mxGetM(prhs[11])!=1)||(mxGetN(prhs[11])!=1)||(mxGetM(prhs[12])!=1)
-      ||(mxGetN(prhs[12])!=1))
-  {
-    mexErrMsgTxt("Last two arguments must be scalar.");
-  }
-
-  Ia = (double*)mxGetData(prhs[0]);
-  gxa = (double*)mxGetData(prhs[1]);
-  gya = (double*)mxGetData(prhs[2]);
-  xa = (double*)mxGetData(prhs[3]);
-  ya = (double*)mxGetData(prhs[4]);
-  Ib = (double*)mxGetData(prhs[5]);
-  gxb = (double*)mxGetData(prhs[6]);
-  gyb = (double*)mxGetData(prhs[7]);
-  xbe = (double*)mxGetData(prhs[8]);
-  ybe = (double*)mxGetData(prhs[9]);
-  L = *(double*)mxGetData(prhs[10]);
-  win = *(double*)mxGetData(prhs[11]);
-  RESIDUE_THRESH = *(double*)mxGetData(prhs[12]);
-
-  /* allocate memory for return arguments and assign pointers */
-  outdims[0] = k;
-  outdims[1] = K;
-  plhs[0] = mxCreateNumericArray(2, outdims, mxDOUBLE_CLASS, mxREAL);
-  plhs[1] = mxCreateNumericArray(2, outdims, mxDOUBLE_CLASS, mxREAL);
-  xb = (double*)mxGetData(plhs[0]);
-  yb = (double*)mxGetData(plhs[1]);
-
-  /* deal with empty list case */
-  if((k==0)||(K==0))
-  {
-    return;
-  }
-
-  /* use the largest list dimension as its length */
-  if(k>K)
-  {
-    K = k;
-  }
-
-  for(k = 0; k<K; k++)
-  {
-    /* call the function to do the work, and change Matlab indices to C convention */
-    trackFeatures(Ia, gxa, gya, xa[k]-1.0, ya[k]-1.0, Ib, gxb, gyb, xbe[k]-1.0, ybe[k]-1.0, L, &xb[k], &yb[k], m, n,
-      (int)floor(win+0.5), RESIDUE_THRESH);
-
-    /* change C indices to Matlab convention */
-    xb[k] += 1.0;
-    yb[k] += 1.0;
-  }
-
-  return;
+  return((x-radius)<1||(y-radius)<1||(x+radius)>(m-1)||(y+radius)>(n-1));
 }
 
-/*** tracking algorithm ***/
+/**
+ * KLT based tracker for a single independent feature
+ *
+ * @param[in] Ia     first image in the range [0,1]
+ * @param[in] gxa    gradient of first image along contiguous dimension
+ * @param[in] gya    gradient of first image along non-contiguous dimension
+ * @param[in] xa     sub-pixel location in the first image along contiguous dimension
+ * @param[in] ya     sub-pixel location in the first image along non-contiguous dimension
+ * @param[in] Ib     second image in the range [0,1]
+ * @param[in] gxb    gradient of second image along contiguous dimension
+ * @param[in] gyb    gradient of second image along non-contiguous dimension
+ * @param[in] xbe    estimate of location in the second image along contiguous dimension
+ * @param[in] ybe    estimate of location in the sedond image along non-contiguous dimension
+ * @param[in] L      pyramid level on which to interperet coordinates
+ * @param[in] win    tracking window size
+ * @param[in] thresh matching threshold below which features will not be matched
+ * @param[in] m      image size in pixels along contiguous dimension
+ * @param[in] n      image size in pixels along non-contiguous dimension
+ * @param[out] xb    sub-pixel location in the second image along contiguous dimension
+ * @param[out] yb    sub-pixel location in the second image along non-contiguous dimension
+ *
+ * RETURNS:
+ * The outputs are set to NaN in the following cases:
+ *   If NaN is encountered while processing inputs
+ *   If the feature cannot be found in the second image
+ *   If the sum of absolute image differences between feature locations exceeds the specified threshold
+ */
 void trackFeatures(double *Ia, double *gxa, double *gya, double xa, double ya, double *Ib, double *gxb, double *gyb,
-  double xbe, double ybe, double L, double *xb, double *yb, int m, int n, int win, double RESIDUE_THRESH)
+  double xbe, double ybe, double L, int win, double thresh, int m, int n, double *xb, double *yb)
 {
   int win2 = win*win;
   int mmwin = m-win;
@@ -274,7 +181,6 @@ void trackFeatures(double *Ia, double *gxa, double *gya, double xa, double ya, d
     /* deal with small determinants */
     if(det<SMALL_DET)
     {
-      printf("\nsmall determinant");
       (*xb) = NaN;
       (*yb) = NaN;
       return;
@@ -339,11 +245,10 @@ void trackFeatures(double *Ia, double *gxa, double *gya, double xa, double ya, d
   }
 
   /* check sum of absolute difference residue threshold */
-  if((residue/(double)win2)>(1-RESIDUE_THRESH))
+  if((residue/(double)win2)>(1-thresh))
   {
     (*xb) = NaN;
     (*yb) = NaN;
-    printf("\nresidue thresh");
     return;
   }
 
@@ -366,16 +271,106 @@ void trackFeatures(double *Ia, double *gxa, double *gya, double xa, double ya, d
   return;
 }
 
-/*** bounds checking ***/
-bool OutOfBounds(int x, int y, int m, int n, int radius)
+
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  if((x-radius)<1||(y-radius)<1||(x+radius)>(m-1)||(y+radius)>(n-1))
+  int k, m, n, K;
+  int cnt;
+  double *Ia, *gxa, *gya, *xa, *ya, *Ib, *gxb, *gyb, *xbe, *ybe, *xb, *yb;
+  double L, win, thresh;
+  int outdims[2];
+
+  /* check for proper number of inputs */
+  if(nrhs!=13)
   {
-    printf("\nout of bounds");
-    return true;
+    mexErrMsgTxt("[xb,yb]=MEXtrackFeatures(Ia,gxa,gya,xa,ya,Ib,gxb,gyb,xbe,ybe,L,win,thresh);");
   }
-  else
+  else if(nlhs>2)
   {
-    return false;
+    mexErrMsgTxt("Too many output arguments");
   }
+
+  /* the inputs must be of the correct type */
+  for(cnt = 0; cnt<12; cnt++)
+  {
+    if(mxIsComplex(prhs[cnt])||!mxIsDouble(prhs[cnt]))
+    {
+      mexErrMsgTxt("Inputs must real double.");
+    }
+  }
+
+  /* extract array sizes */
+  m = mxGetM(prhs[0]);
+  n = mxGetN(prhs[0]);
+
+  /* check all other images for same size */
+  if((mxGetM(prhs[1])!=m)||(mxGetN(prhs[1])!=n)||(mxGetM(prhs[2])!=m)||(mxGetN(prhs[2])!=n)||(mxGetM(prhs[5])!=m)
+      ||(mxGetN(prhs[6])!=n)||(mxGetM(prhs[6])!=m)||(mxGetN(prhs[6])!=n)||(mxGetM(prhs[7])!=m)||(mxGetN(prhs[7])!=n))
+  {
+    mexErrMsgTxt("All input images must be of the same size.");
+  }
+
+  /* check list lengths */
+  k = mxGetM(prhs[3]);
+  K = mxGetN(prhs[3]);
+
+  if((mxGetM(prhs[4])!=k)||(mxGetN(prhs[4])!=K)||(mxGetM(prhs[8])!=k)||(mxGetN(prhs[8])!=K)||(mxGetM(prhs[9])!=k)
+      ||(mxGetN(prhs[9])!=K))
+  {
+    mexErrMsgTxt("Coordinate lists must be the same size.");
+  }
+
+  /* check last few arguments */
+  if((mxGetM(prhs[10])!=1)||(mxGetN(prhs[10])!=1)||(mxGetM(prhs[11])!=1)||(mxGetN(prhs[11])!=1)||(mxGetM(prhs[12])!=1)
+      ||(mxGetN(prhs[12])!=1))
+  {
+    mexErrMsgTxt("Last two arguments must be scalar.");
+  }
+
+  Ia = (double*)mxGetData(prhs[0]);
+  gxa = (double*)mxGetData(prhs[1]);
+  gya = (double*)mxGetData(prhs[2]);
+  xa = (double*)mxGetData(prhs[3]);
+  ya = (double*)mxGetData(prhs[4]);
+  Ib = (double*)mxGetData(prhs[5]);
+  gxb = (double*)mxGetData(prhs[6]);
+  gyb = (double*)mxGetData(prhs[7]);
+  xbe = (double*)mxGetData(prhs[8]);
+  ybe = (double*)mxGetData(prhs[9]);
+  L = *(double*)mxGetData(prhs[10]);
+  win = *(double*)mxGetData(prhs[11]);
+  thresh = *(double*)mxGetData(prhs[12]);
+
+  /* allocate memory for return arguments and assign pointers */
+  outdims[0] = k;
+  outdims[1] = K;
+  plhs[0] = mxCreateNumericArray(2, outdims, mxDOUBLE_CLASS, mxREAL);
+  plhs[1] = mxCreateNumericArray(2, outdims, mxDOUBLE_CLASS, mxREAL);
+  xb = (double*)mxGetData(plhs[0]);
+  yb = (double*)mxGetData(plhs[1]);
+
+  /* deal with empty list case */
+  if((k==0)||(K==0))
+  {
+    return;
+  }
+
+  /* use the largest list dimension as its length */
+  if(k>K)
+  {
+    K = k;
+  }
+
+  for(k = 0; k<K; k++)
+  {
+    /* call the function to do the work, and change Matlab indices to C convention */
+    trackFeatures(Ia, gxa, gya, xa[k]-1.0, ya[k]-1.0, Ib, gxb, gyb, xbe[k]-1.0, ybe[k]-1.0, L, (int)floor(win+0.5), 
+      thresh, m, n, &xb[k], &yb[k]);
+
+    /* change C indices to Matlab convention */
+    xb[k] += 1.0;
+    yb[k] += 1.0;
+  }
+
+  return;
 }
