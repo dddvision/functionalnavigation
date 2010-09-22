@@ -16,6 +16,15 @@ classdef FastPBM < tom.Measure
   methods (Access=public)
     function this=FastPBM(uri)
       this=this@tom.Measure(uri);
+ 
+      if(~exist('mexTrackFeaturesKLT','file'))
+        userDirectory=pwd;
+        cd(fullfile(fileparts(mfilename('fullpath')),'private'));
+        mex('mexTrackFeaturesKLT.cpp');
+        cd(userDirectory);
+      end
+
+      TrackFeaturesKLTTest(this);
     end
     
     function refresh(this)
