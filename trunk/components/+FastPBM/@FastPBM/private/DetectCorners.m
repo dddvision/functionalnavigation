@@ -10,7 +10,7 @@
 % All methods are based on the following symmetric 2x2 matrix consisting of sums of local image gradients
 %   [xx xy]
 %   [xy yy]
-function kappa=DetectCorners(gi,gj,halfwin,method)
+function kappa = DetectCorners(gi, gj, halfwin, method)
 
   % window to use for smoothing
   win=(2*halfwin+1)*[1,1];
@@ -20,10 +20,11 @@ function kappa=DetectCorners(gi,gj,halfwin,method)
   gyy=gj.*gj;
   gxy=gi.*gj;
 
-  % perform smoothing or local sum
-  xx=Smooth2(gxx,win,halfwin/4);
-  yy=Smooth2(gyy,win,halfwin/4);
-  xy=Smooth2(gxy,win,halfwin/4);
+  % perform gaussian smoothing over a window
+  mask=fspecial('gaussian',win,halfwin/4);
+  xx=filter2(mask,gxx);
+  yy=filter2(mask,gyy);
+  xy=filter2(mask,gxy);
 
   % calculate corner intensity
   switch(method)
@@ -36,12 +37,6 @@ function kappa=DetectCorners(gi,gj,halfwin,method)
     otherwise
       error('Unrecognized corner computation method');
   end
-end
-
-% Performs gaussian smoothing over a window
-function OUT=Smooth2(I,win,sig)
-  M=fspecial('gaussian',win,sig);
-  OUT=filter2(M,I);
 end
 
 % The corner detector of Harris and Stephens
