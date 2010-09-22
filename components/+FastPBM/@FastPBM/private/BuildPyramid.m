@@ -1,4 +1,5 @@
-function pyramid=BuildPyramid(f,levels)
+% Builds a pyramid of images and computes their gradients at multiple resolutions
+function pyramid =BuildPyramid(f, levels)
 
   pyramid = cell(levels,1);
 
@@ -18,7 +19,8 @@ function pyramid=BuildPyramid(f,levels)
 
 end
 
-function [gx,gy]=grad(f)
+% Computes the gradient using the central difference formula
+function [gx, gy] = grad(f)
   gx=diff(f,1,1);
   gy=diff(f,1,2);
   gx=([gx(1,:);gx]+[gx;gx(end,:)])/2;
