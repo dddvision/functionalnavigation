@@ -1,19 +1,26 @@
-function pyramid=BuildPyramid(y,LEVELS)
+function pyramid=BuildPyramid(f,levels)
 
-  pyramid = cell(LEVELS,1);
+  pyramid = cell(levels,1);
 
-  [gi,gj]=ComputeDerivatives2(y);
-  pyramid{1}.y=y;
-  pyramid{1}.gi=gi;
-  pyramid{1}.gj=gj;
+  [gx,gy]=grad(f);
+  pyramid{1}.f=f;
+  pyramid{1}.gx=gx;
+  pyramid{1}.gy=gy;
 
-  for L=2:LEVELS
-    y=Reduce(y);
-    [gi,gj]=ComputeDerivatives2(y);
+  for L=2:levels
+    f=Reduce(f);
+    [gx,gy]=grad(f);
 
-    pyramid{L}.y=y;
-    pyramid{L}.gi=gi;
-    pyramid{L}.gj=gj;
+    pyramid{L}.f=f;
+    pyramid{L}.gx=gx;
+    pyramid{L}.gy=gy;
   end
 
+end
+
+function [gx,gy]=grad(f)
+  gx=diff(f,1,1);
+  gy=diff(f,1,2);
+  gx=([gx(1,:);gx]+[gx;gx(end,:)])/2;
+  gy=([gy(:,1),gy]+[gy,gy(:,end)])/2;
 end

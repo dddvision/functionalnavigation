@@ -20,9 +20,12 @@ classdef FastPBM < tom.Measure
       if(~exist('mexTrackFeaturesKLT','file'))
         userDirectory=pwd;
         cd(fullfile(fileparts(mfilename('fullpath')),'private'));
-        mex('mexTrackFeaturesKLT.cpp');
+        mex('mexTrackFeaturesKLT.cpp','-g');
         cd(userDirectory);
       end
+
+      dataContainer=tom.DataContainer.create('MiddleburyData');
+      this.sensor=dataContainer.getSensor(uint32(0));
 
       TrackFeaturesKLTTest(this);
     end

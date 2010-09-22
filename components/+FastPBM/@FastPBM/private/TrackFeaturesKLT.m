@@ -1,31 +1,30 @@
-% Finds locations of features in image B based on their locations in imageA
+% Finds locations of features in the second image based on their locations in the first image
 %
-% @param[in] ia  sub-pixel rows of patch centers in first frame
-% @param[in] ja  sub-pixel columns of patch centers in first frame
-% @param[in] Pin pyramid structure (created by BuildPyramid()
-% @param[in] y   image in range [0,1]
+% @param[in]     pyramidA pyramid structure built from the first frame
+% @param[in]     xA       sub-pixel rows of patch centers in first frame
+% @param[in]     yA       sub-pixel columns of patch centers in first frame
+% @param[in]     pyramidB pyramid structure built from the second frame
+% @param[in,out] xB       estimated sub-pixel rows of patch centers in second frame
+% @param[in,out] yB       estimated sub-pixel columns of patch centers in second frame
+% @param[in]     halfwin  half window size over which to track
+% @param[in]     thresh   matching threshold below which features will not be matched
 %
-% @param[out] ibe  sub-pixel rows of patch centers in first frame
-% @param[out] jbe  sub-pixel columns of patch centers in first frame
-% @param[out] Pout pyramid structure (created by BuildPyramid()
-function [ibe,jbe,Pout]=TrackFeaturesKLT(ia,ja,Pin,y,halfwin,RESIDUE_THRESH)
+% NOTES
+% @see BuildPyramid()
+function [xB,yB]=TrackFeaturesKLT(pyramidA,xA,yA,pyramidB,xB,yB,halfwin,thresh)
 
-  LEVELS=length(Pin);
-  Pout=BuildPyramid(y,LEVELS);
+  levels=length(pyramidA);
 
-  ibe=ia;
-  jbe=ja;
+  for L=levels:-1:1
+    imageA=pyramidA{L}.f;
+    gxA=pyramidA{L}.gx;
+    gyA=pyramidA{L}.gy;
 
-  for L=LEVELS:-1:1
-     za=Pin{L}.y;
-    gia=Pin{L}.gi;
-    gja=Pin{L}.gj;
+    imageB=pyramidB{L}.f;
+    gxB=pyramidB{L}.gx;
+    gyB=pyramidB{L}.gy;
 
-     zb=Pout{L}.y;
-    gib=Pout{L}.gi;
-    gjb=Pout{L}.gj;
-
-    [ibe,jbe]=mexTrackFeaturesKLT(za,gia,gja,ia,ja,zb,gib,gjb,ibe,jbe,L,2*halfwin+1,RESIDUE_THRESH);
+    [xB,yB]=mexTrackFeaturesKLT(imageA,gxA,gyA,xA,yA,imageB,gxB,gyB,xB,yB,L,halfwin,thresh);
   end
 
 end
