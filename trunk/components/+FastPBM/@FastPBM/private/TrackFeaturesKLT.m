@@ -5,7 +5,7 @@
 % ia = sub-pixel rows of patch centers in first frame
 % ib = sub-pixel columns of patch centers in first frame
 % Pin = pyramid structure (created by BuildPyramid()
-% y = image in range [0,1]
+
 function [ibe,jbe,Pout]=TrackFeaturesKLT(ia,ja,Pin,y,halfwin,RESIDUE_THRESH)
 
   LEVELS=length(Pin);
