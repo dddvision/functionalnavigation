@@ -1,4 +1,10 @@
-classdef SparseTracker
+% Inherits the Sensor interface as follows:
+% refresh(this);
+% flag=hasData(this);
+% n=first(this);
+% n=last(this);
+% time=getTime(this,n);
+classdef SparseTracker < Sensor
 
   properties (Constant=true,GetAccess=public)
     maxFeatures = 30; % (30) maximum integer number of features per frame to find
@@ -16,13 +22,12 @@ classdef SparseTracker
     end
   end
   
-  methods (Abstract=true,Access=public,Static=false)
-    % Instructs the tracker to process the next image in a sequence
+  methods (Abstract=true,Access=public,Static=false)  
+    % Instructs the tracker to process an image
     %
     % @param[in] node unique image index (MATLAB: uint32 scalar)
-    % @param[in] pose  estimated camera pose when image was captured (MATLAB: Pose scalar)
-    % @return          unique sequential image index (MATLAB: uint32 scalar)
-    processGrayImage(this, node, pose);
+    % @param[in] pose estimated camera pose when image was captured (MATLAB: Pose scalar)
+    processImage(this, node, pose);
     
     % Get a list of feature indices associated with an image index
     %
