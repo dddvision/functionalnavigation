@@ -20,7 +20,7 @@ classdef FastPBM < tom.Measure
       if(~exist('mexTrackFeaturesKLT','file'))
         userDirectory=pwd;
         cd(fullfile(fileparts(mfilename('fullpath')),'private'));
-        mex('mexTrackFeaturesKLT.cpp','-g');
+        mex('mexTrackFeaturesKLT.cpp');
         cd(userDirectory);
       end
 
