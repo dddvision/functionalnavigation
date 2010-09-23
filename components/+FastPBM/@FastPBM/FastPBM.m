@@ -2,6 +2,7 @@ classdef FastPBM < tom.Measure
   
   properties (SetAccess=private,GetAccess=private)
     sensor
+    tracker
   end
   
   methods (Static=true,Access=public)
@@ -16,18 +17,6 @@ classdef FastPBM < tom.Measure
   methods (Access=public)
     function this=FastPBM(uri)
       this=this@tom.Measure(uri);
- 
-      if(~exist('mexTrackFeaturesKLT','file'))
-        userDirectory=pwd;
-        cd(fullfile(fileparts(mfilename('fullpath')),'private'));
-        try
-          mex('mexTrackFeaturesKLT.cpp');
-        catch err
-          cd(userDirectory);
-          error(err.message);
-        end
-        cd(userDirectory);
-      end
 
       try
         [scheme,resource]=strtok(uri,':');
@@ -44,7 +33,8 @@ classdef FastPBM < tom.Measure
         error('Failed to open data resource: %s',err.message);
       end                  
 
-      TrackFeaturesKLTTest(this);
+      this.tracker=FastPBM.SparseTrackerKLT(this.sensor);
+      this.tracker.refresh();
     end
     
     function refresh(this)
