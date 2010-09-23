@@ -22,20 +22,22 @@ classdef SparseTracker < Sensor
     end
   end
   
-  methods (Abstract=true,Access=public,Static=false)  
-    % Instructs the tracker to process an image
+  methods (Abstract=true,Access=public,Static=false)
+    % Update the tracker with the latest body trajectory estimate
     %
-    % @param[in] node unique image index (MATLAB: uint32 scalar)
-    % @param[in] pose estimated camera pose when image was captured (MATLAB: Pose scalar)
-    processImage(this, node, pose);
+    % @param[in] x predicted body trajectory
+    %
+    % NOTES
+    % The tracker can run without this input, but may run faster with it 
+    updateTrajectory(this, x);
     
-    % Get a list of feature indices associated with an image index
+    % Get a list of features associated with an image
     %
     % @param[in] node unique image index (MATLAB: uint32 scalar)
     % @return         list of unique feature indices (MATLAB: uint32 M-by-1)
     featureList = getFeatures(this, node);
     
-    % Get a list of images associated with a feature index
+    % Get a list of images associated with a feature
     %
     % @param[in] feature unique feature index (MATLAB: uint32 scalar)
     % @return            list of image indices (MATLAB: uint32 N-by-1)
@@ -45,20 +47,17 @@ classdef SparseTracker < Sensor
     % @see getFeatures()
     nodeList = getCorrespondence(this, feature);
     
-    % Get the position of a feature in an image
+    % Get ray vector corresponding to the position of a feature in an image
     %
     % @param[in] node    unique image index (MATLAB: uint32 scalar)
     % @param[in] feature unique feature index (MATLAB: uint32 scalar)    
     % @return            unit vector in camera frame (MATLAB: double 3-by-1)
     %
     % NOTES
-    % Pixel coordinate interpretation:
-    %   pix(1,1) = strides along the non-contiguous dimension (MATLAB: column minus one)
-    %   pix(2,1) = steps along the contiguous dimension (MATLAB: row minus one)
     % Throws an exception if either the node or the feature index are not valid
     % @see getFeatures()
     % @see getCorrespondence()
-    ray = getFeaturePosition(this, node, feature);
+    ray = getFeatureRay(this, node, feature);
   end
 
 end
