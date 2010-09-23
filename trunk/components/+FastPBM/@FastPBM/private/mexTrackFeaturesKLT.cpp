@@ -1,4 +1,3 @@
-#include <malloc.h>
 #include <math.h>
 
 #include "mex.h"
@@ -25,7 +24,7 @@ private:
   int win2;
 
   /* bounds checking */
-  bool OutOfBounds(int x, int y, int m, int n, int radius)
+  static bool OutOfBounds(const int x, const int y, const int m, const int n, const int radius)
   {
     return((x-radius)<1||(y-radius)<1||(x+radius)>(m-1)||(y+radius)>(n-1));
   }
@@ -43,13 +42,12 @@ public:
     win2 = win*win;
 
     /* allocate memory for all six patches */
-    Iap = (double*)malloc(win2*sizeof(double));
-    gxap = (double*)malloc(win2*sizeof(double));
-    gyap = (double*)malloc(win2*sizeof(double));
-    Ibp = (double*)malloc(win2*sizeof(double));
-    gxbp = (double*)malloc(win2*sizeof(double));
-    gybp = (double*)malloc(win2*sizeof(double));
-
+    Iap = new double[win2];
+    gxap = new double[win2];
+    gyap = new double[win2];
+    Ibp = new double[win2];
+    gxbp = new double[win2];
+    gybp = new double[win2];
     return;
   }
 
@@ -58,13 +56,12 @@ public:
    */
   ~TrackerKLT(void)
   {
-    free(Iap);
-    free(gxap);
-    free(gyap);
-    free(Ibp);
-    free(gxbp);
-    free(gybp);
-
+    delete[] Iap;
+    delete[] gxap;
+    delete[] gyap;
+    delete[] Ibp;
+    delete[] gxbp;
+    delete[] gybp;
     return;
   }
 
@@ -240,7 +237,7 @@ public:
       yf = (int)floor(*yb);
 
       /* check bounds */
-      if(OutOfBounds(xf, yf, m, n, halfwin))
+      if((xf<1.0)||(yf<1.0)||(xf>(m-1.0))||(yf>(n-1.0)))
       {
         (*xb) = NaN;
         (*yb) = NaN;
