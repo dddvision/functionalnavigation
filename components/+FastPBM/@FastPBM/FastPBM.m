@@ -20,12 +20,29 @@ classdef FastPBM < tom.Measure
       if(~exist('mexTrackFeaturesKLT','file'))
         userDirectory=pwd;
         cd(fullfile(fileparts(mfilename('fullpath')),'private'));
-        mex('mexTrackFeaturesKLT.cpp');
+        try
+          mex('mexTrackFeaturesKLT.cpp');
+        catch err
+          cd(userDirectory);
+          error(err.message);
+        end
         cd(userDirectory);
       end
 
-      dataContainer=tom.DataContainer.create('MiddleburyData');
-      this.sensor=dataContainer.getSensor(uint32(0));
+      try
+        [scheme,resource]=strtok(uri,':');
+        resource=resource(2:end);
+        switch(scheme)
+          case 'matlab'
+            container=tom.DataContainer.create(resource);
+            list=container.listSensors('Camera');
+            this.sensor=container.getSensor(list(1));
+          otherwise
+            error('Unrecognized resource identifier in URI');
+        end
+      catch err
+        error('Failed to open data resource: %s',err.message);
+      end                  
 
       TrackFeaturesKLTTest(this);
     end

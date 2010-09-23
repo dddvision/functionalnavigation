@@ -23,13 +23,14 @@ classdef SparseTracker < Sensor
   end
   
   methods (Abstract=true,Access=public,Static=false)
-    % Update the tracker with the latest body trajectory estimate
+    % Refresh the tracker given a predicted body trajectory
     %
     % @param[in] x predicted body trajectory
     %
     % NOTES
-    % The tracker can run without this input, but may run faster with it 
-    updateTrajectory(this, x);
+    % If the predicted body trajectory is not available then use the sensor refresh function without arguments
+    % @see tom.Sensor.refresh()
+    refreshWithPrediction(this, x);
     
     % Get a list of features associated with an image
     %

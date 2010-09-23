@@ -1,11 +1,13 @@
+#include "mex.h"
 #include <math.h>
 
-#include "mex.h"
+#ifndef NAN
+static const double NAN = sqrt(static_cast<double>(-1.0));
+#endif
 
-#define  NaN             sqrt(-1.0)
-#define  MAX_ITERATIONS  10
-#define  SMALL_DET       0.00005
-#define  DELTA_THRESH    0.1
+static const double MAX_ITERATIONS = 10;
+static const double SMALL_DET = 0.00005;
+static const double DELTA_THRESH = 0.1;
 
 /**
  * KLT based tracker for a single independent feature
@@ -24,9 +26,9 @@ private:
   int win2;
 
   /* bounds checking */
-  static bool OutOfBounds(const int x, const int y, const int m, const int n, const int radius)
+  static bool OutOfBounds(const int x, const int y, const int M, const int N, const int radius)
   {
-    return((x-radius)<1||(y-radius)<1||(x+radius)>(m-1)||(y+radius)>(n-1));
+    return((x-radius)<0||(y-radius)<0||(x+radius)>(M-1)||(y+radius)>(N-1));
   }
 
 public:
@@ -71,76 +73,66 @@ public:
    * @param[in] Ia     first image in the range [0,1]
    * @param[in] gxa    gradient of first image along contiguous dimension
    * @param[in] gya    gradient of first image along non-contiguous dimension
-   * @param[in] xa     sub-pixel location in the first image along contiguous dimension
-   * @param[in] ya     sub-pixel location in the first image along non-contiguous dimension
+   * @param[in] xa     zero-based sub-pixel location in the first image along contiguous dimension
+   * @param[in] ya     zero-based sub-pixel location in the first image along non-contiguous dimension
    * @param[in] Ib     second image in the range [0,1]
    * @param[in] gxb    gradient of second image along contiguous dimension
    * @param[in] gyb    gradient of second image along non-contiguous dimension
-   * @param[in] xbe    estimate of location in the second image along contiguous dimension
-   * @param[in] ybe    estimate of location in the sedond image along non-contiguous dimension
-   * @param[in] L      pyramid level on which to interperet coordinates
-   * @param[in] thresh matching threshold below which features will not be matched
-   * @param[in] m      image size in pixels along contiguous dimension
-   * @param[in] n      image size in pixels along non-contiguous dimension
+   * @param[in] xbe    zero-based estimate of location in the second image along contiguous dimension
+   * @param[in] ybe    zero-based estimate of location in the sedond image along non-contiguous dimension
+   * @param[in] thresh confidence threshold for feature matching in the range [0,1]
+   * @param[in] M      image size in pixels along contiguous dimension
+   * @param[in] N      image size in pixels along non-contiguous dimension
    * @param[out] xb    sub-pixel location in the second image along contiguous dimension
    * @param[out] yb    sub-pixel location in the second image along non-contiguous dimension
    *
    * RETURNS:
-   * The outputs are set to NaN in the following cases:
-   *   If NaN is encountered while processing inputs
+   * The outputs are set to NAN in the following cases:
+   *   If NAN is encountered while processing inputs
    *   If the feature cannot be found in the second image
    *   If the sum of absolute image differences between feature locations exceeds the specified threshold
    */
   void trackFeature(const double *Ia, const double *gxa, const double *gya, const double xa, const double ya, 
-    const double *Ib, const double *gxb, const double *gyb, const double xbe, const double ybe, const double L, 
-    const double thresh, const int m, const int n, double *xb, double *yb)
+    const double *Ib, const double *gxb, const double *gyb, const double xbe, const double ybe, const double thresh, 
+    const int M, const int N, double *xb, double *yb)
   {
-    int mmwin = m-win;
-    double scale = pow(2.0, L-1.0);
-
+    int mmwin = M-win;
     int iteration;
     double xo, yo, xr, yr;
     double a00, a01, a10, a11;
     double gx, gy, gt, xx, yy, xy, xt, yt;
     double det, dx, dy, residue;
-    double xas, yas, xbes, ybes;
     int xf, yf;
     int p00, p01, p10, p11;
     int i, j, p;
 
-    /* check for NaN inputs */
+    /* check for NAN inputs */
     if(mxIsNaN(xa)||mxIsNaN(ya)||mxIsNaN(xbe)||mxIsNaN(ybe))
     {
-      (*xb) = NaN;
-      (*yb) = NaN;
+      (*xb) = NAN;
+      (*yb) = NAN;
       return;
     }
 
-    /* scale the coordinate system to the appropriate pyramid level */
-    xas = xa/scale;
-    yas = ya/scale;
-    xbes = xbe/scale;
-    ybes = ybe/scale;
-
-    /* shift the coordinate system to align with image a */
-    xf = (int)floor(xas+0.5);
-    yf = (int)floor(yas+0.5);
+    /* shift the coordinate system to align with imageA */
+    xf = (int)floor(xa+0.5);
+    yf = (int)floor(ya+0.5);
 
     /* check bounds */
-    if(OutOfBounds(xf, yf, m, n, halfwin))
+    if(OutOfBounds(xf, yf, M, N, halfwin))
     {
-      (*xb) = NaN;
-      (*yb) = NaN;
+      (*xb) = NAN;
+      (*yb) = NAN;
       return;
     }
 
-    xo = xas-(double)xf; /* coordinate offset */
-    yo = yas-(double)yf; /* coordinate offset */
+    xo = xa-(double)xf; /* coordinate offset */
+    yo = ya-(double)yf; /* coordinate offset */
 
-    (*xb) = xbes-xo; /* estimated patch center in image b */
-    (*yb) = ybes-yo; /* estimated patch center in image b */
+    (*xb) = xbe-xo; /* estimated patch center in imageB */
+    (*yb) = ybe-yo; /* estimated patch center in imageB */
 
-    p00 = (xf-halfwin)+(yf-halfwin)*m; /* patch upper left corner */
+    p00 = (xf-halfwin)+(yf-halfwin)*M; /* patch upper left corner */
 
     p = 0;
     for(j = 0; j<win; j++)
@@ -160,7 +152,7 @@ public:
     iteration = 0;
     do
     {
-      /* extract the patches in image b through bilinear interpolation */
+      /* extract the patches in imageB through bilinear interpolation */
       xr = (*xb)-(double)xf;
       yr = (*yb)-(double)yf;
 
@@ -171,8 +163,8 @@ public:
       a11 = yr*xr;
 
       /* calculate initial array position offsets */
-      p00 = xf-halfwin+(yf-halfwin)*m;
-      p01 = p00+m;
+      p00 = xf-halfwin+(yf-halfwin)*M;
+      p01 = p00+M;
       p10 = p00+1;
       p11 = p01+1;
 
@@ -221,8 +213,8 @@ public:
       /* deal with small determinants */
       if(det<SMALL_DET)
       {
-        (*xb) = NaN;
-        (*yb) = NaN;
+        (*xb) = NAN;
+        (*yb) = NAN;
         return;
       }
 
@@ -237,10 +229,10 @@ public:
       yf = (int)floor(*yb);
 
       /* check bounds */
-      if((xf<1.0)||(yf<1.0)||(xf>(m-1.0))||(yf>(n-1.0)))
+      if(OutOfBounds(xf, yf, M, N, halfwin))
       {
-        (*xb) = NaN;
-        (*yb) = NaN;
+        (*xb) = NAN;
+        (*yb) = NAN;
         return;
       }
 
@@ -259,8 +251,8 @@ public:
     a11 = yr*xr;
 
     /* calculate initial array position offsets */
-    p00 = xf-halfwin+(yf-halfwin)*m;
-    p01 = p00+m;
+    p00 = xf-halfwin+(yf-halfwin)*M;
+    p01 = p00+M;
     p10 = p00+1;
     p11 = p01+1;
 
@@ -287,18 +279,14 @@ public:
     /* check sum of absolute difference residue threshold */
     if((residue/(double)win2)>(1-thresh))
     {
-      (*xb) = NaN;
-      (*yb) = NaN;
+      (*xb) = NAN;
+      (*yb) = NAN;
       return;
     }
 
     /* readjust coordinate system offset */
     (*xb) += xo;
     (*yb) += yo;
-
-    /* readjust coordinate system scale */
-    (*xb) *= scale;
-    (*yb) *= scale;
 
     return;
   }
@@ -307,38 +295,39 @@ public:
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   TrackerKLT *tracker;
-  int k, m, n, K;
+  int M, N;
+  int k, K;
   int cnt;
-  double *Ia, *gxa, *gya, *xa, *ya, *Ib, *gxb, *gyb, *xbe, *ybe, *xb, *yb;
-  double L, halfwin, thresh;
+  double *imageA, *gxA, *gyA, *xA, *yA, *imageB, *gxB, *gyB, *xB, *yB, *xb, *yb;
+  double halfwin, thresh;
   int outdims[2];
 
   /* check for proper number of inputs */
-  if(nrhs!=13)
+  if(nrhs!=12)
   {
-    mexErrMsgTxt("[xb,yb]=MEXtrackFeatures(Ia,gxa,gya,xa,ya,Ib,gxb,gyb,xbe,ybe,L,win,thresh);");
+    mexErrMsgTxt("[xB, yB] = mexTrackFeaturesKLT(imageA, gxA, gyA, xA, yA, imageB, gxB, gyB, xB, yB, halfwin, thresh)");
   }
   else if(nlhs>2)
   {
-    mexErrMsgTxt("Too many output arguments");
+    mexErrMsgTxt("Too many output arguments.");
   }
 
   /* the inputs must be of the correct type */
-  for(cnt = 0; cnt<12; cnt++)
+  for(cnt = 0; cnt<nrhs; cnt++)
   {
     if(mxIsComplex(prhs[cnt])||!mxIsDouble(prhs[cnt]))
     {
-      mexErrMsgTxt("Inputs must real double.");
+      mexErrMsgTxt("All inputs must real double.");
     }
   }
 
   /* extract array sizes */
-  m = mxGetM(prhs[0]);
-  n = mxGetN(prhs[0]);
+  M = mxGetM(prhs[0]);
+  N = mxGetN(prhs[0]);
 
   /* check all other images for same size */
-  if((mxGetM(prhs[1])!=m)||(mxGetN(prhs[1])!=n)||(mxGetM(prhs[2])!=m)||(mxGetN(prhs[2])!=n)||(mxGetM(prhs[5])!=m)
-      ||(mxGetN(prhs[6])!=n)||(mxGetM(prhs[6])!=m)||(mxGetN(prhs[6])!=n)||(mxGetM(prhs[7])!=m)||(mxGetN(prhs[7])!=n))
+  if((mxGetM(prhs[1])!=M)||(mxGetN(prhs[1])!=N)||(mxGetM(prhs[2])!=M)||(mxGetN(prhs[2])!=N)||(mxGetM(prhs[5])!=M)
+      ||(mxGetN(prhs[6])!=N)||(mxGetM(prhs[6])!=M)||(mxGetN(prhs[6])!=N)||(mxGetM(prhs[7])!=M)||(mxGetN(prhs[7])!=N))
   {
     mexErrMsgTxt("All input images must be of the same size.");
   }
@@ -354,25 +343,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   }
 
   /* check last few arguments */
-  if((mxGetM(prhs[10])!=1)||(mxGetN(prhs[10])!=1)||(mxGetM(prhs[11])!=1)||(mxGetN(prhs[11])!=1)||(mxGetM(prhs[12])!=1)
-      ||(mxGetN(prhs[12])!=1))
+  if((mxGetM(prhs[10])!=1)||(mxGetN(prhs[10])!=1)||(mxGetM(prhs[11])!=1)||(mxGetN(prhs[11])!=1))
   {
     mexErrMsgTxt("Last two arguments must be scalar.");
   }
 
-  Ia = (double*)mxGetData(prhs[0]);
-  gxa = (double*)mxGetData(prhs[1]);
-  gya = (double*)mxGetData(prhs[2]);
-  xa = (double*)mxGetData(prhs[3]);
-  ya = (double*)mxGetData(prhs[4]);
-  Ib = (double*)mxGetData(prhs[5]);
-  gxb = (double*)mxGetData(prhs[6]);
-  gyb = (double*)mxGetData(prhs[7]);
-  xbe = (double*)mxGetData(prhs[8]);
-  ybe = (double*)mxGetData(prhs[9]);
-  L = *(double*)mxGetData(prhs[10]);
-  halfwin = *(double*)mxGetData(prhs[11]);
-  thresh = *(double*)mxGetData(prhs[12]);
+  imageA = (double*)mxGetData(prhs[0]);
+  gxA = (double*)mxGetData(prhs[1]);
+  gyA = (double*)mxGetData(prhs[2]);
+  xA = (double*)mxGetData(prhs[3]);
+  yA = (double*)mxGetData(prhs[4]);
+  imageB = (double*)mxGetData(prhs[5]);
+  gxB = (double*)mxGetData(prhs[6]);
+  gyB = (double*)mxGetData(prhs[7]);
+  xB = (double*)mxGetData(prhs[8]);
+  yB = (double*)mxGetData(prhs[9]);
+  halfwin = *(double*)mxGetData(prhs[10]);
+  thresh = *(double*)mxGetData(prhs[11]);
 
   /* allocate memory for return arguments and assign pointers */
   outdims[0] = k;
@@ -397,13 +384,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   tracker = new TrackerKLT((int)floor(halfwin+0.5));
   for(k = 0; k<K; k++)
   {
-    /* call the function to do the work, and change Matlab indices to C convention */
-    tracker->trackFeature(Ia, gxa, gya, xa[k]-1.0, ya[k]-1.0, Ib, gxb, gyb, xbe[k]-1.0, ybe[k]-1.0, L, 
-      thresh, m, n, &xb[k], &yb[k]);
-
-    /* change C indices to Matlab convention */
-    xb[k] += 1.0;
-    yb[k] += 1.0;
+    /* call the function to do the work */
+    tracker->trackFeature(imageA, gxA, gyA, xA[k], yA[k], imageB, gxB, gyB, xB[k], yB[k], thresh, M, N, &xb[k], &yb[k]);
   }
   delete tracker;
 
