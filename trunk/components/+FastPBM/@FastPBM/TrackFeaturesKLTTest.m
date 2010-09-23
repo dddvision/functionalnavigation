@@ -5,11 +5,12 @@ imageB = this.sensor.getImage(uint32(2));
 imageA = double(rgb2gray(imageA))/255;
 imageB = double(rgb2gray(imageB))/255;
 
-levels = 3;
+numLevels = 3;
 halfwin = 5;
+thresh = 0.98;
 
 % zero pad without affecting pixel coordinates
-multiple = 2^(levels-1);
+multiple = 2^(numLevels-1);
 [M, N] = size(imageA);
 Mpad = multiple-mod(M, multiple);
 Npad = multiple-mod(N, multiple);
@@ -18,16 +19,16 @@ if((Mpad>0)||(Npad>0))
   imageB(M+Mpad, N+Npad) = 0;
 end
 
-pyramidA = BuildPyramid(imageA, levels);
-pyramidB = BuildPyramid(imageB, levels);
+pyramidA = buildPyramid(imageA, numLevels);
+pyramidB = buildPyramid(imageB, numLevels);
 
-kappa = DetectCorners(pyramidA{1}.gx, pyramidA{1}.gy, halfwin, 'HarrisCorner');
-peaksA = FindPeaks(kappa, [5,5]);
+kappa = computeCornerStrength(pyramidA{1}.gx, pyramidA{1}.gy, halfwin, 'Harris');
+peaksA = findPeaks(kappa, halfwin);
 [xA, yA] = find(peaksA);
 xB = xA;
 yB = yA;
 
-[xB, yB] = TrackFeaturesKLT(pyramidA, xA, yA, pyramidB, xB, yB, halfwin, 0.000001);
+[xB, yB] = TrackFeaturesKLT(pyramidA, xA, yA, pyramidB, xB, yB, halfwin, thresh);
 
 good = ~isnan(xB);
 xA = xA(good);
