@@ -2,7 +2,7 @@
 
 #include "mex.h"
 
-#define  NaN             sqrt(-1)
+#define  NaN             sqrt(-1.0)
 #define  MAX_ITERATIONS  10
 #define  SMALL_DET       0.00005
 #define  DELTA_THRESH    0.1
