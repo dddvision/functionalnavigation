@@ -7,17 +7,22 @@ classdef SparseTracker
   end
 
   methods (Access=public,Static=true)
-    function this=SparseTracker()
+    % Constructor
+    %
+    % @param[in] camera camera object
+    % @return           instance of this class
+    function this=SparseTracker(camera)
+      assert(isa(camera,'Camera'));
     end
   end
   
   methods (Abstract=true,Access=public,Static=false)
     % Instructs the tracker to process the next image in a sequence
     %
-    % @param[in] image grayscale image (MATLAB: uint8 HEIGHT-by-WIDTH)
+    % @param[in] node unique image index (MATLAB: uint32 scalar)
     % @param[in] pose  estimated camera pose when image was captured (MATLAB: Pose scalar)
     % @return          unique sequential image index (MATLAB: uint32 scalar)
-    node = processGrayImage(this, image, pose);
+    processGrayImage(this, node, pose);
     
     % Get a list of feature indices associated with an image index
     %
@@ -39,7 +44,7 @@ classdef SparseTracker
     %
     % @param[in] node    unique image index (MATLAB: uint32 scalar)
     % @param[in] feature unique feature index (MATLAB: uint32 scalar)    
-    % @return            feature location in pixel coordinates (MATLAB: double 2-by-1)
+    % @return            unit vector in camera frame (MATLAB: double 3-by-1)
     %
     % NOTES
     % Pixel coordinate interpretation:
@@ -48,7 +53,7 @@ classdef SparseTracker
     % Throws an exception if either the node or the feature index are not valid
     % @see getFeatures()
     % @see getCorrespondence()
-    pix = getFeaturePosition(this, node, feature);
+    ray = getFeaturePosition(this, node, feature);
   end
 
 end
