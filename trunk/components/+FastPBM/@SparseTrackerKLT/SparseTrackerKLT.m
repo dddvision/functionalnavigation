@@ -4,16 +4,19 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     numLevels = 3;
     halfwin = 5;
     thresh = 0.98;
+    cornerMethod = 'Harris';
   end
   
   properties (GetAccess=private,SetAccess=private)
     camera
-    indexA
+    nodeA
     pyramidA
     xA
     yA
-    offset
+    nodeOffset
     features
+    uniqueIndex
+    uniqueNext
     initialized
   end
   
@@ -41,53 +44,44 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     function refresh(this)
       refresh(this.camera);
       
-      % track features in new images
+      % find features in first image
       if(~this.initialized)
-        this.indexA = this.camera.first();
-        imageA = this.prepareImage(this.indexA);
-        this.pyramidA = buildPyramid(imageA, this.numLevels);
-        kappa = computeCornerStrength(this.pyramidA{1}.gx, this.pyramidA{1}.gy, this.halfwin, 'Harris');
-        peaksA = findPeaks(kappa, this.halfwin);
-        [this.xA, this.yA] = find(peaksA);
-        xB = this.xA;
-        yB = this.yA;
-        this.offset=this.indexA-uint32(1);
-        this.features{1}.id=1:numel(this.xA);
-        this.features{1}.ray=this.camera.inverseProjection([this.yA';this.xA']-1,this.indexA);
+        this.nodeA = this.camera.first();
+        this.nodeOffset = this.nodeA-uint32(1);
+        this.pyramidA = buildPyramid(this.prepareImage(this.nodeA), this.numLevels);
+        [this.xA, this.yA] = selectFeatures(this, this.pyramidA{1}.gx, this.pyramidA{1}.gy, this.maxFeatures);
+        this.uniqueIndex = getUniqueIndices(this, numel(this.xA));
+        this.features{1}.id = this.uniqueIndex;
+        this.features{1}.ray = this.camera.inverseProjection([this.yA;this.xA]-1, this.nodeA);
         this.initialized = true;
       end
       
-      indexB=this.indexA+uint32(1);
-      if(this.camera.last()>indexB)
-        for indexB=(this.indexA+uint32(1)):this.camera.last()
-          imageB = this.prepareImage(indexB);
-          pyramidB = buildPyramid(imageB, this.numLevels);
+      % track features in new images
+      nodeB=this.nodeA+uint32(1);
+      if(this.camera.last()>nodeB)
+        xB = this.xA;
+        yB = this.yA;
+        for nodeB = nodeB:this.camera.last()
+          pyramidB = buildPyramid(this.prepareImage(nodeB), this.numLevels);
 
           [xB, yB] = TrackFeaturesKLT(this.pyramidA, this.xA, this.yA, pyramidB, xB, yB, this.halfwin, this.thresh);
 
+          % exclude some features and get more
           good = find(~isnan(xB));
-          this.xA = this.xA(good);
-          this.yA = this.yA(good);
-          xB = xB(good);
-          yB = yB(good);
-
-          % TODO: get more features
-          this.features{indexB-this.offset}.id=good;
-          this.features{indexB-this.offset}.ray=this.camera.inverseProjection([yB';xB']-1,indexB);
-
-  %         figure(1);
-  %         clf;
-  %         imshow(this.pyramidA{1}.f);
-  %         hold('on');
-  %         axis('image');
-  %         plot([this.yA,yB]', [this.xA,xB]', 'r');
-  %         drawnow;
+          deficit = max(this.maxFeatures-numel(good),0);
+          [xBnew, yBnew] = selectFeatures(this, pyramidB{1}.gx, pyramidB{1}.gy, deficit);
+          this.uniqueIndex = [this.uniqueIndex(good),getUniqueIndices(this, numel(xBnew))];
+          xB = [xB(good),xBnew];
+          yB = [yB(good),yBnew];
+          
+          this.features{nodeB-this.nodeOffset}.id=this.uniqueIndex;
+          this.features{nodeB-this.nodeOffset}.ray=this.camera.inverseProjection([yB;xB]-1,nodeB);
 
           this.pyramidA=pyramidB;
           this.xA=xB;
           this.yA=yB;
         end
-        this.indexA=indexB;
+        this.nodeA=nodeB;
       end
     end
     
@@ -121,21 +115,45 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
     
     function num = numFeatures(this, node)
-      num = numel(this.features{node-this.offset}.id);
+      num = numel(this.features{node-this.nodeOffset}.id);
     end
     
     function id = getFeatureID(this, node, localIndex)
-      id = this.features{node-this.offset}.id(localIndex+uint32(1));
+      id = this.features{node-this.nodeOffset}.id(localIndex+uint32(1));
     end
     
     function ray = getFeatureRay(this, node, localIndex)
-      ray = this.features{node-this.offset}.ray(:,localIndex+uint32(1));
+      ray = this.features{node-this.nodeOffset}.ray(:,localIndex+uint32(1));
     end
   end
   
   methods (Access=private)
+    % randomly select new image features
+    function [x,y] = selectFeatures(this, gx, gy, num)
+      kappa = computeCornerStrength(gx, gy, this.halfwin, this.cornerMethod);
+      peaksA = findPeaks(kappa, this.halfwin);
+      [x,y] = find(peaksA);
+      numFound = numel(x);
+      r = randperm(numFound);
+      num = min(numFound,num);
+      keep = r(1:num);
+      x = x(keep)';
+      y = y(keep)';
+    end
+    
+    % get unique indices
+    function id = getUniqueIndices(this,num)
+      if(isempty(this.uniqueNext))
+        this.uniqueNext = uint32(0);
+      end
+      a = this.uniqueNext;
+      b = a + uint32(num-1);
+      id = a:b;
+      this.uniqueNext = b+uint32(1);
+    end
+    
     % get image, adjust levels, and zero pad without affecting pixel coordinates
-    function img=prepareImage(this,index)
+    function img = prepareImage(this,index)
       img = this.camera.getImage(index);
       img = rgb2gray(img);
       multiple = 2^(this.numLevels-1);
