@@ -1,18 +1,21 @@
 classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
   
-  properties
+  properties (Constant=true,GetAccess=private)
+    rho=3740/(1390/2); % Reference: http://vision.middlebury.edu/stereo/data/scenes2005/
+    layers='rgb';
+    frameDynamic=false;
+    projectionDynamic=false;
+    frame=[0;0;0;1;0;0;0];
+  end
+  
+  properties (Access=private)
     ring
     ringsz
     base
     na
     nb
-    rho
-    frame
     M
     N
-    layers
-    frameDynamic
-    projectionDynamic
     ready
   end
   
@@ -23,16 +26,11 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
         this.ring{n}.time=tom.WorldTime(double(n-1)/this.fps);
         this.ring{n}.image=getMiddleburyArt(this,n-1);
       end
-      this.rho=1;
       this.base=uint32(1);
       this.na=uint32(1);
       this.nb=uint32(this.numImages);
       this.M=uint32(size(this.ring{1}.image,1));
       this.N=uint32(size(this.ring{1}.image,2)); 
-      this.layers='rgb';
-      this.frameDynamic=false;
-      this.projectionDynamic=false;
-      this.frame=[0;0;0;1;0;0;0];
       this.ready=true;
     end
     
