@@ -55,9 +55,10 @@ classdef InertialSim < InertialSixDoF
       time=tom.WorldTime(this.time(n));      
     end
     
-    function [p,q]=getFrame(this)
-      p=this.pFrame;
-      q=this.qFrame;
+    function pose=getFrame(this)
+      pose.p=this.pFrame;
+      pose.q=this.qFrame;
+      pose=tom.Pose(pose);
     end
 
     function specificForce=getSpecificForce(this,n,ax)

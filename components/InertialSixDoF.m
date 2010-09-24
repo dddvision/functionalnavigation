@@ -9,9 +9,8 @@ classdef InertialSixDoF < AccelerometerArray & GyroscopeArray
     % Get sensor frame position and orientation relative to the body frame
     %
     % OUTPUT
-    % p = position of sensor origin in the body frame, double 3-by-1
-    % q = orientation of sensor frame in the body frame as a quaternion, double 4-by-1
-    [p,q]=getFrame(this);
+    % pose = position and orientation of sensor origin in the body frame, Pose scalar
+    pose=getFrame(this);
   end
   
   methods (Access=public)
@@ -24,7 +23,9 @@ classdef InertialSixDoF < AccelerometerArray & GyroscopeArray
     % This subclass defines the axis order and orientation
     function [offset,direction]=getAxis(this,ax)
       assert(isa(ax,'uint32'));
-      [offset,q]=getFrame(this);
+      pose=getFrame(this);
+      offset=pose.p;
+      q=pose.q;
       q11=q(1)*q(1);
       q22=q(2)*q(2);
       q33=q(3)*q(3);
