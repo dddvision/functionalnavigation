@@ -74,7 +74,7 @@ function test(name)
     testbed.DynamicModelTest(name,initialTime,uri);
   end
   if(tom.Measure.isConnected(name))
-    testbed.MeasureTest(name,uri);
+    testbed.MeasureTest(name,dynamicModelName,initialTime,uri);
   end
   if(tom.Optimizer.isConnected(name))
     testbed.OptimizerTest(name,dynamicModelName,measureName,initialTime,uri);

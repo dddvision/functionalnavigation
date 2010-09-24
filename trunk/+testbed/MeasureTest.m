@@ -1,7 +1,7 @@
 classdef MeasureTest < handle
   
   methods (Access=public)
-    function this=MeasureTest(name,uri)
+    function this=MeasureTest(name,dynamicModelName,initialTime,uri)
       fprintf('\n\n*** MeasureTest ***');
       
       fprintf('\n\nuri =');
@@ -18,6 +18,16 @@ classdef MeasureTest < handle
       assert(isa(measure,'tom.Measure'));
       fprintf(' ok');
 
+      dynamicModel=tom.DynamicModel.create(dynamicModelName,initialTime,uri);
+      
+      % HACK: evaluate all edges
+      first=measure.first();
+      last=measure.last();
+      edges=measure.findEdges(dynamicModel,first,last,first,last);
+      for edgeIndex=1:numel(edges)
+        cost=measure.computeEdgeCost(dynamicModel,edges(edgeIndex));
+      end
+      
       % Call all interface functions
       % Check exception handling
       

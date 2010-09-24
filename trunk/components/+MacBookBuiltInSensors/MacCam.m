@@ -133,11 +133,12 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       flag=this.frameDynamic;
     end
     
-    function [p,q]=getFrame(this,n,varargin)
+    function pose=getFrame(this,n,varargin)
       assert(n>=this.na);
       assert(n<=this.nb);
-      p=this.cameraPositionOffset;
-      q=this.cameraRotationOffset;
+      pose.p=this.cameraPositionOffset;
+      pose.q=this.cameraRotationOffset;
+      pose=tom.Pose(pose);
     end
         
     function flag=isProjectionDynamic(this,varargin)

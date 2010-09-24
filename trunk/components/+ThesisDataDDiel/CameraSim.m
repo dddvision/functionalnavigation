@@ -87,11 +87,12 @@ classdef CameraSim < Camera
       flag=this.frameDynamic;
     end
     
-    function [p,q]=getFrame(this,n,varargin)
+    function pose=getFrame(this,n,varargin)
       assert(n>=this.na);
       assert(n<=this.nb);
-      p=this.frameOffset(1:3);
-      q=this.frameOffset(4:7);
+      pose.p=this.frameOffset(1:3);
+      pose.q=this.frameOffset(4:7);
+      pose=tom.Pose(pose);
     end
         
     function flag=isProjectionDynamic(this,varargin)

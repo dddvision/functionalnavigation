@@ -1,20 +1,4 @@
-% Inherits the Sensor interface as follows:
-% refresh(this);
-% flag=hasData(this);
-% n=first(this);
-% n=last(this);
-% time=getTime(this,n);
 classdef SparseTracker < tom.Sensor
-
-  methods (Access=public,Static=true)
-    % Constructor
-    %
-    % @param[in] camera camera object
-    % @return           instance of this class
-    function this=SparseTracker(camera)
-      assert(isa(camera,'Camera'));
-    end
-  end
   
   methods (Abstract=true,Access=public,Static=false)
     % Refresh the tracker given a predicted body trajectory
@@ -26,33 +10,50 @@ classdef SparseTracker < tom.Sensor
     % @see tom.Sensor.refresh()
     refreshWithPrediction(this, x);
     
-    % Get a list of features associated with an image
+    % Check whether the sensor frame moves relative to the body framer
     %
-    % @param[in] node unique image index (MATLAB: uint32 scalar)
-    % @return         list of unique feature indices (MATLAB: uint32 M-by-1)
-    featureList = getFeatures(this, node);
+    % @param[out] flag true if the offset can change or false otherwise (MATLAB: bool scalar)
+    flag = isFrameDynamic(this);
     
-    % Get a list of images associated with a feature
+    % Get sensor frame position and orientation relative to the body frame
     %
-    % @param[in] feature unique feature index (MATLAB: uint32 scalar)
-    % @return            list of image indices (MATLAB: uint32 N-by-1)
+    % @param[in]  node data index (MATALB: uint32 scalar)
+    % @param[out] pose position and orientation of sensor origin in the body frame (MATLAB: Pose scalar)
     %
     % NOTES
-    % Throws an exception if feature index is not valid 
-    % @see getFeatures()
-    nodeList = getCorrespondence(this, feature);
+    % Sensor frame axis order is forward-right-down relative to the body frame
+    % Throws an exception when the data index is invalid
+    pose = getFrame(this, node);
     
-    % Get ray vector corresponding to the position of a feature in an image
+    % Number of features associated with a data node
     %
-    % @param[in] node    unique image index (MATLAB: uint32 scalar)
-    % @param[in] feature unique feature index (MATLAB: uint32 scalar)    
-    % @return            unit vector in camera frame (MATLAB: double 3-by-1)
+    % @param[in] node data index (MATLAB: uint32 scalar)
+    % @return         number of features associated with the data index (MATLAB: uint32 M-by-1)
     %
     % NOTES
-    % Throws an exception if either the node or the feature index are not valid
+    % Throws an exception when the data index is invalid
+    num = numFeatures(this, node);
+    
+    % Get unique identifier of a feature
+    %
+    % @param[in] node       data index (MATLAB: uint32 scalar)
+    % @param[in] localIndex zeor-based index of a feature relative to the specified node (MATLAB: uint32 scalar)
+    % @return               unique feature identifier
+    %
+    % NOTES
+    % Throws an exception when the data index is invalid
+    id = getFeatureID(this, node, localIndex);
+    
+    % Get ray vector corresponding to the direction of a feature relative to the sensor frame
+    %
+    % @param[in] node       data index (MATLAB: uint32 scalar)
+    % @param[in] localIndex zero-based index of a feature relative to the specified node (MATLAB: uint32 scalar)
+    % @return               unit vector in the sensor frame (MATLAB: double 3-by-1)
+    %
+    % NOTES
+    % Throws an exception if either the node or the feature index are invalid
     % @see getFeatures()
-    % @see getCorrespondence()
-    ray = getFeatureRay(this, node, feature);
+    ray = getFeatureRay(this, node, localIndex);
   end
 
 end

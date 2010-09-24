@@ -15,7 +15,7 @@ classdef Camera < CameraArray
     [numStrides,numSteps,numLayers]=getImageSize(this,n,varargin);
     im=getImage(this,n,varargin);
     flag=isFrameDynamic(this,varargin);
-    [p,q]=getFrame(this,n,varargin);
+    pose=getFrame(this,n,varargin);
     flag=isProjectionDynamic(this,varargin);
     pix=projection(this,ray,n,varargin);
     ray=inverseProjection(this,pix,n,varargin);

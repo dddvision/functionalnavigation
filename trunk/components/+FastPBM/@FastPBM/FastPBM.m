@@ -34,7 +34,6 @@ classdef FastPBM < tom.Measure
       end                  
 
       this.tracker=FastPBM.SparseTrackerKLT(this.sensor);
-      this.tracker.refresh();
     end
     
     function refresh(this)
@@ -75,28 +74,47 @@ classdef FastPBM < tom.Measure
     end
     
     function cost=computeEdgeCost(this,x,graphEdge)
+      nA=graphEdge.first;
+      nB=graphEdge.second;
+      
       % return 0 if the specified edge is not found in the graph
-      isAdjacent = ((graphEdge.first+uint32(1))==graphEdge.second) && ...
+      isAdjacent = ((nA+uint32(1))==nB) && ...
         hasData(this.sensor) && ...
-        (graphEdge.first>=first(this.sensor)) && ...
-        (graphEdge.second<=last(this.sensor));
+        (nA>=first(this.sensor)) && ...
+        (nB<=last(this.sensor));
       if(~isAdjacent)
         cost=0;
         return;
       end
 
       % return NaN if the graph edge extends outside of the trajectory domain
-      ta=getTime(this.sensor,graphEdge.first);
-      tb=getTime(this.sensor,graphEdge.second);
+      tA=getTime(this.sensor,nA);
+      tB=getTime(this.sensor,nB);
       interval=domain(x);
-      if((ta<interval.first)||(tb>interval.second))
+      if((tA<interval.first)||(tB>interval.second))
         cost=NaN;
         return;
       end
 
-      poseA=evaluate(x,ta);
-      poseB=evaluate(x,tb);
-
+      % refresh the tracker
+      this.tracker.refresh();
+      numA=this.tracker.numFeatures(nA);
+      rayA=zeros(3,numA);
+      for localIndex=uint32(1):numA
+        rayA(:,localIndex)=this.tracker.getFeatureRay(nA,localIndex-uint32(1));
+      end
+      figure(1);
+      plot3(rayA(1,:),rayA(2,:),rayA(3,:),'r.','MarkerSize',1);
+      axis('equal');
+      xlim([-1,1]);
+      ylim([-1,1]);
+      zlim([-1,1]);
+      drawnow;
+      
+      poseA=evaluate(x,tA);
+      poseB=evaluate(x,tB);
+      
+      cost=0;
     end
   end
   

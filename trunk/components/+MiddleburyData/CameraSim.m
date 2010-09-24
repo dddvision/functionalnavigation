@@ -85,9 +85,10 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
       flag=this.frameDynamic;
     end
     
-    function [p,q]=getFrame(this,varargin)
-      p=this.frame(1:3);
-      q=this.frame(4:7);
+    function pose=getFrame(this,varargin)
+      pose.p=this.frame(1:3);
+      pose.q=this.frame(4:7);
+      pose=tom.Pose(pose);
     end
     
     function flag=isProjectionDynamic(this,varargin)

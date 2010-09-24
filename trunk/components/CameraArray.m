@@ -54,7 +54,7 @@ classdef CameraArray < tom.Sensor
     % Throws an exception when either input index is out of range
     im=getImage(this,n,view);
     
-    % Check whether the camera frame moves relative to the body frame
+    % Check whether the sensor frame moves relative to the body frame
     %
     % INPUT
     % view = zero-based view index, uint32 scalar
@@ -73,13 +73,12 @@ classdef CameraArray < tom.Sensor
     % view = zero-based view index, uint32 scalar
     %
     % OUTPUT
-    % p = position of sensor origin in the body frame, double 3-by-1
-    % q = orientation of sensor frame in the body frame as a quaternion, double 4-by-1
+    % pose = position and orientation of sensor origin in the body frame, Pose scalar
     %
     % NOTES
-    % Camera frame axis order is forward-right-down relative to the body frame
+    % Sensor frame axis order is forward-right-down relative to the body frame
     % Throws an exception when either input index is out of range
-    [p,q]=getFrame(this,n,view);
+    pose=getFrame(this,n,view);
         
     % Check whether the camera projection changes over time
     %

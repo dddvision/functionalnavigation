@@ -12,12 +12,13 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     pyramidA
     xA
     yA
+    offset
+    features
     initialized
   end
   
   methods (Access=public,Static=true)
     function this=SparseTrackerKLT(camera)
-      this=this@FastPBM.SparseTracker(camera);
       this.camera=camera;
       
       if(~exist('mexTrackFeaturesKLT','file'))
@@ -50,34 +51,44 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         [this.xA, this.yA] = find(peaksA);
         xB = this.xA;
         yB = this.yA;
+        this.offset=this.indexA-uint32(1);
+        this.features{1}.id=1:numel(this.xA);
+        this.features{1}.ray=this.camera.inverseProjection([this.yA';this.xA']-1,this.indexA);
         this.initialized = true;
       end
       
-      for indexB=(this.indexA+uint32(1)):this.camera.last()
-        imageB = this.prepareImage(indexB);
-        pyramidB = buildPyramid(imageB, this.numLevels);
+      indexB=this.indexA+uint32(1);
+      if(this.camera.last()>indexB)
+        for indexB=(this.indexA+uint32(1)):this.camera.last()
+          imageB = this.prepareImage(indexB);
+          pyramidB = buildPyramid(imageB, this.numLevels);
 
-        [xB, yB] = TrackFeaturesKLT(this.pyramidA, this.xA, this.yA, pyramidB, xB, yB, this.halfwin, this.thresh);
+          [xB, yB] = TrackFeaturesKLT(this.pyramidA, this.xA, this.yA, pyramidB, xB, yB, this.halfwin, this.thresh);
 
-        good = ~isnan(xB);
-        this.xA = this.xA(good);
-        this.yA = this.yA(good);
-        xB = xB(good);
-        yB = yB(good);
+          good = find(~isnan(xB));
+          this.xA = this.xA(good);
+          this.yA = this.yA(good);
+          xB = xB(good);
+          yB = yB(good);
 
-        figure(1);
-        clf;
-        imshow(this.pyramidA{1}.f);
-        hold('on');
-        axis('image');
-        plot([this.yA,yB]', [this.xA,xB]', 'r');
-        drawnow;
-        
-        this.pyramidA=pyramidB;
-        this.xA=xB;
-        this.yA=yB;
+          % TODO: get more features
+          this.features{indexB-this.offset}.id=good;
+          this.features{indexB-this.offset}.ray=this.camera.inverseProjection([yB';xB']-1,indexB);
+
+  %         figure(1);
+  %         clf;
+  %         imshow(this.pyramidA{1}.f);
+  %         hold('on');
+  %         axis('image');
+  %         plot([this.yA,yB]', [this.xA,xB]', 'r');
+  %         drawnow;
+
+          this.pyramidA=pyramidB;
+          this.xA=xB;
+          this.yA=yB;
+        end
+        this.indexA=indexB;
       end
-      this.indexA=indexB;
     end
     
     function flag=hasData(this)
@@ -101,16 +112,24 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       refresh(this);
     end
     
-    function featureList = getFeatures(this, node)
-      
+    function flag = isFrameDynamic(this)
+      flag = isFrameDynamic(this.camera);
+    end    
+    
+    function pose = getFrame(this, node)
+      pose = getFrame(this.camera, node);
     end
     
-    function nodeList = getCorrespondence(this, feature)
-      
+    function num = numFeatures(this, node)
+      num = numel(this.features{node-this.offset}.id);
     end
     
-    function ray = getFeatureRay(this, node, feature)
-      
+    function id = getFeatureID(this, node, localIndex)
+      id = this.features{node-this.offset}.id(localIndex+uint32(1));
+    end
+    
+    function ray = getFeatureRay(this, node, localIndex)
+      ray = this.features{node-this.offset}.ray(:,localIndex+uint32(1));
     end
   end
   
