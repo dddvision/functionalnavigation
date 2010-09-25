@@ -17,7 +17,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     features
     uniqueIndex
     uniqueNext
-    initialized
+    firstRefresh
   end
   
   methods (Access=public,Static=true)
@@ -36,7 +36,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         cd(userDirectory);
       end
       
-      this.initialized=false;
+      this.firstRefresh=true;
     end
   end
   
@@ -45,7 +45,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       refresh(this.camera);
       
       % find features in first image
-      if(~this.initialized)
+      if(this.firstRefresh)
         this.nodeA = this.camera.first();
         this.nodeOffset = this.nodeA-uint32(1);
         this.pyramidA = buildPyramid(this.prepareImage(this.nodeA), this.numLevels);
@@ -53,7 +53,6 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         this.uniqueIndex = getUniqueIndices(this, numel(this.xA));
         this.features{1}.id = this.uniqueIndex;
         this.features{1}.ray = this.camera.inverseProjection([this.yA;this.xA]-1, this.nodeA);
-        this.initialized = true;
       end
       
       % track features in new images
@@ -66,39 +65,48 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
 
           [xB, yB] = TrackFeaturesKLT(this.pyramidA, this.xA, this.yA, pyramidB, xB, yB, this.halfwin, this.thresh);
 
-          % exclude some features and get more
-          good = find(~isnan(xB));
-          deficit = max(this.maxFeatures-numel(good),0);
-          [xBnew, yBnew] = selectFeatures(this, pyramidB{1}.gx, pyramidB{1}.gy, deficit);
-          this.uniqueIndex = [this.uniqueIndex(good),getUniqueIndices(this, numel(xBnew))];
-          xB = [xB(good),xBnew];
-          yB = [yB(good),yBnew];
+          % identify tracked and mistracked features
+          bad = isnan(xB);
+          good = ~bad;
+          numGood = sum(good);
           
-          this.features{nodeB-this.nodeOffset}.id=this.uniqueIndex;
-          this.features{nodeB-this.nodeOffset}.ray=this.camera.inverseProjection([yB;xB]-1,nodeB);
+          if(this.firstRefresh)
+            this.features{1}.id = this.features{1}.id(good);
+            this.features{1}.ray = this.features{1}.ray(:, good);
+            this.firstRefresh = false;
+          end
 
-          this.pyramidA=pyramidB;
-          this.xA=xB;
-          this.yA=yB;
+          this.features{nodeB-this.nodeOffset}.id=this.uniqueIndex(good);
+          this.features{nodeB-this.nodeOffset}.ray=this.camera.inverseProjection([yB(good); xB(good)]-1, nodeB);
+          
+          deficit = numel(good)-numGood;
+          [xBnew, yBnew] = selectFeatures(this, pyramidB{1}.gx, pyramidB{1}.gy, deficit);
+          this.uniqueIndex(bad) = getUniqueIndices(this, deficit);
+          xB(bad) = xBnew;
+          yB(bad) = yBnew;
+          
+          this.pyramidA = pyramidB;
+          this.xA = xB;
+          this.yA = yB;
         end
-        this.nodeA=nodeB;
+        this.nodeA = nodeB;
       end
     end
     
-    function flag=hasData(this)
-      flag=hasData(this.camera);
+    function flag = hasData(this)
+      flag = hasData(this.camera);
     end
     
-    function n=first(this)
-      n=first(this.camera);
+    function n = first(this)
+      n = first(this.camera);
     end
     
-    function n=last(this)
-      n=last(this.camera);
+    function n = last(this)
+      n = last(this.camera);
     end
     
-    function time=getTime(this,n)
-      time=getTime(this.camera,n);
+    function time = getTime(this, n)
+      time = getTime(this.camera, n);
     end
 
     function refreshWithPrediction(this, x)
@@ -123,22 +131,15 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
     
     function ray = getFeatureRay(this, node, localIndex)
-      ray = this.features{node-this.nodeOffset}.ray(:,localIndex+uint32(1));
+      ray = this.features{node-this.nodeOffset}.ray(:, localIndex+uint32(1));
     end
   end
   
   methods (Access=private)
     % randomly select new image features
-    function [x,y] = selectFeatures(this, gx, gy, num)
-      kappa = computeCornerStrength(gx, gy, this.halfwin, this.cornerMethod);
-      peaksA = findPeaks(kappa, this.halfwin);
-      [x,y] = find(peaksA);
-      numFound = numel(x);
-      r = randperm(numFound);
-      num = min(numFound,num);
-      keep = r(1:num);
-      x = x(keep)';
-      y = y(keep)';
+    function [x, y] = selectFeatures(this, gx, gy, num)
+      kappa = computeCornerStrength(gx, gy, 0, this.cornerMethod);
+      [x, y] = findPeaks(kappa, this.halfwin, num);
     end
     
     % get unique indices
@@ -161,9 +162,9 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       Mpad = multiple-mod(M, multiple);
       Npad = multiple-mod(N, multiple);
       if((Mpad>0)||(Npad>0))
-        img(M+Mpad, N+Npad) = zeros(1,1,class(img));
+        img(M+Mpad, N+Npad) = zeros(1, 1, class(img));
       end
-      img=double(img)/255;
+      img = double(img)/255;
     end
   end
   

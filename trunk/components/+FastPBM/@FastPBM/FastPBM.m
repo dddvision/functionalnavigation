@@ -100,9 +100,13 @@ classdef FastPBM < tom.Measure
       this.tracker.refresh();
       numA=this.tracker.numFeatures(nA);
       rayA=zeros(3,numA);
-      for localIndex=uint32(1):numA
-        rayA(:,localIndex)=this.tracker.getFeatureRay(nA,localIndex-uint32(1));
+      idA=zeros(1,numA);
+      for k=uint32(1):numA
+        rayA(:,k)=this.tracker.getFeatureRay(nA,k-uint32(1));
+        idA(k)=this.tracker.getFeatureID(nA,k-uint32(1));
       end
+      
+      % plot tracks
       figure(1);
       plot3(rayA(1,:),rayA(2,:),rayA(3,:),'r.','MarkerSize',1);
       axis('equal');
@@ -111,8 +115,8 @@ classdef FastPBM < tom.Measure
       zlim([-1,1]);
       drawnow;
       
-      poseA=evaluate(x,tA);
-      poseB=evaluate(x,tB);
+      %poseA=evaluate(x,tA);
+      %poseB=evaluate(x,tB);
       
       cost=0;
     end
