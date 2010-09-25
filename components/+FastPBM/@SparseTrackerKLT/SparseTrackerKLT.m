@@ -147,10 +147,14 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       if(isempty(this.uniqueNext))
         this.uniqueNext = uint32(0);
       end
-      a = this.uniqueNext;
-      b = a + uint32(num-1);
-      id = a:b;
-      this.uniqueNext = b+uint32(1);
+      if(num>0)
+        a = this.uniqueNext;
+        b = a + uint32(num-1);
+        id = a:b;
+        this.uniqueNext = b+uint32(1);
+      else
+        id = [];
+      end
     end
     
     % get image, adjust levels, and zero pad without affecting pixel coordinates
