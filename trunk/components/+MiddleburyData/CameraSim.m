@@ -14,6 +14,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
     base
     na
     nb
+    nbMax
     M
     N
     ready
@@ -28,7 +29,8 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
       end
       this.base=uint32(1);
       this.na=uint32(1);
-      this.nb=uint32(this.numImages);
+      this.nb=uint32(2);
+      this.nbMax=uint32(this.numImages);
       this.M=uint32(size(this.ring{1}.image,1));
       this.N=uint32(size(this.ring{1}.image,2)); 
       this.ready=true;
@@ -36,6 +38,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
     
     function refresh(this)
       assert(this.ready);
+      this.nb=min(this.nb+uint32(1),this.nbMax);
     end
     
     function flag=hasData(this)

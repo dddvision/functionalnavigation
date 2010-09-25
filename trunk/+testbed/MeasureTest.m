@@ -20,12 +20,15 @@ classdef MeasureTest < handle
 
       dynamicModel=tom.DynamicModel.create(dynamicModelName,initialTime,uri);
       
-      % HACK: evaluate all edges
-      first=measure.first();
-      last=measure.last();
-      edges=measure.findEdges(dynamicModel,first,last,first,last);
-      for edgeIndex=1:numel(edges)
-        cost=measure.computeEdgeCost(dynamicModel,edges(edgeIndex));
+      % HACK: evaluate evaluate all edges, refresh, repeat
+      for k=1:100
+        first=measure.first();
+        last=measure.last();
+        edges=measure.findEdges(dynamicModel,first,last,first,last);
+        for edgeIndex=1:numel(edges)
+          cost=measure.computeEdgeCost(dynamicModel,edges(edgeIndex));
+        end
+        measure.refresh();
       end
       
       % Call all interface functions
