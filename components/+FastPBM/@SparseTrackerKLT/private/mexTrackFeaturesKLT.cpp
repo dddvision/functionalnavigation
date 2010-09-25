@@ -6,8 +6,8 @@ static const double NAN = sqrt(static_cast<double>(-1.0));
 #endif
 
 static const double MAX_ITERATIONS = 10;
-static const double SMALL_DET = 0.00005;
-static const double DELTA_THRESH = 0.1;
+static const double EPSILON = 0.00000001;
+static const double DELTA_THRESH = 0.01;
 
 /**
  * KLT based tracker for a single independent feature
@@ -211,7 +211,7 @@ public:
       det = xx*yy-xy*xy;
 
       /* deal with small determinants */
-      if(det<SMALL_DET)
+      if(det<EPSILON)
       {
         (*xb) = NAN;
         (*yb) = NAN;

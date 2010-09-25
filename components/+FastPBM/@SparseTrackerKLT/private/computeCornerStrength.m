@@ -21,19 +21,21 @@ function kappa = computeCornerStrength(gi, gj, halfwin, method)
   gxy=gi.*gj;
 
   % perform gaussian smoothing over a window
-  mask=fspecial('gaussian',win,halfwin/4);
-  xx=filter2(mask,gxx);
-  yy=filter2(mask,gyy);
-  xy=filter2(mask,gxy);
-
+  if(halfwin>=1)
+    mask=fspecial('gaussian',win,halfwin/4);
+    gxx=filter2(mask,gxx);
+    gyy=filter2(mask,gyy);
+    gxy=filter2(mask,gxy);
+  end
+    
   % calculate corner intensity
   switch(method)
     case 'Harris'
-      kappa=Harris(xx,yy,xy);
+      kappa=Harris(gxx,gyy,gxy);
     case 'EigMin'
-      kappa=EigMin(xx,yy,xy);
+      kappa=EigMin(gxx,gyy,gxy);
     case 'EigBalance'
-      kappa=EigBalance(xx,yy,xy);
+      kappa=EigBalance(gxx,gyy,gxy);
     otherwise
       error('Unrecognized corner computation method');
   end
