@@ -37,8 +37,8 @@ classdef SparseTracker < tom.Sensor
     % Get unique identifier of a feature
     %
     % @param[in] node       data index (MATLAB: uint32 scalar)
-    % @param[in] localIndex zeor-based index of a feature relative to the specified node (MATLAB: uint32 scalar)
-    % @return               unique feature identifier
+    % @param[in] localIndex zero-based feature indices relative to the specified node (MATLAB: uint32 1-by-P)
+    % @return               unique feature identifiers (MATLAB: uint32 1-by-P)
     %
     % NOTES
     % Throws an exception when the data index is invalid
@@ -47,8 +47,8 @@ classdef SparseTracker < tom.Sensor
     % Get ray vector corresponding to the direction of a feature relative to the sensor frame
     %
     % @param[in] node       data index (MATLAB: uint32 scalar)
-    % @param[in] localIndex zero-based index of a feature relative to the specified node (MATLAB: uint32 scalar)
-    % @return               unit vector in the sensor frame (MATLAB: double 3-by-1)
+    % @param[in] localIndex zero-based feature indices relative to the specified node (MATLAB: uint32 1-by-P)
+    % @return               unit vector in the sensor frame (MATLAB: double 3-by-P)
     %
     % NOTES
     % Throws an exception if either the node or the feature index are invalid

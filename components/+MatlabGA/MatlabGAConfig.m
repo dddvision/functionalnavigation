@@ -1,7 +1,7 @@
 classdef MatlabGAConfig < handle
   properties (Constant=true,GetAccess=protected)
     popSize = 10; % (10) number of trajectories to use for optimization
-    maxEdges = 100; % (100) maximum number of edges to compute for each measure
+    maxEdges = 10; % (10) maximum number of edges to compute for each measure
     
     % Genetic Algorithm parameters (see gaoptimset for details) 
     CrossoverFraction = 0.5;

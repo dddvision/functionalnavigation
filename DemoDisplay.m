@@ -132,6 +132,9 @@ classdef DemoDisplay < DemoConfig & handle
       % set axes properties being careful with large numbers
       avgPos=sum(pScene/numel(t),2)-origin;
       avgSiz=twoNorm(max(pScene,[],2)-min(pScene,[],2));
+      if(avgSiz<eps)
+        avgSiz=1;
+      end
       text(avgPos(1),avgPos(2),avgPos(3)+avgSiz,summaryText,'FontName','Courier','FontSize',9);
       set(this.haxes,'CameraTarget',avgPos');
       cameraPosition=avgPos'+avgSiz*[8*cos(double(index)/30),8*sin(double(index)/30),4];
