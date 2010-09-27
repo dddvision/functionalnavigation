@@ -152,8 +152,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       c3=ray(3,:);
       m=this.numSteps;
       n=this.numStrides;
-      mc=m/2;
-      nc=n/2;
+      mc=(m-1)/2;
+      nc=(n-1)/2;
       c1((c1<=0)|(c1>1))=NaN;
       r=this.focal*sqrt(1-c1.*c1)./c1; % r=f*tan(acos(c1))
       theta=atan2(c3,c2);
@@ -168,8 +168,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     function ray=inverseProjection(this,pix,varargin)
       m=this.numSteps;
       n=this.numStrides;
-      mc=m/2;
-      nc=n/2;
+      mc=(m-1)/2;
+      nc=(n-1)/2;
       pm=pix(2,:);
       pn=pix(1,:);
       outside=((-0.5>pm)|(-0.5>pn)|(pn>(n-0.5))|(pm>(m-0.5)));
