@@ -3,7 +3,6 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
   properties (SetAccess=private, GetAccess=private)
     sensor
     tracker
-    figureHandle
   end
   
   methods (Static=true, Access=public)
@@ -35,31 +34,10 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       end                  
 
       this.tracker = FastPBM.SparseTrackerKLT(this.sensor);
-      this.figureHandle = [];
     end
     
     function refresh(this)
       this.tracker.refresh();
-      
-      % plot tracks
-      if(this.displayFeatures)
-        node = this.tracker.last();
-        k = uint32(1):this.tracker.numFeatures(node);
-        ray = this.tracker.getFeatureRay(node, k-uint32(1));
-      
-        if(isempty(this.figureHandle))
-          this.figureHandle = figure;
-        else
-          figure(this.figureHandle);
-          cla;
-        end
-        plot3(ray(1,:), ray(2,:), ray(3,:), 'r.', 'MarkerSize', 1);
-        axis('equal');
-        xlim([-1, 1]);
-        ylim([-1, 1]);
-        zlim([-1, 1]);
-        drawnow;
-      end
     end
     
     function flag = hasData(this)
@@ -118,7 +96,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         return;
       end
 
-      % get data from teh tracker
+      % get data from the tracker
       % numA = this.tracker.numFeatures(nA);
       % k = uint32(1):numA;
       % rayA = this.tracker.getFeatureRay(nA,k-uint32(1));

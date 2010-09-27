@@ -1,7 +1,6 @@
 classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
   properties (Constant=true,GetAccess=private)
-    numLevels = 3;
     halfwin = 5;
     thresh = 0.98;
     cornerMethod = 'Harris';
@@ -18,6 +17,9 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     uniqueIndex
     uniqueNext
     firstTrack
+    numLevels
+    figureHandle
+    plotHandle
   end
   
   methods (Access=public, Static=true)
@@ -96,7 +98,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       % only attempt to track if the camera has data
       if(this.camera.hasData())
         
-        % find features in first image
+        % process first image
         if(this.firstTrack)
           this.nodeA = this.camera.first();
           this.nodeOffset = this.nodeA-uint32(1);
@@ -137,6 +139,23 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             xB(bad) = xBnew;
             yB(bad) = yBnew;
             
+            % optionally display tracking results
+            if(this.displayFeatures)
+              if(isempty(this.figureHandle))
+                this.figureHandle=figure;
+              else
+                figure(this.figureHandle);
+                if(~isempty(this.plotHandle))
+                  delete(this.plotHandle);
+                end
+              end
+              imshow(pyramidB{1}.f, []);
+              axis('image');
+              hold('on');
+              this.plotHandle=plot([this.yA(good);yB(good)],[this.xA(good);xB(good)],'r');
+              drawnow;
+            end
+            
             % store both tracked and new features
             this.features(nodeB-this.nodeOffset).id = this.uniqueIndex;
             this.features(nodeB-this.nodeOffset).ray = this.camera.inverseProjection([yB; xB]-1, nodeB);
@@ -144,7 +163,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             % store the image pyramid and feature locations
             this.pyramidA = pyramidB;
             this.xA = xB;
-            this.yA = yB;
+            this.yA = yB;            
           end
           this.nodeA = nodeB;
         end
@@ -172,9 +191,22 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       end
     end
     
-    % get image, adjust levels, and zero pad without affecting pixel coordinates
-    function img = prepareImage(this, index)
-      img = this.camera.getImage(index);
+    % Prepare an image for processing
+    %
+    % Compute number of pyramid levels if this.firstTrack is true
+    % Gets an image, normalizes it, and zero pads the bottom and right sides
+    % Does not affect pixel coordinates
+    function img = prepareImage(this, node)
+      if(this.firstTrack)
+        [numStrides, numSteps] = this.camera.getImageSize(node);
+        pix = [double(numStrides)-2; double(numSteps)-1]/2;
+        pix = [pix, pix+[1; 0]];
+        ray = this.camera.inverseProjection(pix,node);
+        angularSpacing = acos(dot(ray(:,1),ray(:,2)));
+        maxPix = this.maxSearch/angularSpacing;
+        this.numLevels = uint32(1+ceil(log2(maxPix/this.halfwin)));
+      end
+      img = this.camera.getImage(node);
       img = rgb2gray(img);
       multiple = 2^(this.numLevels-1);
       [M, N] = size(img);
