@@ -99,12 +99,12 @@ classdef DemoDisplay < DemoConfig & handle
           poseBest=evaluate(x(k),t);
           pBest=cat(2,poseBest.p);
           qBest=cat(2,poseBest.q);
-          plotIndividual(this,origin,pBest,qBest,alpha(k),this.colorHighlight,'LineWidth',1.5);
+          plotIndividual(this,origin,pBest,qBest,alpha(k),this.colorHighlight,'LineWidth',1);
         elseif(~this.bestOnly)
           posek=evaluate(x(k),t);
           pk=cat(2,posek.p);
           qk=cat(2,posek.q);
-          plotIndividual(this,origin,pk,qk,alpha(k),1-this.colorBackground);
+          plotIndividual(this,origin,pk,qk,alpha(k),1-this.colorBackground,'LineWidth',1);
         end
       end
       
@@ -114,7 +114,7 @@ classdef DemoDisplay < DemoConfig & handle
         summaryText=sprintf('cost=%0.6f',costBest);
       else
         pScene=this.pRef;
-        plotIndividual(this,origin,this.pRef,this.qRef,1,this.colorReference,'LineWidth',1.5);
+        plotIndividual(this,origin,this.pRef,this.qRef,1,this.colorReference,'LineWidth',1);
         pDif=pBest-this.pRef; % position comparison
         pDif=sqrt(sum(pDif.*pDif,1));
         qDif=acos(sum(qBest.*this.qRef,1)); % quaternion comparison
