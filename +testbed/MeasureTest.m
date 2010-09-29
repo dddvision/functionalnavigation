@@ -2,13 +2,17 @@ classdef MeasureTest < handle
   
   methods (Access=public)
     function this=MeasureTest(name,dynamicModelName,initialTime,uri)
-      fprintf('\n\n*** MeasureTest ***');
+      fprintf('\n\n*** Begin Measure Test ***\n');
       
-      fprintf('\n\nuri =');
+      fprintf('\ninitialTime =');
+      assert(isa(initialTime,'tom.WorldTime'));
+      fprintf(' %f',double(initialTime));
+      
+      fprintf('\nuri =');
       assert(isa(uri,'char'));
       fprintf(' ''%s''',uri);
       
-      fprintf('\n\ntom.Measure.description =');
+      fprintf('\ntom.Measure.description =');
       text=tom.Measure.description(name);
       assert(isa(text,'char'));
       fprintf(' %s',text);
@@ -17,18 +21,22 @@ classdef MeasureTest < handle
       measure=tom.Measure.create(name,initialTime,uri);
       assert(isa(measure,'tom.Measure'));
       fprintf(' ok');
+      
+      testbed.SensorTest(measure);
 
       dynamicModel=tom.DynamicModel.create(dynamicModelName,initialTime,uri);
       
       % HACK: evaluate evaluate all edges, refresh, repeat
-      for k=1:100
-        first=measure.first();
-        last=measure.last();
-        edges=measure.findEdges(dynamicModel,first,last,first,last);
-        for edgeIndex=1:numel(edges)
-          cost=measure.computeEdgeCost(dynamicModel,edges(edgeIndex));
+      if(measure.hasData())
+        for k=1:100
+          first=measure.first();
+          last=measure.last();
+          edges=measure.findEdges(dynamicModel,first,last,first,last);
+          for edgeIndex=1:numel(edges)
+            cost=measure.computeEdgeCost(dynamicModel,edges(edgeIndex));
+          end
+          measure.refresh();
         end
-        measure.refresh();
       end
       
       % Call all interface functions
@@ -46,6 +54,8 @@ classdef MeasureTest < handle
         % Time to run findEdges
         % Time to run evaluateEdgeCost initially
         % Time to run evaluateEdgeCost repeated
+        
+      fprintf('\n\n*** End Measure Test ***');
     end
   end
   

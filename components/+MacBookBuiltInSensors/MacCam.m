@@ -26,7 +26,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     function this=MacCam(initialTime)
       this=this@Camera(initialTime);
       if(this.verbose)
-        fprintf('\nInitializing %s\n',class(this));
+        fprintf('\nInitializing %s',class(this));
       end
         
       this.focal=this.numStrides*cot(this.cameraFieldOfView/2);
@@ -107,7 +107,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
     function time=getTime(this,n)
       assert(n>=this.na);
       assert(n<=this.nb);
-      time=this.initialTime+this.rate*double(n-this.na);
+      time=tom.WorldTime(this.initialTime+this.rate*double(n-this.na));
     end
 
     function str=interpretLayers(this,varargin)

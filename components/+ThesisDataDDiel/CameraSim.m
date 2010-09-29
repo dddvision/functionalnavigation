@@ -29,7 +29,7 @@ classdef CameraSim < Camera
         this.na=uint32(str2double(fnames(1,6:11)));
         this.nb=this.na+uint32(1);
         this.nbMax=uint32(str2double(fnames(end,6:11)));
-        this.tn=tom.WorldTime(S.T_cam);
+        this.tn=tom.WorldTime(S.T_cam+initialTime); % same policy for all sensors
         this.cameraType=S.CAMERA_TYPE;
         this.layers='rgb';
         this.frameDynamic=false;

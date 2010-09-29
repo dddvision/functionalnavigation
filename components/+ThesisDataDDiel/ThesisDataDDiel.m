@@ -41,7 +41,7 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataConta
         delete(localZip);
       end
       this.hasRef=true;
-      this.bodyRef=ThesisDataDDiel.BodyReference(localCache,dataSetName);
+      this.bodyRef=ThesisDataDDiel.BodyReference(initialTime,localCache,dataSetName);
       this.sensors{1}=ThesisDataDDiel.CameraSim(initialTime,localCache);
       this.sensorDescription{1}='Monocular fisheye camera fixed to body frame with offset and rotation';
       this.sensors{2}=ThesisDataDDiel.InertialSim(initialTime,localCache);

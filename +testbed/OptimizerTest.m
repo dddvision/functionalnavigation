@@ -2,9 +2,9 @@ classdef OptimizerTest < handle
   
   methods (Access=public)
     function this=OptimizerTest(name,dynamicModelName,measureName,initialTime,uri)
-      fprintf('\n\n*** OptimizerTest ***');
+      fprintf('\n\n*** Begin Optimizer Test ***\n');
             
-      fprintf('\n\ndynamicModelName =');
+      fprintf('\ndynamicModelName =');
       assert(isa(dynamicModelName,'char'));
       fprintf(' ''%s''',dynamicModelName);
 
@@ -33,6 +33,8 @@ classdef OptimizerTest < handle
       optimizer.defineProblem(dynamicModel,measure,true);
       assert(isa(optimizer,'tom.Optimizer'));
       fprintf(' ok');
+      
+      fprintf('\n\n*** End Optimizer Test ***');
     end
   end
   
