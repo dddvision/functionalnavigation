@@ -23,7 +23,10 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   end
   
   methods (Access=public, Static=true)
-    function this = SparseTrackerKLT(camera)
+    function this = SparseTrackerKLT(initialTime,camera)
+      this = this@FastPBM.SparseTracker(initialTime);
+      
+      % store camera handle
       this.camera = camera;
       
       if(~exist('mexTrackFeaturesKLT','file'))
@@ -182,7 +185,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         id = a:b;
         this.uniqueNext = b+uint32(1);
       else
-        id = zeros(1,0,'uint32');
+        id = zeros(1, 0, 'uint32');
       end
     end
     
@@ -197,20 +200,26 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         pix = [double(numStrides)-2; double(numSteps)-1]/2;
         pix = [pix, pix+[1; 0]];
         ray = this.camera.inverseProjection(pix,node);
-        angularSpacing = acos(dot(ray(:,1),ray(:,2)));
+        angularSpacing = acos(dot(ray(:, 1), ray(:, 2)));
         maxPix = this.maxSearch/angularSpacing;
         this.numLevels = uint32(1+ceil(log2(maxPix/this.halfwin)));
       end
       img = this.camera.getImage(node);
       img = rgb2gray(img);
+      img = double(img)/255;
       multiple = 2^(this.numLevels-1);
       [M, N] = size(img);
       Mpad = multiple-mod(M, multiple);
       Npad = multiple-mod(N, multiple);
       if((Mpad>0)||(Npad>0))
-        img(M+Mpad, N+Npad) = zeros(1, 1, class(img));
+        img(M+Mpad, N+Npad) = 0; % allocates memory for padded image
       end
-      img = double(img)/255;
+      if(Mpad>0)
+        img((M+1):(M+Mpad), :) = NaN;
+      end  
+      if(Npad>0)
+        img(:, (N+1):(N+Npad)) = NaN;
+      end
     end
   end
   

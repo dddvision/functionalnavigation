@@ -25,7 +25,7 @@ classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & tom.DataContaine
       this.sensor{1}=MiddleburyData.CameraSim(initialTime);
       this.sensorDescription{1}='Forward facing monocular perspective camera fixed at the body origin';
       this.hasRef=true;
-      this.bodyRef=MiddleburyData.BodyReference;
+      this.bodyRef=MiddleburyData.BodyReference(initialTime);
     end
     
     function list=listSensors(this,type)
