@@ -36,10 +36,13 @@ function test(name)
   % initialize the default pseudorandom number generator
   reset(RandStream.getDefaultStream);
 
-  initialTime=tom.WorldTime(0); % default finite lower bound of trajectory time domain
+  % testbed configuration
   uri='matlab:MiddleburyData'; % default data resource identifier
   dynamicModelName='Default'; % default dynamic model name
   measureName='Default'; % default measure name
+  
+  % get system time
+  initialTime=tom.getCurrentTime();
 
   fprintf('\n\nname =');
   assert(isa(name,'char'));

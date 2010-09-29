@@ -39,10 +39,8 @@ reset(RandStream.getDefaultStream);
 % get configuration
 config=DemoConfig;
 
-
-% TODO: get system time instead of using the configuration default
-initialTime=config.defaultInitialTime;
-
+% get system time
+initialTime=tom.getCurrentTime();
 
 % instantiate the graphical display
 gui=DemoDisplay(initialTime,config.uri);

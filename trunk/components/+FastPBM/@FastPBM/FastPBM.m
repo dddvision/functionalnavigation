@@ -33,7 +33,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         error('Failed to open data resource: %s', err.message);
       end                  
 
-      this.tracker = FastPBM.SparseTrackerKLT(this.sensor);
+      this.tracker = FastPBM.SparseTrackerKLT(initialTime, this.sensor);
     end
     
     function refresh(this)
