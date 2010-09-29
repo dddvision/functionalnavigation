@@ -174,7 +174,7 @@ classdef DemoDisplay < DemoConfig & handle
       if(tmin==tmax)
         t=tom.WorldTime(repmat(tmin,[1,this.bigSteps*this.subSteps+1]));
       else
-        tmax(isinf(tmax))=this.infinity; % prevent NaN
+        tmax(isinf(tmax))=tmin+this.infinity; % prevent NaN
         t=tom.WorldTime(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
       end
     end
