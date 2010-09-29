@@ -1,6 +1,12 @@
 % This class defines how to access data from a gyroscope
 classdef GyroscopeArray < InertialArray
   
+  methods (Access=public)
+    function this=GyroscopeArray(initialTime)
+      this=this@InertialArray(initialTime);
+    end
+  end
+  
   methods (Abstract=true)
     % Get raw gyroscope data
     %

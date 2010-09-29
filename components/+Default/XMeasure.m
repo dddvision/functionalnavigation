@@ -2,7 +2,8 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
 
   properties (SetAccess=private,GetAccess=private)
     xRef
-    t
+    ta
+    initTime
     yBar
     na
     nb
@@ -20,14 +21,14 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
   end
   
   methods (Access=public)
-    function this=XMeasure(uri)
-      this=this@tom.Measure(uri);
+    function this=XMeasure(initialTime,uri)
+      this=this@tom.Measure(initialTime,uri);
       try
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=tom.DataContainer.create(resource);
+            container=tom.DataContainer.create(resource,initialTime);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
@@ -39,36 +40,24 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
       catch err
         error('Failed to open data resource: %s',err.message);
       end
-      this.t=tom.WorldTime([]);
+      interval=this.xRef.domain();
+      this.ta=interval.first;
+      this.initTime=initialTime;
       this.yBar=[];
-      this.na=uint32([]);
-      this.nb=uint32([]);
+      this.na=uint32(0);
       this.status=false;
     end
 
     function refresh(this)
       if(this.status)
-        time=tom.WorldTime(this.t(end)+this.dt);
+        this.nb=this.nb+uint32(1);
       else
-        interval=domain(this.xRef);
-        time=interval.first;
+        this.nb=this.na;
+        this.status=true;
       end
+      time=tom.WorldTime(this.ta+double(this.nb)*this.dt);
       pose=evaluate(this.xRef,time);
-      if(~isnan(pose.p))
-        this.t=[this.t,time];
-        this.yBar=[this.yBar,pose.p(1)+this.deviation*randn];
-        if(this.status)
-          this.nb=this.nb+uint32(1);
-        else
-          this.na=uint32(1);
-          this.nb=uint32(1);
-          this.status=true;
-        end
-      else
-        if(this.verbose)
-          fprintf('\n\nWarning: Simulation has run out of reference data');
-        end
-      end
+      this.yBar=[this.yBar,pose.p(1)+this.deviation*randn];
     end
 
     function flag=hasData(this)
@@ -86,7 +75,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
     end
 
     function time=getTime(this,n)
-      time=tom.WorldTime(this.t(n));
+      time=tom.WorldTime(this.initTime+double(n)*this.dt);
     end
     
     function edgeList=findEdges(this,x,naMin,naMax,nbMin,nbMax)
@@ -114,7 +103,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
       end
          
       % return NaN if the graph edge extends outside of the trajectory domain
-      time=this.t(graphEdge.second);
+      time=this.getTime(graphEdge.second);
       interval=domain(x);
       if((time<interval.first)||(time>interval.second))
         cost=NaN;
@@ -122,7 +111,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
       end
       
       pose=evaluate(x,time);
-      dnorm=(this.yBar(graphEdge.second)-pose.p(1))./this.deviation;
+      dnorm=(this.yBar(graphEdge.second+1)-pose.p(1))./this.deviation;
       cost=0.5*dnorm.*dnorm;
     end
   end

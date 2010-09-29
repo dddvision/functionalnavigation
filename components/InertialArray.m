@@ -2,6 +2,12 @@
 %   rigidly attached to a body with different positions and orientations
 classdef InertialArray < tom.Sensor
 
+  methods (Access=public)
+    function this=InertialArray(initialTime)
+      this=this@tom.Sensor(initialTime);
+    end
+  end
+  
   methods (Abstract)
     % Get number of axes in the array
     %

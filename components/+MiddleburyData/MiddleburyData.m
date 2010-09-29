@@ -20,9 +20,9 @@ classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & tom.DataContaine
   end
   
   methods (Access=public)
-    function this=MiddleburyData
-      this=this@tom.DataContainer;
-      this.sensor{1}=MiddleburyData.CameraSim;
+    function this=MiddleburyData(initialTime)
+      this=this@tom.DataContainer(initialTime);
+      this.sensor{1}=MiddleburyData.CameraSim(initialTime);
       this.sensorDescription{1}='Forward facing monocular perspective camera fixed at the body origin';
       this.hasRef=true;
       this.bodyRef=MiddleburyData.BodyReference;

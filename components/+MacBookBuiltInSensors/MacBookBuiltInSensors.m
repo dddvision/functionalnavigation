@@ -26,8 +26,8 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
   end
   
   methods (Access=public)
-    function this=MacBookBuiltInSensors
-      this=this@tom.DataContainer;
+    function this=MacBookBuiltInSensors(initialTime)
+      this=this@tom.DataContainer(initialTime);
       if(this.verbose)
         fprintf('\n\nInitializing %s\n',class(this));
       end
@@ -37,8 +37,8 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
 
       this.sensorDescription{1}=this.camDescription;
       this.sensorDescription{2}=this.accDescription;
-      this.sensors{1}=MacBookBuiltInSensors.MacCam;
-      this.sensors{2}=MacBookBuiltInSensors.MacAcc;
+      this.sensors{1}=MacBookBuiltInSensors.MacCam(initialTime);
+      this.sensors{2}=MacBookBuiltInSensors.MacAcc(initialTime);
     end
     
     function list=listSensors(this,type)

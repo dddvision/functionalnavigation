@@ -19,8 +19,8 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataConta
   end
   
   methods (Access=public)
-    function this=ThesisDataDDiel
-      this=this@tom.DataContainer;
+    function this=ThesisDataDDiel(initialTime)
+      this=this@tom.DataContainer(initialTime);
       dataSetName=this.dataSetName;
       repository=this.repository;
       localDir=fileparts(mfilename('fullpath'));
@@ -42,9 +42,9 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataConta
       end
       this.hasRef=true;
       this.bodyRef=ThesisDataDDiel.BodyReference(localCache,dataSetName);
-      this.sensors{1}=ThesisDataDDiel.CameraSim(localCache);
+      this.sensors{1}=ThesisDataDDiel.CameraSim(initialTime,localCache);
       this.sensorDescription{1}='Monocular fisheye camera fixed to body frame with offset and rotation';
-      this.sensors{2}=ThesisDataDDiel.InertialSim(localCache);
+      this.sensors{2}=ThesisDataDDiel.InertialSim(initialTime,localCache);
       this.sensorDescription{2}='Six axis inertial sensor fixed to body frame with offset and rotation';
     end
     

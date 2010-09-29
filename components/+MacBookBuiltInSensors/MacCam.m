@@ -23,8 +23,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   end
   
   methods (Access=public)
-    function this=MacCam
-      this=this@Camera;
+    function this=MacCam(initialTime)
+      this=this@Camera(initialTime);
       if(this.verbose)
         fprintf('\nInitializing %s\n',class(this));
       end

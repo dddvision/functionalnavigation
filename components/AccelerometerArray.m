@@ -1,6 +1,12 @@
 % This class defines how to access data from an accelerometer
 classdef AccelerometerArray < InertialArray
   
+  methods (Access=public)
+    function this=AccelerometerArray(initialTime)
+      this=this@InertialArray(initialTime);
+    end
+  end
+  
   methods (Abstract=true)
     % Get raw accelerometer data
     %

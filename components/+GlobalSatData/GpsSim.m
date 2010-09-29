@@ -19,7 +19,9 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
   end
   
   methods (Access=public)
-    function this=GpsSim
+    function this=GpsSim(initialTime)
+      this=this@GPSReceiver(initialTime);
+      
       % Read the configuration file
       this.refData = readGPSdataFile(this.referenceTrajectoryFile);
       

@@ -10,7 +10,7 @@ classdef DemoDisplay < DemoConfig & handle
   
   methods (Access=public)
 
-    function this=DemoDisplay(uri)
+    function this=DemoDisplay(initialTime,uri)
       if(this.textOnly)
         return;
       end
@@ -41,7 +41,7 @@ classdef DemoDisplay < DemoConfig & handle
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         if(strcmp(scheme,'matlab'))
-          container=tom.DataContainer.create(resource);
+          container=tom.DataContainer.create(resource,initialTime);
           if(hasReferenceTrajectory(container))
             xRef=getReferenceTrajectory(container);
             this.tRef=generateSampleTimes(this,xRef);

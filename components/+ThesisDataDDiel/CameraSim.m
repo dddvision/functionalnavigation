@@ -16,7 +16,8 @@ classdef CameraSim < Camera
   end
   
   methods (Access=public)
-    function this=CameraSim(localCache)
+    function this=CameraSim(initialTime,localCache)
+      this=this@Camera(initialTime);
       this.localCache=localCache;
       try
         info=dir(fullfile(localCache,'/color*'));

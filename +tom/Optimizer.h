@@ -52,7 +52,7 @@ namespace tom
      * Protected method to construct a component instance
      *
      * NOTES
-     * Each subclass constructor should initialize this base class
+     * Each subclass constructor must initialize this base class
      * (MATLAB) Initialize by calling this=this@tom.Optimizer();
      */
     Optimizer(void)

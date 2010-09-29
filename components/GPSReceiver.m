@@ -1,6 +1,12 @@
 % This class defines a single receiver in a global positioning system
 classdef GPSReceiver < tom.Sensor
     
+  methods (Access=public)
+    function this=GPSReceiver(initialTime)
+      this=this@tom.Sensor(initialTime);
+    end
+  end
+  
   methods (Abstract=true)
     % Get antenna offset relative to the body frame
     %

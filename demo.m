@@ -39,8 +39,13 @@ reset(RandStream.getDefaultStream);
 % get configuration
 config=DemoConfig;
 
+
+% TODO: get system time instead of using the configuration default
+initialTime=config.defaultInitialTime;
+
+
 % instantiate the graphical display
-gui=DemoDisplay(config.uri);
+gui=DemoDisplay(initialTime,config.uri);
 
 % instantiate an optimizer
 name=config.optimizerName;
@@ -60,26 +65,12 @@ for m=1:M
   fprintf('\n\nInitializing Measure: %s',name);
   if(tom.Measure.isConnected(name))
     fprintf('\n%s',tom.Measure.description(name));
-    measure{m}=tom.Measure.create(name,config.uri);
+    measure{m}=tom.Measure.create(name,initialTime,config.uri);
   else
     error('TOMMAS component is not recognized. Ensure that it is present in the MATLAB path.');
   end
 end
 
-% determine initial time based on first available data node
-initialTime=tom.WorldTime(Inf);
-for m=1:M
-  measure{m}.refresh();
-  if(measure{m}.hasData())
-    initialTime=tom.WorldTime(min(initialTime,measure{m}.getTime(measure{m}.first())));
-  end
-end
-
-% use default initial time when no data is available
-if(isinf(initialTime))
-  initialTime=config.defaultInitialTime;
-end
-  
 % initialize multiple dynamic models
 name=config.dynamicModelName;
 fprintf('\n\nInitializing DynamicModel: %s',name);

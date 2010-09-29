@@ -1,7 +1,7 @@
 classdef DataContainerTest < handle
   
   methods (Access=public)
-    function this=DataContainerTest(name)
+    function this=DataContainerTest(name,initialTime)
       fprintf('\n\n*** DataContainerTest ***');
             
       fprintf('\n\ntom.DataContainer.description =');
@@ -10,7 +10,7 @@ classdef DataContainerTest < handle
       fprintf(' %s',text);
       
       fprintf('\ntom.DataContainer.create =');
-      dataContainer=tom.DataContainer.create(name);
+      dataContainer=tom.DataContainer.create(name,initialTime);
       assert(isa(dataContainer,'tom.DataContainer'));
       fprintf(' ok');
     end

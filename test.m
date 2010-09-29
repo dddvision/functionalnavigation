@@ -80,7 +80,7 @@ function test(name)
     testbed.OptimizerTest(name,dynamicModelName,measureName,initialTime,uri);
   end
   if(tom.DataContainer.isConnected(name))
-    testbed.DataContainerTest(name);
+    testbed.DataContainerTest(name,initialTime);
   end
 
   fprintf('\n\nDone');

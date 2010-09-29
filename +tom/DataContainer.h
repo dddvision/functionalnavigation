@@ -41,7 +41,7 @@ namespace tom
     }
 
     /* Storage for component factories */
-    typedef DataContainer* (*DataContainerFactory)(void);
+    typedef DataContainer* (*DataContainerFactory)(const WorldTime);
     static std::map<std::string, DataContainerFactory>* pFactoryList(void)
     {
       static std::map<std::string, DataContainerFactory> factoryList;
@@ -52,11 +52,13 @@ namespace tom
     /**
      * Protected method to construct a singleton component instance
      *
+     * @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor
+     *
      * NOTES
-     * Each subclass constructor should initialize this base class
+     * Each subclass constructor must initialize this base class
      * (MATLAB) Initialize by calling this=this@tom.DataContainer;
      */
-    DataContainer(void)
+    DataContainer(const WorldTime initialTime)
     {}
 
     /**
@@ -122,6 +124,7 @@ namespace tom
     /**
      * Public method to construct a singleton component instance
      *
+     * @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor
      * @param[in] name component identifier
      * @return         singleton object instance that should not be deleted
      *
@@ -129,14 +132,14 @@ namespace tom
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
-    static DataContainer* create(const std::string name)
+    static DataContainer* create(const WorldTime initialTime, const std::string name)
     {
       static DataContainer* singleton = NULL;
       if(singleton==NULL)
       {
         if(isConnected(name))
         {
-          singleton = (*pFactoryList())[name]();
+          singleton = (*pFactoryList())[name](initialTime);
         }
         else
         {

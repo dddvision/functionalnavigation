@@ -21,7 +21,8 @@ classdef DataContainer < handle
   end
   
   methods (Access=protected,Static=true)
-    function this=DataContainer
+    function this=DataContainer(initialTime)
+      assert(isa(initialTime,'tom.WorldTime'));
     end
     
     function connect(name,cD,cF)
@@ -56,12 +57,13 @@ classdef DataContainer < handle
       end
     end
     
-    function obj=create(name)
+    function obj=create(name,initialTime)
       persistent singleton
+      assert(isa(initialTime,'tom.WorldTime'));
       if(tom.DataContainer.isConnected(name))
         if(isempty(singleton))
           cF=tom.DataContainer.pFactoryList(name);
-          obj=cF.(name)();
+          obj=cF.(name)(initialTime);
           assert(isa(obj,'tom.DataContainer'));
           singleton=obj;
         else

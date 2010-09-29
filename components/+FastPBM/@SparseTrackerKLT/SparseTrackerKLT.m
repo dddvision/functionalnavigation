@@ -38,7 +38,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         cd(userDirectory);
       end
       
-      this.firstTrack=true;
+      this.firstTrack = true;
       this.track();
     end
   end
@@ -63,11 +63,6 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     
     function time = getTime(this, n)
       time = this.camera.getTime(n);
-    end
-
-    function refreshWithPrediction(this, x)
-      assert(isa(x,'Trajectory'));
-      this.refresh();
     end
     
     function flag = isFrameDynamic(this)

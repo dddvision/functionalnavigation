@@ -13,7 +13,8 @@ classdef InertialSim < InertialSixDoF
   end
   
   methods (Access=public)
-    function this=InertialSim(localCache)
+    function this=InertialSim(initialTime,localCache)
+      this=this@InertialSixDoF(initialTime);
       this.pFrame=[0;0;0];
       this.qFrame=[1;0;0;0];
       try
