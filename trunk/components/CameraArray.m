@@ -2,6 +2,12 @@
 %   rigidly attached to a body with different positions and orientations
 classdef CameraArray < tom.Sensor
   
+  methods (Access=public)
+    function this=CameraArray(initialTime)
+      this=this@tom.Sensor(initialTime);
+    end
+  end
+  
   methods (Abstract=true)
     % Get number of cameras in the array
     %

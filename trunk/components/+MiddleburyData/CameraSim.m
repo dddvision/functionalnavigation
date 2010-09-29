@@ -21,7 +21,8 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
   end
   
   methods (Access=public)
-    function this=CameraSim
+    function this=CameraSim(initialTime)
+      this=this@Camera(initialTime);
       this.ringsz=uint32(this.numImages);
       for n=1:this.ringsz
         this.ring{n}.time=tom.WorldTime(double(n-1)/this.fps);

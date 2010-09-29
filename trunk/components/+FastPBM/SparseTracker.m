@@ -1,15 +1,6 @@
 classdef SparseTracker < tom.Sensor
   
   methods (Abstract=true,Access=public,Static=false)
-    % Refresh the tracker given a predicted body trajectory
-    %
-    % @param[in] x predicted body trajectory
-    %
-    % NOTES
-    % If the predicted body trajectory is not available then use the sensor refresh function without arguments
-    % @see tom.Sensor.refresh()
-    refreshWithPrediction(this, x);
-    
     % Check whether the sensor frame moves relative to the body framer
     %
     % @param[out] flag true if the offset can change or false otherwise (MATLAB: bool scalar)

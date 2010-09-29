@@ -46,7 +46,7 @@ namespace tom
     }
 
     /* Storage for component factories */
-    typedef Measure* (*MeasureFactory)(const std::string);
+    typedef Measure* (*MeasureFactory)(const WorldTime, const std::string);
     static std::map<std::string, MeasureFactory>* pFactoryList(void)
     {
       static std::map<std::string, MeasureFactory> factoryList;
@@ -57,17 +57,18 @@ namespace tom
     /**
      * Protected method to construct a component instance
      *
-     * @param[in] uri (@see tom::Measure)
+     * @param[in] initialTime less than or equal to the time stamp of the first data node
+     * @param[in] uri         uniform resource identifier as described below
      *
      * NOTES
      * The URI may identify a hardware resource or DataContainer
      * URI examples:
      *   'file://dev/camera0'
      *   'matlab:middleburyData'
-     * Each subclass constructor should initialize this base class
-     * (MATLAB) Initialize by calling this=this@tom.Measure(uri);
+     * Each subclass constructor must initialize this base class
+     * (MATLAB) Initialize by calling this=this@tom.Measure(initialTime,uri);
      */
-    Measure(const std::string uri)
+    Measure(const WorldTime initialTime, const std::string uri) : Sensor(initialTime)
     {}
 
     /**
@@ -141,12 +142,12 @@ namespace tom
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
-    static Measure* create(const std::string name, const std::string uri)
+    static Measure* create(const std::string name, const WorldTime initialTime, const std::string uri)
     {
       Measure* obj = NULL;
       if(isConnected(name))
       {
-        obj = (*pFactoryList())[name](uri);
+        obj = (*pFactoryList())[name](initialTime, uri);
       }
       else
       {

@@ -2,6 +2,10 @@
 classdef Camera < CameraArray
   
   methods (Access=public)
+    function this=Camera(initialTime)
+      this=this@CameraArray(initialTime);
+    end
+    
     % Limits the camera array to providing exactly one view
     function num=numViews(this)
       assert(isa(this,'Camera'));

@@ -14,7 +14,7 @@ classdef MeasureTest < handle
       fprintf(' %s',text);
       
       fprintf('\ntom.Measure.create =');
-      measure=tom.Measure.create(name,uri);
+      measure=tom.Measure.create(name,initialTime,uri);
       assert(isa(measure,'tom.Measure'));
       fprintf(' ok');
 

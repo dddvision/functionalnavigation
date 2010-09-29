@@ -17,9 +17,9 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.DataContainer
   end
   
   methods (Access=public)
-    function this=GlobalSatData
-      this=this@tom.DataContainer;
-      this.sensor{1}=GlobalSatData.GpsSim;
+    function this=GlobalSatData(initialTime)
+      this=this@tom.DataContainer(initialTime);
+      this.sensor{1}=GlobalSatData.GpsSim(initialTime);
       this.sensorDescription{1}='GlobalSat BU-xxx GPS sensor';
       this.hasRef=true;
       this.bodyRef=GlobalSatData.BodyReference;

@@ -26,7 +26,7 @@ classdef OptimizerTest < handle
       fprintf(' %s',text);
       
       dynamicModel=tom.DynamicModel.create(dynamicModelName,initialTime,uri);
-      measure{1}=tom.Measure.create(measureName,uri);
+      measure{1}=tom.Measure.create(measureName,initialTime,uri);
       
       fprintf('\ntom.Optimizer.create =');
       optimizer=tom.Optimizer.create(name);

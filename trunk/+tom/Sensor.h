@@ -13,6 +13,19 @@ namespace tom
    */
   class Sensor
   {
+  protected:
+    /**
+     * Protected constructor
+     *
+     * @param[in] initialTime less than or equal to the time stamp of the first data node
+     *
+     * NOTES
+     * Each subclass constructor must initialize this base class
+     * (MATLAB) Initialize by calling this=this@tom.Sensor(initialTime);
+     */
+    Sensor(const WorldTime initialTime)
+    {}
+
   public:
     /**
      * Incorporate new data and allow old data to expire
@@ -56,6 +69,7 @@ namespace tom
      * @return      time stamp at the node
      *
      * NOTES
+     * All time stamps must be greater than or equal to the initial time provided to the constructor
      * Time stamps must not decrease with increasing indices
      * Throws an exception if data at the node is invalid
      */

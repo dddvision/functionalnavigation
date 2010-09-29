@@ -16,8 +16,8 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
   end
   
   methods (Access=public)
-    function this=OpticalFlowOpenCV(uri)
-      this=this@tom.Measure(uri);
+    function this=OpticalFlowOpenCV(initialTime,uri)
+      this=this@tom.Measure(initialTime,uri);
       if(this.verbose)
         fprintf('\nInitializing %s\n',class(this));
       end
@@ -80,7 +80,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=tom.DataContainer.create(resource);
+            container=tom.DataContainer.create(resource,initialTime);
             list=listSensors(container,'Camera');
             this.sensor=getSensor(container,list(1));
           otherwise

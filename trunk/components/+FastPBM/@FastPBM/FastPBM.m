@@ -15,15 +15,15 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
   end
   
   methods (Access=public)
-    function this = FastPBM(uri)
-      this = this@tom.Measure(uri);
+    function this = FastPBM(initialTime, uri)
+      this = this@tom.Measure(initialTime, uri);
 
       try
         [scheme, resource] = strtok(uri, ':');
         resource = resource(2:end);
         switch(scheme)
           case 'matlab'
-            container = tom.DataContainer.create(resource);
+            container = tom.DataContainer.create(resource, initialTime);
             list = container.listSensors('Camera');
             this.sensor = container.getSensor(list(1));
           otherwise
