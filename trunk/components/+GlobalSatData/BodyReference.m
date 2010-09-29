@@ -7,10 +7,11 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & tom.Trajectory
   end
   
   methods (Access=public)
-    function this=BodyReference
+    function this=BodyReference(initialTime)
       currdir = fileparts(mfilename('fullpath'));
       full_fname = fullfile(currdir,this.referenceTrajectoryFile);
       [this.gpsTime,lon,lat,alt,vDOP,hDOP] = textread(full_fname,'%f %f %f %f %f %f','delimiter',',');
+      this.gpsTime = this.gpsTime + initialTime;
       [X,Y,Z] = GlobalSatData.lolah2ecef(lon,lat,alt);
       this.pts = [X,Y,Z];
     end

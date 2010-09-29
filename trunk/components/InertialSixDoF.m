@@ -5,6 +5,13 @@
 %   shared origin
 classdef InertialSixDoF < AccelerometerArray & GyroscopeArray
 
+  methods (Access=public, Static=true)
+    function this = InertialSixDoF(initialTime)
+      this = this@AccelerometerArray(initialTime);
+      this = this@GyroscopeArray(initialTime);
+    end
+  end
+  
   methods (Abstract=true)
     % Get sensor frame position and orientation relative to the body frame
     %

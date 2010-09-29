@@ -22,7 +22,7 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.DataContainer
       this.sensor{1}=GlobalSatData.GpsSim(initialTime);
       this.sensorDescription{1}='GlobalSat BU-xxx GPS sensor';
       this.hasRef=true;
-      this.bodyRef=GlobalSatData.BodyReference;
+      this.bodyRef=GlobalSatData.BodyReference(initialTime);
     end
     
     function list=listSensors(this,type)

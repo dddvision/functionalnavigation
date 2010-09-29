@@ -35,7 +35,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
     function this=MacAcc(initialTime)
       this=this@AccelerometerArray(initialTime);
       if(this.verbose)
-        fprintf('\nInitializing %s\n',class(this));
+        fprintf('\nInitializing %s',class(this));
       end
       
       thisPath=fileparts(mfilename('fullpath'));
@@ -107,7 +107,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
     end
     
     function time=getTime(this,n)
-      time=this.initialTime+get(this,n,4);
+      time=tom.WorldTime(this.initialTime+get(this,n,4));
     end
     
     function specificForce=getSpecificForce(this,n,ax)

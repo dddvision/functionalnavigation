@@ -3,8 +3,11 @@ function test(name)
   % display info
   fprintf('\n\nThis is the testbed script for components of the Trajectory Optimization ');
   fprintf('\nManager for Multiple Algorithms and Sensors (TOMMAS).');
-
+  
+  fprintf('\n\n*** Begin Configuration Test ***\n');
+  
   % check MATLAB version
+  fprintf('\nmatlabVersion =');
   try
     matlabVersion=version('-release');
   catch err
@@ -13,28 +16,35 @@ function test(name)
   if(str2double(matlabVersion(1:4))<2009)
     error('\nTOMMAS requires MATLAB version 2009a or greater');
   end
-
-  % close figures and clear everything except breakpoints
+  fprintf(' %s',matlabVersion);
+  
+  % close figures
+  fprintf('\nclose =');
   close('all');
+  fprintf(' ok');
+  
+  % clear everything except breakpoints
+  fprintf('\nclear =');
   breakpoints=dbstatus('-completenames');
   save('temp.mat','breakpoints','name');
   clear('classes');
   load('temp.mat');
   dbstop(breakpoints);
-
-  % set the warning state
-  warning('on','all');
-  warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
+  fprintf(' ok');
 
   % add component repository to the path
   componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
   if(isempty(findstr(componentPath,path)))
     addpath(componentPath);
-    fprintf('\n\npath added: %s',componentPath);
+    fprintf('\naddpath = %s',componentPath);
   end
+  
+  % set the warning state
+  warning('on','all');
+  warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
 
   % initialize the default pseudorandom number generator
-  reset(RandStream.getDefaultStream);
+  RandStream.getDefaultStream.reset();
 
   % testbed configuration
   uri='matlab:MiddleburyData'; % default data resource identifier
@@ -43,49 +53,21 @@ function test(name)
   
   % get system time
   initialTime=tom.getCurrentTime();
-
-  fprintf('\n\nname =');
-  assert(isa(name,'char'));
-  fprintf(' ''%s''',name);
   
-  fprintf('\n\ntom.DynamicModel.isConnected = ')
-  if(tom.DynamicModel.isConnected(name))
-    fprintf('yes');
-  else
-    fprintf('no');
-  end
-  fprintf('\ntom.Measure.isConnected = ')
-  if(tom.Measure.isConnected(name))
-    fprintf('yes');
-  else
-    fprintf('no');
-  end
-  fprintf('\ntom.Optimizer.isConnected = ')
-  if(tom.Optimizer.isConnected(name))
-    fprintf('yes');
-  else
-    fprintf('no');
-  end
-  fprintf('\ntom.DataContainer.isConnected = ')
-  if(tom.DataContainer.isConnected(name))
-    fprintf('yes');
-  else
-    fprintf('no');
-  end
+  fprintf('\n*** End Configuration Test ***');
 
-  if(tom.DynamicModel.isConnected(name))
-    testbed.DynamicModelTest(name,initialTime,uri);
+  % recurse through all packages if the input argument is 'all'
+  if(strcmp(name,'all'))
+    allPackages=meta.package.getAllPackages;
+    for pkg=1:numel(allPackages)
+      try
+        testbed.ComponentTest(allPackages{pkg}.Name,dynamicModelName,measureName,initialTime,uri);
+      catch err
+        fprintf(err.message);
+      end
+    end
+  else
+    testbed.ComponentTest(name,dynamicModelName,measureName,initialTime,uri);
   end
-  if(tom.Measure.isConnected(name))
-    testbed.MeasureTest(name,dynamicModelName,initialTime,uri);
-  end
-  if(tom.Optimizer.isConnected(name))
-    testbed.OptimizerTest(name,dynamicModelName,measureName,initialTime,uri);
-  end
-  if(tom.DataContainer.isConnected(name))
-    testbed.DataContainerTest(name,initialTime);
-  end
-
-  fprintf('\n\nDone');
 
 end

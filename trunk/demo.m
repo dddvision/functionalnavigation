@@ -22,19 +22,19 @@ clear('classes');
 load('temp.mat');
 dbstop(breakpoints);
 
-% set the warning state
-warning('on','all');
-warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
-
 % add component repository to the path
 componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
 if(isempty(findstr(componentPath,path)))
   addpath(componentPath);
-  fprintf('\npath added: %s',componentPath);
+  fprintf('\naddpath = %s',componentPath);
 end
+
+% set the warning state
+warning('on','all');
+warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
   
 % initialize the default pseudorandom number generator
-reset(RandStream.getDefaultStream);
+RandStream.getDefaultStream.reset();
 
 % get configuration
 config=DemoConfig;

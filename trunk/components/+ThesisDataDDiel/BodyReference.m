@@ -6,24 +6,26 @@ classdef BodyReference < tom.Trajectory
   end  
   
   methods (Access=public)
-    function this=BodyReference(localCache,dataSetName)
+    function this=BodyReference(initialTime,localCache,dataSetName)
       if(strcmp(dataSetName(1:6),'Gantry'))
         S=load(fullfile(localCache,'workspace.mat'),'INITIAL_BODY_STATE');
         [this.T_imu,this.x_imu]=ReadGantry(fullfile(localCache,'gantry_raw.dat'));
         N=size(this.x_imu,2);
-        this.T_imu=tom.WorldTime(this.T_imu);
         this.x_imu=[repmat(S.INITIAL_BODY_STATE(1:4),[1,N]);this.x_imu];
       else
         S=load(fullfile(localCache,'workspace.mat'),'T_imu','x_imu');
         this.x_imu=S.x_imu;
+        this.T_imu=S.T_imu;
         N=size(S.x_imu,2);
-        this.T_imu=tom.WorldTime(S.T_imu);
       end
       
       % MIT laboratory location
       DTOR=pi/180;
       refLatitude=DTOR*42.3582722;
       refLongitude=DTOR*-71.0927417;
+      
+      % add initial time to recorded time (same policy for all sensors)
+      this.T_imu=tom.WorldTime(this.T_imu+initialTime);
       
       % convert from tangent plane to ECEF
       Raxes=[0,0,-1;0,1,0;1,0,0];

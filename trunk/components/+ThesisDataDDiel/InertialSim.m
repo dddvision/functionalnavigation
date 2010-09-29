@@ -19,6 +19,7 @@ classdef InertialSim < InertialSixDoF
       this.qFrame=[1;0;0;0];
       try
         [this.time,this.gyro,this.accel]=ReadIMUdat(localCache,'inertia.dat');
+        this.time=tom.WorldTime(this.time+initialTime); % same policy for all sensors
         N=numel(this.time);
         this.na=uint32(1);
         this.nb=uint32(N);
@@ -53,7 +54,7 @@ classdef InertialSim < InertialSixDoF
       assert(this.ready);
       assert(n>=this.na);
       assert(n<=this.nb);
-      time=tom.WorldTime(this.time(n));      
+      time=this.time(n);      
     end
     
     function pose=getFrame(this)

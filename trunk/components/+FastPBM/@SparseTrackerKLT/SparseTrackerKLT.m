@@ -2,7 +2,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
   properties (Constant=true,GetAccess=private)
     halfwin = 5;
-    thresh = 0.98;
+    thresh = 0.97;
     cornerMethod = 'Harris';
   end
   
