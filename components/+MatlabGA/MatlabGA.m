@@ -153,7 +153,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function num=numSolutions(this)
-      num=numel(this.dynamicModel);
+      num=uint32(numel(this.dynamicModel));
     end
        
     function xEst=getSolution(this,k)

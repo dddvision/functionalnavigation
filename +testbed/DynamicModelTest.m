@@ -54,7 +54,7 @@ classdef DynamicModelTest
         v=dynamicModel.getInitialLogical(p-uint32(1));
         assert(isa(v,'logical'));
         if(p~=uint32(1))
-          fprintf(',');
+          fprintf(', ');
         end
         fprintf('%d',v);
         vIL(p)=v;
@@ -67,7 +67,7 @@ classdef DynamicModelTest
         v=dynamicModel.getInitialUint32(p-uint32(1));
         assert(isa(v,'uint32'));
         if(p~=uint32(1))
-          fprintf(',');
+          fprintf(', ');
         end
         fprintf('%d',v);
         vIU(p)=v;
