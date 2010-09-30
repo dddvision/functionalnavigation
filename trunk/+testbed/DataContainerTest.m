@@ -17,8 +17,15 @@ classdef DataContainerTest < handle
       fprintf('\n\nlistSensors =');
       list = dataContainer.listSensors('tom.Sensor');
       assert(isa(list,'tom.SensorIndex'));
-      fprintf(' %d', uint32(list))
-    
+      fprintf(' [');
+      for s=1:numel(list)
+        if(s~=1)
+          fprintf(', ');
+        end
+        fprintf('%d', uint32(list(s)));  
+      end
+      fprintf(']');
+        
       for id=list'
         fprintf('\n\ngetSensorDescription(%d) =', uint32(id));
         text = dataContainer.getSensorDescription(id);
@@ -48,7 +55,7 @@ classdef DataContainerTest < handle
         fprintf(' false');
       end
       
-      fprintf('\n\n*** End DataContainer Test ***\n');
+      fprintf('\n\n*** End DataContainer Test ***');
     end
   end
   

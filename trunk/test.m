@@ -54,17 +54,25 @@ function test(name)
   % get system time
   initialTime=tom.getCurrentTime();
   
-  fprintf('\n*** End Configuration Test ***');
+  fprintf('\n\n*** End Configuration Test ***');
 
   % recurse through all packages if the input argument is 'all'
   if(strcmp(name,'all'))
     allPackages=meta.package.getAllPackages;
-    for pkg=1:numel(allPackages)
+    numPackages=numel(allPackages);
+    summary='';
+    for pkg=1:numPackages
+      pkgName=allPackages{pkg}.Name;
       try
-        testbed.ComponentTest(allPackages{pkg}.Name,dynamicModelName,measureName,initialTime,uri);
+        testbed.ComponentTest(pkgName,dynamicModelName,measureName,initialTime,uri);
       catch err
         fprintf(err.message);
+        summary=cat(2,summary,pkgName,' = ',err.message,'\n');
       end
+    end
+    fprintf(['\n\n*** Error Summary ***\n\n',summary]);
+    if(isempty(summary))
+      fprintf('none');
     end
   else
     testbed.ComponentTest(name,dynamicModelName,measureName,initialTime,uri);

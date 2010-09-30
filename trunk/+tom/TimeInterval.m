@@ -39,7 +39,7 @@ classdef TimeInterval
     
     function display(this)
       for n=1:numel(this)
-        fprintf('\n%s = [%f,%f]\n',inputname(1),double(this(n).first),double(this(n).second));
+        fprintf('\n%s = [%f, %f]\n',inputname(1),double(this(n).first),double(this(n).second));
       end
     end
   end
