@@ -1,8 +1,8 @@
 classdef InertialSim < InertialSixDoF
   
   properties (Constant = true, GetAccess = private)
-    pFrame=[0;0;0];
-    qFrame=[1;0;0;0];
+    pFrame=[0; 0; 0];
+    qFrame=[1; 0; 0; 0];
   end
   
   properties (SetAccess = private, GetAccess = private)
@@ -59,7 +59,7 @@ classdef InertialSim < InertialSixDoF
       assert(this.hasData());
       assert(n>=this.na);
       assert(n<=this.nb);
-      time = this.tn(n);
+      time = this.tn(n-this.na+uint32(1));
     end
     
     function pose = getFrame(this)

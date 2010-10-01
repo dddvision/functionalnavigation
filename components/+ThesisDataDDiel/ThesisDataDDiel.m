@@ -1,13 +1,13 @@
 classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataContainer
 
-  properties (GetAccess=private, SetAccess=private)
+  properties (GetAccess = private, SetAccess = private)
     hasRef
     bodyRef
     sensors
     sensorDescription
   end
   
-  methods (Static=true, Access=public)
+  methods (Access = public,Static = true)
     function initialize(name)
       function text = componentDescription
         text = ['Real and simulated visual and inertial data undergoing mixed motion. Reference: ',...
@@ -16,9 +16,7 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataConta
       end
       tom.DataContainer.connect(name, @componentDescription, @ThesisDataDDiel.ThesisDataDDiel);
     end
-  end
   
-  methods (Access=public)
     function this = ThesisDataDDiel(initialTime)
       this = this@tom.DataContainer(initialTime);
       dataSetName = this.dataSetName;
@@ -47,7 +45,9 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataConta
       this.sensors{2} = ThesisDataDDiel.InertialSim(initialTime, this.secondsPerRefresh, localCache);
       this.sensorDescription{2} = 'Six axis inertial sensor fixed to body frame with offset and rotation';
     end
-    
+  end
+  
+  methods (Access = public,Static = false)
     function list = listSensors(this, type)
       K = numel(this.sensors);
       flag = false(K, 1);

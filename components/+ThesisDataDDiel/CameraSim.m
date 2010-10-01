@@ -69,7 +69,7 @@ classdef CameraSim < Camera
       assert(this.hasData());
       assert(n>=this.na);
       assert(n<=this.nb);
-      time = this.tn(n);
+      time = this.tn(n-this.na+uint32(1));
     end
 
     function str = interpretLayers(this, varargin)
@@ -109,7 +109,10 @@ classdef CameraSim < Camera
       flag = this.projectionDynamic;
     end
 
-    function pix = projection(this, ray, varargin)      
+    function pix = projection(this, ray, node, varargin)
+      assert(this.hasData());
+      assert(node>=this.na);
+      assert(node<=this.nb);
       switch(this.cameraType)
         case 2
           m = this.imsize(1);
@@ -152,7 +155,10 @@ classdef CameraSim < Camera
       
     end
     
-    function ray = inverseProjection(this, pix, varargin)
+    function ray = inverseProjection(this, pix, node, varargin)
+      assert(this.hasData());
+      assert(node>=this.na);
+      assert(node<=this.nb);
       switch(this.cameraType)
         case 2
           m = this.imsize(1);
