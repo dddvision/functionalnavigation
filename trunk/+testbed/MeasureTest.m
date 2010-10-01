@@ -28,7 +28,7 @@ classdef MeasureTest < handle
       
       % HACK: evaluate evaluate all edges, refresh, repeat
       if(measure.hasData())
-        for k=1:100
+        for k=1:3
           first=measure.first();
           last=measure.last();
           edges=measure.findEdges(dynamicModel,first,last,first,last);

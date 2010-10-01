@@ -78,7 +78,7 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
     end
     
     function num=numSolutions(this)
-      num=numel(this.dynamicModel);
+      num=uint32(numel(this.dynamicModel));
     end
     
     function xEst=getSolution(this,k)

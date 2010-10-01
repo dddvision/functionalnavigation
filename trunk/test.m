@@ -35,8 +35,9 @@ function test(name)
   % add component repository to the path
   componentPath = fullfile(fileparts(mfilename('fullpath')), 'components');
   if(isempty(findstr(componentPath, path)))
+    fprintf('\naddpath =');
     addpath(componentPath);
-    fprintf('\naddpath = %s', componentPath);
+    fprintf(' %s',componentPath);
   end
   
   % set the warning state
@@ -56,7 +57,7 @@ function test(name)
   
   fprintf('\n\n*** End Configuration Test ***');
 
-  % recurse through all packages if the input argument is 'all'
+  % process all packages on the path if the input argument is 'all'
   if(strcmp(name, 'all'))
     allPackages = meta.package.getAllPackages;
     numPackages = numel(allPackages);
@@ -70,10 +71,11 @@ function test(name)
         summary = cat(2, summary, pkgName, ' = ', err.message, '\n');
       end
     end
-    fprintf(['\n\n*** Error Summary ***\n\n', summary]);
+    fprintf(['\n\n*** Begin Error Summary ***\n\n', summary]);
     if(isempty(summary))
-      fprintf('none');
+      fprintf('No errors detected');
     end
+    fprintf(['\n\n*** End Error Summary ***', summary]);
   else
     testbed.ComponentTest(name, dynamicModelName, measureName, initialTime, uri);
   end
