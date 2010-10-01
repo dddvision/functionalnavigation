@@ -125,19 +125,22 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
     end
     
     function cost=computeEdgeCost(this,x,graphEdge)
+      nodeA = graphEdge.first;
+      nodeB = graphEdge.second;
+      
       % return 0 if the specified edge is not found in the graph
-      isAdjacent = ((graphEdge.first+uint32(1))==graphEdge.second) && ...
+      isAdjacent = ((nodeA+uint32(1))==nodeB) && ...
         hasData(this.sensor) && ...
-        (graphEdge.first>=first(this.sensor)) && ...
-        (graphEdge.second<=last(this.sensor));
+        (nodeA>=first(this.sensor)) && ...
+        (nodeB<=last(this.sensor));
       if(~isAdjacent)
         cost=0;
         return;
       end
 
       % return NaN if the graph edge extends outside of the trajectory domain
-      ta=getTime(this.sensor,graphEdge.first);
-      tb=getTime(this.sensor,graphEdge.second);
+      ta=getTime(this.sensor,nodeA);
+      tb=getTime(this.sensor,nodeB);
       interval=domain(x);
       if((ta<interval.first)||(tb>interval.second))
         cost=NaN;
@@ -147,7 +150,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       poseA=evaluate(x,ta);
       poseB=evaluate(x,tb);
 
-      data=computeIntermediateDataCache(this,graphEdge.first,graphEdge.second);
+      data=computeIntermediateDataCache(this,nodeA,nodeB);
 
       u=transpose(data.pixB(:,1)-data.pixA(:,1));
       v=transpose(data.pixB(:,2)-data.pixA(:,2));
@@ -161,7 +164,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       rotation=[Eb(1)-Ea(1);
                 Eb(2)-Ea(2);
                 Eb(3)-Ea(3)];
-      [uvr,uvt]=generateFlowSparse(this,translation,rotation,transpose(data.pixA));
+      [uvr,uvt]=generateFlowSparse(this,translation,rotation,transpose(data.pixA),nodeA);
 
       cost=computeCost(this,u,v,uvr,uvt);
     end  

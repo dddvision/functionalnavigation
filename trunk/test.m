@@ -7,75 +7,75 @@ function test(name)
   fprintf('\n\n*** Begin Configuration Test ***\n');
   
   % check MATLAB version
-  fprintf('\nmatlabVersion =');
+  fprintf('\nmatlabVersion  =');
   try
-    matlabVersion=version('-release');
+    matlabVersion = version('-release');
   catch err
-    error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB',err.message);
+    error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB', err.message);
   end
   if(str2double(matlabVersion(1:4))<2009)
     error('\nTOMMAS requires MATLAB version 2009a or greater');
   end
-  fprintf(' %s',matlabVersion);
+  fprintf(' %s', matlabVersion);
   
   % close figures
-  fprintf('\nclose =');
+  fprintf('\nclose  =');
   close('all');
   fprintf(' ok');
   
   % clear everything except breakpoints
-  fprintf('\nclear =');
-  breakpoints=dbstatus('-completenames');
-  save('temp.mat','breakpoints','name');
+  fprintf('\nclear  =');
+  breakpoints = dbstatus('-completenames');
+  save('temp.mat', 'breakpoints', 'name');
   clear('classes');
   load('temp.mat');
   dbstop(breakpoints);
   fprintf(' ok');
 
   % add component repository to the path
-  componentPath=fullfile(fileparts(mfilename('fullpath')),'components');
-  if(isempty(findstr(componentPath,path)))
+  componentPath = fullfile(fileparts(mfilename('fullpath')), 'components');
+  if(isempty(findstr(componentPath, path)))
     addpath(componentPath);
-    fprintf('\naddpath = %s',componentPath);
+    fprintf('\naddpath = %s', componentPath);
   end
   
   % set the warning state
-  warning('on','all');
-  warning('off','MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
+  warning('on', 'all');
+  warning('off', 'MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
 
   % initialize the default pseudorandom number generator
   RandStream.getDefaultStream.reset();
 
   % testbed configuration
-  uri='matlab:MiddleburyData'; % default data resource identifier
-  dynamicModelName='Default'; % default dynamic model name
-  measureName='Default'; % default measure name
+  uri = 'matlab:MiddleburyData'; % default data resource identifier
+  dynamicModelName = 'Default'; % default dynamic model name
+  measureName = 'Default'; % default measure name
   
   % get system time
-  initialTime=tom.getCurrentTime();
+  initialTime = getCurrentTime();
   
   fprintf('\n\n*** End Configuration Test ***');
 
   % recurse through all packages if the input argument is 'all'
-  if(strcmp(name,'all'))
-    allPackages=meta.package.getAllPackages;
-    numPackages=numel(allPackages);
-    summary='';
-    for pkg=1:numPackages
-      pkgName=allPackages{pkg}.Name;
+  if(strcmp(name, 'all'))
+    allPackages = meta.package.getAllPackages;
+    numPackages = numel(allPackages);
+    summary = '';
+    for pkg = 1:numPackages
+      pkgName = allPackages{pkg}.Name;
       try
-        testbed.ComponentTest(pkgName,dynamicModelName,measureName,initialTime,uri);
+        testbed.ComponentTest(pkgName, dynamicModelName, measureName, initialTime, uri);
       catch err
         fprintf(err.message);
-        summary=cat(2,summary,pkgName,' = ',err.message,'\n');
+        summary = cat(2, summary, pkgName, ' = ', err.message, '\n');
       end
     end
-    fprintf(['\n\n*** Error Summary ***\n\n',summary]);
+    fprintf(['\n\n*** Error Summary ***\n\n', summary]);
     if(isempty(summary))
       fprintf('none');
     end
   else
-    testbed.ComponentTest(name,dynamicModelName,measureName,initialTime,uri);
+    testbed.ComponentTest(name, dynamicModelName, measureName, initialTime, uri);
   end
 
 end

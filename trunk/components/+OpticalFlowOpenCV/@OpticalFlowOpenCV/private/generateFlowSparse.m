@@ -14,9 +14,9 @@
 %   See CameraArray.projection
 % Algorithm is based on:
 %   http://code.google.com/p/functionalnavigation/wiki/MotionInducedOpticalFlow
-function [uvr,uvt]=generateFlowSparse(this,deltap,deltaEuler,pix)
+function [uvr,uvt]=generateFlowSparse(this,deltap,deltaEuler,pix,node)
   % Put the pixel coordinates through the inverse camera projection to get ray vectors
-  c=inverseProjection(this.sensor,pix);
+  c=inverseProjection(this.sensor,pix,node);
 
   % Compute the rotation matrix R that represents the camera frame at time tb
   % relative to the camera frame at time ta.
@@ -32,7 +32,7 @@ function [uvr,uvt]=generateFlowSparse(this,deltap,deltaEuler,pix)
   c_new=transpose(R)*c; 
 
   % Put the new rays through the forward camera projection to get new pixel coordinates
-  pix_new=projection(this.sensor,c_new);
+  pix_new=projection(this.sensor,c_new,node);
 
   % The rotational flow field is the pixel coordinate difference
   uvr=pix_new-pix;
@@ -52,7 +52,7 @@ function [uvr,uvt]=generateFlowSparse(this,deltap,deltaEuler,pix)
   c_new=c-repmat(T_norm,[1,size(c,2)]);
 
   % Put the new rays through the forward camera projection to get new pixel coordinates
-  pix_new=projection(this.sensor,c_new);
+  pix_new=projection(this.sensor,c_new,node);
 
   % The translational flow field is the pixel coordinate difference
   uvt=pix_new-pix;
