@@ -79,7 +79,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
       assert(this.hasData());
       assert(n>=this.na);
       assert(n<=this.nb);
-      im = this.im{n};
+      im = this.im{n-this.na+uint32(1)};
     end
     
     function str = interpretLayers(this, varargin)

@@ -10,27 +10,27 @@ classdef ComponentTest
 
       fprintf('\nDynamicModel.isConnected = ')
       if(tom.DynamicModel.isConnected(name))
-        fprintf('yes');
+        fprintf('true');
       else
-        fprintf('no');
+        fprintf('false');
       end
       fprintf('\nMeasure.isConnected = ')
       if(tom.Measure.isConnected(name))
-        fprintf('yes');
+        fprintf('true');
       else
-        fprintf('no');
+        fprintf('false');
       end
       fprintf('\nOptimizer.isConnected = ')
       if(tom.Optimizer.isConnected(name))
-        fprintf('yes');
+        fprintf('true');
       else
-        fprintf('no');
+        fprintf('false');
       end
       fprintf('\nDataContainer.isConnected = ')
       if(tom.DataContainer.isConnected(name))
-        fprintf('yes');
+        fprintf('true');
       else
-        fprintf('no');
+        fprintf('false');
       end
 
       if(tom.DynamicModel.isConnected(name))
