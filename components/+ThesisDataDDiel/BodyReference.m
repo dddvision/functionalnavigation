@@ -48,7 +48,7 @@ classdef BodyReference < tom.Trajectory
     function pose = evaluate(this, t)
       pose(1, numel(t)) = tom.Pose;
       interval = domain(this);
-      pq = cardinalSpline(this.x_imu, this.T_imu, t);
+      pq = cardinalSpline(this.T_imu, this.x_imu, t);
       for k = find((t>=interval.first)&(t<=interval.second))
         pose(k).p = pq(1:3, k);
         pose(k).q = pq(4:7, k);
@@ -58,7 +58,7 @@ classdef BodyReference < tom.Trajectory
     function tangentPose = tangent(this, t)
       tangentPose(1, numel(t)) = tom.TangentPose;
       interval = domain(this);
-      [pq, rs] = cardinalSpline(this.x_imu, this.T_imu, t);
+      [pq, rs] = cardinalSpline(this.T_imu, this.x_imu, t);
       for k = find((t>=interval.first)&(t<=interval.second))
         tangentPose(k).p = pq(1:3, k);
         tangentPose(k).q = pq(4:7, k);
@@ -91,23 +91,29 @@ end
 %
 % NOTES
 % The default tension parameter yields a Catman Hull spline
-function [pos, posdot] = cardinalSpline(pts, t, test_t, c)
+function [pos, posdot] = cardinalSpline(t, pts, test_t, c)
+  
   if(nargin<4)
     c = 0;
   end
+  
   pts = pts';
   D = size(pts, 2);
   Ntest = numel(test_t);
   pos = zeros(D, Ntest);
   posdot = zeros(D, Ntest);
+  
   if(Ntest==0)
     return;
   end
+  
   Npts = size(pts, 1);
+  
   if(Npts<2)
-    error('At least two points required to interpolate');
+    error('At least two points are required to interpolate');
   end
-  % Compute the slopes at each point
+  
+  % compute the slopes at each given point
   wt = (1-c)./2;
   m = zeros(size(pts));
   for dim = 1:size(pts, 2)
@@ -117,26 +123,32 @@ function [pos, posdot] = cardinalSpline(pts, t, test_t, c)
   end
   m(1, :) = 2*wt*(pts(2, :)-pts(1, :));
   m(end, :) = 2*wt*(pts(end, :)-pts(end-1, :));
-  % Find the t indices between which the current test_t lies
+  
+  % interpolate
   for indx = 1:Ntest
-    t_indx = find(test_t(indx)>=t);
-    t_indx = t_indx(end);
-    if( (isempty(t_indx)) || (t_indx==1) )
+    t_indx = find(test_t(indx)>=t,1,'last');
+  
+    if(isempty(t_indx))
       t_indx = 1;
     end
-    if( t_indx==Npts )
+    
+    if(t_indx==Npts)
       t_indx = Npts-1;
     end
+    
     t_range = t(t_indx+1)-t(t_indx);
     curr_t = (test_t(indx)-t(t_indx))./t_range;
+    
     h00 = 2*curr_t.^3-3*curr_t.^2+1;
-    h10 = curr_t.^3-2*curr_t^2+curr_t;
+    h10 = curr_t.^3-2*curr_t.^2+curr_t;
     h01 = -2*curr_t.^3+3*curr_t.^2;
     h11 = curr_t.^3-curr_t.^2;
+    
     h00dot = 6*curr_t.^2-6*curr_t;
-    h10dot = 3*curr_t.^2-4*curr_t;
+    h10dot = 3*curr_t.^2-4*curr_t+1;
     h01dot = -6*curr_t.^2-6*curr_t;
     h11dot = 3*curr_t.^2-2*curr_t;
+    
     pos(:, indx) = (h00.*pts(t_indx, :) + h10.*m(t_indx, :) + ...
       h01.*pts(t_indx+1, :) + h11.*m(t_indx+1, :))';
     posdot(:, indx) = (h00dot.*pts(t_indx, :) + h10dot.*m(t_indx, :) + ...

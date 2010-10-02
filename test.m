@@ -3,11 +3,9 @@ function test(name)
   % display info
   fprintf('\n\nThis is the testbed script for components of the Trajectory Optimization ');
   fprintf('\nManager for Multiple Algorithms and Sensors (TOMMAS).');
-  
-  fprintf('\n\n*** Begin Configuration Test ***\n');
-  
+
   % check MATLAB version
-  fprintf('\nmatlabVersion  =');
+  fprintf('\n\nmatlabVersion  =');
   try
     matlabVersion = version('-release');
   catch err
@@ -18,20 +16,6 @@ function test(name)
   end
   fprintf(' %s', matlabVersion);
   
-  % close figures
-  fprintf('\nclose  =');
-  close('all');
-  fprintf(' ok');
-  
-  % clear everything except breakpoints
-  fprintf('\nclear  =');
-  breakpoints = dbstatus('-completenames');
-  save('temp.mat', 'breakpoints', 'name');
-  clear('classes');
-  load('temp.mat');
-  dbstop(breakpoints);
-  fprintf(' ok');
-
   % add component repository to the path
   componentPath = fullfile(fileparts(mfilename('fullpath')), 'components');
   if(isempty(findstr(componentPath, path)))
@@ -40,44 +24,60 @@ function test(name)
     fprintf(' %s',componentPath);
   end
   
-  % set the warning state
-  warning('on', 'all');
-  warning('off', 'MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
-
-  % initialize the default pseudorandom number generator
-  RandStream.getDefaultStream.reset();
-
-  % testbed configuration
-  uri = 'matlab:MiddleburyData'; % default data resource identifier
-  dynamicModelName = 'Default'; % default dynamic model name
-  measureName = 'Default'; % default measure name
-  
-  % get system time
-  initialTime = getCurrentTime();
-  
-  fprintf('\n\n*** End Configuration Test ***');
-
   % process all packages on the path if the input argument is 'all'
   if(strcmp(name, 'all'))
     allPackages = meta.package.getAllPackages;
     numPackages = numel(allPackages);
-    summary = '';
-    for pkg = 1:numPackages
-      pkgName = allPackages{pkg}.Name;
+    name = cell(numPackages,1);
+    for packageIndex = 1:numPackages
+      name{packageIndex} = allPackages{packageIndex}.Name;
+    end
+  else
+    name = {name};
+  end
+
+  errorSummary = cell(0,2);
+  for nameIndex = 1:numel(name)
+    % close figures
+    close('all');
+
+    % clear everything except breakpoints and necessary arguments
+    breakpoints = dbstatus('-completenames');
+    save('temp.mat', 'breakpoints', 'name', 'nameIndex', 'errorSummary');
+    clear('classes');
+    load('temp.mat');
+    dbstop(breakpoints);
+
+    % set the warning state
+    warning('on', 'all');
+    warning('off', 'MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
+
+    % initialize the default pseudorandom number generator
+    RandStream.getDefaultStream.reset();
+    
+    % get test configuration
+    config = TestConfig;
+
+    if(numel(name)==1)
+      testbed.ComponentTest(name{nameIndex}, config.dynamicModel, config.measure, config.initialTime, config.uri);
+    else
       try
-        testbed.ComponentTest(pkgName, dynamicModelName, measureName, initialTime, uri);
+        testbed.ComponentTest(name{nameIndex}, config.dynamicModel, config.measure, config.initialTime, config.uri);
       catch err
-        fprintf(err.message);
-        summary = cat(2, summary, pkgName, ' = ', err.message, '\n');
+        errorSummary = cat(1, errorSummary, {name{nameIndex}, err.message});
       end
     end
-    fprintf(['\n\n*** Begin Error Summary ***\n\n', summary]);
-    if(isempty(summary))
-      fprintf('No errors detected');
-    end
-    fprintf(['\n\n*** End Error Summary ***', summary]);
-  else
-    testbed.ComponentTest(name, dynamicModelName, measureName, initialTime, uri);
   end
+  
+  fprintf('\n\n*** Begin Summary ***\n');
+  numErrors = size(errorSummary,1);
+  name = char(errorSummary{:,1});
+  for nameIndex = 1:numErrors
+    fprintf('\n%s = %s',name(nameIndex,:),errorSummary{nameIndex,2});
+  end
+  if(numErrors>0)
+    fprintf('\n');
+  end
+  fprintf('\n*** End Summary ***');
 
 end
