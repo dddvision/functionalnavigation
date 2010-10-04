@@ -97,15 +97,32 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       end
 
       % get data from the tracker
-      % numA = this.tracker.numFeatures(nA);
-      % k = uint32(1):numA;
-      % rayA = this.tracker.getFeatureRay(nA,k-uint32(1));
-      % idA = this.tracker.getFeatureID(nA,k-uint32(1));
+%       numA = this.tracker.numFeatures(nA);
+%       k = uint32(1):numA;
+%       rayA = this.tracker.getFeatureRay(nA,k-uint32(1));
+%       idA = this.tracker.getFeatureID(nA,k-uint32(1));
       
-      %poseA = evaluate(x,tA);
-      %poseB = evaluate(x,tB);
+      poseA = evaluate(x,tA);
+      poseB = evaluate(x,tB);
       
-      cost=0;
+     
+      data=computeIntermediateDataCache(this,graphEdge.first,graphEdge.second);
+
+      u=transpose(data.pixB(:,1)-data.pixA(:,1));
+      v=transpose(data.pixB(:,2)-data.pixA(:,2));
+
+      Ea=Quat2Euler(poseA.q);
+      Eb=Quat2Euler(poseB.q);
+
+      translation=[poseB.p(1)-poseA.p(1);
+                   poseB.p(2)-poseA.p(2);
+                   poseB.p(3)-poseA.p(3)];
+      rotation=[Eb(1)-Ea(1);
+                Eb(2)-Ea(2);
+                Eb(3)-Ea(3)];
+      [uvr,uvt]=generateFlowSparse(this,translation,rotation,transpose(data.pixA));
+
+      cost=computeCost(this,u,v,uvr,uvt);
     end
   end
   
