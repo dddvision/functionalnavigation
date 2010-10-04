@@ -56,7 +56,7 @@ end
 % NOTES
 % The default tension parameter yields a Catman Hull spline
 function [pos, posdot] = cardinalSpline(t, pts, test_t, c)
-  
+
   if(nargin<4)
     c = 0;
   end
@@ -110,7 +110,7 @@ function [pos, posdot] = cardinalSpline(t, pts, test_t, c)
 
     h00dot = 6*curr_t.^2-6*curr_t;
     h10dot = 3*curr_t.^2-4*curr_t+1;
-    h01dot = -6*curr_t.^2-6*curr_t;
+    h01dot = -6*curr_t.^2+6*curr_t;
     h11dot = 3*curr_t.^2-2*curr_t;
 
     pos(:, indx) = (h00.*pts(t_indx, :) + h10.*m(t_indx, :) + ...
