@@ -1,4 +1,5 @@
 function data=computeIntermediateData(this,na,nb)
+  persistent handle
 
   ia=getImage(this.sensor,na);
   ib=getImage(this.sensor,nb);
@@ -18,16 +19,22 @@ function data=computeIntermediateData(this,na,nb)
   data=struct('pixA',pixA,'pixB',pixB);
   
   if(this.displayFlow)
-    pixA=pixA+1;
-    pixB=pixB+1;
-    figure;
-    colormap('gray');
+    if(isempty(handle))
+      handle=figure;
+    else
+      figure(handle);
+      clf(handle);
+    end
     imagesc(ia);
     hold('on');
+    pixA=pixA+1;
+    pixB=pixB+1;
     for ind = 1: size(pixA,1)
       line([pixA(ind,1) pixB(ind,1)], [pixA(ind,2) pixB(ind,2)],'Color','c');
     end
+    colormap('gray');
     hold('off');
+    drawnow;
   end
   
 end
