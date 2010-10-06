@@ -20,25 +20,52 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & tom.Trajectory
       interval=tom.TimeInterval(tom.WorldTime(this.gpsTime(1)),tom.WorldTime(this.gpsTime(end)));
     end
     
-    function pose=evaluate(this,t)
-      pose(1,numel(t))=tom.Pose;
-      p=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension); 
-      interval=domain(this);
-      for k=find((t>=interval.first)&(t<=interval.second))
-        pose(k).p=p(:,k);
-        pose(k).q=[1;0;0;0];
+    function pose=evaluate(this, t)
+      N = numel(t);
+      if(N==0)
+        pose = repmat(tom.Pose, [1, 0]);
+      else
+        pose(1, N) = tom.Pose;
+        interval = domain(this);
+        lowerBound = t>=interval.first;
+        upperBound = t<=interval.second;
+        p = cardinalSpline(this.gpsTime, this.pts, t(lowerBound&upperBound), this.splineTension); 
+        k = 1;
+        for n = find(lowerBound)
+          if(upperBound(n))
+            pose(n).p = p(:, k);
+            pose(n).q = [1; 0; 0; 0];
+            k = k+1;
+          else
+            finalTangentPose = tangent(this, interval.second);
+            pose(n) = predictPose(finalTangentPose, t(n)-interval.second);
+          end
+        end
       end
     end
     
-    function tangentPose=tangent(this,t)
-      tangentPose(1,numel(t))=tom.TangentPose;
-      [p,r]=cardinalSpline(this.gpsTime,this.pts,t,this.splineTension); 
-      interval=domain(this);
-      for k=find((t>=interval.first)&(t<=interval.second))
-        tangentPose(k).p=p(:,k);
-        tangentPose(k).q=[1;0;0;0];
-        tangentPose(k).r=r(:,k);
-        tangentPose(k).s=[0;0;0;0];
+    function tangentPose=tangent(this, t)
+      N = numel(t);
+      if(N==0);
+        tangentPose = repmat(tom.TangentPose, [1, 0]);
+      else
+        tangentPose(1, N) = tom.TangentPose;
+        interval = domain(this);
+        lowerBound = t>=interval.first;
+        upperBound = t<=interval.second;
+        [p, r] = cardinalSpline(this.gpsTime, this.pts, t(lowerBound&upperBound), this.splineTension); 
+        k = 1;
+        for n = find(lowerBound)
+          if(upperBound(n))
+            tangentPose(n).p = p(:, k);
+            tangentPose(n).q = [1; 0; 0; 0];
+            tangentPose(n).r = r(:, k);
+            tangentPose(n).s = [0; 0; 0; 0];
+          else
+            finalTangentPose = tangent(this, interval.second);
+            tangentPose(n) = predictTangentPose(finalTangentPose, t(n)-interval.second);
+          end
+        end
       end
     end
   end
@@ -117,5 +144,39 @@ function [pos, posdot] = cardinalSpline(t, pts, test_t, c)
       h01.*pts(t_indx+1, :) + h11.*m(t_indx+1, :))';
     posdot(:, indx) = (h00dot.*pts(t_indx, :) + h10dot.*m(t_indx, :) + ...
       h01dot.*pts(t_indx+1, :) + h11dot.*m(t_indx+1, :))';
+  end
+end
+
+function pose = predictPose(tP, dt)
+  N = numel(dt);
+  if(N==0)
+    pose = repmat(tom.Pose, [1, 0]);
+    return;
+  end
+
+  p = tP.p*ones(1, N)+tP.r*dt;
+  
+  pose(1, N) = tom.Pose;
+  for n=1:N
+    pose(n).p = p(:, n);
+    pose(n).q = tP.q;
+  end
+end
+
+function tangentPose = predictTangentPose(tP, dt)
+  N = numel(dt);
+  if(N==0)
+    tangentPose = repmat(tom.TangentPose, [1, 0]);
+    return;
+  end
+
+  p = tP.p*ones(1, N)+tP.r*dt;
+
+  tangentPose(1, N) = tP;
+  for n=1:N
+    tangentPose(n).p = p(:, n);
+    tangentPose(n).q = tP.q;
+    tangentPose(n).r = tP.r;
+    tangentPose(n).s = tP.s;
   end
 end

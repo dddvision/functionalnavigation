@@ -46,24 +46,52 @@ classdef BodyReference < tom.Trajectory
     end
 
     function pose = evaluate(this, t)
-      pose(1, numel(t)) = tom.Pose;
-      interval = domain(this);
-      pq = cardinalSpline(this.T_imu, this.x_imu, t);
-      for k = find((t>=interval.first)&(t<=interval.second))
-        pose(k).p = pq(1:3, k);
-        pose(k).q = pq(4:7, k);
+      N = numel(t);
+      if(N==0)
+        pose = repmat(tom.Pose, [1, N]);
+      else
+        pose(1, N) = tom.Pose;
+        interval = domain(this);
+        lowerBound = t>=interval.first;
+        upperBound = t<=interval.second;
+        pq = cardinalSpline(this.T_imu, this.x_imu, t(lowerBound&upperBound));
+        k = 1;
+        for n = find(lowerBound)
+          if(upperBound(n))
+            pose(n).p = pq(1:3, k);
+            pose(n).q = pq(4:7, k);
+            k = k+1;
+          else
+            finalTangentPose = tangent(this, interval.second);
+            pose(n) = predictPose(finalTangentPose, t(n)-interval.second);
+          end
+        end
       end
     end
 
     function tangentPose = tangent(this, t)
-      tangentPose(1, numel(t)) = tom.TangentPose;
-      interval = domain(this);
-      [pq, rs] = cardinalSpline(this.T_imu, this.x_imu, t);
-      for k = find((t>=interval.first)&(t<=interval.second))
-        tangentPose(k).p = pq(1:3, k);
-        tangentPose(k).q = pq(4:7, k);
-        tangentPose(k).r = rs(1:3, k);
-        tangentPose(k).s = rs(4:7, k);
+      N = numel(t);
+      if(N==0)
+        tangentPose = repmat(tom.TangentPose, [1, 0]);
+      else
+        tangentPose(1, N) = tom.TangentPose;
+        interval = domain(this);
+        lowerBound = t>=interval.first;
+        upperBound = t<=interval.second;
+        [pq, rs] = cardinalSpline(this.T_imu, this.x_imu, t(lowerBound&upperBound));
+        k = 1;
+        for n = find(lowerBound)
+          if(upperBound(n))
+            tangentPose(n).p = pq(1:3, k);
+            tangentPose(n).q = pq(4:7, k);
+            tangentPose(n).r = rs(1:3, k);
+            tangentPose(n).s = rs(4:7, k);
+            k = k+1;
+          else
+            finalTangentPose = tangent(this, interval.second);
+            tangentPose(n) = predictTangentPose(finalTangentPose, t(n)-interval.second);
+          end
+        end
       end
     end
   end
@@ -146,7 +174,7 @@ function [pos, posdot] = cardinalSpline(t, pts, test_t, c)
     
     h00dot = 6*curr_t.^2-6*curr_t;
     h10dot = 3*curr_t.^2-4*curr_t+1;
-    h01dot = -6*curr_t.^2-6*curr_t;
+    h01dot = -6*curr_t.^2+6*curr_t;
     h11dot = 3*curr_t.^2-2*curr_t;
     
     pos(:, indx) = (h00.*pts(t_indx, :) + h10.*m(t_indx, :) + ...
@@ -201,17 +229,6 @@ function M = Euler2Matrix(Y)
   M(3, 3) = c2.*c1;
 end
 
-function h = Quat2Homo(q)
-  q1 = q(1);
-  q2 = q(2);
-  q3 = q(3);
-  q4 = q(4);
-  h = [[q1, -q2, -q3, -q4]
-       [q2,  q1, -q4,  q3]
-       [q3,  q4,  q1, -q2]
-       [q4, -q3,  q2,  q1]];
-end
-
 function ecef = lolah2ecef(lolah)
   lon = lolah(1, :);
   lat = lolah(2, :);
@@ -228,4 +245,95 @@ function ecef = lolah2ecef(lolah)
   ecef = [(alt+N).*clat.*cos(lon);
           (alt+N).*clat.*sin(lon);
           ((b2./a2)*N+alt).*slat];
+end
+
+function pose = predictPose(tP, dt)
+  N = numel(dt);
+  if(N==0)
+    pose = repmat(tom.Pose, [1, 0]);
+    return;
+  end
+
+  p = tP.p*ones(1, N)+tP.r*dt;
+  w = Quat2Homo(QuatConj(tP.q))*(2*tP.s); % 2*conj(q)*qdot
+  dq = AxisAngle2Quat(w(2:4)*dt);
+  q = Quat2HomoReverse(tP.q)*dq; % dq*q
+  
+  pose(1, N) = tom.Pose;
+  for n=1:N
+    pose(n).p = p(:, n);
+    pose(n).q = q(:, n);
+  end
+end
+
+function tangentPose = predictTangentPose(tP, dt)
+  N = numel(dt);
+  if(N==0)
+    tangentPose = repmat(tom.TangentPose, [1, 0]);
+    return;
+  end
+
+  p = tP.p*ones(1, N)+tP.r*dt;
+  w = Quat2Homo(QuatConj(tP.q))*(2*tP.s); % 2*conj(q)*qdot
+  dq = AxisAngle2Quat(w(2:4)*dt); 
+  q = Quat2HomoReverse(tP.q)*dq; % dq*q
+  s = 0.5*Quat2HomoReverse(w)*q; % 0.5*q*w
+
+  tangentPose(1, N) = tP;
+  for n=1:N
+    tangentPose(n).p = p(:, n);
+    tangentPose(n).q = q(:, n);
+    tangentPose(n).r = tP.r;
+    tangentPose(n).s = s(:, n);
+  end
+end
+
+function h = Quat2HomoReverse(q)
+  q1 = q(1);
+  q2 = q(2);
+  q3 = q(3);
+  q4 = q(4);
+  h = [[q1, -q2, -q3, -q4]
+       [q2,  q1,  q4, -q3]
+       [q3, -q4,  q1,  q2]
+       [q4,  q3, -q2,  q1]];
+end
+
+function h = Quat2Homo(q)
+  q1 = q(1);
+  q2 = q(2);
+  q3 = q(3);
+  q4 = q(4);
+  h = [[q1, -q2, -q3, -q4]
+       [q2,  q1, -q4,  q3]
+       [q3,  q4,  q1, -q2]
+       [q4, -q3,  q2,  q1]];
+end
+
+function q = QuatConj(q)
+ q(2:4, :) = -q(2:4, :);
+end
+
+function q = AxisAngle2Quat(v)
+  v1 = v(1, :);
+  v2 = v(2, :);
+  v3 = v(3, :);
+  n = sqrt(v1.*v1+v2.*v2+v3.*v3);
+  good = n>eps;
+  ngood = n(good);
+  N = numel(n);
+  a = zeros(1, N);
+  b = zeros(1, N);
+  c = zeros(1, N);
+  th2 = zeros(1, N);
+  a(good) = v1(good)./ngood;
+  b(good) = v2(good)./ngood;
+  c(good) = v3(good)./ngood;
+  th2(good) = ngood/2;
+  s = sin(th2);
+  q1 = cos(th2);
+  q2 = s.*a;
+  q3 = s.*b;
+  q4 = s.*c;
+  q = [q1; q2; q3; q4];
 end
