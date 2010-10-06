@@ -6,8 +6,16 @@ classdef TrajectoryTest
     infinity = 1000; % (1000) maximum span of time domain when the upper bound is infinite
   end
   
-  properties (Access = private)
-    handle
+  methods (Access = private, Static = true)
+    function handle = figureHandle
+      persistent h
+      if(isempty(h))
+        h=figure;
+        set(h,'Units','normalized','Position',[0,0,1,1]);
+        set(h, 'Name', 'Trajectory history (blue) and prediction (red)');
+      end
+      handle = h;
+    end        
   end
   
   methods (Access = public, Static = true)
@@ -99,12 +107,7 @@ classdef TrajectoryTest
       assert(~any(isnan(tangentPose.r)));
       assert(~any(isnan(tangentPose.s)));
       
-      if(isempty(this.handle))
-        this.handle = figure;
-      else
-        figure(this.handle);
-      end
-      set(this.handle, 'Name', 'Trajectory history (blue) and prediction (red)');
+      figure(this.figureHandle);
       for d = 1:3
         subplot(7, 2, 2*d-1);
         cla;

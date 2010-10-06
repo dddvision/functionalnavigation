@@ -141,58 +141,98 @@ namespace BrownianPlanar
       return;
     }
 
-    void evaluatePose(const tom::WorldTime& time, tom::Pose& pose)
-    {
-      static const tom::Pose nullPose;
-      uint32_t dkFloor;
-      double dtRemain;
-      double halfAngle;
-
-      if((time<interval.first)||(time>interval.second))
-      {
-        pose = nullPose;
-        return;
-      }
-
-      evaluateGeneral(time, pose, dkFloor, dtRemain, halfAngle);
-      transformPose(pose);
-
-      return;
-    }
-
     void evaluateTangentPose(const tom::WorldTime& time, tom::TangentPose& tangentPose)
     {
       static const tom::TangentPose nullTangentPose;
+      static tom::TangentPose tP;
       uint32_t dkFloor;
       double dtRemain;
       double halfAngle;
       double halfAngleRate;
       double ct2;
       double ct3;
+      tom::WorldTime dt;
 
-      if((time<interval.first)||(time>interval.second))
+      if(time<interval.first)
       {
         tangentPose = nullTangentPose;
-        return;
       }
+      else if(time>interval.second)
+      {
+        evaluateTangentPose(interval.second, tP);
+        dt = time-interval.second;
+        halfAngleRate = tP.q[0]*tP.s[3]-tP.q[3]*tP.s[0];
+        halfAngle = atan2(tP.q[3],tP.q[0])+halfAngleRate*dt;
+        tangentPose.p[0] = tP.p[0]+tP.r[0]*dt;
+        tangentPose.p[1] = tP.p[1]+tP.r[1]*dt;
+        tangentPose.p[2] = tP.p[2]+tP.r[2]*dt;
+        tangentPose.q[0] = cos(halfAngle);
+        tangentPose.q[1] = 0.0;
+        tangentPose.q[2] = 0.0;
+        tangentPose.q[3] = sin(halfAngle);
+        tangentPose.r[0] = tP.r[0];
+        tangentPose.r[1] = tP.r[1];
+        tangentPose.r[2] = tP.r[2];
+        tangentPose.s[0] = -sin(halfAngle)*halfAngleRate;
+        tangentPose.s[1] = 0.0;
+        tangentPose.s[2] = 0.0;
+        tangentPose.s[3] = cos(halfAngle)*halfAngleRate;
+      }
+      else
+      {
+        evaluateGeneral(time, tangentPose, dkFloor, dtRemain, halfAngle);
 
-      evaluateGeneral(time, tangentPose, dkFloor, dtRemain, halfAngle);
+        ct2 = dtRemain;
+        ct3 = ct2/normalizedRotationalMass;
+        ct2 /= normalizedMass;
 
-      ct2 = dtRemain;
-      ct3 = ct2/normalizedRotationalMass;
-      ct2 /= normalizedMass;
+        tangentPose.r[0] = xRate[dkFloor]+ct2*fx[dkFloor];
+        tangentPose.r[1] = yRate[dkFloor]+ct2*fy[dkFloor];
+        tangentPose.r[2] = 0.0;
+        halfAngleRate = 0.5*(aRate[dkFloor]+ct3*fa[dkFloor]);
+        tangentPose.s[0] = -sin(halfAngle)*halfAngleRate;
+        tangentPose.s[1] = 0.0;
+        tangentPose.s[2] = 0.0;
+        tangentPose.s[3] = cos(halfAngle)*halfAngleRate;
 
-      tangentPose.r[0] = xRate[dkFloor]+ct2*fx[dkFloor];
-      tangentPose.r[1] = yRate[dkFloor]+ct2*fy[dkFloor];
-      tangentPose.r[2] = 0.0;
-      halfAngleRate = 0.5*(aRate[dkFloor]+ct3*fa[dkFloor]);
-      tangentPose.s[0] = -sin(halfAngle)*halfAngleRate;
-      tangentPose.s[1] = 0.0;
-      tangentPose.s[2] = 0.0;
-      tangentPose.s[3] = cos(halfAngle)*halfAngleRate;
+        transformTangentPose(tangentPose);
+      }
+      return;
+    }
 
-      transformTangentPose(tangentPose);
+    void evaluatePose(const tom::WorldTime& time, tom::Pose& pose)
+    {
+      static const tom::Pose nullPose;
+      static tom::TangentPose tP;
+      uint32_t dkFloor;
+      double dtRemain;
+      double halfAngle;
+      double halfAngleRate;
+      tom::WorldTime dt;
 
+      if(time<interval.first)
+      {
+        pose = nullPose;
+      }
+      else if(time>interval.second)
+      {
+        evaluateTangentPose(interval.second, tP);
+        dt = time-interval.second;
+        halfAngleRate = tP.q[0]*tP.s[3]-tP.q[3]*tP.s[0];
+        halfAngle = atan2(tP.q[3],tP.q[0])+halfAngleRate*dt;
+        pose.p[0] = tP.p[0]+tP.r[0]*dt;
+        pose.p[1] = tP.p[1]+tP.r[1]*dt;
+        pose.p[2] = tP.p[2]+tP.r[2]*dt;
+        pose.q[0] = cos(halfAngle);
+        pose.q[1] = 0.0;
+        pose.q[2] = 0.0;
+        pose.q[3] = sin(halfAngle);
+      }
+      else
+      {
+        evaluateGeneral(time, pose, dkFloor, dtRemain, halfAngle);
+        transformPose(pose);
+      }
       return;
     }
 
