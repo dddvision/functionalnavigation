@@ -75,7 +75,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
       % ensure that exactly two measurements are available
       this.ready=false;
       while(etime(t1,t0)<this.timeOut)
-        refresh(this);
+        this.update();
         if(last(this)>=uint32(1))
           this.ready=true;
           break;
@@ -88,10 +88,9 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
       this.nb=uint32(1);
     end
     
-    function refresh(this)
-      fseek(this.fid,0,1);
-      sz=ftell(this.fid);
-      this.nb=uint32(max(0,floor(sz/this.lineSkip)-1));
+    function refresh(this, x)
+      assert(isa(x,'tom.Trajectory'));
+      this.update();
     end
     
     function flag=hasData(this)
@@ -171,6 +170,12 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
   end
   
   methods (Access=private)
+    function update(this)
+      fseek(this.fid,0,1);
+      sz=ftell(this.fid);
+      this.nb=uint32(max(0,floor(sz/this.lineSkip)-1));
+    end
+    
     function v=get(this,n,ax)
       persistent pn pt pax pay paz
       if(isempty(pn)||(n~=pn))

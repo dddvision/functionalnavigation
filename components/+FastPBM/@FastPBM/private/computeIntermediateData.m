@@ -1,26 +1,28 @@
-function data=computeIntermediateData(this,na,nb)
+function data = computeIntermediateData(this, nA, nB)
 
-  ia=getImage(this.sensor,na);
-  ib=getImage(this.sensor,nb);
+  % get data from the tracker
+  numA = this.tracker.numFeatures(nA);
+  numB = this.tracker.numFeatures(nB);
+  kA = (uint32(1):numA)-uint32(1);
+  kB = (uint32(1):numB)-uint32(1);
+  idA = this.tracker.getFeatureID(nA, kA);
+  idB = this.tracker.getFeatureID(nB, kB);
   
-  switch( interpretLayers(this.sensor) )
-    case {'rgb','rgbi'}
-      ia=rgb2gray(ia(:,:,1:3));
-      ib=rgb2gray(ib(:,:,1:3));
-    case {'hsv','hsvi'}
-      ia=ia(:,:,3);
-      ib=ib(:,:,3);
-    otherwise
-      % do nothing
-  end
+  % find features common to both images
+  [idAB, indexA, indexB] = intersect(idA, idB);
+  kA = kA(indexA);
+  kB = kB(indexB);
 
-  % replace with tracker
+  % get corresponding rays
+  rayA = this.tracker.getFeatureRay(nA, kA);
+  rayB = this.tracker.getFeatureRay(nB, kB);
   
-  %this.Tracker
+  % project to image space
+  pixA = this.sensor.projection(rayA, nA);
+  pixB = this.sensor.projection(rayB, nB);
   
-  
-  [pixA,pixB]=mexOpticalFlowOpenCV(double(ia),double(ib),0,9,3);
-  data=struct('pixA',pixA,'pixB',pixB);
+  % store pixel locations
+  data = struct('pixA', pixA', 'pixB', pixB');
   
 %   if(this.displayFlow)
 %     pixA=pixA+1;

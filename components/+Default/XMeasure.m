@@ -48,7 +48,8 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
       this.status=false;
     end
 
-    function refresh(this)
+    function refresh(this,x)
+      assert(isa(x,'tom.Trajectory'));
       if(this.status)
         this.nb=this.nb+uint32(1);
       else
@@ -78,8 +79,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
       time=tom.WorldTime(this.initTime+double(n)*this.dt);
     end
     
-    function edgeList=findEdges(this,x,naMin,naMax,nbMin,nbMax)
-      assert(isa(x,'tom.Trajectory'));
+    function edgeList=findEdges(this,naMin,naMax,nbMin,nbMax)
       edgeList=repmat(tom.GraphEdge,[0,1]);
       if(this.status)
         nMin=max([this.na,naMin,nbMin]);

@@ -1,41 +1,45 @@
 classdef MeasureTest < handle
   
-  methods (Access=public)
-    function this=MeasureTest(name,dynamicModelName,initialTime,uri)
+  methods (Access = public)
+    function this = MeasureTest(name, trajectory, uri)
       fprintf('\n\n*** Begin Measure Test ***\n');
       
-      fprintf('\ninitialTime =');
-      assert(isa(initialTime,'tom.WorldTime'));
-      fprintf(' %f',double(initialTime));
-      
-      fprintf('\nuri =');
-      assert(isa(uri,'char'));
-      fprintf(' ''%s''',uri);
-      
-      fprintf('\ntom.Measure.description =');
-      text=tom.Measure.description(name);
-      assert(isa(text,'char'));
-      fprintf(' %s',text);
-      
-      fprintf('\ntom.Measure.create =');
-      measure=tom.Measure.create(name,initialTime,uri);
-      assert(isa(measure,'tom.Measure'));
+      fprintf('\ntrajectory =');
+      assert(isa(trajectory, 'tom.Trajectory'));
       fprintf(' ok');
       
-      testbed.SensorTest(measure);
-
-      dynamicModel=tom.DynamicModel.create(dynamicModelName,initialTime,uri);
+      fprintf('\ninitialTime =');
+      interval = trajectory.domain();
+      initialTime = interval.first;
+      assert(isa(initialTime, 'tom.WorldTime'));
+      fprintf(' %f', double(initialTime));
+      
+      fprintf('\nuri =');
+      assert(isa(uri, 'char'));
+      fprintf(' ''%s''', uri);
+      
+      fprintf('\ntom.Measure.description =');
+      text = tom.Measure.description(name);
+      assert(isa(text, 'char'));
+      fprintf(' %s', text);
+      
+      fprintf('\ntom.Measure.create =');
+      measure = tom.Measure.create(name, initialTime, uri);
+      assert(isa(measure, 'tom.Measure'));
+      fprintf(' ok');
+     
+      testbed.SensorTest(measure, trajectory);
       
       % HACK: evaluate evaluate all edges, refresh, repeat
       if(measure.hasData())
-        for k=1:3
-          first=measure.first();
-          last=measure.last();
-          edges=measure.findEdges(dynamicModel,first,last,first,last);
-          for edgeIndex=1:numel(edges)
-            cost=measure.computeEdgeCost(dynamicModel,edges(edgeIndex));
+        for k = 1:3
+          first = measure.first();
+          last = measure.last();
+          edges = measure.findEdges(first, last, first, last);
+          for edgeIndex = 1:numel(edges)
+            cost = measure.computeEdgeCost(trajectory, edges(edgeIndex));
           end
-          measure.refresh();
+          measure.refresh(trajectory);
         end
       end
       

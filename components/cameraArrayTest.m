@@ -1,27 +1,27 @@
-function cameraArrayTest(cam)
+function cameraArrayTest(cam,trajectory)
   assert(isa(cam,'CameraArray'));
-  testCameraArrayProjection(cam);
-  testCameraArrayProjectionRoundTrip(cam);
+  testCameraArrayProjection(cam,trajectory);
+  testCameraArrayProjectionRoundTrip(cam,trajectory);
 end
 
-function testCameraArrayProjection(cam)
+function testCameraArrayProjection(cam,trajectory)
   % find out which images are available
-  refresh(cam);
-  if(~hasData(cam))
+  cam.refresh(trajectory);
+  if(~cam.hasData())
     error('camera is not ready');
   end
-  na=first(cam);
-  nb=last(cam);
+  na=cam.first();
+  nb=cam.last();
   assert(isa(na,'uint32'));
   assert(isa(nb,'uint32'));
   
-  for view=1:numViews(cam);
+  for view=1:cam.numViews();
 
     % get an image
-    img=getImage(cam,nb,view);
+    img=cam.getImage(nb,view);
 
     % convert to grayscale
-    switch interpretLayers(cam,view)
+    switch cam.interpretLayers(view)
       case 'rgb'
         gray=double(rgb2gray(img))/255;
       case 'y'
@@ -54,7 +54,7 @@ function testCameraArrayProjection(cam)
       rays=[c1(:)';c2(:)';c3(:)'];
 
       % project these rays to the given camera
-      pix=projection(cam,rays,nb,view);
+      pix=cam.projection(rays,nb,view);
 
       % grab pixels using bilinear interpolation
       bad=isnan(pix(1,:))|isnan(pix(2,:));
@@ -73,21 +73,21 @@ function testCameraArrayProjection(cam)
   end 
 end
 
-function testCameraArrayProjectionRoundTrip(cam)
+function testCameraArrayProjectionRoundTrip(cam,trajectory)
   % find out which images are available
-  refresh(cam);
-  if(~hasData(cam))
+  cam.refresh(trajectory);
+  if(~cam.hasData())
     error('camera is not ready');
   end
-  na=first(cam);
-  nb=last(cam);
+  na=cam.first();
+  nb=cam.last();
   assert(isa(na,'uint32'));
   assert(isa(nb,'uint32'));
 
-  for view=1:numViews(cam);
+  for view=1:cam.numViews();
 
     % get an image
-    img=getImage(cam,nb,view);
+    img=cam.getImage(nb,view);
 
     % show image
     figure;
@@ -103,7 +103,7 @@ function testCameraArrayProjectionRoundTrip(cam)
     pix=[jj(:)';ii(:)'];
 
     % create ray vectors from pixels
-    ray=inverseProjection(cam,pix,nb,view);
+    ray=cam.inverseProjection(pix,nb,view);
     c1=reshape(ray(1,:),[HEIGHT,WIDTH]);
     c2=reshape(ray(2,:),[HEIGHT,WIDTH]);
     c3=reshape(ray(3,:),[HEIGHT,WIDTH]);
@@ -115,7 +115,7 @@ function testCameraArrayProjectionRoundTrip(cam)
     drawnow;
 
     % reproject the rays to pixel coordinates
-    pixout=projection(cam,ray,nb,view);
+    pixout=cam.projection(ray,nb,view);
     iout=reshape(pixout(2,:),[HEIGHT,WIDTH]);
     jout=reshape(pixout(1,:),[HEIGHT,WIDTH]);
 

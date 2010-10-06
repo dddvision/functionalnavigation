@@ -135,16 +135,23 @@ namespace tom
     static DataContainer* create(const WorldTime initialTime, const std::string name)
     {
       static DataContainer* singleton = NULL;
-      if(singleton==NULL)
+      static std::string identifier = "";
+
+      if(isConnected(name))
       {
-        if(isConnected(name))
+        if(singleton==NULL)
         {
           singleton = (*pFactoryList())[name](initialTime);
+          identifier = name;
         }
-        else
+        else if(name.compare(identifier))
         {
-          throw("DataContainer is not connected to the requested component");
+          throw("This singleton class must receive the same ''name'' argument every time it is called");
         }
+      }
+      else
+      {
+        throw("The requested component is not connected");
       }
       return (singleton);
     }

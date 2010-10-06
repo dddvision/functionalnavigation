@@ -80,7 +80,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
       this.nb=uint32(2);
     end
 
-    function refresh(this)
+    function refresh(this,x)
+      assert(isa(x,'tom.Trajectory'));
       kRef=this.nb;
       while(isValid(this,this.nb+uint32(1)))
         time=clock;

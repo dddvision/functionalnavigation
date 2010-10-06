@@ -91,8 +91,8 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       end                  
     end
     
-    function refresh(this)
-      refresh(this.sensor);
+    function refresh(this,x)
+      this.sensor.refresh(x);
     end
     
     function flag=hasData(this)
@@ -111,8 +111,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       time=getTime(this.sensor,n);
     end
     
-    function edgeList=findEdges(this,x,naMin,naMax,nbMin,nbMax)
-      assert(isa(x,'tom.Trajectory'));
+    function edgeList=findEdges(this,naMin,naMax,nbMin,nbMax)
       edgeList=repmat(tom.GraphEdge,[0,1]);
       if(hasData(this.sensor))
         naMin=max([naMin,first(this.sensor),nbMin-uint32(1)]);

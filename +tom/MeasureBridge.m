@@ -10,10 +10,12 @@ classdef MeasureBridge < tom.Measure
       this=this@tom.Measure(uri);
       this.m=[name,'.',name];
       this.h=feval(this.m,name,uri);
+      error('tom.MeasureBridge has not been fully implemented')
     end
 
-    function refresh(this)
-      feval(this.m,this.h,'refresh');
+    function refresh(this,x)
+      assert(isa(x,'tom.Trajectory'));
+      feval(this.m,this.h,'refresh',x);
     end
 
     function flag=hasData(this)
@@ -32,10 +34,8 @@ classdef MeasureBridge < tom.Measure
       time=feval(this.m,this.h,'getTime',n);
     end
     
-    function graphEdge=findEdges(this,x,naMin,naMax,nbMin,nbMax)
-      error('tom.MeasureBridge::findEdges has not been implemented')
-      assert(isa(x,'tom.Trajectory'));
-      graphEdge=feval(this.m,this.h,'findEdges',x,naMin,naMax,nbMin,nbMax);
+    function graphEdge=findEdges(this,naMin,naMax,nbMin,nbMax)
+      graphEdge=feval(this.m,this.h,'findEdges',naMin,naMax,nbMin,nbMax);
     end
 
     function cost=computeEdgeCost(this,x,graphEdge)

@@ -1,21 +1,21 @@
 classdef SensorTest
 
   methods (Access = public, Static = true)
-    function this = SensorTest(sensor)
+    function this = SensorTest(sensor, trajectory)
       fprintf('\n\n*** Begin Sensor Test ***\n');
       assert(isa(sensor,'tom.Sensor'));
       
-      SensorTestRun(sensor);
+      SensorTestNoRefresh(sensor);
       
       fprintf('\n\nrefresh\n');
-      sensor.refresh();
+      sensor.refresh(trajectory);
         
-      SensorTestRun(sensor);
+      SensorTestNoRefresh(sensor);
       
       fprintf('\n\nrefresh\n');
-      sensor.refresh();
+      sensor.refresh(trajectory);
       
-      SensorTestRun(sensor);
+      SensorTestNoRefresh(sensor);
     
       fprintf('\n\n*** End Sensor Test ***');
     end
@@ -23,7 +23,7 @@ classdef SensorTest
   
 end
 
-function SensorTestRun(sensor)
+function SensorTestNoRefresh(sensor)
   fprintf('\nhasData =');
   flag = sensor.hasData();
   assert(isa(flag,'logical'));

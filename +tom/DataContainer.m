@@ -58,7 +58,7 @@ classdef DataContainer < handle
     end
     
     function obj=create(name,initialTime)
-      persistent singleton
+      persistent identifier singleton
       assert(isa(initialTime,'tom.WorldTime'));
       if(tom.DataContainer.isConnected(name))
         if(isempty(singleton))
@@ -66,8 +66,13 @@ classdef DataContainer < handle
           obj=cF.(name)(initialTime);
           assert(isa(obj,'tom.DataContainer'));
           singleton=obj;
+          identifier=name;
         else
-          obj=singleton;
+          if(strcmp(name,identifier))
+            obj=singleton;
+          else
+            error('This singleton class must receive the same ''name'' argument every time it is called');
+          end
         end
       else
         error('The requested component is not connected');

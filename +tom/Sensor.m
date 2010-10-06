@@ -7,7 +7,7 @@ classdef Sensor < handle
   end
   
   methods (Abstract=true, Access=public, Static=false)
-    refresh(this);
+    refresh(this, x);
     flag = hasData(this);
     n = first(this);
     n = last(this);

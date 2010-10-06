@@ -10,7 +10,5 @@ int main()
   
   tom::DynamicModel* dynamicModel = tom::DynamicModel::create("BrownianPlanar",0.0,"uri");
   std::cout << dynamicModel->numExtensionBlocks() << std::endl;
-//  tom::Measure* measure = tom::Measure::create("OpticalFlowOpenCV", "uri");
-//  measure->refresh();
   return(0);
 }

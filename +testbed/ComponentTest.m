@@ -18,18 +18,26 @@ classdef ComponentTest
         fprintf('\nMeasure.isConnected = %d', isMeasure);
         fprintf('\nOptimizer.isConnected = %d', isOptimizer);
         fprintf('\nDataContainer.isConnected = %d', isDataContainer);
+        
+        if(isDataContainer)
+          uri = ['matlab:',name];
+        end
+        
+        if(isMeasure||isDataContainer)
+          dynamicModel = tom.DynamicModel.create(dynamicModelName, initialTime, uri);
+        end
 
         if(isDynamicModel)
           testbed.DynamicModelTest(name, initialTime, uri);
         end
         if(isMeasure)
-          testbed.MeasureTest(name, dynamicModelName, initialTime, uri);
+          testbed.MeasureTest(name, dynamicModel, uri);
         end
         if(isOptimizer)
           testbed.OptimizerTest(name, dynamicModelName, measureName, initialTime, uri);
         end
         if(isDataContainer)
-          testbed.DataContainerTest(name, initialTime);
+          testbed.DataContainerTest(name, dynamicModel);
         end
 
         fprintf('\n\n*** End Component Test ***');
