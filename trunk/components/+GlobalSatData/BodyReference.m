@@ -1,26 +1,32 @@
 classdef BodyReference < GlobalSatData.GlobalSatDataConfig & tom.Trajectory
-    
-  properties (SetAccess=private, GetAccess=private)
+  
+  properties (Constant = true, GetAccess = private)
+    splineTension = 0;
+  end
+  
+  properties (SetAccess = private, GetAccess = private)
     pts
     gpsTime
     zone
   end
   
-  methods (Access=public)
-    function this=BodyReference(initialTime)
+  methods (Access = public, Static = true)
+    function this = BodyReference(initialTime)
       currdir = fileparts(mfilename('fullpath'));
-      full_fname = fullfile(currdir,this.referenceTrajectoryFile);
-      [this.gpsTime,lon,lat,alt,vDOP,hDOP] = textread(full_fname,'%f %f %f %f %f %f','delimiter',',');
-      this.gpsTime = this.gpsTime + initialTime;
-      [X,Y,Z] = GlobalSatData.lolah2ecef(lon,lat,alt);
-      this.pts = [X';Y';Z'];
+      full_fname = fullfile(currdir, this.referenceTrajectoryFile);
+      [this.gpsTime, lon, lat, alt, vDOP, hDOP] = textread(full_fname, '%f %f %f %f %f %f', 'delimiter', ',');
+      this.gpsTime = this.gpsTime+initialTime;
+      [X, Y, Z] = GlobalSatData.lolah2ecef(lon, lat, alt);
+      this.pts = [X'; Y'; Z'];
+    end
+  end
+    
+  methods (Access = public, Static = false)
+    function interval = domain(this)
+      interval = tom.TimeInterval(tom.WorldTime(this.gpsTime(1)), tom.WorldTime(this.gpsTime(end)));
     end
     
-    function interval=domain(this)
-      interval=tom.TimeInterval(tom.WorldTime(this.gpsTime(1)),tom.WorldTime(this.gpsTime(end)));
-    end
-    
-    function pose=evaluate(this, t)
+    function pose = evaluate(this, t)
       N = numel(t);
       if(N==0)
         pose = repmat(tom.Pose, [1, 0]);
@@ -37,14 +43,15 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & tom.Trajectory
             pose(n).q = [1; 0; 0; 0];
             k = k+1;
           else
-            finalTangentPose = tangent(this, interval.second);
-            pose(n) = predictPose(finalTangentPose, t(n)-interval.second);
+            tP = tangent(this, interval.second);
+            pose(n).p = tP.p+tP.r*(t(n)-interval.second);
+            pose(n).q = [1; 0; 0; 0];
           end
         end
       end
     end
     
-    function tangentPose=tangent(this, t)
+    function tangentPose = tangent(this, t)
       N = numel(t);
       if(N==0);
         tangentPose = repmat(tom.TangentPose, [1, 0]);
@@ -62,8 +69,8 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & tom.Trajectory
             tangentPose(n).r = r(:, k);
             tangentPose(n).s = [0; 0; 0; 0];
           else
-            finalTangentPose = tangent(this, interval.second);
-            tangentPose(n) = predictTangentPose(finalTangentPose, t(n)-interval.second);
+            tangentPose(n) = tangent(this, interval.second);
+            tangentPose(n).p = tangentPose(n).p+tangentPose(n).r*(t(n)-interval.second);
           end
         end
       end
@@ -144,39 +151,5 @@ function [pos, posdot] = cardinalSpline(t, pts, test_t, c)
       h01.*pts(t_indx+1, :) + h11.*m(t_indx+1, :))';
     posdot(:, indx) = (h00dot.*pts(t_indx, :) + h10dot.*m(t_indx, :) + ...
       h01dot.*pts(t_indx+1, :) + h11dot.*m(t_indx+1, :))';
-  end
-end
-
-function pose = predictPose(tP, dt)
-  N = numel(dt);
-  if(N==0)
-    pose = repmat(tom.Pose, [1, 0]);
-    return;
-  end
-
-  p = tP.p*ones(1, N)+tP.r*dt;
-  
-  pose(1, N) = tom.Pose;
-  for n=1:N
-    pose(n).p = p(:, n);
-    pose(n).q = tP.q;
-  end
-end
-
-function tangentPose = predictTangentPose(tP, dt)
-  N = numel(dt);
-  if(N==0)
-    tangentPose = repmat(tom.TangentPose, [1, 0]);
-    return;
-  end
-
-  p = tP.p*ones(1, N)+tP.r*dt;
-
-  tangentPose(1, N) = tP;
-  for n=1:N
-    tangentPose(n).p = p(:, n);
-    tangentPose(n).q = tP.q;
-    tangentPose(n).r = tP.r;
-    tangentPose(n).s = tP.s;
   end
 end
