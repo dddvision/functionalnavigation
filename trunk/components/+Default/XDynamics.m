@@ -161,33 +161,43 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
     end
     
     function pose=evaluate(this,t)
-      interval=domain(this.xRef);
-      tmax=double(interval.second);
-      t=double(t);
-      t(t>tmax)=tmax;
-      pose=evaluate(this.xRef,t);
-      z=initialBlock2deviation(this);
-      t0=double(this.initialTime);
-      c1=this.positionOffset-this.positionDeviation*z(1);
-      c2=this.positionRateOffset-this.positionRateDeviation*z(2);
-      for k=1:numel(t)
-        pose(k).p(1)=pose(k).p(1)+c1+c2*(t(k)-t0);
+      N=numel(t);
+      if(N==0)
+        pose=repmat(tom.Pose,[1,0]);
+      else
+        interval=domain(this.xRef);
+        tmax=double(interval.second);
+        t=double(t);
+        t(t>tmax)=tmax;
+        pose=evaluate(this.xRef,t);
+        z=initialBlock2deviation(this);
+        t0=double(this.initialTime);
+        c1=this.positionOffset-this.positionDeviation*z(1);
+        c2=this.positionRateOffset-this.positionRateDeviation*z(2);
+        for n=1:N
+          pose(n).p(1)=pose(n).p(1)+c1+c2*(t(n)-t0);
+        end
       end
     end
    
     function tangentPose=tangent(this,t)
-      interval=domain(this.xRef);
-      tmax=double(interval.second);
-      t=double(t);
-      t(t>tmax)=tmax;
-      tangentPose=tangent(this.xRef,t);
-      z=initialBlock2deviation(this);
-      t0=double(this.initialTime);
-      c1=this.positionOffset-this.positionDeviation*z(1);
-      c2=this.positionRateOffset-this.positionRateDeviation*z(2);
-      for k=1:numel(t)
-        tangentPose(k).p(1)=tangentPose(k).p(1)+c1+c2*(t(k)-t0);
-        tangentPose(k).r(1)=tangentPose(k).r(1)+c2;
+      N=numel(t);
+      if(N==0);
+        tangentPose=repmat(tom.TangentPose,[1,0]);
+      else
+        interval=domain(this.xRef);
+        tmax=double(interval.second);
+        t=double(t);
+        t(t>tmax)=tmax;
+        tangentPose=tangent(this.xRef,t);
+        z=initialBlock2deviation(this);
+        t0=double(this.initialTime);
+        c1=this.positionOffset-this.positionDeviation*z(1);
+        c2=this.positionRateOffset-this.positionRateDeviation*z(2);
+        for n=1:N
+          tangentPose(n).p(1)=tangentPose(n).p(1)+c1+c2*(t(n)-t0);
+          tangentPose(n).r(1)=tangentPose(n).r(1)+c2;
+        end
       end
     end
   end

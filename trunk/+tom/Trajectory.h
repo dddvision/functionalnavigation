@@ -30,7 +30,8 @@ namespace tom
      * @param[in,out] pose vector of poses at each time (MATLAB: 1-by-N)
      *
      * NOTES
-     * Evaluation outside of the domain returns NaN in corresponding outputs
+     * Times before the lower bound of the domain return NaN in corresponding outputs
+     * Times after the upper bound of the domain return predicted poses in corresponding outputs
      */
     virtual void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose) = 0;
 
@@ -41,7 +42,8 @@ namespace tom
      * @param[in,out] tangentPose vector of tangent poses at each time (MATLAB: 1-by-N)
      *
      * NOTES
-     * Evaluation outside of the domain returns NaN in corresponding outputs
+     * Times before the lower bound of the domain return NaN in corresponding outputs
+     * Times after the upper bound of the domain return predicted tangent poses in corresponding outputs
      */
     virtual void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose) = 0;
   };

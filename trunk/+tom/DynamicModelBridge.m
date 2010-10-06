@@ -104,15 +104,25 @@ classdef DynamicModelBridge < tom.DynamicModel
    
     function pose=evaluate(this,t)
       assert(isa(t,'tom.WorldTime'));
-      t=double(t); % workaround avoids array duplication
-      pose(1,numel(t))=tom.Pose; % workaround creates object externally
+      N=numel(t);
+      if(N==0);
+        pose=repmat(tom.Pose,[1,0]);
+      else
+        t=double(t); % workaround avoids array duplication
+        pose(1,N)=tom.Pose; % workaround creates object externally
+      end
       pose=feval(this.m,this.h,'evaluate',pose,t);
     end
     
     function tangentPose=tangent(this,t)
       assert(isa(t,'tom.WorldTime'));
-      t=double(t); % workaround avoids array duplication
-      tangentPose(1,numel(t))=tom.TangentPose; % workaround creates object externally
+      N=numel(t);
+      if(N==0);
+        tangentPose=repmat(tom.TangentPose,[1,0]);
+      else
+        t=double(t); % workaround avoids array duplication
+        tangentPose(1,N)=tom.TangentPose; % workaround creates object externally
+      end
       tangentPose=feval(this.m,this.h,'tangent',tangentPose,t);
     end
   end

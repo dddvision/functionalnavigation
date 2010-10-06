@@ -31,22 +31,22 @@ classdef DynamicModelTest
       fprintf('\n\nnumInitialLogical =');
       nIL=dynamicModel.numInitialLogical();
       assert(isa(nIL,'uint32'));
-      fprintf(' %d',nIL);
+      fprintf(' %u',nIL);
 
       fprintf('\nnumInitialUint32 =');
       nIU=dynamicModel.numInitialUint32();
       assert(isa(nIU,'uint32'));
-      fprintf(' %d',nIU);  
+      fprintf(' %u',nIU);  
 
       fprintf('\nnumExtensionLogical =');
       nEL=dynamicModel.numExtensionLogical();
       assert(isa(nEL,'uint32'));
-      fprintf(' %d',nEL); 
+      fprintf(' %u',nEL); 
 
       fprintf('\nnumExtensionUint32 =');
       nEU=dynamicModel.numExtensionUint32();
       assert(isa(nEU,'uint32'));
-      fprintf(' %d',nEU);
+      fprintf(' %u',nEU);
 
       fprintf('\n\ngetInitialLogical = [');
       vIL=false(nIL,1);
@@ -56,7 +56,7 @@ classdef DynamicModelTest
         if(p~=uint32(1))
           fprintf(', ');
         end
-        fprintf('%d',v);
+        fprintf('%u',v);
         vIL(p)=v;
       end
       fprintf(']');
@@ -69,7 +69,7 @@ classdef DynamicModelTest
         if(p~=uint32(1))
           fprintf(', ');
         end
-        fprintf('%d',v);
+        fprintf('%u',v);
         vIU(p)=v;
       end
       fprintf(']');
@@ -83,9 +83,9 @@ classdef DynamicModelTest
         fprintf('\nnumBlocks =');
         numBlocks=dynamicModel.numExtensionBlocks();
         assert(isa(numBlocks,'uint32'));
-        fprintf(' %d',numBlocks);
+        fprintf(' %u',numBlocks);
         
-        fprintf('\n\ngetExtensionLogical(%d) = [',b);
+        fprintf('\n\ngetExtensionLogical(%u) = [',b);
         vEL=false(nEL,1);
         for p=uint32(1):nEL
           v=dynamicModel.getExtensionLogical(b,p-uint32(1));
@@ -93,12 +93,12 @@ classdef DynamicModelTest
           if(p~=uint32(1))
             fprintf(',');
           end
-          fprintf('%d',v);
+          fprintf('%u',v);
           vEL(p)=v;
         end
         fprintf(']');
 
-        fprintf('\ngetExtensionUint32(%d) = [',b);
+        fprintf('\ngetExtensionUint32(%u) = [',b);
         vEU=zeros(nEU,1,'uint32');
         for p=uint32(1):nEU
           v=dynamicModel.getExtensionUint32(b,p-uint32(1));
@@ -106,7 +106,7 @@ classdef DynamicModelTest
           if(p~=uint32(1))
             fprintf(',');
           end
-          fprintf('%d',v);
+          fprintf('%u',v);
           vEU(p)=v;
         end
         fprintf(']');
@@ -114,6 +114,32 @@ classdef DynamicModelTest
         testbed.TrajectoryTest(dynamicModel);
       end
       
+      for b=uint32(0:2)   
+        fprintf('\n\nsetExtensionLogical(%u) = [',b);
+        v=true;
+        for p=uint32(1):nEL
+          dynamicModel.setExtensionLogical(b,p-uint32(1),v);
+          if(p~=uint32(1))
+            fprintf(',');
+          end
+          fprintf('%u',v);
+        end
+        fprintf(']');
+
+        fprintf('\nsetExtensionUint32(%u) = [',b);
+        v=intmax('uint32');
+        for p=uint32(1):nEU
+          dynamicModel.setExtensionUint32(b,p-uint32(1),v);
+          if(p~=uint32(1))
+            fprintf(',');
+          end
+          fprintf('%u',v);
+        end
+        fprintf(']');
+
+        testbed.TrajectoryTest(dynamicModel);
+      end
+        
       fprintf('\n\n*** End DynamicModel Test ***');
     end
   end

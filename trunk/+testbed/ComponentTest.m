@@ -34,7 +34,7 @@ classdef ComponentTest
 
         fprintf('\n\n*** End Component Test ***');
       else
-        error('not connected');
+        error('Not connected.');
       end
     end
   end
