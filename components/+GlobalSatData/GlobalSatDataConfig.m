@@ -1,6 +1,6 @@
 classdef GlobalSatDataConfig < handle
   
-  properties (Constant=true,GetAccess=protected)
+  properties (Constant = true, GetAccess = protected)
     % File containing a list of points that define a reference trajectory
     % Must contain comma separated data in the following form:
     %   time, lon, lat, alt, hDOP, vDOP
@@ -17,9 +17,6 @@ classdef GlobalSatDataConfig < handle
     %   Must contain NMEA formatted $GPGGA strings
     %   Lines that do not begin with $GPGGA are skipped
     rawGPSfile = 'gtGPSdata.txt';
-    
-    % Cardinal spline tension parameter
-    splineTension = 0;
     
     % Standard deviation of equivalent circular error (meters)
     sigmaR = 6.7; % should be based on environment and hardware

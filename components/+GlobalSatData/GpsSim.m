@@ -18,9 +18,9 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
     ready
   end
   
-  methods (Access=public)
-    function this=GpsSim(initialTime)
-      this=this@GPSReceiver(initialTime);
+  methods (Access = public, Static = true)
+    function this = GpsSim(initialTime)
+      this = this@GPSReceiver(initialTime);
       
       % Read the configuration file
       this.refData = readGPSdataFile(this.referenceTrajectoryFile);
@@ -30,7 +30,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
       this.refTraj = GlobalSatData.BodyReference(initialTime);
       interval = domain(this.refTraj);
       tdelta = interval.second-interval.first;
-      this.noise = this.noise(:,this.noise(1,:)<tdelta);
+      this.noise = this.noise(:, this.noise(1,:)<tdelta);
       this.precisionFlag = true;
       this.offset = [0;0;0];
       N=size(this.noise,2);
@@ -38,60 +38,62 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
       this.nb = uint32(N);
       this.ready = logical(N>0);
     end
-    
+  end
+  
+  methods (Access = public, Static = false)  
     function refresh(this)
-      isa(this,'GPSReceiver');
+      isa(this, 'GPSReceiver');
     end
     
-    function flag=hasData(this)
-      flag=this.ready;
+    function flag = hasData(this)
+      flag = this.ready;
     end
     
-    function na=first(this)
+    function na = first(this)
       assert(this.ready)
-      na=this.na;
+      na = this.na;
     end
 
-    function nb=last(this)
+    function nb = last(this)
       assert(this.ready)
-      nb=this.nb;
+      nb = this.nb;
     end
     
-    function time=getTime(this,n)
+    function time = getTime(this, n)
       assert(this.ready);
       assert(n>=this.na);
       assert(n<=this.nb);
-      interval=domain(this.refTraj);
-      time=tom.WorldTime(interval.first+this.noise(1,n));
+      interval = domain(this.refTraj);
+      time = tom.WorldTime(interval.first+this.noise(1, n));
     end
 
-    function [lon,lat,alt]=getGlobalPosition(this,n)
+    function [lon, lat, alt] = getGlobalPosition(this, n)
       assert(this.ready);
       assert(n>=this.na);
       assert(n<=this.nb);
       
       % Evaluate the reference trajectory at the measurement time
-      pose=evaluate(this.refTraj,getTime(this,n));
-      p=cat(2,pose.p);
-      [lon,lat,alt] = globalSatData.ecef2lolah(p(1,:),p(2,:),p(3,:));
+      pose = evaluate(this.refTraj, getTime(this, n));
+      p = cat(2, pose.p);
+      [lon, lat, alt] = globalSatData.ecef2lolah(p(1, :), p(2, :), p(3, :));
       
       % Add error based on real Global Sat gps data
-      lon = lon+this.noise(2,n);
-      lat = lat+this.noise(3,n);
-      alt = alt+this.noise(4,n);
+      lon = lon+this.noise(2, n);
+      lat = lat+this.noise(3, n);
+      alt = alt+this.noise(4, n);
     end
     
     function flag = hasPrecision(this)
-      flag=this.precisionFlag;
+      flag = this.precisionFlag;
     end
     
     % Picks the closest vDOP and hDOP in the data to the requested index
-    function [vDOP,hDOP,sigmaR] = getPrecision(this,n)
+    function [vDOP, hDOP, sigmaR] = getPrecision(this, n)
       assert(this.ready);
       assert(n>=this.na);
       assert(n<=this.nb);
       
-      timeDiff = abs(getTime(this,n)-this.refData.time);
+      timeDiff = abs(getTime(this, n)-this.refData.time);
       nearestDataIndx = find(timeDiff==min(timeDiff));
       vDOP = this.refData.vDOP(nearestDataIndx);
       hDOP = this.refData.hDOP(nearestDataIndx);
@@ -99,7 +101,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
     end
     
     function offset = getAntennaOffset(this)
-      offset=this.offset;
+      offset = this.offset;
     end
   end
 end
@@ -113,23 +115,23 @@ end
 % Alt --> Altitude in meters (double)
 % hDop --> Horizontal dilution of precision (double)
 % vDop --> Vertical dilution of precision (double)
-function refData=readGPSdataFile(fname)
+function refData = readGPSdataFile(fname)
   currdir = fileparts(mfilename('fullpath'));
   full_fname = fullfile(currdir, fname);
 
   csvdata = csvread(full_fname);
 
   % Only keep measurements that are made in increasing order of time
-  gpsTime = csvdata(:,1);
-  keepIndx = logical([diff(gpsTime);1] >= 0);
-  csvdata = csvdata(keepIndx,:);
+  gpsTime = csvdata(:, 1);
+  keepIndx = logical([diff(gpsTime); 1] >= 0);
+  csvdata = csvdata(keepIndx, :);
 
-  refData.time = csvdata(:,1);
-  refData.lon = csvdata(:,2);
-  refData.lat = csvdata(:,3);
-  refData.alt = csvdata(:,4);
-  refData.hDOP = csvdata(:,5);
-  refData.vDOP = csvdata(:,6);
+  refData.time = csvdata(:, 1);
+  refData.lon = csvdata(:, 2);
+  refData.lat = csvdata(:, 3);
+  refData.alt = csvdata(:, 4);
+  refData.hDOP = csvdata(:, 5);
+  refData.vDOP = csvdata(:, 6);
 end
 
 % Read a text file that contains an ascii GPS data stream
@@ -138,11 +140,11 @@ end
 % NOTES
 % Refer to data formats at
 % http://www.gpsinformation.org/dale/nmea.htm#GSA
-function noise=readNoiseData(fname)
+function noise = readNoiseData(fname)
   currdir = fileparts(mfilename('fullpath'));
   full_fname = fullfile(currdir, fname);
 
-  fid = fopen(full_fname,'r');
+  fid = fopen(full_fname, 'r');
   str = fgetl(fid);
   counter = 0;
   while str ~= -1
@@ -151,13 +153,10 @@ function noise=readNoiseData(fname)
       counter = counter + 1;
       
       % collect all outputs from strread, then use those that are needed
-      [strId, time, latstr, latDir, lonstr, lonDir, quality, numSat, ...
-        precision, alt,mStr1,geoidalSep, mStr2, ...
-        ageData, stationId] = ...
-        strread(str,'%s %s %s %s %s %s %d %d %f %f %s %f %s %f %s', ...
-        'delimiter',',');
+      [strId, time, latstr, latDir, lonstr, lonDir, quality, numSat, precision, alt, mStr1, geoidalSep, mStr2, ...
+        ageData, stationId] = strread(str,'%s %s %s %s %s %s %d %d %f %f %s %f %s %f %s', 'delimiter', ',');
 
-      [lond,latd] = ll_string2deg(latstr,lonstr);
+      [lond,latd] = ll_string2deg(latstr, lonstr);
 
       if strmatch(latDir, 'W')
         latd = -latd;
@@ -177,17 +176,17 @@ function noise=readNoiseData(fname)
   end
   fclose(fid);
 
-  noise = zeros(4,counter);
-  noise(1,:) = T(:) - T(1);
-  noise(2,:) = A(:) - mean(A);
-  noise(3,:) = B(:) - mean(B);
-  noise(4,:) = C(:) - mean(C);
+  noise = zeros(4, counter);
+  noise(1, :) = T(:) - T(1);
+  noise(2, :) = A(:) - mean(A);
+  noise(3, :) = B(:) - mean(B);
+  noise(4, :) = C(:) - mean(C);
 end
 
 % INPUTS
 % lat = string of the form ddmm.mmmm
 % long = string of the form dddmm.mmmm
-function [lat_dec,long_dec] = ll_string2deg(lat, long)
+function [lat_dec, long_dec] = ll_string2deg(lat, long)
   lat = char(lat);
   long = char(long);
   lat_dec = str2double(lat(1:2)) + str2double(lat(3:end))./60;
