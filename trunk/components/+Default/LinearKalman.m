@@ -62,8 +62,9 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
     function refreshProblem(this)
       assert(this.isDefined);
       currentTime=tom.WorldTime(-Inf);
+      [cBest,iBest]=min([this.cost{:}]);
       for m=1:numel(this.measure)
-        this.measure{m}.refresh();
+        this.measure{m}.refresh(this.dynamicModel(iBest));
         if(this.measure{m}.hasData())
           currentTime=tom.WorldTime(max(currentTime,this.measure{m}.getTime(this.measure{m}.last())));
         end
@@ -182,7 +183,7 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
         gm=this.measure{m};
         if(gm.hasData())
           node=gm.last();
-          edgeList=gm.findEdges(this.dynamicModel(k),node,node,node,node); % zero or one edges
+          edgeList=gm.findEdges(node,node,node,node); % zero or one edges
           if(~isempty(edgeList))
             yDiff=gm.computeEdgeCost(this.dynamicModel(k),edgeList);
             if(~isnan(yDiff))

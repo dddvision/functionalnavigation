@@ -1,9 +1,19 @@
 classdef DataContainerTest < handle
   
   methods (Access=public)
-    function this = DataContainerTest(name, initialTime)
+    function this = DataContainerTest(name, trajectory)
       fprintf('\n\n*** Begin DataContainer Test ***\n');
-            
+      
+      fprintf('\ntrajectory =');
+      assert(isa(trajectory,'tom.Trajectory'));
+      fprintf(' ok');
+      
+      fprintf('\ninitialTime =');
+      interval = trajectory.domain();
+      initialTime = interval.first;
+      assert(isa(initialTime, 'tom.WorldTime'));
+      fprintf(' %f',double(initialTime));
+      
       fprintf('\ntom.DataContainer.description =');
       text = tom.DataContainer.description(name);
       assert(isa(text, 'char'));
@@ -25,7 +35,23 @@ classdef DataContainerTest < handle
         fprintf('%d', uint32(list(s)));  
       end
       fprintf(']');
+      
+      fprintf('\n\nhasReferenceTrajectory =');
+      flag = dataContainer.hasReferenceTrajectory();
+      assert(isa(flag,'logical'));
+      if(flag)
+        fprintf(' true');
         
+        fprintf('\ngetReferenceTrajectory =');
+        referenceTrajectory = dataContainer.getReferenceTrajectory();
+        assert(isa(referenceTrajectory,'tom.Trajectory'));
+        fprintf(' ok');
+        
+        testbed.TrajectoryTest(referenceTrajectory);
+      else
+        fprintf(' false');
+      end
+      
       for id=list'
         fprintf('\n\ngetSensorDescription(%d) =', uint32(id));
         text = dataContainer.getSensorDescription(id);
@@ -36,23 +62,7 @@ classdef DataContainerTest < handle
         assert(isa(sensor,'tom.Sensor'));
         fprintf(' ok');
         
-        testbed.SensorTest(sensor);
-      end
-      
-      fprintf('\n\nhasReferenceTrajectory =');
-      flag = dataContainer.hasReferenceTrajectory();
-      assert(isa(flag,'logical'));
-      if(flag)
-        fprintf(' true');
-        
-        fprintf('\ngetReferenceTrajectory =');
-        trajectory = dataContainer.getReferenceTrajectory();
-        assert(isa(trajectory,'tom.Trajectory'));
-        fprintf(' ok');
-        
-        testbed.TrajectoryTest(trajectory);
-      else
-        fprintf(' false');
+        testbed.SensorTest(sensor, trajectory);
       end
       
       fprintf('\n\n*** End DataContainer Test ***');

@@ -74,7 +74,7 @@ classdef Measure < tom.Sensor
   end
   
   methods (Abstract=true, Access=public, Static=false)
-    edgeList = findEdges(this, x, naMin, naMax, nbMin, nbMax);
+    edgeList = findEdges(this, naMin, naMax, nbMin, nbMax);
     cost = computeEdgeCost(this, x, graphEdge);
   end
   

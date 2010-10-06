@@ -284,7 +284,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         break;
 
       case refresh:
-        instance[handle]->refresh();
+        TrajectoryBridge x;
+        instance[handle]->refresh(x);
         break;
 
       case hasData:
@@ -308,14 +309,13 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         // TODO: implement this bridge function properly
       case findEdges:
       {
-        TrajectoryBridge x;
         uint32_t naSpan;
         uint32_t nbSpan;
-        convert(prhs[3], naMin);
-        convert(prhs[4], naMax);
-        convert(prhs[5], nbMin);
-        convert(prhs[6], nbMax);
-        convert(instance[handle]->findEdges(x, naMin, naMax, nbMin, nbMax), prhs[2], plhs[0]);
+        convert(prhs[2], naMin);
+        convert(prhs[3], naMax);
+        convert(prhs[4], nbMin);
+        convert(prhs[5], nbMax);
+        convert(instance[handle]->findEdges(naMin, naMax, nbMin, nbMax), plhs[0]);
         break;
       }
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "Trajectory.h"
 #include "DynamicModel.h"
 #include "Measure.h"
 
@@ -184,8 +185,8 @@ namespace tom
      * Has no effect in the case that no measures have data
      * Throws an exception if the problem had not been defined
      * @see defineProblem()
-     * @see tom::Measure::hasData()
      * @see tom::Measure::refresh()
+     * @see tom::Measure::hasData()
      * @see tom::DynamicModel::extend()
      */
     virtual void refreshProblem(void) = 0;

@@ -1,14 +1,14 @@
 % For each valid index in the GPS data domain, evaluate the reference
 %   trajectory and compare with the reported GPS position
-function gpsTest(gpsHandle,refTraj)
+function gpsTest(gpsHandle,trajectory)
   assert(isa(gpsHandle,'GPSReceiver'));
-  refresh(gpsHandle);
-  if(~hasData(gpsHandle))
+  gpsHandle.refresh(trajectory);
+  if(~gpsHandle.hasData())
     error('GPS is not ready');
   end
   
-  na=first(gpsHandle);
-  nb=last(gpsHandle);
+  na=gpsHandle.first();
+  nb=gpsHandle.last();
   assert(isa(na,'uint32'));
   assert(isa(nb,'uint32'));
   
@@ -16,10 +16,10 @@ function gpsTest(gpsHandle,refTraj)
   gpsLonLatAlt=zeros(3,K);
   trueECEF=zeros(3,K);
   for indx = 1:K
-    currTime = getTime(gpsHandle,indx);
-    pose = evaluate(refTraj,currTime);
+    currTime = gpsHandle.getTime(indx);
+    pose = evaluate(trajectory,currTime);
     trueECEF(:,indx) = cat(2,pose.p);
-    [gpsLonLatAlt(1,indx),gpsLonLatAlt(2,indx),gpsLonLatAlt(3,indx)] = getGlobalPosition(gpsHandle,na+indx-1);
+    [gpsLonLatAlt(1,indx),gpsLonLatAlt(2,indx),gpsLonLatAlt(3,indx)] = gpsHandle.getGlobalPosition(na+indx-1);
   end
   trueLonLatAlt = ecef2lolah(trueECEF);
   errLonLatAlt = gpsLonLatAlt-trueLonLatAlt;

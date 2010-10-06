@@ -12,7 +12,6 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     pyramidA
     xA
     yA
-    nodeOffset
     features
     uniqueIndex
     uniqueNext
@@ -47,8 +46,8 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   end
   
   methods (Abstract=false, Access=public, Static=false)
-    function refresh(this)
-      this.camera.refresh();
+    function refresh(this, x)
+      this.camera.refresh(x);
       this.track();
     end
     
@@ -77,15 +76,15 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
     
     function num = numFeatures(this, node)
-      num = numel(this.features(node-this.nodeOffset).id);
+      num = numel(this.features(node-this.nodeA+uint32(1)).id);
     end
     
     function id = getFeatureID(this, node, localIndex)
-      id = this.features(node-this.nodeOffset).id(localIndex+uint32(1));
+      id = this.features(node-this.nodeA+uint32(1)).id(localIndex+uint32(1));
     end
     
     function ray = getFeatureRay(this, node, localIndex)
-      ray = this.features(node-this.nodeOffset).ray(:, localIndex+uint32(1));
+      ray = this.features(node-this.nodeA+uint32(1)).ray(:, localIndex+uint32(1));
     end
   end
   
@@ -99,7 +98,6 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         % process first image
         if(this.firstTrack)
           this.nodeA = this.camera.first();
-          this.nodeOffset = this.nodeA-uint32(1);
           this.pyramidA = buildPyramid(this.prepareImage(this.nodeA), this.numLevels);
           [this.xA, this.yA] = selectFeatures(this, this.pyramidA{1}.gx, this.pyramidA{1}.gy, this.maxFeatures);
           this.uniqueIndex = getUniqueIndices(this, numel(this.xA));
@@ -155,8 +153,8 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             end
             
             % store both tracked and new features
-            this.features(nodeB-this.nodeOffset).id = this.uniqueIndex;
-            this.features(nodeB-this.nodeOffset).ray = this.camera.inverseProjection([yB; xB]-1, nodeB);
+            this.features(nodeB-this.nodeA+uint32(1)).id = this.uniqueIndex;
+            this.features(nodeB-this.nodeA+uint32(1)).ray = this.camera.inverseProjection([yB; xB]-1, nodeB);
 
             % store the image pyramid and feature locations
             this.pyramidA = pyramidB;

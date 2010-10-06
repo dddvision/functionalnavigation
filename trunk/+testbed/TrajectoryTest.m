@@ -28,9 +28,14 @@ classdef TrajectoryTest
       
       time = tom.WorldTime(interval.first+this.tau*(min(interval.second, ...
         interval.first+this.infinity)-interval.first));
-      timep = tom.WorldTime(interval.first+this.taup*(min(interval.second, ...
-        interval.first+this.infinity)-interval.first));
-
+      
+      if((interval.second-interval.first)>(this.taup(end)-1))
+        timep = tom.WorldTime(interval.first+this.taup*(min(interval.second, ...
+          interval.first+this.infinity)-interval.first));
+      else
+        timep = tom.WorldTime(interval.first+this.taup-1);
+      end
+        
       fprintf('\ntime = %f', double(time(1)));
       
       pose = trajectory.evaluate(time(1));

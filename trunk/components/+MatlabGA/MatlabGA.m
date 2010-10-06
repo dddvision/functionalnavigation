@@ -126,8 +126,9 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     function refreshProblem(this)
       assert(this.isDefined);
       tb=tom.WorldTime(-Inf);
+      [cBest,iBest]=min(this.cost(:));
       for m=1:numel(this.measure)
-        this.measure{m}.refresh();
+        this.measure{m}.refresh(this.dynamicModel(iBest));
         if(hasData(this.measure{m}))
           tb=tom.WorldTime(max(tb,getTime(this.measure{m},last(this.measure{m}))));
         end
@@ -269,7 +270,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
         if(gm.hasData())
           nMax=gm.last();
           nMin=nMax-nSpan+uint32(1);
-          edgeList=findEdges(gm,this.dynamicModel(kBest),nMin,nMax,nMin,nMax);
+          edgeList=gm.findEdges(nMin,nMax,nMin,nMax);
           numEdges(m)=numel(edgeList);
           na=cat(1,edgeList.first);
           nb=cat(1,edgeList.second);

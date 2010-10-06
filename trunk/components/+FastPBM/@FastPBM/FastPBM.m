@@ -36,8 +36,8 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       this.tracker = FastPBM.SparseTrackerKLT(initialTime, this.sensor);
     end
     
-    function refresh(this)
-      this.tracker.refresh();
+    function refresh(this, x)
+      this.tracker.refresh(x);
     end
     
     function flag = hasData(this)
@@ -56,8 +56,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       time = this.tracker.getTime(n);
     end
     
-    function edgeList = findEdges(this, x, naMin, naMax, nbMin, nbMax)
-      assert(isa(x, 'tom.Trajectory'));
+    function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)
       edgeList = repmat(tom.GraphEdge, [0, 1]);
       if(hasData(this.tracker))
         nMin = max([naMin, this.tracker.first(), nbMin-uint32(1)]);
@@ -95,34 +94,27 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         cost = NaN;
         return;
       end
-
-      % get data from the tracker
-%       numA = this.tracker.numFeatures(nA);
-%       k = uint32(1):numA;
-%       rayA = this.tracker.getFeatureRay(nA,k-uint32(1));
-%       idA = this.tracker.getFeatureID(nA,k-uint32(1));
       
-      poseA = evaluate(x,tA);
-      poseB = evaluate(x,tB);
-      
-     
-      data=computeIntermediateDataCache(this,graphEdge.first,graphEdge.second);
+      poseA = evaluate(x, tA);
+      poseB = evaluate(x, tB);
+        
+      data = computeIntermediateDataCache(this, graphEdge.first, graphEdge.second);
 
-      u=transpose(data.pixB(:,1)-data.pixA(:,1));
-      v=transpose(data.pixB(:,2)-data.pixA(:,2));
+      u = transpose(data.pixB(:, 1)-data.pixA(:, 1));
+      v = transpose(data.pixB(:, 2)-data.pixA(:, 2));
 
-      Ea=Quat2Euler(poseA.q);
-      Eb=Quat2Euler(poseB.q);
+      Ea = Quat2Euler(poseA.q);
+      Eb = Quat2Euler(poseB.q);
 
-      translation=[poseB.p(1)-poseA.p(1);
-                   poseB.p(2)-poseA.p(2);
-                   poseB.p(3)-poseA.p(3)];
-      rotation=[Eb(1)-Ea(1);
-                Eb(2)-Ea(2);
-                Eb(3)-Ea(3)];
-      [uvr,uvt]=generateFlowSparse(this,translation,rotation,transpose(data.pixA));
+      translation = [poseB.p(1)-poseA.p(1);
+                     poseB.p(2)-poseA.p(2);
+                     poseB.p(3)-poseA.p(3)];
+      rotation = [Eb(1)-Ea(1);
+                  Eb(2)-Ea(2);
+                  Eb(3)-Ea(3)];
+      [uvr, uvt] = generateFlowSparse(this, translation, rotation, transpose(data.pixA), nA);
 
-      cost=computeCost(this,u,v,uvr,uvt);
+      cost = computeCost(this, u, v, uvr, uvt);
     end
   end
   

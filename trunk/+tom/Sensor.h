@@ -2,6 +2,7 @@
 #define SENSOR_H
 
 #include "WorldTime.h"
+#include "Trajectory.h"
 
 namespace tom
 {
@@ -30,10 +31,17 @@ namespace tom
     /**
      * Incorporate new data and allow old data to expire
      *
+     * @param[in] x best available estimate of body trajectory
+     *
      * NOTES
-     * Does not block or wait for hardware events
+     * The input trajectory:
+     *   May provide a starting point for efficient processing of sensor data
+     *   May assist in fault detection and outlier removal
+     *   Is assumed to be a poor estimate of the actual body trajectory
+     *   Its accuracy has little or no effect on functions in derived classs
+     * This function does not wait for hardware events
      */
-    virtual void refresh(void) = 0;
+    virtual void refresh(const Trajectory* x) = 0;
 
     /**
      * Check whether data is available

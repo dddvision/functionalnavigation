@@ -41,8 +41,9 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
   end
   
   methods (Access = public, Static = false)  
-    function refresh(this)
-      isa(this, 'GPSReceiver');
+    function refresh(this, x)
+      assert(isa(this, 'GPSReceiver'));
+      assert(isa(x, 'tom.Trajectory'));
     end
     
     function flag = hasData(this)

@@ -35,7 +35,8 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
   end
   
   methods (Access = public, Static = false)
-    function refresh(this)
+    function refresh(this, x)
+      assert(isa(x,'tom.Trajectory'));
       tMax = this.tn(1)+double(this.refreshCount)*this.secondsPerRefresh;
       nNext = this.nb+uint32(1);
       while((numel(this.tn)>nNext)&&(this.tn(nNext+1)<tMax))

@@ -171,7 +171,6 @@ namespace tom
     /**
      * Find a limited set of graph edges in the adjacency matrix of the cost graph
      *
-     * @param[in] x     predicted trajectory that can be used to compute the graph structure
      * @param[in] naMin minimum lower node index
      * @param[in] naMax maximum lower node index
      * @param[in] nbMin minimum upper node index
@@ -181,7 +180,6 @@ namespace tom
      * NOTES
      * The purpose of this function is solely to reduce computation
      * If adjacency is hard to compute then include the edge
-     * Graph edges may extend outside of the domain of the input trajectory
      * Graph edges may be added on successive calls to refresh, but they are never removed
      * The number of returned edges is bounded as follows:
      *   numel(edgeList) <= (nbMax-naMmin+1)*(nbMax-naMin+2)/2
@@ -189,8 +187,8 @@ namespace tom
      * Edges are sorted in ascending order of node indices, first by lower index, then by upper index
      * If there are no edges within the selected range then the output is an empty vector
      */
-    virtual std::vector<GraphEdge> findEdges(const Trajectory& x, const uint32_t naMin, const uint32_t naMax,
-      const uint32_t nbMin, const uint32_t nbMax) = 0;
+    virtual std::vector<GraphEdge> findEdges(const uint32_t naMin, const uint32_t naMax, const uint32_t nbMin, 
+      const uint32_t nbMax) = 0;
 
     /**
      * Evaluate the cost of a single graph edge given a trajectory
