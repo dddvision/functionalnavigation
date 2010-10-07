@@ -62,7 +62,17 @@ classdef DataContainerTest < handle
         assert(isa(sensor, 'tom.Sensor'));
         fprintf(' ok');
         
-        testbed.SensorTest(sensor, trajectory);
+        testbed.SensorTest(sensor);
+        
+        fprintf('\n\nrefresh\n');
+        sensor.refresh(trajectory);
+        
+        testbed.SensorTest(sensor);
+        
+        fprintf('\n\nrefresh\n');
+        sensor.refresh(trajectory);
+        
+        testbed.SensorTest(sensor);
       end
       
       fprintf('\n\n*** End DataContainer Test ***');

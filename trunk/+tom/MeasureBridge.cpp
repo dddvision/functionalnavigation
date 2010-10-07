@@ -306,7 +306,6 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         convert(instance[handle]->getTime(n), plhs[0]);
         break;
 
-        // TODO: implement this bridge function properly
       case findEdges:
       {
         uint32_t naSpan;

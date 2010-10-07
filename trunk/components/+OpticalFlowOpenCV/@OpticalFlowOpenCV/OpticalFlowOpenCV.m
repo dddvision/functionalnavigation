@@ -141,7 +141,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       ta=getTime(this.sensor,nodeA);
       tb=getTime(this.sensor,nodeB);
       interval=domain(x);
-      if((ta<interval.first)||(tb>interval.second))
+      if(ta<interval.first)
         cost=NaN;
         return;
       end

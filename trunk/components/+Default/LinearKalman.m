@@ -52,7 +52,7 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
       for k=1:numel(this.dynamicModel)
         [jacobian,hessian]=this.computeSecondOrderModel(k,'initialCost');
         this.covariance{k}=hessian^(-1);
-        this.cost{k}=sqrt(trace(this.covariance{k}));
+        this.cost(k)=sqrt(trace(this.covariance{k}));
       end
       
       % flag the problem as defined
@@ -62,7 +62,7 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
     function refreshProblem(this)
       assert(this.isDefined);
       currentTime=tom.WorldTime(-Inf);
-      [cBest,iBest]=min([this.cost{:}]);
+      [cBest,iBest]=min(this.cost);
       for m=1:numel(this.measure)
         this.measure{m}.refresh(this.dynamicModel(iBest));
         if(this.measure{m}.hasData())
@@ -87,7 +87,7 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
     end
 
     function cEst=getCost(this,k)
-      cEst=this.cost{k+1};
+      cEst=this.cost(k+1);
     end
     
     function step(this)
@@ -117,7 +117,7 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
 
         % compute current trajectory and approximate cost
         this.putParam(k,state2param(this.state{k}));
-        this.cost{k}=sqrt(trace(this.covariance{k}));
+        this.cost(k)=sqrt(trace(this.covariance{k}));
       end
     end
   end

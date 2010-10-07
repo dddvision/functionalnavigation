@@ -178,14 +178,16 @@ namespace tom
      * @return          list of edges (MATLAB: N-by-1)
      *
      * NOTES
-     * The purpose of this function is solely to reduce computation
+     * The purpose of this function is solely to reduce calls to compute edge cost
      * If adjacency is hard to compute then include the edge
      * Graph edges may be added on successive calls to refresh, but they are never removed
      * The number of returned edges is bounded as follows:
      *   numel(edgeList) <= (nbMax-naMmin+1)*(nbMax-naMin+2)/2
      * All information regarding a unique pair of nodes is grouped such that no duplicate edges are returned
      * Edges are sorted in ascending order of node indices, first by lower index, then by upper index
+     * A measure can have data nodes without having any edges present
      * If there are no edges within the selected range then the output is an empty vector
+     * @see computeEdgeCost()
      */
     virtual std::vector<GraphEdge> findEdges(const uint32_t naMin, const uint32_t naMax, const uint32_t nbMin, 
       const uint32_t nbMax) = 0;

@@ -15,9 +15,9 @@ if(str2double(matlabVersion(1:4))<2009)
 end
 
 % close figures and clear everything except breakpoints
-close('all');
 breakpoints = dbstatus('-completenames');
 save('temp.mat', 'breakpoints');
+close('all');
 clear('classes');
 load('temp.mat');
 dbstop(breakpoints);

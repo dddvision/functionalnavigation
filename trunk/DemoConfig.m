@@ -1,6 +1,6 @@
 classdef DemoConfig < handle
   
-  properties (Constant=true,GetAccess=public)
+  properties (Constant = true, GetAccess = public)
     % trajectory optimization parameters
     uri = 'matlab:MiddleburyData'; % ('matlab:MiddleburyData') select hardware resource or data container
     dynamicModelName = 'Default'; % ('Default') name of a single DynamicModel component

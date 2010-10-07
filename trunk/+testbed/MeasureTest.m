@@ -1,6 +1,17 @@
 classdef MeasureTest < handle
   
-  methods (Access = public)
+  methods (Access = private, Static = true)
+    function handle = figureHandle
+      persistent h
+      if(isempty(h))
+        h = figure;
+        set(h, 'Name', 'Cost graph');
+      end
+      handle = h;
+    end        
+  end
+  
+  methods (Access = public, Static = true)
     function this = MeasureTest(name, trajectory, uri)
       fprintf('\n\n*** Begin Measure Test ***\n');
       
@@ -27,24 +38,56 @@ classdef MeasureTest < handle
       measure = tom.Measure.create(name, initialTime, uri);
       assert(isa(measure, 'tom.Measure'));
       fprintf(' ok');
-     
-      testbed.SensorTest(measure, trajectory);
       
-      % HACK: evaluate evaluate all edges, refresh, repeat
-      if(measure.hasData())
-        for k = 1:3
+      for count = 1:4
+        if(count>1)
+%           fprintf('\n\npause');
+%           pause(1);
+
+          fprintf('\nrefresh');
+          measure.refresh(trajectory);
+        end
+        
+        testbed.SensorTest(measure);
+
+        if(measure.hasData())
+          fprintf('\n\nfindEdges =');
           first = measure.first();
           last = measure.last();
           edges = measure.findEdges(first, last, first, last);
-          for edgeIndex = 1:numel(edges)
-            cost = measure.computeEdgeCost(trajectory, edges(edgeIndex));
+          display(edges);
+        
+          numEdges = numel(edges);
+          if(numEdges>0)
+            nA = zeros(numel(edges),1);
+            nB = zeros(numel(edges),1);
+            for k = 1:numEdges
+              nA(k) = edges(k).first;
+              nB(k) = edges(k).second;
+            end
+            nMin = min(nA);
+            nMax = max(nB);
+            span = nMax-nMin+uint32(1);
+            
+            adjacencyImage = false(span,span);
+            costImage = zeros(span,span);
+            for k = 1:numEdges
+              adjacencyImage(nA(k)-nMin+1,nB(k)-nMin+1) = true;
+              costImage(nA(k)-nMin+1,nB(k)-nMin+1) = measure.computeEdgeCost(trajectory, edges(k));
+            end
+            
+            figure(this.figureHandle);
+            subplot(1, 2, 1);
+            cla;
+            imshow(adjacencyImage);
+            title('Adjacency');
+            subplot(1, 2, 2);
+            cla;
+            imshow(costImage/9);
+            title('Cost');
           end
-          measure.refresh(trajectory);
         end
       end
-      
-      % Call all interface functions
-      % Check exception handling
       
       % For each edge that the measure supports for the specified data set
         % Compute bias? (distance from ground truth to cost minimum)
