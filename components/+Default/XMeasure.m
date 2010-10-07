@@ -32,7 +32,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
-              this.xRef=Default.BodyReference(initialTime);
+              this.xRef=Default.DefaultTrajectory(initialTime);
             end
           otherwise
             error('Unrecognized resource identifier in URI');

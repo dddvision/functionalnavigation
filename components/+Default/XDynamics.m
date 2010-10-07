@@ -6,7 +6,6 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
     extensionNumLogical=uint32(0);
     extensionNumUint32=uint32(0);
     extensionBlockCost=0;
-    rate=0;
     numExtension=uint32(0);
     parameterErrorText='This dynamic model has no initial logical parameters';
     extensionErrorText='This dynamic model has no extension blocks';
@@ -43,7 +42,7 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
-              this.xRef=Default.BodyReference(initialTime);
+              this.xRef=Default.DefaultTrajectory(initialTime);
             end
           otherwise
             error('Unrecognized resource identifier in URI');
@@ -157,7 +156,7 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
     end
      
     function interval=domain(this)
-      interval=tom.TimeInterval(this.initialTime,tom.WorldTime(inf));
+      interval=this.xRef.domain();
     end
     
     function pose=evaluate(this,t)
@@ -165,12 +164,9 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
       if(N==0)
         pose=repmat(tom.Pose,[1,0]);
       else
-        interval=domain(this.xRef);
-        tmax=double(interval.second);
-        t=double(t);
-        t(t>tmax)=tmax;
         pose=evaluate(this.xRef,t);
         z=initialBlock2deviation(this);
+        t=double(t);
         t0=double(this.initialTime);
         c1=this.positionOffset-this.positionDeviation*z(1);
         c2=this.positionRateOffset-this.positionRateDeviation*z(2);
@@ -185,12 +181,9 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
       if(N==0);
         tangentPose=repmat(tom.TangentPose,[1,0]);
       else
-        interval=domain(this.xRef);
-        tmax=double(interval.second);
-        t=double(t);
-        t(t>tmax)=tmax;
         tangentPose=tangent(this.xRef,t);
         z=initialBlock2deviation(this);
+        t=double(t);
         t0=double(this.initialTime);
         c1=this.positionOffset-this.positionDeviation*z(1);
         c2=this.positionRateOffset-this.positionRateDeviation*z(2);

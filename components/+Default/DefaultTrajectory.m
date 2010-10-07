@@ -1,11 +1,11 @@
-classdef BodyReference < tom.Trajectory
+classdef DefaultTrajectory < tom.Trajectory
   
   properties (GetAccess = private, SetAccess = private)
     initialTime
   end
   
   methods (Access = public, Static = true)
-    function this = BodyReference(initialTime)
+    function this = DefaultTrajectory(initialTime)
       this.initialTime = initialTime;
     end
   end
@@ -21,12 +21,8 @@ classdef BodyReference < tom.Trajectory
         pose = repmat(tom.Pose, [1, 0]);
       else
         pose(1, N) = tom.Pose;
-        t = double(t);
-        tmin = double(this.initialTime);
-        good = (t>=tmin);
-        dt = t-this.initialTime;
-        for k = find(good)
-          pose(k).p = [0; dt(k); 0];
+        for k = find(t>=this.initialTime)
+          pose(k).p = [0; 0; 0];
           pose(k).q = [1; 0; 0; 0];
         end
       end
@@ -38,12 +34,8 @@ classdef BodyReference < tom.Trajectory
         tangentPose = repmat(tom.TangentPose, [1, 0]);
       else
         tangentPose(1, N) = tom.TangentPose;
-        t = double(t);
-        tmin = double(this.initialTime);
-        good = (t>=tmin);
-        dt = t-this.initialTime;
-        for k = find(good)
-          tangentPose(k).p = [0; dt(k); 0];
+        for k = find(t>=this.initialTime)
+          tangentPose(k).p = [0; 1; 0];
           tangentPose(k).q = [1; 0; 0; 0];
           tangentPose(k).r = [0; 1; 0];
           tangentPose(k).s = [0; 0; 0; 0];
