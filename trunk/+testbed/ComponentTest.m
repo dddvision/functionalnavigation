@@ -26,7 +26,6 @@ classdef ComponentTest
         if(isMeasure||isDataContainer)
           dynamicModel = tom.DynamicModel.create(dynamicModelName, initialTime, uri);
         end
-
         if(isDynamicModel)
           testbed.DynamicModelTest(name, initialTime, uri);
         end
