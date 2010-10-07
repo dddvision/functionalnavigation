@@ -20,7 +20,7 @@ classdef ComponentTest
         fprintf('\nDataContainer.isConnected = %d', isDataContainer);
         
         if(isDataContainer)
-          uri = ['matlab:',name];
+          uri = ['matlab:', name];
         end
         
         if(isMeasure||isDataContainer)

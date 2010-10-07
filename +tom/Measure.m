@@ -1,6 +1,6 @@
 classdef Measure < tom.Sensor
 
-  methods (Access=private, Static=true)
+  methods (Access = private, Static = true)
     function dL = pDescriptionList(name, cD)
       persistent descriptionList
       if(nargin==2)
@@ -20,7 +20,7 @@ classdef Measure < tom.Sensor
     end
   end
   
-  methods (Access=protected, Static=true)
+  methods (Access = protected, Static = true)
     function this = Measure(initialTime, uri)
       this = this@tom.Sensor(initialTime);
       assert(isa(uri, 'char'));
@@ -35,7 +35,7 @@ classdef Measure < tom.Sensor
     end
   end
       
-  methods (Access=public, Static=true)
+  methods (Access = public, Static = true)
     function flag = isConnected(name)
       flag = false;
       if(exist([name, '.', name], 'class'))
@@ -69,11 +69,11 @@ classdef Measure < tom.Sensor
     end
   end
   
-  methods (Abstract=true, Access=public, Static=true)
+  methods (Abstract = true, Access = public, Static = true)
     initialize(name);
   end
   
-  methods (Abstract=true, Access=public, Static=false)
+  methods (Abstract = true, Access = public, Static = false)
     edgeList = findEdges(this, naMin, naMax, nbMin, nbMax);
     cost = computeEdgeCost(this, x, graphEdge);
   end

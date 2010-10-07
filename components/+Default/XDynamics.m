@@ -43,7 +43,7 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
-              error('Simulator requires reference trajectory');
+              this.xRef=Default.BodyReference(initialTime);
             end
           otherwise
             error('Unrecognized resource identifier in URI');

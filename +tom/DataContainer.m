@@ -1,75 +1,75 @@
 classdef DataContainer < handle
   
-  methods (Access=private,Static=true)
-    function dL=pDescriptionList(name,cD)
+  methods (Access = private, Static = true)
+    function dL = pDescriptionList(name, cD)
       persistent descriptionList
       if(nargin==2)
-        descriptionList.(name)=cD;
+        descriptionList.(name) = cD;
       else
-        dL=descriptionList;
+        dL = descriptionList;
       end
     end
 
-    function fL=pFactoryList(name,cF)
+    function fL = pFactoryList(name, cF)
       persistent factoryList
       if(nargin==2)
-        factoryList.(name)=cF;
+        factoryList.(name) = cF;
       else
-        fL=factoryList;
+        fL = factoryList;
       end
     end
   end
   
-  methods (Access=protected,Static=true)
-    function this=DataContainer(initialTime)
-      assert(isa(initialTime,'tom.WorldTime'));
+  methods (Access = protected, Static = true)
+    function this = DataContainer(initialTime)
+      assert(isa(initialTime, 'tom.WorldTime'));
     end
     
-    function connect(name,cD,cF)
-      if(isa(cD,'function_handle')&&...
-         isa(cF,'function_handle'))
-         tom.DataContainer.pDescriptionList(name,cD);
-         tom.DataContainer.pFactoryList(name,cF);
+    function connect(name, cD, cF)
+      if(isa(cD, 'function_handle')&&...
+         isa(cF, 'function_handle'))
+         tom.DataContainer.pDescriptionList(name, cD);
+         tom.DataContainer.pFactoryList(name, cF);
       end
     end
   end
       
-  methods (Access=public,Static=true)
-    function flag=isConnected(name)
-      flag=false;
-      if(exist([name,'.',name],'class'))
+  methods (Access = public, Static = true)
+    function flag = isConnected(name)
+      flag = false;
+      if(exist([name, '.', name], 'class'))
         try
-          feval([name,'.',name,'.initialize'],name);
+          feval([name, '.', name, '.initialize'], name);
         catch err
           err.message;
         end  
-        if(isfield(tom.DataContainer.pFactoryList(name),name))
-          flag=true;
+        if(isfield(tom.DataContainer.pFactoryList(name), name))
+          flag = true;
         end
       end
     end
     
-    function text=description(name)
-      text='';
+    function text = description(name)
+      text = '';
       if(tom.DataContainer.isConnected(name))
-        dL=tom.DataContainer.pDescriptionList(name);
-        text=dL.(name)();
+        dL = tom.DataContainer.pDescriptionList(name);
+        text = dL.(name)();
       end
     end
     
-    function obj=create(name,initialTime)
+    function obj = create(name, initialTime)
       persistent identifier singleton
-      assert(isa(initialTime,'tom.WorldTime'));
+      assert(isa(initialTime, 'tom.WorldTime'));
       if(tom.DataContainer.isConnected(name))
         if(isempty(singleton))
-          cF=tom.DataContainer.pFactoryList(name);
-          obj=cF.(name)(initialTime);
-          assert(isa(obj,'tom.DataContainer'));
-          singleton=obj;
-          identifier=name;
+          cF = tom.DataContainer.pFactoryList(name);
+          obj = cF.(name)(initialTime);
+          assert(isa(obj, 'tom.DataContainer'));
+          singleton = obj;
+          identifier = name;
         else
-          if(strcmp(name,identifier))
-            obj=singleton;
+          if(strcmp(name, identifier))
+            obj = singleton;
           else
             error('This singleton class must receive the same ''name'' argument every time it is called');
           end
@@ -80,16 +80,16 @@ classdef DataContainer < handle
     end
   end
   
-  methods (Abstract=true,Access=public,Static=true)
+  methods (Abstract = true, Access = public, Static = true)
     initialize(name);
   end
   
-  methods (Abstract=true,Access=public,Static=false)
-    list=listSensors(this,type); 
-    text=getSensorDescription(this,id);
-    obj=getSensor(this,id);
-    flag=hasReferenceTrajectory(this);
-    x=getReferenceTrajectory(this);
+  methods (Abstract = true, Access = public, Static = false)
+    list = listSensors(this, type); 
+    text = getSensorDescription(this, id);
+    obj = getSensor(this, id);
+    flag = hasReferenceTrajectory(this);
+    x = getReferenceTrajectory(this);
   end
   
 end

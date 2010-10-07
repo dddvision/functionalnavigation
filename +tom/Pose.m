@@ -5,7 +5,7 @@ classdef Pose
     q = nan(4, 1);
   end
   
-  methods (Access = public)
+  methods (Access = public, Static = true)
     function this = Pose(S)
       if(nargin)
         N = numel(S);
@@ -21,7 +21,9 @@ classdef Pose
         end
       end
     end
+  end
     
+  methods (Access = public, Static = false)
     function display(this)
       name = inputname(1);
       for n = 1:numel(this)
