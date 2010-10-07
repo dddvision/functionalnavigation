@@ -90,7 +90,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       tA = getTime(this.tracker, nA);
       tB = getTime(this.tracker, nB);
       interval = domain(x);
-      if((tA<interval.first)||(tB>interval.second))
+      if(tA<interval.first)
         cost = NaN;
         return;
       end

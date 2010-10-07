@@ -10,7 +10,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
 
   methods (Access = public, Static = true)
     function this = BodyReference(initialTime)
-      this.interval = tom.TimeInterval(initialTime, tom.WorldTime(initialTime+(this.numImages-1)/this.fps));
+      this.interval = tom.TimeInterval(initialTime, tom.WorldTime(initialTime+(double(this.numImages)-1)/this.fps));
     end
   end
     

@@ -21,7 +21,7 @@ function test(name)
   if(isempty(findstr(componentPath, path)))
     fprintf('\naddpath =');
     addpath(componentPath);
-    fprintf(' %s',componentPath);
+    fprintf(' %s', componentPath);
   end
   
   % process all packages on the path if the input argument is 'all'
@@ -36,14 +36,12 @@ function test(name)
     name = {name};
   end
 
-  errorSummary = cell(0,2);
+  errorSummary = cell(0, 2);
   for nameIndex = 1:numel(name)
-    % close figures
-    close('all');
-
-    % clear everything except breakpoints and necessary arguments
+     % close figures and clear everything except breakpoints and necessary arguments
     breakpoints = dbstatus('-completenames');
     save('temp.mat', 'breakpoints', 'name', 'nameIndex', 'errorSummary');
+    close('all');
     clear('classes');
     load('temp.mat');
     dbstop(breakpoints);

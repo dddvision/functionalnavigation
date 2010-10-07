@@ -1,5 +1,5 @@
 classdef DefaultConfig < handle
-  properties (Constant=true)
+  properties (Constant = true, GetAccess = public)
     % dynamic model parameters
     positionOffset = -1.2; % (-1.2) simulated offset in first position coordinate
     positionRateOffset = 0.2; % (0.2) simulated offset in first position rate coordinate

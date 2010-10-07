@@ -105,7 +105,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
       % return NaN if the graph edge extends outside of the trajectory domain
       time=this.getTime(graphEdge.second);
       interval=domain(x);
-      if((time<interval.first)||(time>interval.second))
+      if(time<interval.first)
         cost=NaN;
         return;
       end
