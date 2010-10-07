@@ -3,15 +3,15 @@ classdef TrajectoryTest
   properties (Constant = true, GetAccess = private)
     tau = 0.5+0.5*sin(pi/2*(-1:1/100:1)); % irregular time steps normalized in the range [0,1]
     taup = 1.1.^(0:0.02:1); % irregular time steps in the range [1,1.1]
-    infinity = 1000; % (1000) maximum span of time domain when the upper bound is infinite
+    infinity = 1000; % maximum span of time domain when the upper bound is infinite
   end
   
   methods (Access = private, Static = true)
     function handle = figureHandle
       persistent h
       if(isempty(h))
-        h=figure;
-        set(h,'Units','normalized','Position',[0,0,1,1]);
+        h = figure;
+        set(h, 'Units', 'normalized', 'Position', [0, 0, 1, 1]);
         set(h, 'Name', 'Trajectory history (blue) and prediction (red)');
       end
       handle = h;
@@ -26,8 +26,7 @@ classdef TrajectoryTest
       interval = trajectory.domain();
       interval.display();
       
-      time = tom.WorldTime(interval.first+this.tau*(min(interval.second, ...
-        interval.first+this.infinity)-interval.first));
+      time = tom.WorldTime(interval.first+this.tau*(min(interval.second, interval.first+this.infinity)-interval.first));
       
       if((interval.second-interval.first)>(this.taup(end)-1))
         timep = tom.WorldTime(interval.first+this.taup*(min(interval.second, ...

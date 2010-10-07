@@ -1,38 +1,34 @@
 classdef OptimizerBridge < tom.Optimizer
 
-  properties (SetAccess=private,GetAccess=private)
+  properties (SetAccess = private, GetAccess = private)
     m % class name
     h % handle to instantiated C++ object
   end
   
-  methods (Static=true,Access=public)
-    function text=description(name)
-      error('\n\ntom.OptimizerBridge has not been implemented');
+  methods (Access = public, Static = true)
+    function this = OptimizerBridge(name, dynamicModelName, measureNames, uri)
+      this = this@tom.Optimizer(dynamicModelName, measureNames, uri);
+      error('\n\ntom.OptimizerBridge has not been fully implemented');
+%      this.m = [name, '.', name];
+%      this.h = feval(this.m, name, dynamicModelName, measureNames, uri);
     end
   end
-  
-  methods (Access=public)
-    function this=OptimizerBridge(name,dynamicModelName,measureNames,uri)
-      this=this@tom.Optimizer(dynamicModelName,measureNames,uri);
-      error('\n\ntom.OptimizerBridge has not been implemented');
-%      this.m=[name,'.',name];
-%      this.h=feval(this.m,name,dynamicModelName,measureNames,uri);
-    end
 
-    function num=numResults(this)
-      num=feval(this.m,this.h,'numResults');
+  methods (Access = public, Static = false)
+    function num = numResults(this)
+      num = feval(this.m, this.h, 'numResults');
     end
     
-    function xEst=getTrajectory(this)
-      xEst=feval(this.m,this.h,'getTrajectory');
+    function xEst = getTrajectory(this)
+      xEst = feval(this.m, this.h, 'getTrajectory');
     end
     
-    function cEst=getCost(this)
-      cEst=feval(this.m,this.h,'getCost');
+    function cEst = getCost(this)
+      cEst = feval(this.m, this.h, 'getCost');
     end
     
     function step(this)
-      feval(this.m,this.h,'step');
+      feval(this.m, this.h, 'step');
     end
   end
   

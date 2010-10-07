@@ -3,7 +3,7 @@ classdef SensorTest
   methods (Access = public, Static = true)
     function this = SensorTest(sensor, trajectory)
       fprintf('\n\n*** Begin Sensor Test ***\n');
-      assert(isa(sensor,'tom.Sensor'));
+      assert(isa(sensor, 'tom.Sensor'));
       
       SensorTestNoRefresh(sensor);
       
@@ -26,7 +26,7 @@ end
 function SensorTestNoRefresh(sensor)
   fprintf('\nhasData =');
   flag = sensor.hasData();
-  assert(isa(flag,'logical'));
+  assert(isa(flag, 'logical'));
   if(flag)
     fprintf(' true');
 
@@ -51,7 +51,7 @@ function SensorTestNoRefresh(sensor)
     fprintf(' %f', double(tb));
 
     if(last>first)
-      fprintf('\nsecondsPerNode = %f',(tb-ta)/double(last-first));
+      fprintf('\nsecondsPerNode = %f', (tb-ta)/double(last-first));
     end
   else
     fprintf(' false');

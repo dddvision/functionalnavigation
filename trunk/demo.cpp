@@ -8,7 +8,7 @@ int main()
     << "and a graphical display, and then alternately optimizes and displays " << std::endl
     << "trajectories in an infinite loop. See DemoConfig for options." << std::endl;
   
-  tom::DynamicModel* dynamicModel = tom::DynamicModel::create("BrownianPlanar",0.0,"uri");
+  tom::DynamicModel* dynamicModel = tom::DynamicModel::create("BrownianPlanar", 0.0, "uri");
   std::cout << dynamicModel->numExtensionBlocks() << std::endl;
   return(0);
 }

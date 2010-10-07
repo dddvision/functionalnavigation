@@ -70,10 +70,10 @@ function test(name)
   end
   
   fprintf('\n\n*** Begin Summary ***\n');
-  numErrors = size(errorSummary,1);
-  name = char(errorSummary{:,1});
+  numErrors = size(errorSummary, 1);
+  name = char(errorSummary{:, 1});
   for nameIndex = 1:numErrors
-    fprintf('\n%s = %s',name(nameIndex,:),errorSummary{nameIndex,2});
+    fprintf('\n%s = %s', name(nameIndex,:), errorSummary{nameIndex, 2});
   end
   if(numErrors>0)
     fprintf('\n');

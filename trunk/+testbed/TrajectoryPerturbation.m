@@ -1,11 +1,11 @@
 classdef TrajectoryPerturbation < tom.Trajectory
 
-  methods (Access=public)
+  methods (Access = public)
     function TrajectoryPerturbation(uri)
       
     end
     
-    function setPerturbation(time,perturbation)
+    function setPerturbation(time, perturbation)
       
     end
   end
