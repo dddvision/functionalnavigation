@@ -35,6 +35,6 @@
 %   ErrorMag=abs(acos(Vx_OFTD.*Vxt+Vy_OFTD.*Vyt));
 %   upperBound=pi*numel(Vx_OF);
   
-  cost=sum(ErrorMag(:))*(20/upperBound);
+  cost=sum(ErrorMag(:))*(this.maxCost/upperBound);
  end
  

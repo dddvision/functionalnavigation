@@ -4,6 +4,7 @@
 % deltap = change in position, double 1-by-3
 % deltaEuler = change in Euler angles, double 1-by-3
 % pix = points in pixel coordinates, double 2-by-P
+% nA = data node at which to compute the image projection, uint32 scalar
 %
 % OUTPUT
 % uvr = flow in pixel coordinates due to rotation, double 2-by-P

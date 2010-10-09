@@ -40,10 +40,11 @@ classdef GraphEdge
     
   methods (Access = public, Static = false)
     function display(this)
-      fprintf('\n%s = ',inputname(1));
+      fprintf('\n%s = [',inputname(1));
       for n = 1:numel(this)
-        fprintf('[%d, %d] ', this(n).first, this(n).second);
+        fprintf('[%d, %d]', this(n).first, this(n).second);
       end
+      fprintf(']');
     end
   end
   

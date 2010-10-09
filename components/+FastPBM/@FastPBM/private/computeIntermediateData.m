@@ -9,7 +9,7 @@ function data = computeIntermediateData(this, nA, nB)
   idB = this.tracker.getFeatureID(nB, kB);
   
   % find features common to both images
-  [idAB, indexA, indexB] = intersect(idA, idB);
+  [idAB, indexA, indexB] = intersect(double(idA), double(idB)); % only supports double
   kA = kA(indexA);
   kB = kB(indexB);
 
