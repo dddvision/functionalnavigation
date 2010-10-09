@@ -26,9 +26,9 @@ private:
   int win2;
 
   /* bounds checking */
-  static bool OutOfBounds(const int x, const int y, const int M, const int N, const int radius)
+  static bool OutOfBounds(const int xf, const int yf, const int M, const int N, const int radius)
   {
-    return((x-radius)<0||(y-radius)<0||(x+radius)>(M-1)||(y+radius)>(N-1));
+    return((xf-radius)<0||(yf-radius)<0||(xf+radius)>(M-2)||(yf+radius)>(N-2));
   }
 
 public:
@@ -40,10 +40,10 @@ public:
   TrackerKLT(int halfWindowSize)
   {
     halfwin = halfWindowSize;
-    win = 2*halfwin;
+    win = 2*halfwin+1;
     win2 = win*win;
 
-    /* allocate memory for all six patches */
+    /* allocate memory for all patches */
     Iap = new double[win2];
     gxap = new double[win2];
     gyap = new double[win2];
@@ -90,21 +90,22 @@ public:
    * The outputs are set to NAN in the following cases:
    *   If NAN is encountered while processing inputs
    *   If the feature cannot be found in the second image
-   *   If the sum of absolute image differences between feature locations exceeds the specified threshold
+   *   If the sum of absolute image differences between matched features exceeds the variation within the first feature
+   *   If the sum of absolute image differences between matched features exceeds the specified threshold
    */
   void trackFeature(const double *Ia, const double *gxa, const double *gya, const double xa, const double ya, 
     const double *Ib, const double *gxb, const double *gyb, const double xbe, const double ybe, const double thresh, 
     const int M, const int N, double *xb, double *yb)
   {
-    int mmwin = M-win;
-    int iteration;
     double xo, yo, xr, yr;
     double a00, a01, a10, a11;
     double gx, gy, gt, xx, yy, xy, xt, yt;
     double det, dx, dy, residue;
+    int iteration;
     int xf, yf;
     int p00, p01, p10, p11;
     int i, j, p;
+    int strideMinusWin = M-win;
 
     /* check for NAN inputs */
     if(mxIsNaN(xa)||mxIsNaN(ya)||mxIsNaN(xbe)||mxIsNaN(ybe))
@@ -113,19 +114,19 @@ public:
       (*yb) = NAN;
       return;
     }
-
+    
     /* shift the coordinate system to align with imageA */
     xf = (int)floor(xa+0.5);
     yf = (int)floor(ya+0.5);
 
     /* check bounds */
-    if(OutOfBounds(xf, yf, M, N, halfwin))
+    if(OutOfBounds(xf, yf, M, N, halfwin+1))
     {
       (*xb) = NAN;
       (*yb) = NAN;
       return;
     }
-
+    
     xo = xa-(double)xf; /* coordinate offset */
     yo = ya-(double)yf; /* coordinate offset */
 
@@ -135,9 +136,9 @@ public:
     p00 = (xf-halfwin)+(yf-halfwin)*M; /* patch upper left corner */
 
     p = 0;
-    for(j = 0; j<win; j++)
+    for(j = 0; j<win; ++j)
     {
-      for(i = 0; i<win; i++)
+      for(i = 0; i<win; ++i)
       {
         Iap[p] = Ia[p00];
         gxap[p] = gxa[p00];
@@ -145,9 +146,9 @@ public:
         p++;
         p00++;
       }
-      p00 += mmwin;
+      p00 += strideMinusWin;
     }
-
+    
     /* iteratively update the delta position */
     iteration = 0;
     do
@@ -170,9 +171,9 @@ public:
 
       /* run through and extract new patches */
       p = 0;
-      for(j = 0; j<win; j++)
+      for(j = 0; j<win; ++j)
       {
-        for(i = 0; i<win; i++)
+        for(i = 0; i<win; ++i)
         {
           Ibp[p] = Ib[p00]*a00+Ib[p01]*a01+Ib[p10]*a10+Ib[p11]*a11;
           gxbp[p] = gxb[p00]*a00+gxb[p01]*a01+gxb[p10]*a10+gxb[p11]*a11;
@@ -183,10 +184,10 @@ public:
           p10++;
           p11++;
         }
-        p00 += mmwin;
-        p01 += mmwin;
-        p10 += mmwin;
-        p11 += mmwin;
+        p00 += strideMinusWin;
+        p01 += strideMinusWin;
+        p10 += strideMinusWin;
+        p11 += strideMinusWin;
       }
 
       /* compute gradient sums */
@@ -195,7 +196,7 @@ public:
       xy = 0;
       xt = 0;
       yt = 0;
-      for(p = 0; p<win2; p++)
+      for(p = 0; p<win2; ++p)
       {
         gx = (gxap[p]+gxbp[p])/2.0;
         gy = (gyap[p]+gybp[p])/2.0;
@@ -210,8 +211,8 @@ public:
       /* calculate the flow equation determinant */
       det = xx*yy-xy*xy;
 
-      /* deal with small determinants */
-      if(det<EPSILON)
+      /* deal with small determinants or NAN */
+      if((det<EPSILON)||mxIsNaN(det))
       {
         (*xb) = NAN;
         (*yb) = NAN;
@@ -229,7 +230,7 @@ public:
       yf = (int)floor(*yb);
 
       /* check bounds */
-      if(OutOfBounds(xf, yf, M, N, halfwin))
+      if(OutOfBounds(xf, yf, M, N, halfwin+1))
       {
         (*xb) = NAN;
         (*yb) = NAN;
@@ -239,7 +240,7 @@ public:
       iteration++;
     }
     while((fabs(dx)>=DELTA_THRESH||fabs(dy)>=DELTA_THRESH)&&(iteration<MAX_ITERATIONS));
-
+    
     /* final check */
     xr = (*xb)-(double)xf;
     yr = (*yb)-(double)yf;
@@ -259,9 +260,9 @@ public:
     /* run through and sum absolute intensity differences */
     p = 0;
     residue = 0.0;
-    for(j = 0; j<win; j++)
+    for(j = 0; j<win; ++j)
     {
-      for(i = 0; i<win; i++)
+      for(i = 0; i<win; ++i)
       {
         residue += fabs(Ib[p00]*a00+Ib[p01]*a01+Ib[p10]*a10+Ib[p11]*a11-Iap[p]);
         p++;
@@ -270,14 +271,15 @@ public:
         p10++;
         p11++;
       }
-      p00 += mmwin;
-      p01 += mmwin;
-      p10 += mmwin;
-      p11 += mmwin;
+      p00 += strideMinusWin;
+      p01 += strideMinusWin;
+      p10 += strideMinusWin;
+      p11 += strideMinusWin;
     }
-
+    residue /= static_cast<double>(win2);
+        
     /* check sum of absolute difference residue threshold */
-    if((residue/(double)win2)>(1-thresh))
+    if(residue>(1.0-thresh))
     {
       (*xb) = NAN;
       (*yb) = NAN;
@@ -388,6 +390,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     tracker->trackFeature(imageA, gxA, gyA, xA[k], yA[k], imageB, gxB, gyB, xB[k], yB[k], thresh, M, N, &xb[k], &yb[k]);
   }
   delete tracker;
-
+  
   return;
 }

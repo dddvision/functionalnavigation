@@ -2,13 +2,15 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
   properties (Constant=true,GetAccess=private)
     halfwin = 5;
-    thresh = 0.97;
+    thresh = 0.96;
     cornerMethod = 'Harris';
   end
   
   properties (GetAccess=private,SetAccess=private)
     camera
+    mask
     nodeA
+    nodePrevious
     pyramidA
     xA
     yA
@@ -98,6 +100,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         % process first image
         if(this.firstTrack)
           this.nodeA = this.camera.first();
+          this.nodePrevious = this.nodeA;
           this.pyramidA = buildPyramid(this.prepareImage(this.nodeA), this.numLevels);
           [this.xA, this.yA] = selectFeatures(this, this.pyramidA{1}.gx, this.pyramidA{1}.gy, this.maxFeatures);
           this.uniqueIndex = getUniqueIndices(this, numel(this.xA));
@@ -108,7 +111,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
 
         % if there are any new images
         nodeLast = this.camera.last();
-        nodeB = this.nodeA+uint32(1);
+        nodeB = this.nodePrevious+uint32(1);
         if(nodeLast>=nodeB)
           
           % estimate the feature locations in imageB
@@ -161,7 +164,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             this.xA = xB;
             this.yA = yB;            
           end
-          this.nodeA = nodeB;
+          this.nodePrevious = nodeB;
         end
       end
     end
@@ -189,12 +192,18 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     
     % Prepare an image for processing
     %
-    % Compute number of pyramid levels if this.firstTrack is true
-    % Gets an image, normalizes it, and zero pads the bottom and right sides
-    % Does not affect pixel coordinates
+    % Computes number of pyramid levels if this.firstTrack is true
+    % Gets an image from the camera
+    % Converts to grayscale and normalizes to the range [0,1]
+    % Applies NaN mask outside of the projection area
+    % Pads the bottom and right sides with NaN based on pyramid levels (does not affect pixel coordinates)
     function img = prepareImage(this, node)
       if(this.firstTrack)
         [numStrides, numSteps] = this.camera.getImageSize(node);
+        [steps, strides] = ndgrid(0:(double(numSteps)-1),0:(double(numStrides)-1));
+        pix = [strides(:)'; steps(:)'];
+        ray = this.camera.inverseProjection(pix,node);
+        this.mask = find(isnan(ray(1, :)));
         pix = [double(numStrides)-2; double(numSteps)-1]/2;
         pix = [pix, pix+[1; 0]];
         ray = this.camera.inverseProjection(pix,node);
@@ -205,6 +214,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       img = this.camera.getImage(node);
       img = rgb2gray(img);
       img = double(img)/255;
+      img(this.mask) = NaN;     
       multiple = 2^(this.numLevels-1);
       [M, N] = size(img);
       Mpad = multiple-mod(M, multiple);

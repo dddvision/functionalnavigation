@@ -62,7 +62,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         nMin = max([naMin, this.tracker.first(), nbMin-uint32(1)]);
         nMax = min([naMax+uint32(1), this.tracker.last(), nbMax]);
         nList = nMin:nMax;
-        [na, nb] = ndgrid(nList, nList);
+        [nb, na] = ndgrid(nList, nList);
         keep = nb(:)>na(:);
         na = na(keep);
         nb = nb(keep);
@@ -77,7 +77,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       nB = graphEdge.second;
       
       % return 0 if the specified edge is not found in the graph
-      isAdjacent = ((nA+uint32(1))==nB) && ...
+      isAdjacent = (nA<nB) && ...
         hasData(this.tracker) && ...
         (nA>=first(this.tracker)) && ...
         (nB<=last(this.tracker));

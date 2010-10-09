@@ -39,19 +39,16 @@ classdef MeasureTest < handle
       assert(isa(measure, 'tom.Measure'));
       fprintf(' ok');
       
-      for count = 1:4
+      for count = 1:4       
         if(count>1)
-%           fprintf('\n\npause');
-%           pause(1);
-
           fprintf('\nrefresh');
           measure.refresh(trajectory);
         end
         
         testbed.SensorTest(measure);
-
+        fprintf('\n');
+        
         if(measure.hasData())
-          fprintf('\n\nfindEdges =');
           first = measure.first();
           last = measure.last();
           edges = measure.findEdges(first, last, first, last);
