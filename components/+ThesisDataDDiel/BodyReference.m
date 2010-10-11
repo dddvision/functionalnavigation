@@ -109,78 +109,79 @@ function [t, x] = ReadGantry(filename)
   x = [N'; E'; D'];
 end
 
-% Cardinal Spline interpolation function
+% Cardinal spline interpolation
 %
 % INPUT
-% t = time index of pts, double 1-by-N
-% pts = points in M dimensions to be interpolated, double M-by-N
-% test_t = times at which to interpolate, double 1-by-K
-% c = (default 0) tension parameter, double scalar
+% @param[in]  tRef reference times, double 1-by-N
+% @param[in]  pRef reference values, double D-by-N
+% @param[in]  t    interpolation times, double 1-by-K
+% @param[in]  c    (default 0) tension parameter, double scalar
+% @param[out] p    values at interpolation times, double D-by-K
+% @param[out] r    derivatives with respect to time at interpolation times, double D-by-K
 %
 % NOTES
+% Returns initial values if queried before tRef(1)
+% Returns final values if queried after tRef(N) 
 % The default tension parameter yields a Catman Hull spline
-function [pos, posdot] = cardinalSpline(t, pts, test_t, c)
+function [p, r] = cardinalSpline(tRef, pRef, t, c)
+
+  [D,N] = size(pRef);
+  K = numel(t);
+  p = zeros(D, K);
+  r = zeros(D, K);
   
+  if(K==0)
+    return;
+  end
+   
+  if(N<2)
+    error('At least two points are required to interpolate');
+  end
+
+  % transpose reference points for convienience
+  pRef = pRef';
+  
+  % compute the slopes at each given point
   if(nargin<4)
     c = 0;
   end
-  
-  pts = pts';
-  D = size(pts, 2);
-  Ntest = numel(test_t);
-  pos = zeros(D, Ntest);
-  posdot = zeros(D, Ntest);
-  
-  if(Ntest==0)
-    return;
+  wt = (1-c);
+  m = zeros(size(pRef));
+  m(1, :) = wt*(pRef(2, :)-pRef(1, :))./(tRef(2)-tRef(1));
+  for n = 2:(N-1)
+    m(n, :) = wt*(pRef(n+1, :)-pRef(n-1, :))./(tRef(n+1)-tRef(n-1));
   end
-  
-  Npts = size(pts, 1);
-  
-  if(Npts<2)
-    error('At least two points are required to interpolate');
-  end
-  
-  % compute the slopes at each given point
-  wt = (1-c)./2;
-  m = zeros(size(pts));
-  for dim = 1:size(pts, 2)
-    for indx = 2:(Npts-1)
-      m(indx, :) = wt*(pts(indx+1, :)-pts(indx-1, :));
-    end
-  end
-  m(1, :) = 2*wt*(pts(2, :)-pts(1, :));
-  m(end, :) = 2*wt*(pts(end, :)-pts(end-1, :));
-  
+  m(end, :) = wt*(pRef(end, :)-pRef(end-1, :))/(tRef(end)-tRef(end-1));
+ 
   % interpolate
-  for indx = 1:Ntest
-    t_indx = find(test_t(indx)>=t,1,'last');
-  
-    if(isempty(t_indx))
-      t_indx = 1;
+  for k = 1:K
+    tIndex = find(t(k)>=tRef,1,'last');
+
+    if(isempty(tIndex))
+      tIndex = 1;
+    end
+
+    if(tIndex==N)
+      tIndex = N-1;
     end
     
-    if(t_indx==Npts)
-      t_indx = Npts-1;
-    end
-    
-    t_range = t(t_indx+1)-t(t_indx);
-    curr_t = (test_t(indx)-t(t_indx))./t_range;
-    
-    h00 = 2*curr_t.^3-3*curr_t.^2+1;
-    h10 = curr_t.^3-2*curr_t.^2+curr_t;
-    h01 = -2*curr_t.^3+3*curr_t.^2;
-    h11 = curr_t.^3-curr_t.^2;
-    
-    h00dot = 6*curr_t.^2-6*curr_t;
-    h10dot = 3*curr_t.^2-4*curr_t+1;
-    h01dot = -6*curr_t.^2+6*curr_t;
-    h11dot = 3*curr_t.^2-2*curr_t;
-    
-    pos(:, indx) = (h00.*pts(t_indx, :) + h10.*m(t_indx, :) + ...
-      h01.*pts(t_indx+1, :) + h11.*m(t_indx+1, :))';
-    posdot(:, indx) = (h00dot.*pts(t_indx, :) + h10dot.*m(t_indx, :) + ...
-      h01dot.*pts(t_indx+1, :) + h11dot.*m(t_indx+1, :))';
+    tPlus = tIndex+1;
+    tRange = tRef(tPlus)-tRef(tIndex);
+    tNorm = (t(k)-tRef(tIndex))./tRange;
+
+    h00 = 2*tNorm.^3-3*tNorm.^2+1;
+    h10 = tNorm.^3-2*tNorm.^2+tNorm;
+    h01 = -2*tNorm.^3+3*tNorm.^2;
+    h11 = tNorm.^3-tNorm.^2;
+
+    h00dot = 6*tNorm.^2-6*tNorm;
+    h10dot = 3*tNorm.^2-4*tNorm+1;
+    h01dot = -6*tNorm.^2+6*tNorm;
+    h11dot = 3*tNorm.^2-2*tNorm;
+
+    p(:, k) = (h00.*pRef(tIndex, :)+h10.*(tRange).*m(tIndex, :)+h01.*pRef(tPlus, :)+h11.*(tRange).*m(tPlus, :))';
+    r(:, k) = ((h00dot.*pRef(tIndex, :)+h10dot.*(tRange).*m(tIndex, :)+h01dot.*pRef(tPlus, :)+...
+      h11dot.*(tRange).*m(tPlus, :))')/(tRange);
   end
 end
 
