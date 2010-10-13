@@ -1,9 +1,4 @@
 Demonstration:
- * Get indoor navigation data from Jimmy Touma or use RAWSEEDS
- * Integration with AFRL ANTBED
-   * Stateless API
-   * Provide configuration tool with graphical data preview
-   * Ask about netcdf format
  * Demonstrate variable computation concept
  * Re-interpretation of old data through re-evaluation of Measures
  * Show that measurement graphs are a superclass of pose graphs
