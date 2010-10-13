@@ -1,50 +1,29 @@
-Testbed:
- * Characterization of trajectory Measures
-   * Compute bias? (distance from ground truth to cost minimum)
-   * Perturb trajectory small amounts around ground truth and evaluate costs
-     * Include tests with ta=tb
-     * Granularity (dilution of precision, distance until cost increases at all)
-     * Monotonicity (distance until cost begins to decrease)
-     * Cost (maybe smoothed around ground truth)
-     * Jacobian (sensitivity)
-     * Hessian (eigenvalues and consistency of their ratios, eigenvectors)
- * Unit tests for all framework classes
-   * Call all constructors, copy constructors, and destructors
-   * Call all interface functions
-   * Check exception handling
-
 Demonstration:
- * Demonstrate variable computation concept
-
-DataContainer:
  * Get indoor navigation data from Jimmy Touma or use RAWSEEDS
  * Integration with AFRL ANTBED
    * Stateless API
    * Provide configuration tool with graphical data preview
    * Ask about netcdf format
-
-Measure:
- * New visual measure that is novel, efficient, complete, and independent of third party libraries
-   * SURF feature tracks to be compared to trajectories?
-
-Optimizer:
- * New optimizer that is novel, efficient, complete, and independent of third party libraries
-   * Linkage-based GA crossover function?
-   * Adaptation of Pose Graph method?
-
-Publication:
- * Present latest material on the whole framework
- * Offer examples of each object type
- * Measurement graphs are an alternative to pose graphs
+ * Demonstrate variable computation concept
  * Re-interpretation of old data through re-evaluation of Measures
- * Partial or scale-dependent computation
- * Disseminate to people listed in the correspondence directory
-
-Documentation:
- * Complete minimal set of dOxygen comments
+ * Show that measurement graphs are a superclass of pose graphs
  * Provide textual descriptions of use cases on the Wiki
    * TOMMAS is a Reference Implementation (RI)
    * Describe the distinction between testbed and Optimizer
+ * Describe how to perform trade studies
+   * loose, tight, and ultra-tight modes
+   * computation limitations
+   * GPS quality
+   * IMU quality
+   * camera FOV
+   * camera FPS
+   * image resolution
+
+Documentation:
+ * Present latest material on the whole framework
+ * Disseminate to people listed in the correspondence directory
+ * Complete minimal set of dOxygen comments
+ * Elaborate on component descriptions
  * Visual Measures must take into account the camera offset and projection function
  * Code must compile and run on both Windows and Linux unless the user's environment is not capable
  * Write class level comments for all classes
@@ -55,11 +34,22 @@ Documentation:
  * The measurement cost functional evaluates trajectories over an interval defined by two points
  * Image masking is incorporated into the camera projection, most easily queried by its inverse
  * Add a glossary page
- * Describe how to perform trade studies
-   * loose, tight, and ultra-tight modes
-   * computation limitations
-   * GPS quality
-   * IMU quality
-   * camera FOV
-   * camera FPS
-   * image resolution
+
+Miscelaneous References:
+ * RAWSEEDS data (ask developers about value of standardized API)
+ * Evolution Robotics VSLAM
+ * H. W. Sorenson. "Parameter Estimation". 1980
+ * Michael Kaess' iSAM approach as an Optimizer with quadratic
+assumption, benefit is non-linear measures
+ * Xi-Ren Cao. "Stochastic Learning and Optimization: A
+sensitivity-based Approach". Springer 2007
+ * Other code in /projects/1490/software
+ * Standards documents
+ * Cramer-Rao: cov(your estimator)>=inv(information)
+ * Anil Rao & Dave Benson: Gauss Pseudospectral Method (GPM)
+ * Natalia Hernandez Gardiol @ CSAIL:
+ * Adam Klivans: learning decision trees over binary inputs
+ * Kalai: learning halfspaces
+ * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation
+Technology. IEE, page 254, 2004
+ * Cost as Shannon information? (inconsistent bits as a ratio of total bits)
