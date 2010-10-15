@@ -9,6 +9,14 @@ You will need MATLAB {{{R2009a}}} or later, and in order to make full use of the
 
 The framework comes with a few default examples of components that can be selected by editing DemoConfig.m. In addition, you can [http://code.google.com/p/functionalnavigation/downloads/list download components] created by others to demonstrate more system configurations.
 
+=== Layer Diagram for Embedded Systems ===
+
+<img src="http://functionalnavigation.googlecode.com/svn/wiki/LayerDiagramForEmbeddedSystems.png">
+
+=== Layer Diagram for Developers ===
+
+<img src="http://functionalnavigation.googlecode.com/svn/wiki/LayerDiagramForDevelopers.png">
+
 === Class Diagram ===
 
 <img src="http://functionalnavigation.googlecode.com/svn/wiki/SimpleClassDiagram.png">
