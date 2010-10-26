@@ -1,4 +1,4 @@
-classdef DefaultSensor < tom.Sensor
+classdef Sensor < tom.Sensor
   
   properties (Constant = true, GetAccess = private)
     hasDataFlag = false;
@@ -6,7 +6,7 @@ classdef DefaultSensor < tom.Sensor
   end
   
   methods (Access = public, Static = true)
-    function this = DefaultSensor(initialTime)
+    function this = Sensor(initialTime)
       this = this@tom.Sensor(initialTime);
     end
   end

@@ -3,8 +3,11 @@ classdef DataContainer < handle
   methods (Access = private, Static = true)
     function dL = pDescriptionList(name, cD)
       persistent descriptionList
+      if(isempty(descriptionList))
+        descriptionList = containers.Map;
+      end
       if(nargin==2)
-        descriptionList.(name) = cD;
+        descriptionList(name) = cD;
       else
         dL = descriptionList;
       end
@@ -12,8 +15,11 @@ classdef DataContainer < handle
 
     function fL = pFactoryList(name, cF)
       persistent factoryList
+      if(isempty(factoryList))
+        factoryList = containers.Map;
+      end
       if(nargin==2)
-        factoryList.(name) = cF;
+        factoryList(name) = cF;
       else
         fL = factoryList;
       end
@@ -37,13 +43,14 @@ classdef DataContainer < handle
   methods (Access = public, Static = true)
     function flag = isConnected(name)
       flag = false;
-      if(exist([name, '.', name], 'class'))
+      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
+      if(exist(className, 'class'))
         try
-          feval([name, '.', name, '.initialize'], name);
+          feval([className, '.initialize'], name);
         catch err
           err.message;
         end  
-        if(isfield(tom.DataContainer.pFactoryList(name), name))
+        if(isKey(tom.DataContainer.pFactoryList(name), name))
           flag = true;
         end
       end
@@ -53,7 +60,7 @@ classdef DataContainer < handle
       text = '';
       if(tom.DataContainer.isConnected(name))
         dL = tom.DataContainer.pDescriptionList(name);
-        text = dL.(name)();
+        text = feval(dL(name));
       end
     end
     
@@ -63,7 +70,7 @@ classdef DataContainer < handle
       if(tom.DataContainer.isConnected(name))
         if(isempty(singleton))
           cF = tom.DataContainer.pFactoryList(name);
-          obj = cF.(name)(initialTime);
+          obj = feval(cF(name), initialTime);
           assert(isa(obj, 'tom.DataContainer'));
           singleton = obj;
           identifier = name;

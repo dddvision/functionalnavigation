@@ -1,4 +1,4 @@
-classdef DefaultMeasure < Default.DefaultSensor & tom.Measure
+classdef Measure < tom.Default.Sensor & tom.Measure
 
   properties (Access = private)
     edgeList
@@ -10,13 +10,13 @@ classdef DefaultMeasure < Default.DefaultSensor & tom.Measure
       function text = componentDescription
         text = 'This default measure constructs no graph edges and always returns zero cost.';
       end
-      tom.Measure.connect(name, @componentDescription, @Default.DefaultMeasure);
+      tom.Measure.connect(name, @componentDescription, @tom.Default.Measure);
     end
   end
   
   methods (Access = public, Static = true)
-    function this = DefaultMeasure(initialTime, uri)
-      this = this@Default.DefaultSensor(initialTime);
+    function this = Measure(initialTime, uri)
+      this = this@tom.Default.Sensor(initialTime);
       this = this@tom.Measure(initialTime, uri);
       this.edgeList = repmat(tom.GraphEdge, [0, 1]);
       this.cost = 0;

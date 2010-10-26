@@ -1,4 +1,4 @@
-classdef DefaultDynamicModel < Default.DefaultTrajectory & tom.DynamicModel
+classdef DynamicModel < tom.Default.Trajectory & tom.DynamicModel
   
   properties (Constant = true, GetAccess = private)
     cost = 0;
@@ -12,13 +12,13 @@ classdef DefaultDynamicModel < Default.DefaultTrajectory & tom.DynamicModel
         text = ['This default dynamic model represents a stationary body at the world origin.', ...
           'It has no input parameters.'];
       end
-      tom.DynamicModel.connect(name, @componentDescription, @Default.DefaultDynamicModel);
+      tom.DynamicModel.connect(name, @componentDescription, @tom.Default.DynamicModel);
     end
   end
   
   methods (Access = public, Static = true)
-    function this = DefaultDynamicModel(initialTime, uri)
-      this = this@Default.DefaultTrajectory(initialTime);
+    function this = DynamicModel(initialTime, uri)
+      this = this@tom.Default.Trajectory(initialTime);
       this = this@tom.DynamicModel(initialTime, uri);
     end
   end

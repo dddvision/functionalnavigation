@@ -3,8 +3,11 @@ classdef Optimizer < handle
   methods (Access = private, Static = true)
     function dL = pDescriptionList(name, cD)
       persistent descriptionList
+      if(isempty(descriptionList))
+        descriptionList = containers.Map;
+      end
       if(nargin==2)
-        descriptionList.(name) = cD;
+        descriptionList(name) = cD;
       else
         dL = descriptionList;
       end
@@ -12,8 +15,11 @@ classdef Optimizer < handle
 
     function fL = pFactoryList(name, cF)
       persistent factoryList
+      if(isempty(factoryList))
+        factoryList = containers.Map;
+      end
       if(nargin==2)
-        factoryList.(name) = cF;
+        factoryList(name) = cF;
       else
         fL = factoryList;
       end
@@ -36,13 +42,14 @@ classdef Optimizer < handle
   methods (Access = public, Static = true)
     function flag = isConnected(name)
       flag = false;
-      if(exist([name, '.', name], 'class'))
+      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
+      if(exist(className, 'class'))
         try
-          feval([name, '.', name, '.initialize'], name);
+          feval([className, '.initialize'], name);
         catch err
           err.message;
         end  
-        if(isfield(tom.Optimizer.pFactoryList(name), name))
+        if(isKey(tom.Optimizer.pFactoryList(name), name))
           flag = true;
         end
       end
@@ -52,14 +59,14 @@ classdef Optimizer < handle
       text = '';
       if(tom.Optimizer.isConnected(name))
         dL = tom.Optimizer.pDescriptionList(name);
-        text = dL.(name)();
+        text = feval(dL(name));
       end
     end
     
     function obj = create(name)
       if(tom.Optimizer.isConnected(name))
         cF = tom.Optimizer.pFactoryList(name);
-        obj = cF.(name)();
+        obj = feval(cF(name));
         assert(isa(obj, 'tom.Optimizer'));
       else
         error('The requested component is not connected');

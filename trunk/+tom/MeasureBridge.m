@@ -8,7 +8,7 @@ classdef MeasureBridge < tom.Measure
   methods (Access = public, Static = true)
     function this = MeasureBridge(name, uri)
       this = this@tom.Measure(uri);
-      this.m = [name, '.', name];
+      this.m = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
       this.h = feval(this.m, name, uri);
       error('tom.MeasureBridge has not been fully implemented')
     end
