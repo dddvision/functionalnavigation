@@ -1,4 +1,4 @@
-classdef XMeasure < Default.DefaultConfig & tom.Measure
+classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
 
   properties (SetAccess=private,GetAccess=private)
     xRef
@@ -16,7 +16,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
         text=['Evaluates a reference trajectory and simulates measurement of initial ECEF X positon with error. ',...
           'Error is simulated by sampling from a normal distribution.'];
       end
-      tom.Measure.connect(name,@componentDescription,@Default.XMeasure);
+      tom.Measure.connect(name,@componentDescription,@XMeasure.XMeasure);
     end
   end
   
@@ -32,7 +32,7 @@ classdef XMeasure < Default.DefaultConfig & tom.Measure
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
-              this.xRef=Default.DefaultTrajectory(initialTime);
+              this.xRef=XMeasure.DefaultTrajectory(initialTime);
             end
           otherwise
             error('Unrecognized resource identifier in URI');

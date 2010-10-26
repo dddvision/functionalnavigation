@@ -214,7 +214,7 @@ namespace tom
      * NOTES
      * The return value increments by one when extend() is called
      */
-    virtual uint32_t numExtensionBlocks(void) = 0;
+    virtual uint32_t numExtensionBlocks(void) const = 0;
 
     /**
      * Extend the time domain by incrementing the number of extension blocks by one
@@ -322,7 +322,7 @@ namespace tom
      * @return non-negative cost associated with each block
      *
      * NOTES
-     * A block with zero parameters returns zero cost
+     * An block with zero parameters returns zero cost
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
      */
@@ -335,9 +335,11 @@ namespace tom
      * @return               non-negative cost associated with each block
      *
      * NOTES
+     * Throws an exception if the block index is out of range
      * A block with zero parameters returns zero cost
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
+     * @see numExtensionBlocks()
      */
     virtual double computeExtensionBlockCost(uint32_t blockIndex) = 0;
     

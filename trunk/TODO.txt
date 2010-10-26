@@ -2,9 +2,6 @@ Demonstration:
  * Demonstrate variable computation concept
  * Re-interpretation of old data through re-evaluation of Measures
  * Show that measurement graphs are a superclass of pose graphs
- * Provide textual descriptions of use cases on the Wiki
-   * TOMMAS is a Reference Implementation (RI)
-   * Describe the distinction between testbed and Optimizer
  * Describe how to perform trade studies
    * loose, tight, and ultra-tight modes
    * computation limitations
@@ -15,6 +12,9 @@ Demonstration:
    * image resolution
 
 Documentation:
+ * Provide textual descriptions of use cases on the Wiki
+   * TOMMAS is a Reference Implementation (RI)
+   * Describe the distinction between testbed and Optimizer
  * Present latest material on the whole framework
  * Disseminate to people listed in the correspondence directory
  * Complete minimal set of dOxygen comments
@@ -48,3 +48,4 @@ sensitivity-based Approach". Springer 2007
  * Titterton, D. H. and Weston, J. L. Strapdown Inertial Navigation
 Technology. IEE, page 254, 2004
  * Cost as Shannon information? (inconsistent bits as a ratio of total bits)
+ * Willow Garage PR2 robot (http://www.willowgarage.com/pages/pr2/overview)

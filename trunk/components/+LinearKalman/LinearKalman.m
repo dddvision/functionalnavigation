@@ -1,4 +1,4 @@
-classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
+classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
   
   properties (GetAccess=private,SetAccess=private)
     isDefined
@@ -17,7 +17,7 @@ classdef LinearKalman < tom.Optimizer & Default.DefaultConfig
           'Extension blocks are ignored. ',...
           'Only the last on-diagonal element of each measure is evaluated.'];
       end
-      tom.Optimizer.connect(name,@componentDescription,@Default.LinearKalman);
+      tom.Optimizer.connect(name,@componentDescription,@LinearKalman.LinearKalman);
     end
   end
  
