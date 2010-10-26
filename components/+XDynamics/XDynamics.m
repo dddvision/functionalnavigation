@@ -1,4 +1,4 @@
-classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
+classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
   
   properties (Constant=true,GetAccess=private)
     initialNumLogical=uint32(0);
@@ -23,7 +23,7 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
         text=['Evaluates a reference trajectory and adds perturbation to initial ECEF X positon and velocity. ',...
           'Perturbation is simulated by sampling from a normal distribution.'];
       end
-      tom.DynamicModel.connect(name,@componentDescription,@Default.XDynamics);
+      tom.DynamicModel.connect(name,@componentDescription,@XDynamics.XDynamics);
     end
   end
   
@@ -42,7 +42,7 @@ classdef XDynamics < Default.DefaultConfig & tom.DynamicModel
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
-              this.xRef=Default.DefaultTrajectory(initialTime);
+              this.xRef=XDynamics.DefaultTrajectory(initialTime);
             end
           otherwise
             error('Unrecognized resource identifier in URI');

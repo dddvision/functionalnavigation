@@ -35,7 +35,7 @@ namespace tom
      *
      * NOTES
      * The input trajectory:
-     *   May provide a starting point for efficient processing of sensor data
+     *   May assist in efficient processing of sensor data
      *   May assist in fault detection and outlier removal
      *   Is assumed to be a poor estimate of the actual body trajectory
      *   Its accuracy has little or no effect on functions in derived classs

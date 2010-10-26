@@ -14,7 +14,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     iU
     dynamicModel
     measure
-    cost
+    numSubCosts
+    costMean
     defaultOptions
     stepGAhandle
   end
@@ -119,14 +120,14 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       % determine initial costs
       bits=getBits(this);
       objectiveContainer('put',this);
-      this.cost=feval(@objectiveContainer,bits);
+      this.costMean=feval(@objectiveContainer,bits);
       this.isDefined=true;
     end
     
     function refreshProblem(this)
       assert(this.isDefined);
       tb=tom.WorldTime(-Inf);
-      [cBest,iBest]=min(this.cost(:));
+      [cBest,iBest]=min(this.costMean(:));
       for m=1:numel(this.measure)
         this.measure{m}.refresh(this.dynamicModel(iBest));
         if(hasData(this.measure{m}))
@@ -162,7 +163,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function cEst=getCost(this,k)
-      cEst=this.cost(k+1);
+      cEst=this.costMean(k+1)*this.numSubCosts;
     end
     
     function step(this)
@@ -172,8 +173,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
         nvars=size(bits,2);
         nullstate=struct('FunEval',0);
         objectiveContainer('put',this);
-        this.cost(this.cost<eps)=eps; % MATLAB GA doesn't like zero cost
-        [this.cost,bits]=feval(this.stepGAhandle,this.cost,bits,...
+        this.costMean(this.costMean<eps)=eps; % MATLAB GA doesn't like zero cost
+        [this.costMean,bits]=feval(this.stepGAhandle,this.costMean,bits,...
           this.defaultOptions,nullstate,nvars,@objectiveContainer);
         putBits(this,bits);
       end
@@ -246,7 +247,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       end
     end
     
-    function cost=computeCostMean(this,kBest,nSpan)
+    function cost=computeCostMean(this,nSpan)
       K=numel(this.dynamicModel);
       M=numel(this.measure);
       B=double(numExtensionBlocks(this.dynamicModel(1)));
@@ -307,7 +308,8 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       end
 
       % normalize costs by total number of blocks and edges
-      cost=cost/(1+B+sum(numEdges));
+      this.numSubCosts=1+B+sum(numEdges);
+      cost=cost/this.numSubCosts;
     end
   end
   
@@ -338,9 +340,8 @@ function varargout=objectiveContainer(varargin)
   persistent this
   bits=varargin{1};
   if(~ischar(bits))
-    kBest=find(this.cost==min(this.cost),1,'first');
     putBits(this,bits);
-    varargout{1}=computeCostMean(this,kBest,this.nSpan);
+    varargout{1}=computeCostMean(this,this.nSpan);
   elseif(strcmp(bits,'put'))
     this=varargin{2};
   else
