@@ -214,7 +214,7 @@ namespace tom
      * NOTES
      * The return value increments by one when extend() is called
      */
-    virtual uint32_t numExtensionBlocks(void) const = 0;
+    virtual uint32_t numExtensionBlocks(void) = 0;
 
     /**
      * Extend the time domain by incrementing the number of extension blocks by one
