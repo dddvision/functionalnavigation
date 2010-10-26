@@ -1,4 +1,4 @@
-classdef DefaultTrajectory < tom.Trajectory
+classdef Trajectory < tom.Trajectory
   
   properties (GetAccess = private, SetAccess = private)
     initialTime
@@ -7,7 +7,7 @@ classdef DefaultTrajectory < tom.Trajectory
   end
   
   methods (Access = public, Static = true)
-    function this = DefaultTrajectory(initialTime)
+    function this = Trajectory(initialTime)
       tP.p = [0; 0; 0];
       tP.q = [1; 0; 0; 0];
       tP.r = [0; 0; 0];

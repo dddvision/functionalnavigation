@@ -9,7 +9,8 @@ classdef DynamicModelBridge < tom.DynamicModel
     function initialize(name)
       assert(isa(name, 'char'));
       compileOnDemand(name);
-      mName = [name, '.', name, 'Bridge'];
+      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];     
+      mName = [className, 'Bridge'];
       function text = componentDescription
         text = feval(mName, 'DynamicModelDescription', name);
       end
@@ -27,7 +28,8 @@ classdef DynamicModelBridge < tom.DynamicModel
       assert(isa(initialTime, 'tom.WorldTime'));
       assert(isa(uri, 'char'));
       compileOnDemand(name);
-      this.m = [name, '.', name, 'Bridge'];
+      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];     
+      this.m = [className, 'Bridge'];
       initialTime = double(initialTime); % workaround avoids array duplication
       this.h = feval(this.m, 'DynamicModelFactory', name, initialTime, uri);
     end

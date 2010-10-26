@@ -9,7 +9,7 @@ classdef OptimizerBridge < tom.Optimizer
     function this = OptimizerBridge(name, dynamicModelName, measureNames, uri)
       this = this@tom.Optimizer(dynamicModelName, measureNames, uri);
       error('\n\ntom.OptimizerBridge has not been fully implemented');
-%      this.m = [name, '.', name];
+%      this.m = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
 %      this.h = feval(this.m, name, dynamicModelName, measureNames, uri);
     end
   end

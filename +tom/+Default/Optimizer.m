@@ -1,4 +1,4 @@
-classdef DefaultOptimizer < tom.Optimizer
+classdef Optimizer < tom.Optimizer
   
   properties (Constant = true, GetAccess = private)
     popSize = uint32(3);
@@ -16,12 +16,12 @@ classdef DefaultOptimizer < tom.Optimizer
       function text = componentDescription
         text = 'This default optimizer does not compute or minimize cost.';
       end
-      tom.Optimizer.connect(name, @componentDescription, @Default.DefaultOptimizer);
+      tom.Optimizer.connect(name, @componentDescription, @tom.Default.Optimizer);
     end
   end
  
   methods (Access = public, Static = true)
-    function this = DefaultOptimizer()
+    function this = Optimizer()
       this = this@tom.Optimizer();
       this.isDefined = false;
     end

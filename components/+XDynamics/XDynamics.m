@@ -42,7 +42,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else
-              this.xRef=XDynamics.DefaultTrajectory(initialTime);
+              this.xRef=tom.Default.Trajectory(initialTime);
             end
           otherwise
             error('Unrecognized resource identifier in URI');

@@ -3,8 +3,11 @@ classdef Measure < tom.Sensor
   methods (Access = private, Static = true)
     function dL = pDescriptionList(name, cD)
       persistent descriptionList
+      if(isempty(descriptionList))
+        descriptionList = containers.Map;
+      end
       if(nargin==2)
-        descriptionList.(name) = cD;
+        descriptionList(name) = cD;
       else
         dL = descriptionList;
       end
@@ -12,8 +15,11 @@ classdef Measure < tom.Sensor
 
     function fL = pFactoryList(name, cF)
       persistent factoryList
+      if(isempty(factoryList))
+        factoryList = containers.Map;
+      end
       if(nargin==2)
-        factoryList.(name) = cF;
+        factoryList(name) = cF;
       else
         fL = factoryList;
       end
@@ -38,13 +44,14 @@ classdef Measure < tom.Sensor
   methods (Access = public, Static = true)
     function flag = isConnected(name)
       flag = false;
-      if(exist([name, '.', name], 'class'))
+      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
+      if(exist(className, 'class'))
         try
-          feval([name, '.', name, '.initialize'], name);
+          feval([className, '.initialize'], name);
         catch err
           err.message;
         end  
-        if(isfield(tom.Measure.pFactoryList(name), name))
+        if(isKey(tom.Measure.pFactoryList(name), name))
           flag = true;
         end
       end
@@ -54,14 +61,14 @@ classdef Measure < tom.Sensor
       text = '';
       if(tom.Measure.isConnected(name))
         dL = tom.Measure.pDescriptionList(name);
-        text = dL.(name)();
+        text = feval(dL(name));
       end
     end
     
     function obj = create(name, initialTime, uri)
       if(tom.Measure.isConnected(name))
         cF = tom.Measure.pFactoryList(name);
-        obj = cF.(name)(initialTime, uri);
+        obj = feval(cF(name), initialTime, uri);
         assert(isa(obj, 'tom.Measure'));
       else
         error('The requested component is not connected');

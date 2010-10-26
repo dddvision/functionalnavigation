@@ -1,4 +1,4 @@
-classdef DefaultDataContainer < tom.DataContainer
+classdef DataContainer < tom.DataContainer
   
   properties (Constant = true, GetAccess = private)
     hasRef = true;
@@ -15,15 +15,15 @@ classdef DefaultDataContainer < tom.DataContainer
       function text = componentDescription
         text = 'This default data container returns a default sensor and has a default trajectory.';
       end
-      tom.DataContainer.connect(name, @componentDescription, @Default.DefaultDataContainer);
+      tom.DataContainer.connect(name, @componentDescription, @tom.Default.DataContainer);
     end
   end
   
   methods (Access = public, Static = true)
-    function this = DefaultDataContainer(initialTime)
+    function this = DataContainer(initialTime)
       this = this@tom.DataContainer(initialTime);
-      this.sensor = Default.DefaultSensor(initialTime);
-      this.referenceTrajectory = Default.DefaultTrajectory(initialTime);
+      this.sensor = tom.Default.Sensor(initialTime);
+      this.referenceTrajectory = tom.Default.Trajectory(initialTime);
     end
   end
   
