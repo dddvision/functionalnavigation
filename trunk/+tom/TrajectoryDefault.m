@@ -1,20 +1,12 @@
-classdef Trajectory < tom.Trajectory
+classdef TrajectoryDefault < tom.Trajectory
   
-  properties (GetAccess = private, SetAccess = private)
+  properties (GetAccess = protected, SetAccess = protected)
     initialTime
-    initialPose
-    initialTangentPose
   end
   
   methods (Access = public, Static = true)
-    function this = Trajectory(initialTime)
-      tP.p = [0; 0; 0];
-      tP.q = [1; 0; 0; 0];
-      tP.r = [0; 0; 0];
-      tP.s = [0; 0; 0; 0];
+    function this = TrajectoryDefault(initialTime)
       this.initialTime = initialTime;
-      this.initialPose = tom.Pose(tP);
-      this.initialTangentPose = tom.TangentPose(tP);
     end
   end
   
@@ -24,14 +16,22 @@ classdef Trajectory < tom.Trajectory
     end
   
     function pose = evaluate(this, t)
-      pose = repmat(this.initialPose, [1, numel(t)]);
+      pose.p = [0; 0; 0];
+      pose.q = [1; 0; 0; 0];
+      pose = tom.Pose(pose);
+      pose = repmat(pose, [1, numel(t)]);
       for k = find(t<this.initialTime)
         pose(k) = tom.Pose;
       end
     end
 
     function tangentPose = tangent(this, t)
-      tangentPose = repmat(this.initialTangentPose, [1, numel(t)]);
+      tangentPose.p = [0; 0; 0];
+      tangentPose.q = [1; 0; 0; 0];
+      tangentPose.r = [0; 0; 0];
+      tangentPose.s = [0; 0; 0; 0];
+      tangentPose = tom.TangentPose(tangentPose);
+      tangentPose = repmat(tangentPose, [1, numel(t)]);
       for k = find(t<this.initialTime)
         tangentPose(k) = tom.TangentPose;
       end

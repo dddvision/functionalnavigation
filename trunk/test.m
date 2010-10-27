@@ -36,11 +36,11 @@ function test(name)
     name = {name};
   end
 
-  errorSummary = cell(0, 2);
+  summary = cell(0, 2);
   for nameIndex = 1:numel(name)
      % close figures and clear everything except breakpoints and necessary arguments
     breakpoints = dbstatus('-completenames');
-    save('temp.mat', 'breakpoints', 'name', 'nameIndex', 'errorSummary');
+    save('temp.mat', 'breakpoints', 'name', 'nameIndex', 'summary');
     close('all');
     clear('classes');
     load('temp.mat');
@@ -56,26 +56,72 @@ function test(name)
     % get test configuration
     config = TestConfig;
 
+    message = 'ok';
     if(numel(name)==1)
-      testbed.ComponentTest(name{nameIndex}, config.dynamicModel, config.measure, config.initialTime, config.uri);
+      testComponent(name{nameIndex}, config.dynamicModel, config.measure, config.initialTime, config.uri);
     else
       try
-        testbed.ComponentTest(name{nameIndex}, config.dynamicModel, config.measure, config.initialTime, config.uri);
+        testComponent(name{nameIndex}, config.dynamicModel, config.measure, config.initialTime, config.uri);
       catch err
-        errorSummary = cat(1, errorSummary, {name{nameIndex}, err.message});
+        message = err.message;
       end
     end
+    summary = cat(1, summary, {name{nameIndex}, message});  
   end
   
   fprintf('\n\n*** Begin Summary ***\n');
-  numErrors = size(errorSummary, 1);
-  name = char(errorSummary{:, 1});
-  for nameIndex = 1:numErrors
-    fprintf('\n%s = %s', name(nameIndex,:), errorSummary{nameIndex, 2});
+  numMessages = size(summary, 1);
+  name = char(summary{:, 1});
+  for nameIndex = 1:numMessages
+    fprintf('\n%s = %s', name(nameIndex, :), summary{nameIndex, 2});
   end
-  if(numErrors>0)
+  if(numMessages>0)
     fprintf('\n');
   end
   fprintf('\n*** End Summary ***');
 
+end
+
+function testComponent(name, dynamicModelName, measureName, initialTime, uri)
+  isDynamicModel = tom.DynamicModel.isConnected(name);
+  isMeasure = tom.Measure.isConnected(name);
+  isOptimizer = tom.Optimizer.isConnected(name);
+  isDataContainer = tom.DataContainer.isConnected(name);
+
+  if(isDynamicModel||isMeasure||isOptimizer||isDataContainer)
+    fprintf('\n\n*** Begin Component Test ***\n');
+
+    fprintf('\nname =');
+    assert(isa(name, 'char'));
+    fprintf(' ''%s''', name);
+
+    fprintf('\nDynamicModel.isConnected = %d', isDynamicModel);
+    fprintf('\nMeasure.isConnected = %d', isMeasure);
+    fprintf('\nOptimizer.isConnected = %d', isOptimizer);
+    fprintf('\nDataContainer.isConnected = %d', isDataContainer);
+
+    if(isDataContainer)
+      uri = ['matlab:', name];
+    end
+
+    if(isMeasure||isDataContainer)
+      dynamicModel = tom.DynamicModel.create(dynamicModelName, initialTime, uri);
+    end
+    if(isDynamicModel)
+      testbed.DynamicModelTest(name, initialTime, uri);
+    end
+    if(isMeasure)
+      testbed.MeasureTest(name, dynamicModel, uri);
+    end
+    if(isOptimizer)
+      testbed.OptimizerTest(name, dynamicModelName, measureName, initialTime, uri);
+    end
+    if(isDataContainer)
+      testbed.DataContainerTest(name, dynamicModel);
+    end
+
+    fprintf('\n\n*** End Component Test ***');
+  else
+    error('disconnected');
+  end
 end

@@ -99,11 +99,14 @@ for index = uint32(0):config.numSteps
       trajectory(k, 1) = optimizer.getSolution(k-uint32(1));
       cost(k, 1) = optimizer.getCost(k-uint32(1));
     end
-    
-    % update graphical display
-    gui.put(trajectory, cost, index);
+  else
+    trajectory = tom.TrajectoryDefault(initialTime);
+    cost = Inf;
   end
-    
+  
+  % update graphical display
+  gui.put(trajectory, cost, index);
+  
   % refresh the problem
   optimizer.refreshProblem();
   

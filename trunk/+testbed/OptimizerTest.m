@@ -7,10 +7,18 @@ classdef OptimizerTest < handle
       fprintf('\ndynamicModelName =');
       assert(isa(dynamicModelName, 'char'));
       fprintf(' ''%s''', dynamicModelName);
-
-      fprintf('\nmeasureName =');
-      assert(isa(measureName, 'char'));
-      fprintf(' ''%s''', measureName);
+      
+      fprintf('\nmeasureName = {');
+      assert(isa(measureName, 'cell'));
+      K = numel(measureName);
+      for k = 1:K
+        assert(isa(measureName{k}, 'char'));
+        if(k>1)
+          fprintf(', ');
+        end
+        fprintf('''%s''', measureName{k});
+      end
+      fprintf('}');
       
       fprintf('\ninitialTime =');
       assert(isa(initialTime, 'tom.WorldTime')); 
@@ -20,22 +28,29 @@ classdef OptimizerTest < handle
       assert(isa(uri, 'char'));
       fprintf(' ''%s''', uri);
       
-      fprintf('\n\ntom.Optimizer.description =');
+      fprintf('\n\ntom.Optimizer.description(''%s'') =', name);
       text = tom.Optimizer.description(name);
       assert(isa(text, 'char'));
       fprintf(' %s', text);
       
-      fprintf('\ntom.Optimizer.create =');
+      fprintf('\ntom.Optimizer.create(''%s'') =', name);
       optimizer = tom.Optimizer.create(name);
       assert(isa(optimizer, 'tom.Optimizer'));
       fprintf(' ok');
 
+      
+      measure = cell(numel(measureName),1);
+      for k = 1:K
+        fprintf('\ntom.Measure.create(''%s'') =', measureName{k});
+        measure{k} = tom.Measure.create(measureName{k}, initialTime, uri);
+        fprintf(' ok');
+      end
+      
       fprintf('\ndefineProblem =');
       dynamicModel = tom.DynamicModel.create(dynamicModelName, initialTime, uri);
       for k = 2:optimizer.numInitialConditions()
         dynamicModel(k) = tom.DynamicModel.create(dynamicModelName, initialTime, uri);
       end
-      measure{1} = tom.Measure.create(measureName, initialTime, uri);
       optimizer.defineProblem(dynamicModel, measure, true);
       fprintf(' ok');
       
@@ -45,16 +60,16 @@ classdef OptimizerTest < handle
         assert(isa(K, 'uint32'));
         fprintf(' %d', K);
 
-        for k = uint32(0:(K-1))
-          fprintf('\ngetSolution(%d) =', k);
-          trajectory = optimizer.getSolution(k);
+        for k = uint32(1):K
+          fprintf('\ngetSolution(%d) =', k-uint32(1));
+          trajectory = optimizer.getSolution(k-uint32(1));
           assert(isa(trajectory, 'tom.Trajectory'));
           fprintf(' ok');
         end
         
-        for k = uint32(0:(K-1))
-          fprintf('\ngetCost(%d) =', k);
-          cost = optimizer.getCost(k);
+        for k = uint32(1):K
+          fprintf('\ngetCost(%d) =', k-uint32(1));
+          cost = optimizer.getCost(k-uint32(1));
           assert(isa(cost, 'double'));
           fprintf(' %f', cost);
         end
