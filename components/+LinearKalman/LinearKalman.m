@@ -48,6 +48,36 @@ classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
         end
       end
       
+% alternate randomization method
+%       if(randomize)
+%         nIL = this.dynamicModel(1).numInitialLogical(); 
+%         nIU = this.dynamicModel(1).numInitialUint32();
+%         nEL = this.dynamicModel(1).numExtensionLogical();
+%         nEU = this.dynamicModel(1).numExtensionUint32();
+%         nEB = this.dynamicModel(1).numExtensionBlocks();
+%         for k = 1:numel(this.dynamicModel)
+%           x = this.dynamicModel(k);
+%           vIL = rand(1, nIL)>=0.5;
+%           vIU = randi([uint32(0), intmax('uint32')], 1, nIU, 'uint32');
+%           vEL = rand(nEB, nEL)>=0.5;
+%           vEU = randi([uint32(0), intmax('uint32')], nEB, nIU, 'uint32');
+%           for p = uint32(1):nIL
+%             x.setInitialLogical(p-1, vIL(p));
+%           end
+%           for p = uint32(1):nIU
+%             x.setInitialUint32(p-1, vIU(p));
+%           end
+%           for b = uint32(1):nEB
+%             for p = uint32(1):nEL
+%               x.setExtensionLogical(b-1, p-1, vEL(b, p));
+%             end
+%             for p = uint32(1):nEU
+%               x.setExtensionUint32(b-1, p-1, vEU(b, p));
+%             end
+%           end
+%         end
+%       end
+      
       % compute initial distribution model (assuming non-zero prior uncertainty)
       for k=1:numel(this.dynamicModel)
         [jacobian,hessian]=this.computeSecondOrderModel(k,'initialCost');

@@ -211,7 +211,7 @@ namespace tom
      *
      * @return true if available and false otherwise
      */
-    virtual bool hasReferenceTrajectory(void) = 0;
+    virtual bool hasReferenceTrajectory(void) const = 0;
 
     /**
      * Get reference trajectory
