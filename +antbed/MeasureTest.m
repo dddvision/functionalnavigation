@@ -45,7 +45,7 @@ classdef MeasureTest < handle
           measure.refresh(trajectory);
         end
         
-        testbed.SensorTest(measure);
+        antbed.SensorTest(measure);
         fprintf('\n');
         
         if(measure.hasData())

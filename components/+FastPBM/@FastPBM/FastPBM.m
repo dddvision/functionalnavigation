@@ -23,8 +23,8 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         resource = resource(2:end);
         switch(scheme)
           case 'matlab'
-            container = tom.DataContainer.create(resource, initialTime);
-            list = container.listSensors('Camera');
+            container = antbed.DataContainer.create(resource, initialTime);
+            list = container.listSensors('antbed.Camera');
             this.sensor = container.getSensor(list(1));
           otherwise
             error('Unrecognized resource identifier in URI');

@@ -1,4 +1,4 @@
-classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
+classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Camera
   
   properties (Constant=true,GetAccess=private)
     na=uint32(1);
@@ -24,7 +24,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Camera
   
   methods (Access=public)
     function this=MacCam(initialTime)
-      this=this@Camera(initialTime);
+      this=this@antbed.Camera(initialTime);
       if(this.verbose)
         fprintf('\nInitializing %s',class(this));
       end

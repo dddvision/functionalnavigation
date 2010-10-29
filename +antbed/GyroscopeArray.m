@@ -1,9 +1,9 @@
 % This class defines how to access data from a gyroscope
-classdef GyroscopeArray < InertialArray
+classdef GyroscopeArray < antbed.InertialArray
   
   methods (Access=public)
     function this=GyroscopeArray(initialTime)
-      this=this@InertialArray(initialTime);
+      this=this@antbed.InertialArray(initialTime);
     end
   end
   

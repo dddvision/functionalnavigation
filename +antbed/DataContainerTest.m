@@ -14,19 +14,19 @@ classdef DataContainerTest < handle
       assert(isa(initialTime, 'tom.WorldTime'));
       fprintf(' %f', double(initialTime));
       
-      fprintf('\ntom.DataContainer.description =');
-      text = tom.DataContainer.description(name);
+      fprintf('\nantbed.DataContainer.description =');
+      text = antbed.DataContainer.description(name);
       assert(isa(text, 'char'));
       fprintf(' %s', text);
       
-      fprintf('\ntom.DataContainer.create =');
-      dataContainer = tom.DataContainer.create(name, initialTime);
-      assert(isa(dataContainer, 'tom.DataContainer'));
+      fprintf('\nantbed.DataContainer.create =');
+      dataContainer = antbed.DataContainer.create(name, initialTime);
+      assert(isa(dataContainer, 'antbed.DataContainer'));
       fprintf(' ok');
       
       fprintf('\n\nlistSensors =');
       list = dataContainer.listSensors('tom.Sensor');
-      assert(isa(list, 'tom.SensorIndex'));
+      assert(isa(list, 'antbed.SensorIndex'));
       fprintf(' [');
       for s = 1:numel(list)
         if(s~=1)
@@ -47,7 +47,7 @@ classdef DataContainerTest < handle
         assert(isa(referenceTrajectory, 'tom.Trajectory'));
         fprintf(' ok');
         
-        testbed.TrajectoryTest(referenceTrajectory);
+        antbed.TrajectoryTest(referenceTrajectory);
       else
         fprintf(' false');
       end
@@ -62,17 +62,17 @@ classdef DataContainerTest < handle
         assert(isa(sensor, 'tom.Sensor'));
         fprintf(' ok');
         
-        testbed.SensorTest(sensor);
+        antbed.SensorTest(sensor);
         
         fprintf('\n\nrefresh\n');
         sensor.refresh(trajectory);
         
-        testbed.SensorTest(sensor);
+        antbed.SensorTest(sensor);
         
         fprintf('\n\nrefresh\n');
         sensor.refresh(trajectory);
         
-        testbed.SensorTest(sensor);
+        antbed.SensorTest(sensor);
       end
       
       fprintf('\n\n*** End DataContainer Test ***');

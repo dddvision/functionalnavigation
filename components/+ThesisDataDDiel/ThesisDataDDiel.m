@@ -1,4 +1,4 @@
-classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataContainer
+classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & antbed.DataContainer
 
   properties (GetAccess = private, SetAccess = private)
     hasRef
@@ -14,11 +14,11 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataConta
           'David D. Diel. Stochastic Constraints for Vision-Aided Inertial Navigation. ',...
           'MIT Masters Thesis, January 2005.'];
       end
-      tom.DataContainer.connect(name, @componentDescription, @ThesisDataDDiel.ThesisDataDDiel);
+      antbed.DataContainer.connect(name, @componentDescription, @ThesisDataDDiel.ThesisDataDDiel);
     end
   
     function this = ThesisDataDDiel(initialTime)
-      this = this@tom.DataContainer(initialTime);
+      this = this@antbed.DataContainer(initialTime);
       dataSetName = this.dataSetName;
       repository = this.repository;
       localDir = fileparts(mfilename('fullpath'));
@@ -56,7 +56,7 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & tom.DataConta
           flag(k) = true;
         end
       end
-      list = tom.SensorIndex(find(flag)-1);
+      list = antbed.SensorIndex(find(flag)-1);
     end
     
     function text = getSensorDescription(this, id)

@@ -1,7 +1,6 @@
 classdef tom
   methods (Static = true, Access = public)
     function initialize(name)
-      tom.DataContainerDefault.initialize(name);
       tom.DynamicModelDefault.initialize(name);
       tom.MeasureDefault.initialize(name);
       tom.OptimizerDefault.initialize(name);
