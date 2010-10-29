@@ -43,7 +43,7 @@ classdef DemoDisplay < DemoConfig & handle
       if(nargin>0)
         [scheme, resource] = strtok(uri, ':');
         resource = resource(2:end);
-        if(strcmp(scheme, 'matlab'))
+        if(strcmp(scheme, 'antbed'))
           container = antbed.DataContainer.create(resource, initialTime);
           if(hasReferenceTrajectory(container))
             xRef = getReferenceTrajectory(container);

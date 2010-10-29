@@ -27,7 +27,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         switch(scheme)
-          case 'matlab'
+          case 'antbed'
             container=antbed.DataContainer.create(resource,initialTime);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);

@@ -22,7 +22,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         [scheme, resource] = strtok(uri, ':');
         resource = resource(2:end);
         switch(scheme)
-          case 'matlab'
+          case 'antbed'
             container = antbed.DataContainer.create(resource, initialTime);
             list = container.listSensors('antbed.Camera');
             this.sensor = container.getSensor(list(1));
