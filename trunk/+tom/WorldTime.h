@@ -1,6 +1,11 @@
 #ifndef WORLDTIME_H
 #define WORLDTIME_H
 
+#include <math.h>
+#ifndef INFINITY
+static const double INFINITY = 1.0/0.0;
+#endif
+
 namespace tom
 {
   /**

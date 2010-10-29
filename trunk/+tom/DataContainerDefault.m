@@ -3,7 +3,7 @@ classdef DataContainerDefault < tom.DataContainer
   methods (Static = true, Access = public)
     function initialize(name)
       function text = componentDescription
-        text = 'This default data container has a default trajectory but no sensors.';
+        text = 'This default data container no data.';
       end
       tom.DataContainer.connect(name, @componentDescription, @tom.DataContainerDefault);
     end
@@ -27,25 +27,27 @@ classdef DataContainerDefault < tom.DataContainer
       assert(isa(id, 'tom.SensorIndex'));
       text = '';
       assert(isa(text, 'char'));
-      error('The default data container has no sensors.');
+      error('This default data container has no data.');
     end
         
     function obj = getSensor(this, id)
       assert(isa(this, 'tom.DataContainer'));
       assert(isa(id, 'tom.SensorIndex'));
-      obj = tom.SensorDefault(tom.WorldTime(0));
+      obj = tom.Measure.create('tom', tom.WorldTime(0), '');
       assert(isa(obj,'tom.Sensor'));
-      error('The default data container has no sensors.');
+      error('This default data container has no data.');
     end
     
     function flag = hasReferenceTrajectory(this)
       assert(isa(this, 'tom.DataContainer'));
-      flag = true;
+      flag = false;
     end
     
     function x = getReferenceTrajectory(this)
       assert(isa(this, 'tom.DataContainer'));
-      x = tom.TrajectoryDefault(tom.WorldTime(0));
+      x = tom.DynamicModel.create('tom', tom.WorldTime(0), '');
+      assert(isa(x, 'tom.Trajectory'));
+      error('This default data container has no data.');
     end
   end
   

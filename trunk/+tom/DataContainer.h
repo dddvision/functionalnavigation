@@ -171,14 +171,14 @@ namespace tom
     /**
      * List available sensors of a given class
      *
-     * @param[in] type class identifier
-     * @return         list of unique sensor identifiers (MATLAB: N-by-1)
+     * @param[in]  type class identifier
+     * @param[out] list unique sensor identifiers (MATLAB: N-by-1)
      *
      * NOTES
      * Sensors that inherit from the given class will also be included in the output list
      * To list all, use type='Sensor'
      */
-    virtual std::vector<SensorIndex> listSensors(const std::string type) = 0;
+    virtual void listSensors(const std::string type, std::vector<SensorIndex>& list) = 0;
 
     /**
      * Get sensor description
@@ -192,7 +192,7 @@ namespace tom
      * Avoid using line feed or return characters
      * Throws an exception if input index is out of range
      */
-    virtual std::string getSensorDescription(SensorIndex) = 0;
+    virtual std::string getSensorDescription(SensorIndex id) = 0;
 
     /**
      * Get instance of a Sensor
@@ -204,14 +204,14 @@ namespace tom
      * The specific subclass of the output depends on the given identifier
      * Throws an exception if input index is out of range
      */
-    virtual Sensor& getSensor(SensorIndex) = 0;
+    virtual Sensor& getSensor(SensorIndex id) = 0;
 
     /**
      * Check whether a refernce trajectory is available
      *
      * @return true if available and false otherwise
      */
-    virtual bool hasReferenceTrajectory(void) const = 0;
+    virtual bool hasReferenceTrajectory(void) = 0;
 
     /**
      * Get reference trajectory
@@ -222,7 +222,7 @@ namespace tom
      * The body follows this trajectory while recording sensor data
      * Throws an exception if trajectory is not available
      */
-    virtual Trajectory& getReferenceTrajectory(void) = 0;
+    virtual Trajectory* getReferenceTrajectory(void) = 0;
     
     /**
      * Virtual base class destructor
@@ -231,5 +231,7 @@ namespace tom
     {}
   };
 }
+
+#include "DataContainerDefault.cpp"
 
 #endif
