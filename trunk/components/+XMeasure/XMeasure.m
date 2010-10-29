@@ -28,7 +28,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=tom.DataContainer.create(resource,initialTime);
+            container=antbed.DataContainer.create(resource,initialTime);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else

@@ -1,4 +1,4 @@
-classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
+classdef CameraSim < MiddleburyData.MiddleburyDataConfig & antbed.Camera
   
   properties (Constant = true, GetAccess = private)
     rho = 3740/(1390/2); % Reference: http://vision.middlebury.edu/stereo/data/scenes2005/
@@ -20,7 +20,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & Camera
   
   methods (Access = public, Static = true)
     function this = CameraSim(initialTime)
-      this = this@Camera(initialTime);
+      this = this@antbed.Camera(initialTime);
       this.tn = tom.WorldTime(initialTime+double(1:this.numImages-1)/this.fps);
       this.im = cell(this.numImages,1);
       for n = 1:this.numImages

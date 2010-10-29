@@ -6,6 +6,7 @@ classdef DemoDisplay < DemoConfig & handle
     tRef
     pRef
     qRef
+    xDefault
   end
   
   methods (Access = public, Static = true)
@@ -33,6 +34,8 @@ classdef DemoDisplay < DemoConfig & handle
       set(this.haxes, 'Visible', 'on');
       set(this.haxes, 'NextPlot', 'add');
       
+      this.xDefault = tom.DynamicModel.create('tom', initialTime, uri);
+      
       this.tRef = [];
       this.pRef = [];
       this.qRef = [];
@@ -41,7 +44,7 @@ classdef DemoDisplay < DemoConfig & handle
         [scheme, resource] = strtok(uri, ':');
         resource = resource(2:end);
         if(strcmp(scheme, 'matlab'))
-          container = tom.DataContainer.create(resource, initialTime);
+          container = antbed.DataContainer.create(resource, initialTime);
           if(hasReferenceTrajectory(container))
             xRef = getReferenceTrajectory(container);
             this.tRef = generateSampleTimes(this, xRef);
@@ -58,10 +61,18 @@ classdef DemoDisplay < DemoConfig & handle
     % Visualize a set of trajectories with optional transparency
     %
     % INPUT
+    % index  =  plot index,  double scalar
     % x  =  trajectory instances,  tom.Trajectory N-by-1
     % c  =  costs,  double N-by-1
-    % index  =  plot index,  double scalar
-    function put(this, x, c, index)
+    function put(this, index, x, c)
+      
+      % fill missing arguments with defaults
+      if(nargin<4)
+        c=0;
+      end
+      if(nargin<3)
+        x = this.xDefault;
+      end
 
       % compute minimium cost
       K = numel(x);

@@ -1,7 +1,7 @@
 % For each valid index in the GPS data domain, evaluate the reference
 %   trajectory and compare with the reported GPS position
 function gpsTest(gpsHandle,trajectory)
-  assert(isa(gpsHandle,'GPSReceiver'));
+  assert(isa(gpsHandle,'antbed.GPSReceiver'));
   gpsHandle.refresh(trajectory);
   if(~gpsHandle.hasData())
     error('GPS is not ready');

@@ -9,7 +9,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       function text=componentDescription
         text=['Implements a trajectory measure based on the computation of optical flow between image pairs. ',...
           'Depends on the OpenCV library.',...
-          'Depends on a tom.DataContainer that has at least one Camera object.'];
+          'Depends on a antbed.DataContainer that has at least one antbed.Camera object.'];
       end
       tom.Measure.connect(name,@componentDescription,@OpticalFlowOpenCV.OpticalFlowOpenCV);
     end
@@ -80,8 +80,8 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=tom.DataContainer.create(resource,initialTime);
-            list=listSensors(container,'Camera');
+            container=antbed.DataContainer.create(resource,initialTime);
+            list=listSensors(container,'antbed.Camera');
             this.sensor=getSensor(container,list(1));
           otherwise
             error('Unrecognized resource identifier in URI');

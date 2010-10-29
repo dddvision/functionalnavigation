@@ -3,12 +3,12 @@
 %   one accelerometer and one gyroscope on each axis
 %   shared time stamps
 %   shared origin
-classdef InertialSixDoF < AccelerometerArray & GyroscopeArray
+classdef InertialSixDoF < antbed.AccelerometerArray & antbed.GyroscopeArray
 
   methods (Access=public, Static=true)
     function this = InertialSixDoF(initialTime)
-      this = this@AccelerometerArray(initialTime);
-      this = this@GyroscopeArray(initialTime);
+      this = this@antbed.AccelerometerArray(initialTime);
+      this = this@antbed.GyroscopeArray(initialTime);
     end
   end
   

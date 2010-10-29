@@ -1,4 +1,4 @@
-classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & AccelerometerArray
+classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.AccelerometerArray
   
   properties (Constant=true,GetAccess=private)
     na=uint32(0);
@@ -33,7 +33,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & Accelerome
   
   methods (Access=public)
     function this=MacAcc(initialTime)
-      this=this@AccelerometerArray(initialTime);
+      this=this@antbed.AccelerometerArray(initialTime);
       if(this.verbose)
         fprintf('\nInitializing %s',class(this));
       end

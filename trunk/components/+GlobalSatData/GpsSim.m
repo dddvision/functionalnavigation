@@ -1,4 +1,4 @@
-classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
+classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
   
   properties
     refData
@@ -20,7 +20,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
   
   methods (Access = public, Static = true)
     function this = GpsSim(initialTime)
-      this = this@GPSReceiver(initialTime);
+      this = this@antbed.GPSReceiver(initialTime);
       
       % Read the configuration file
       this.refData = readGPSdataFile(this.referenceTrajectoryFile);
@@ -42,7 +42,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & GPSReceiver
   
   methods (Access = public, Static = false)  
     function refresh(this, x)
-      assert(isa(this, 'GPSReceiver'));
+      assert(isa(this, 'antbed.GPSReceiver'));
       assert(isa(x, 'tom.Trajectory'));
     end
     

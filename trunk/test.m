@@ -1,8 +1,8 @@
 function test(name)
 
   % display info
-  fprintf('\n\nThis is the testbed script for components of the Trajectory Optimization ');
-  fprintf('\nManager for Multiple Algorithms and Sensors (TOMMAS).');
+  fprintf('\n\nThis is the alternative navigation testbed script for components of the ');
+  fprintf('\nTrajectory Optimization Manager for Multiple Algorithms and Sensors (TOMMAS).');
 
   % check MATLAB version
   fprintf('\n\nmatlabVersion  =');
@@ -86,7 +86,7 @@ function testComponent(name, dynamicModelName, measureName, initialTime, uri)
   isDynamicModel = tom.DynamicModel.isConnected(name);
   isMeasure = tom.Measure.isConnected(name);
   isOptimizer = tom.Optimizer.isConnected(name);
-  isDataContainer = tom.DataContainer.isConnected(name);
+  isDataContainer = antbed.DataContainer.isConnected(name);
 
   if(isDynamicModel||isMeasure||isOptimizer||isDataContainer)
     fprintf('\n\n*** Begin Component Test ***\n');
@@ -108,16 +108,16 @@ function testComponent(name, dynamicModelName, measureName, initialTime, uri)
       dynamicModel = tom.DynamicModel.create(dynamicModelName, initialTime, uri);
     end
     if(isDynamicModel)
-      testbed.DynamicModelTest(name, initialTime, uri);
+      antbed.DynamicModelTest(name, initialTime, uri);
     end
     if(isMeasure)
-      testbed.MeasureTest(name, dynamicModel, uri);
+      antbed.MeasureTest(name, dynamicModel, uri);
     end
     if(isOptimizer)
-      testbed.OptimizerTest(name, dynamicModelName, measureName, initialTime, uri);
+      antbed.OptimizerTest(name, dynamicModelName, measureName, initialTime, uri);
     end
     if(isDataContainer)
-      testbed.DataContainerTest(name, dynamicModel);
+      antbed.DataContainerTest(name, dynamicModel);
     end
 
     fprintf('\n\n*** End Component Test ***');

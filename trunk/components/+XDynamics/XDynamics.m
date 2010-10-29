@@ -38,7 +38,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
         resource=resource(2:end);
         switch(scheme)
           case 'matlab'
-            container=tom.DataContainer.create(resource,initialTime);
+            container=antbed.DataContainer.create(resource,initialTime);
             if(hasReferenceTrajectory(container))
               this.xRef=getReferenceTrajectory(container);
             else

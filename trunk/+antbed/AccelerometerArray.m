@@ -1,9 +1,9 @@
 % This class defines how to access data from an accelerometer
-classdef AccelerometerArray < InertialArray
+classdef AccelerometerArray < antbed.InertialArray
   
   methods (Access=public)
     function this=AccelerometerArray(initialTime)
-      this=this@InertialArray(initialTime);
+      this=this@antbed.InertialArray(initialTime);
     end
   end
   

@@ -1,4 +1,4 @@
-classdef InertialSim < InertialSixDoF
+classdef InertialSim < antbed.InertialSixDoF
   
   properties (Constant = true, GetAccess = private)
     pFrame=[0; 0; 0];
@@ -18,7 +18,7 @@ classdef InertialSim < InertialSixDoF
   
   methods (Access = public, Static = true)
     function this = InertialSim(initialTime, secondsPerRefresh, localCache)
-      this = this@InertialSixDoF(initialTime);
+      this = this@antbed.InertialSixDoF(initialTime);
       this.secondsPerRefresh = secondsPerRefresh;
       [this.tn, this.gyro, this.accel] = ReadIMUdat(localCache, 'inertia.dat');
       this.tn = tom.WorldTime(this.tn+initialTime); % same policy for all sensors

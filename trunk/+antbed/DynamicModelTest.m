@@ -74,7 +74,7 @@ classdef DynamicModelTest
       end
       fprintf(']');
       
-      testbed.TrajectoryTest(dynamicModel);
+      antbed.TrajectoryTest(dynamicModel);
       
       for b = uint32(0:2)
         fprintf('\n\nextend');
@@ -111,7 +111,7 @@ classdef DynamicModelTest
         end
         fprintf(']');
         
-        testbed.TrajectoryTest(dynamicModel);
+        antbed.TrajectoryTest(dynamicModel);
       end
       
       for b = uint32(0:2)   
@@ -137,7 +137,7 @@ classdef DynamicModelTest
         end
         fprintf(']');
 
-        testbed.TrajectoryTest(dynamicModel);
+        antbed.TrajectoryTest(dynamicModel);
       end
         
       fprintf('\n\n*** End DynamicModel Test ***');

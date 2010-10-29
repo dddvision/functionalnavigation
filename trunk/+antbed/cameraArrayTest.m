@@ -1,5 +1,5 @@
 function cameraArrayTest(cam,trajectory)
-  assert(isa(cam,'CameraArray'));
+  assert(isa(cam,'antbed.CameraArray'));
   testCameraArrayProjection(cam,trajectory);
   testCameraArrayProjectionRoundTrip(cam,trajectory);
 end

@@ -1,4 +1,4 @@
-classdef CameraSim < Camera
+classdef CameraSim < antbed.Camera
   
   properties (Constant = true, GetAccess = private)
     layers = 'rgb';
@@ -20,7 +20,7 @@ classdef CameraSim < Camera
   
   methods (Access = public, Static = true)
     function this = CameraSim(initialTime, secondsPerRefresh, localCache)
-      this = this@Camera(initialTime);
+      this = this@antbed.Camera(initialTime);
       this.secondsPerRefresh = secondsPerRefresh;
       this.localCache = localCache;
       info = dir(fullfile(localCache,'/color*'));

@@ -1,14 +1,14 @@
 % This class defines a single camera as a special case of a camera array
-classdef Camera < CameraArray
+classdef Camera < antbed.CameraArray
   
   methods (Access=public)
     function this=Camera(initialTime)
-      this=this@CameraArray(initialTime);
+      this=this@antbed.CameraArray(initialTime);
     end
     
     % Limits the camera array to providing exactly one view
     function num=numViews(this)
-      assert(isa(this,'Camera'));
+      assert(isa(this,'antbed.Camera'));
       num=uint32(1);
     end
   end
