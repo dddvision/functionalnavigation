@@ -351,4 +351,6 @@ namespace tom
   };
 }
 
+#include "DynamicModelDefault.cpp"
+
 #endif

@@ -175,7 +175,7 @@ namespace tom
      * @see refreshProblem()
      * @see numInitialConditions()
      */
-    virtual void defineProblem(std::vector<DynamicModel*> &dynamicModel, std::vector<Measure*> &measure,
+    virtual void defineProblem(std::vector<DynamicModel*>& dynamicModel, std::vector<Measure*>& measure,
       bool randomize) = 0;
 
     /**
@@ -248,5 +248,7 @@ namespace tom
     {}
   };
 }
+
+#include "OptimizerDefault.cpp"
 
 #endif

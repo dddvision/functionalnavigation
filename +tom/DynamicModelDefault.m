@@ -1,4 +1,8 @@
-classdef DynamicModelDefault < tom.TrajectoryDefault & tom.DynamicModel
+classdef DynamicModelDefault < tom.DynamicModel
+  
+  properties (GetAccess = protected, SetAccess = protected)
+    interval
+  end
   
   methods (Static = true, Access = public)
     function initialize(name)
@@ -11,12 +15,38 @@ classdef DynamicModelDefault < tom.TrajectoryDefault & tom.DynamicModel
   
   methods (Access = public, Static = true)
     function this = DynamicModelDefault(initialTime, uri)
-      this = this@tom.TrajectoryDefault(initialTime);
       this = this@tom.DynamicModel(initialTime, uri);
+      this.interval = tom.TimeInterval(initialTime, tom.WorldTime(Inf));
     end
   end
   
-  methods (Access = public, Static = false)  
+  methods (Access = public, Static = false)
+    function interval = domain(this)
+      interval = this.interval;
+    end
+  
+    function pose = evaluate(this, t)
+      pose.p = [0; 0; 0];
+      pose.q = [1; 0; 0; 0];
+      pose = tom.Pose(pose);
+      pose = repmat(pose, [1, numel(t)]);
+      for k = find(t<this.interval.first)
+        pose(k) = tom.Pose;
+      end
+    end
+
+    function tangentPose = tangent(this, t)
+      tangentPose.p = [0; 0; 0];
+      tangentPose.q = [1; 0; 0; 0];
+      tangentPose.r = [0; 0; 0];
+      tangentPose.s = [0; 0; 0; 0];
+      tangentPose = tom.TangentPose(tangentPose);
+      tangentPose = repmat(tangentPose, [1, numel(t)]);
+      for k = find(t<this.interval.first)
+        tangentPose(k) = tom.TangentPose;
+      end
+    end
+    
     function num = numInitialLogical(this)
       assert(isa(this, 'tom.DynamicModel'));
       num = uint32(0);
@@ -117,7 +147,7 @@ classdef DynamicModelDefault < tom.TrajectoryDefault & tom.DynamicModel
       assert(isa(b, 'uint32'));
       cost = 0;
       assert(isa(cost, 'double'));
-      error('The default dynamic model has no input parameters.');
+      error('The default dynamic model has no extension blocks.');
     end
     
     function extend(this)
