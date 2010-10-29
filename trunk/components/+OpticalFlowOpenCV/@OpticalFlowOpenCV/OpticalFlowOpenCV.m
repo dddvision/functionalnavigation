@@ -79,7 +79,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
         [scheme,resource]=strtok(uri,':');
         resource=resource(2:end);
         switch(scheme)
-          case 'matlab'
+          case 'antbed'
             container=antbed.DataContainer.create(resource,initialTime);
             list=listSensors(container,'antbed.Camera');
             this.sensor=getSensor(container,list(1));

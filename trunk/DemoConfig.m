@@ -2,7 +2,7 @@ classdef DemoConfig < handle
   
   properties (Constant = true, GetAccess = public)
     % trajectory optimization parameters
-    uri = 'matlab:MiddleburyData'; % ('matlab:MiddleburyData') select hardware resource or data container
+    uri = 'antbed:MiddleburyData'; % ('antbed:MiddleburyData') select hardware resource or data container
     dynamicModelName = 'tom'; % ('tom') name of a single DynamicModel component
     measureNames = {'tom'}; % ({'tom'}) cell array of zero or more names of Measure components
     optimizerName = 'tom'; % ('tom') name of a single Optimizer component

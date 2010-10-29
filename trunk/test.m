@@ -101,7 +101,7 @@ function testComponent(name, dynamicModelName, measureName, initialTime, uri)
     fprintf('\nDataContainer.isConnected = %d', isDataContainer);
 
     if(isDataContainer)
-      uri = ['matlab:', name];
+      uri = ['antbed:', name];
     end
 
     if(isMeasure||isDataContainer)

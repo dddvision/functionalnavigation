@@ -61,10 +61,8 @@ namespace tom
      * @param[in] uri         uniform resource identifier as described below
      *
      * NOTES
-     * The URI may identify a hardware resource or DataContainer
-     * URI examples:
-     *   'file://dev/camera0'
-     *   'matlab:middleburyData'
+     * Testing is supported by recognizing the URI format 'antbed:dataContainerName'
+     * Hardware implementation is supported by recognizing system resources such as 'file://dev/camera0'
      * Each subclass constructor must initialize this base class
      * (MATLAB) Initialize by calling this=this@tom.Measure(initialTime,uri);
      */
