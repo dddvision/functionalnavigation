@@ -1,8 +1,8 @@
 classdef TestConfig
   properties (Constant = true, GetAccess = public)
-    uri = 'antbed:MiddleburyData'; % default data resource identifier
-    dynamicModel = 'tom'; % default dynamic model name
-    measure = {'tom'}; % default measure names
-    initialTime = getCurrentTime(); % default initial time
+    uri = 'antbed:MiddleburyData'; % data resource identifier
+    dynamicModel = 'tom'; % dynamic model name
+    measure = {'tom'}; % cell array of measure names
+    initialTime = antbed.getCurrentTime(); % default initial time
   end
 end

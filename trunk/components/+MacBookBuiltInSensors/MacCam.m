@@ -18,6 +18,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
     focal
     refTime
     initialTime
+    zoneOffset
     rate
     ready
   end
@@ -28,6 +29,11 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
       if(this.verbose)
         fprintf('\nInitializing %s',class(this));
       end
+      
+      % store time zone offset
+      calendar = java.util.GregorianCalendar;
+      zone = calendar.getTimeZone;
+      this.zoneOffset = (zone.getRawOffset+zone.getDSTSavings)/1000;
         
       this.focal=this.numStrides*cot(this.cameraFieldOfView/2);
       
@@ -108,7 +114,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
     function time=getTime(this,n)
       assert(n>=this.na);
       assert(n<=this.nb);
-      time=tom.WorldTime(this.initialTime+this.rate*double(n-this.na));
+      time=tom.WorldTime(this.initialTime-this.zoneOffset+this.rate*double(n-this.na));
     end
 
     function str=interpretLayers(this,varargin)
