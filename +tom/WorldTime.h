@@ -3,7 +3,7 @@
 
 #include <math.h>
 #ifndef INFINITY
-static const double INFINITY = 1.0/0.0;
+static const double INFINITY = exp(10000.0);
 #endif
 
 namespace tom

@@ -29,6 +29,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Acc
     nb
     ready
     initialTime
+    zoneOffset
   end
   
   methods (Access=public)
@@ -37,6 +38,11 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Acc
       if(this.verbose)
         fprintf('\nInitializing %s',class(this));
       end
+      
+      % store time zone offset
+      calendar = java.util.GregorianCalendar;
+      zone = calendar.getTimeZone;
+      this.zoneOffset = (zone.getRawOffset+zone.getDSTSavings)/1000;
       
       thisPath=fileparts(mfilename('fullpath'));
       smsLibPath=fullfile(thisPath,this.smsLib);
@@ -106,7 +112,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Acc
     end
     
     function time=getTime(this,n)
-      time=tom.WorldTime(this.initialTime+get(this,n,4));
+      time=tom.WorldTime(this.initialTime-this.zoneOffset+get(this,n,4));
     end
     
     function specificForce=getSpecificForce(this,n,ax)

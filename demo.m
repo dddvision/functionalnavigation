@@ -40,7 +40,7 @@ RandStream.getDefaultStream.reset();
 config = DemoConfig;
 
 % get system time
-initialTime = getCurrentTime();
+initialTime = antbed.getCurrentTime();
 
 % instantiate the graphical display
 gui = DemoDisplay(initialTime, config.uri);
