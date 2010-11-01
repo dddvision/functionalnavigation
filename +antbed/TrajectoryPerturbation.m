@@ -1,34 +1,52 @@
 classdef TrajectoryPerturbation < Trajectory
 
   properties (GetAccess = private, SetAccess = private)
-      translation
-      rotation
-      deltaTranslation
-      deltaRotation
+      basePose
+      deltaPose
   end
     
   methods (Access = public, Static = true)
-    % foward,right,down   -   quat
-    % base trajectory and rotation (ie ground truth)
-    function this = TrajectoryPerturbation(trans, rot)
-      this.translation = trans;
-      this.rotation = rot;
+    % base trajectory and rotation (ie ground truth) passed as a tom.pose
+    function this = TrajectoryPerturbation(pose)
+        this.basePose = pose;
     end
   end
     
   methods (Access = public, Static = false)
-    function setPerturbation(this, deltaTrans, deltaRot)
-      this.deltaTranslation = deltaTrans;
-      this.deltaRotation = deltaRot;
+    function setPerturbation(this, offsetPose)
+      this.deltaPose = offsetPose;
     end
     
     function pose = evaluate(this, t)
-      pFinal = this.translation+this.deltaTranslation;
-      qFinal = Quat2Homo(this.deltaRotation)*this.rotation;
-      pose = tom.Pose(struct('p', pFinal, 'q', qFinal));      
+      N = numel(t);
+      if(N==0)
+        pose = repmat(tom.Pose, [1, 0]);
+      else
+        pose(1, N) = tom.Pose;
+        for k = find(t>=this.initialTime)
+          pose(k).p = this.basePose.p + this.deltaPose.p;
+          pose(k).q = Quat2Homo(this.deltaPose.q) * this.basePose.q;
+        end
+      end   
+    end
+  
+    % the method returns 0 for the change in rate of rotation, this may be
+    % implemented in the future
+    function tangentPose = tangent(this, t)
+      N = numel(t);
+      if(N==0)
+        tangentPose = repmat(tom.TangentPose, [1, 0]);
+      else
+        tangentPose(1, N) = tom.TangentPose;
+        for k = find(t>=this.initialTime)
+          tangentPose(k).p = this.basePose.p + this.deltaPose.p;
+          tangentPose(k).q = Quat2Homo(this.deltaPose.q) * this.basePose.q;
+          tangentPose(k).r = [0; 0; 0];
+          tangentPose(k).s = [0; 0; 0; 0];
+        end
+      end
     end
   end
-  
 end
 
 function h = Quat2Homo(q)
