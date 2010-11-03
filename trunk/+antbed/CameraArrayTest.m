@@ -1,21 +1,38 @@
-function cameraArrayTest(cam, trajectory)
-  assert(isa(cam, 'antbed.CameraArray'));
-  testCameraArrayProjection(cam, trajectory);
-  testCameraArrayProjectionRoundTrip(cam, trajectory);
-end
-
-function testCameraArrayProjection(cam, trajectory)
-  % find out which images are available
-  cam.refresh(trajectory);
-  if(~cam.hasData())
-    error('camera is not ready');
-  end
-  na = cam.first();
-  nb = cam.last();
-  assert(isa(na, 'uint32'));
-  assert(isa(nb, 'uint32'));
+% Assumes that the general Sensor interface has already been tested
+classdef CameraArrayTest
   
-  for view = 1:cam.numViews();
+  methods (Access = private, Static = true)
+    function handle = figureHandle
+      persistent h
+      if(isempty(h))
+        h = figure;
+        set(h, 'Name', 'Camera projection tests');
+      end
+      handle = h;
+    end        
+  end
+  
+  methods (Access = public, Static = true)
+    function this = CameraArrayTest(cam)
+      assert(isa(cam, 'antbed.CameraArray'));
+      
+      if(~cam.hasData())
+        return;
+      end
+      nb = cam.last();
+      
+      testCameraArrayProjection(cam, nb);
+      testCameraArrayProjectionRoundTrip(cam, nb);
+    end
+  end
+  
+end
+    
+function testCameraArrayProjection(cam, nb)
+  figure(antbed.CameraArrayTest.figureHandle());
+
+  % test each view 
+  for view = uint32(1):cam.numViews();
 
     % get an image
     img = cam.getImage(nb, view);
@@ -31,9 +48,7 @@ function testCameraArrayProjection(cam, trajectory)
     end
 
     % show original image
-    figure;
-    imshow(gray);
-    drawnow;
+    imshow(gray, 'Parent', subplot(2, 3, 1));
 
     % set parameters for your desired camera
     HEIGHT = 200;
@@ -41,7 +56,6 @@ function testCameraArrayProjection(cam, trajectory)
     CENTER_VERT = (HEIGHT+1)/2;
     CENTER_HORZ = (WIDTH+1)/2;
 
-    fig = figure;
     for FOCAL = (WIDTH-1)/2*(1:-0.1:0.1)
       % create rays corresponding to your desired camera
       [c3, c2] = ndgrid((1:HEIGHT)-CENTER_VERT, (1:WIDTH)-CENTER_HORZ);
@@ -64,8 +78,7 @@ function testCameraArrayProjection(cam, trajectory)
       newImage(good) = interp2(gray, pix(1, good)+1, pix(2, good)+1, '*linear', NaN);
 
       % display the reprojected image
-      figure(fig);
-      imshow(newImage);
+      imshow(newImage, 'Parent', subplot(2, 3, 3));
       title('Test Camera Array Projection');
       drawnow;
       pause(0.1);
@@ -73,26 +86,17 @@ function testCameraArrayProjection(cam, trajectory)
   end 
 end
 
-function testCameraArrayProjectionRoundTrip(cam, trajectory)
-  % find out which images are available
-  cam.refresh(trajectory);
-  if(~cam.hasData())
-    error('camera is not ready');
-  end
-  na = cam.first();
-  nb = cam.last();
-  assert(isa(na, 'uint32'));
-  assert(isa(nb, 'uint32'));
+function testCameraArrayProjectionRoundTrip(cam, nb)
+  figure(antbed.CameraArrayTest.figureHandle());
 
-  for view = 1:cam.numViews();
+  % test each view
+  for view = uint32(1):cam.numViews();
 
     % get an image
     img = cam.getImage(nb, view);
 
     % show image
-    figure;
-    imshow(img);
-    drawnow;
+    imshow(img, 'Parent', subplot(2, 3, 2));
 
     % get image size
     HEIGHT = size(img, 1);
@@ -109,10 +113,8 @@ function testCameraArrayProjectionRoundTrip(cam, trajectory)
     c3 = reshape(ray(3, :), [HEIGHT, WIDTH]);
 
     % show the ray vector components
-    figure;
-    imshow([c1, c2, c3], []);
+    imshow([c1, c2, c3], [], 'Parent', subplot(2, 3, 4));
     title('Test Camera Array Inverse Projection');
-    drawnow;
 
     % reproject the rays to pixel coordinates
     pixout = cam.projection(ray, nb, view);
@@ -124,9 +126,7 @@ function testCameraArrayProjectionRoundTrip(cam, trajectory)
     jdiff = abs(jout-jj);
 
     % display differences
-    figure;
-    imshow(1000*[idiff, jdiff]+0.5);
+    imshow(1000*[idiff, jdiff]+0.5, 'Parent', subplot(2, 3, 5));
     title('Test Camera Array Projection Round Trip (image area should be gray)');
-    drawnow;
   end
 end
