@@ -76,7 +76,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
       % Evaluate the reference trajectory at the measurement time
       pose = evaluate(this.refTraj, getTime(this, n));
       p = cat(2, pose.p);
-      [lon, lat, alt] = globalSatData.ecef2lolah(p(1, :), p(2, :), p(3, :));
+      [lon, lat, alt] = GlobalSatData.ecef2lolah(p(1, :), p(2, :), p(3, :));
       
       % Add error based on real Global Sat gps data
       lon = lon+this.noise(2, n);

@@ -34,13 +34,6 @@ classdef SensorTest
         if(last>first)
           fprintf('\nsecondsPerNode = %f', (tb-ta)/double(last-first));
         end
-        
-        if(isa(sensor, 'antbed.CameraArray'))
-          antbed.CameraArrayTest(sensor);
-        end
-        if(isa(sensor, 'antbed.GPSReceiver'))
-          antbed.GPSReceiverTest(sensor);
-        end
       else
         fprintf(' false');
       end
