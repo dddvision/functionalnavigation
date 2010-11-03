@@ -49,3 +49,4 @@ sensitivity-based Approach". Springer 2007
 Technology. IEE, page 254, 2004
  * Cost as Shannon information? (inconsistent bits as a ratio of total bits)
  * Willow Garage PR2 robot (http://www.willowgarage.com/pages/pr2/overview)
+ * DualAlign registration software

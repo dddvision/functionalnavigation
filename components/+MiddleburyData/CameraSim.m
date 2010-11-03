@@ -135,13 +135,13 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & antbed.Camera
       subdir = [this.sceneYear, '/', this.fractionalSize, '/', this.scene, '/', this.illumination, '/', ...
         this.exposure, '/'];
       view = sprintf('view%d.png', num);
-      fcache = fullfile(cache,subdir, view);
+      fcache = fullfile(cache, subdir, view);
       dircache = [cache, subdir];
       if(~exist(dircache, 'file'))
         mkdir(dircache);
       end
       if(~exist(fcache, 'file'))
-        url = [repository,subdir, view];
+        url = [repository, subdir, view];
         if(this.verbose)
           fprintf('\ncaching: %s', url);
         end

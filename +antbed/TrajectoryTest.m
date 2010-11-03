@@ -11,11 +11,10 @@ classdef TrajectoryTest
       persistent h
       if(isempty(h))
         h = figure;
-        set(h, 'Units', 'normalized', 'Position', [0, 0, 1, 1]);
         set(h, 'Name', 'Trajectory history (blue) and prediction (red)');
       end
       handle = h;
-    end        
+    end
   end
   
   methods (Access = public, Static = true)

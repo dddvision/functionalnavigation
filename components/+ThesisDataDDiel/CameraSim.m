@@ -24,12 +24,12 @@ classdef CameraSim < antbed.Camera
       this.secondsPerRefresh = secondsPerRefresh;
       this.localCache = localCache;
       info = dir(fullfile(localCache,'/color*'));
-      fnames = sortrows(cat(1,info(:).name));
+      fnames = sortrows(cat(1, info(:).name));
       if(isempty(fnames))
         error('no images found in local cache');
       end
       S = load(fullfile(localCache, 'workspace.mat'), 'T_cam', 'CAMERA_TYPE', 'CAMERA_OFFSET');
-      this.na = uint32(str2double(fnames(1,6:11)));
+      this.na = uint32(str2double(fnames(1, 6:11)));
       this.nb = this.na;
       this.tn = tom.WorldTime(S.T_cam+initialTime); % same policy for all sensors
       this.cameraType = S.CAMERA_TYPE;
@@ -138,9 +138,9 @@ classdef CameraSim < antbed.Camera
           a2 = -0.083878888;
           b1 = 0.149954284;
           b2 = -0.06062850;
-          c1 = -ray(3,:);
-          c2 = ray(1,:);
-          c3 = -ray(2,:);
+          c1 = -ray(3, :);
+          c2 = ray(1, :);
+          c3 = -ray(2, :);
           c1(c1<cos(thmax)) = NaN;
           th = acos(c1);
           th2 = th.*th;
@@ -162,8 +162,8 @@ classdef CameraSim < antbed.Camera
         case 2
           m = this.imsize(1);
           n = this.imsize(2);
-          down = (pix(2,:)+1)*2/(n-1)+(m+1)/(1-n);
-          right = (pix(1,:)+1)*(2/(n-1))+(1+n)/(1-n);
+          down = (pix(2, :)+1)*2/(n-1)+(m+1)/(1-n);
+          right = (pix(1, :)+1)*(2/(n-1))+(1+n)/(1-n);
           r = sqrt(down.*down+right.*right);
           a = (r>1);
           b = (r==0);
