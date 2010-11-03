@@ -1,11 +1,11 @@
 classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
   
-  properties (SetAccess=private, GetAccess=private)
+  properties (SetAccess = private, GetAccess = private)
     sensor
     tracker
   end
   
-  methods (Static=true, Access=public)
+  methods (Static = true, Access = public)
     function initialize(name)
       function text = componentDescription
         text = 'Implements a fast visual feature tracker and associated trajectory measure.';
@@ -14,7 +14,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
     end
   end
   
-  methods (Access=public)
+  methods (Access = public)
     function this = FastPBM(initialTime, uri)
       this = this@tom.Measure(initialTime, uri);
 

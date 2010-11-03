@@ -199,12 +199,13 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     % Pads the bottom and right sides with NaN based on pyramid levels (does not affect pixel coordinates)
     function img = prepareImage(this, node)
       if(this.firstTrack)
-        [numStrides, numSteps] = this.camera.getImageSize(node);
-        [steps, strides] = ndgrid(0:(double(numSteps)-1),0:(double(numStrides)-1));
-        pix = [strides(:)'; steps(:)'];
+        steps = this.camera.numSteps();
+        strides = this.camera.numStrides();
+        [stepGrid, strideGrid] = ndgrid(0:(double(steps)-1),0:(double(strides)-1));
+        pix = [strideGrid(:)'; stepGrid(:)'];
         ray = this.camera.inverseProjection(pix,node);
         this.mask = find(isnan(ray(1, :)));
-        pix = [double(numStrides)-2; double(numSteps)-1]/2;
+        pix = [double(strides)-2; double(steps)-1]/2;
         pix = [pix, pix+[1; 0]];
         ray = this.camera.inverseProjection(pix,node);
         angularSpacing = acos(dot(ray(:, 1), ray(:, 2)));

@@ -5,7 +5,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & antbed.Camera
     layers = 'rgb';
     frameDynamic = false;
     projectionDynamic = false;
-    frame = [0;0;0;1;0;0;0];
+    frame = [0; 0; 0; 1; 0; 0; 0];
   end
   
   properties (Access = private)
@@ -22,7 +22,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & antbed.Camera
     function this = CameraSim(initialTime)
       this = this@antbed.Camera(initialTime);
       this.tn = tom.WorldTime(initialTime+double(1:this.numImages-1)/this.fps);
-      this.im = cell(this.numImages,1);
+      this.im = cell(this.numImages, 1);
       for n = 1:this.numImages
         this.im{n} = getMiddleburyArt(this, n-1);
       end
@@ -67,13 +67,16 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & antbed.Camera
       time = this.tn(n-this.na+uint32(1));
     end
     
-    function [numStrides, numSteps, numLayers] = getImageSize(this, n, varargin)
-      assert(this.hasData());
-      assert(n>=this.na);
-      assert(n<=this.nb);
-      numStrides = this.N;
-      numSteps = this.M;
-      numLayers = length(this.layers);
+    function num = numSteps(this, varargin)
+      num = this.M;
+    end
+    
+    function num = numStrides(this, varargin)
+      num = this.N;
+    end
+    
+    function str = interpretLayers(this, varargin)
+      str = this.layers;
     end
     
     function im = getImage(this, n, varargin)
@@ -82,11 +85,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & antbed.Camera
       assert(n<=this.nb);
       im = this.im{n-this.na+uint32(1)};
     end
-    
-    function str = interpretLayers(this, varargin)
-      str = this.layers;
-    end
-    
+
     function flag = isFrameDynamic(this, varargin)
       flag = this.frameDynamic;
     end
@@ -113,8 +112,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & antbed.Camera
       coef = this.rho./ray(1,:);
       u1 = ((n-1)/(m-1))*coef.*ray(3, :);
       u2 = coef.*ray(2, :);
-      pix = [(u2+1)*((n-1)/2);
-           (u1+1)*((m-1)/2)];
+      pix = [(u2+1)*((n-1)/2); (u1+1)*((m-1)/2)];
     end
     
     function ray = inverseProjection(this, pix, node, varargin)
