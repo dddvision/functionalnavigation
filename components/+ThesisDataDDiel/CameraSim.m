@@ -72,18 +72,17 @@ classdef CameraSim < antbed.Camera
       assert(n<=this.nb);
       time = this.tn(n-this.na+uint32(1));
     end
+    
+    function num = numSteps(this,varargin)
+      num = uint32(this.imsize(1));
+    end
 
-    function str = interpretLayers(this, varargin)
-      str = this.layers;
+    function num = numStrides(this,varargin)
+      num = uint32(this.imsize(2));
     end
     
-    function [numStrides,numSteps,numLayers]=getImageSize(this,n,varargin)
-      assert(this.hasData());
-      assert(n>=this.na);
-      assert(n<=this.nb);
-      numStrides=this.imsize(2);
-      numSteps=this.imsize(1);
-      numLayers=length(this.layers);
+    function str = interpretLayers(this, varargin)
+      str = this.layers;
     end
     
     function im = getImage(this, n, varargin)
@@ -130,8 +129,7 @@ classdef CameraSim < antbed.Camera
           u2 = scale.*c2;
           u1(behind) = NaN;
           u2(behind) = NaN;
-          pix = [(u2+1)*((n-1)/2);
-                 (u1+1)*((m-1)/2)];
+          pix = [(u2+1)*((n-1)/2); (u1+1)*((m-1)/2)];
         case 4
           thmax = 1.570796;
           ic = 254.5;

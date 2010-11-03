@@ -3,7 +3,7 @@
 % @return current system time in tom.WorldTime format
 %
 % NOTES
-% @see tom:WorldTime
+% @see tom.WorldTime
 function time = getCurrentTime
   time = etime(clock, [1980, 1, 6, 0, 0, 0]);
   calendar = java.util.GregorianCalendar;

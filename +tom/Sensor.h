@@ -22,7 +22,7 @@ namespace tom
      *
      * NOTES
      * Each subclass constructor must initialize this base class
-     * (MATLAB) Initialize by calling this=this@tom.Sensor(initialTime);
+     * (MATLAB) Initialize by calling this = this@tom.Sensor(initialTime);
      */
     Sensor(const WorldTime initialTime)
     {}

@@ -23,7 +23,11 @@ struct timezone
  * @return        always returns zero
  *
  * NOTES
- * Time zone support has been deprecated and currently has no effect
+ * Time zone support has been deprecated and has no effect
+ *
+ * REFERENCE
+ * Unlicensed gettimeofday code for Windows retrieved September 2010
+ * http://www.suacommunity.com/dictionary/gettimeofday-entry.php
  */
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
@@ -66,13 +70,12 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 namespace antbed
 {
   /**
-   * Get the system time
+   * Get the current time of day from the operating system
    *
-   * @return time
+   * @return current system time in tom.WorldTime format
    *
-   * REFERENCE
-   * Unlicensed gettimeofday code for Windows retrieved September 2010
-   * http://www.suacommunity.com/dictionary/gettimeofday-entry.php
+   * NOTES
+   * @see tom::WorldTime
    */
   WorldTime getCurrentTime(void)
   {
@@ -80,7 +83,7 @@ namespace antbed
     long int offset = 315964800; // difference between Jan 6 1980 and Jan 1 1979
     double time;
     gettimeofday(&tv, NULL);
-    time = static_cast<double> (tv.tv_sec - offset) + static_cast<double> (tv.tv_usec)/1000000.0;
+    time = static_cast<double> (tv.tv_sec-offset)+static_cast<double> (tv.tv_usec)/1000000.0;
     return (time);
   }
 }
