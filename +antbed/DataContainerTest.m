@@ -73,6 +73,17 @@ classdef DataContainerTest < handle
         sensor.refresh(trajectory);
         
         antbed.SensorTest(sensor);
+        
+        if(isa(sensor, 'antbed.CameraArray'))
+          antbed.CameraArrayTest(sensor);
+        end
+        
+        % tests that require a reference trajectory
+        if(flag)
+          if(isa(sensor, 'antbed.GPSReceiver'))
+            antbed.GPSReceiverTest(sensor, referenceTrajectory);
+          end
+        end
       end
       
       fprintf('\n\n*** End DataContainer Test ***');
