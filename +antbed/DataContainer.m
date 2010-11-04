@@ -39,7 +39,7 @@ classdef DataContainer < handle
     %
     % NOTES
     % Each subclass constructor must initialize this base class
-    % Initialize by calling this=this@antbed.DataContainer;
+    % Initialize by calling this = this@antbed.DataContainer(initialTime);
     function this = DataContainer(initialTime)
       assert(isa(initialTime, 'tom.WorldTime'));
     end

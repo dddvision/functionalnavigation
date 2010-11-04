@@ -32,19 +32,19 @@ function testCameraArrayProjection(cam, nb)
   figure(antbed.CameraArrayTest.figureHandle());
 
   % test each view 
-  for view = uint32(1):cam.numViews();
+  for view = ((uint32(1):cam.numViews())-uint32(1))
 
     % get an image
-    img = cam.getImage(nb, view);
+    gray = cam.getImage(nb, view);
 
     % convert to grayscale
-    switch cam.interpretLayers(view)
-      case 'rgb'
-        gray = double(rgb2gray(img))/255;
-      case 'y'
-        gray = double(img)/255;
-      otherwise
-        error('unhandled image type');
+    switch( interpretLayers(cam, view) )
+    case {'rgb', 'rgbi'}
+      gray = rgb2gray(gray(:, :, 1:3))/255;
+     case {'hsv', 'hsvi'}
+      gray = double(gray(:, :, 3))/255;
+     otherwise
+      gray = double(gray)/255;
     end
 
     % show original image
@@ -90,7 +90,7 @@ function testCameraArrayProjectionRoundTrip(cam, nb)
   figure(antbed.CameraArrayTest.figureHandle());
 
   % test each view
-  for view = uint32(1):cam.numViews();
+  for view = ((uint32(1):cam.numViews())-uint32(1))
 
     % get an image
     img = cam.getImage(nb, view);

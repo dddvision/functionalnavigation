@@ -5,14 +5,15 @@ function data=computeIntermediateData(this,na,nb)
   ib=getImage(this.sensor,nb);
   
   switch( interpretLayers(this.sensor) )
-    case {'rgb','rgbi'}
-      ia=rgb2gray(ia(:,:,1:3));
-      ib=rgb2gray(ib(:,:,1:3));
-    case {'hsv','hsvi'}
-      ia=ia(:,:,3);
-      ib=ib(:,:,3);
-    otherwise
-      % do nothing
+  case {'rgb','rgbi'}
+    ia=rgb2gray(ia(:,:,1:3));
+    ib=rgb2gray(ib(:,:,1:3));
+  case {'hsv','hsvi'}
+    ia=double(ia(:,:,3));
+    ib=double(ib(:,:,3));
+  otherwise
+    ia=double(ia);
+    ib=double(ib);
   end
 
   [pixA,pixB]=mexOpticalFlowOpenCV(double(ia),double(ib),double(this.isDense),this.windowSize,this.levels);
