@@ -87,7 +87,6 @@ classdef DynamicModel < tom.Trajectory
     num = numExtensionUint32(this);
 
     num = numExtensionBlocks(this);
-    extend(this);
     
     v = getInitialLogical(this, p);
     v = getInitialUint32(this, p);
@@ -101,6 +100,9 @@ classdef DynamicModel < tom.Trajectory
 
     cost = computeInitialBlockCost(this);
     cost = computeExtensionBlockCost(this, b);
+
+    extend(this);
+    obj = copy(this);
   end
     
 end

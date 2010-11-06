@@ -1,3 +1,5 @@
+#include "Optimizer.h"
+
 namespace tom
 {
   class OptimizerDefault : public Optimizer

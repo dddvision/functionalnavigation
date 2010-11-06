@@ -33,20 +33,72 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
   
   methods (Access=public)
     function this=BoundedMarkov(initialTime,uri)
+      if(nargin==0)
+        initialTime=tom.WorldTime(0);
+        uri='';
+      end
       this=this@tom.DynamicModel(initialTime,uri);
-      this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
-        'uint32',zeros(1,this.initialNumUint32,'uint32'));
-      this.firstNewBlock=1;
-      this.interval=tom.TimeInterval(initialTime,initialTime);
-      this.block=struct('logical',{},'uint32',{});
-      this.numInputs=size(this.B,2);
-      this.state=zeros(this.numStates,this.chunkSize);
-      this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
-      ABd=expmApprox(this.ABZ/this.rate);
-      this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
-      this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
+      if(nargin>0)
+        this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
+          'uint32',zeros(1,this.initialNumUint32,'uint32'));
+        this.firstNewBlock=1;
+        this.interval=tom.TimeInterval(initialTime,initialTime);
+        this.block=struct('logical',{},'uint32',{});
+        this.numInputs=size(this.B,2);
+        this.state=zeros(this.numStates,this.chunkSize);
+        this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
+        ABd=expmApprox(this.ABZ/this.rate);
+        this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
+        this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
+      end
     end
 
+    function interval=domain(this)
+      interval=this.interval;
+    end
+   
+    function pose=evaluate(this,t)
+      N=numel(t);
+      if(N==0)
+        pose=repmat(tom.Pose,[1,0]);
+      else
+        [lowerBound,upperBound,dkFloor,dtRemain]=preEvaluate(this,t);
+        pose(1,N)=tom.Pose;
+        for n=find(lowerBound)
+          if(upperBound(n))
+            substate=subIntegrate(this,dkFloor(n),dtRemain(n));
+            pose(n).p=substate(1:3)+this.initialPosition;
+            pose(n).q=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
+          else
+            finalTangentPose=tangent(this,this.interval.second);
+            pose(n)=predictPose(finalTangentPose,t(n)-this.interval.second);
+          end
+        end
+      end
+    end
+    
+    function tangentPose=tangent(this,t)
+      N=numel(t);
+      if(N==0)
+        tangentPose=repmat(tom.TangentPose,[1,0]);
+      else
+        [lowerBound,upperBound,dkFloor,dtRemain]=preEvaluate(this,t);
+        tangentPose(1,N)=tom.TangentPose;
+        for n=find(lowerBound)
+          if(upperBound(n))
+            substate=subIntegrate(this,dkFloor(n),dtRemain(n));
+            tangentPose(n).p=substate(1:3)+this.initialPosition;
+            tangentPose(n).q=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
+            tangentPose(n).r=substate(7:9)+this.initialPositionRate;
+            tangentPose(n).s=0.5*Quat2Homo(tangentPose(n).q)*([0;this.initialOmega+substate(10:12)]);
+          else
+            finalTangentPose=tangent(this,this.interval.second);
+            tangentPose(n)=predictTangentPose(finalTangentPose,t(n)-this.interval.second);
+          end
+        end
+      end
+    end
+    
     function num=numInitialLogical(this)
       num=this.initialNumLogical;
     end
@@ -121,50 +173,17 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
       this.interval.second=this.interval.first+N/this.rate;
     end
      
-    function interval=domain(this)
-      interval=this.interval;
-    end
-   
-    function pose=evaluate(this,t)
-      N=numel(t);
-      if(N==0)
-        pose=repmat(tom.Pose,[1,0]);
-      else
-        [lowerBound,upperBound,dkFloor,dtRemain]=preEvaluate(this,t);
-        pose(1,N)=tom.Pose;
-        for n=find(lowerBound)
-          if(upperBound(n))
-            substate=subIntegrate(this,dkFloor(n),dtRemain(n));
-            pose(n).p=substate(1:3)+this.initialPosition;
-            pose(n).q=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
-          else
-            finalTangentPose=tangent(this,this.interval.second);
-            pose(n)=predictPose(finalTangentPose,t(n)-this.interval.second);
-          end
-        end
-      end
-    end
-    
-    function tangentPose=tangent(this,t)
-      N=numel(t);
-      if(N==0)
-        tangentPose=repmat(tom.TangentPose,[1,0]);
-      else
-        [lowerBound,upperBound,dkFloor,dtRemain]=preEvaluate(this,t);
-        tangentPose(1,N)=tom.TangentPose;
-        for n=find(lowerBound)
-          if(upperBound(n))
-            substate=subIntegrate(this,dkFloor(n),dtRemain(n));
-            tangentPose(n).p=substate(1:3)+this.initialPosition;
-            tangentPose(n).q=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
-            tangentPose(n).r=substate(7:9)+this.initialPositionRate;
-            tangentPose(n).s=0.5*Quat2Homo(tangentPose(n).q)*([0;this.initialOmega+substate(10:12)]);
-          else
-            finalTangentPose=tangent(this,this.interval.second);
-            tangentPose(n)=predictTangentPose(finalTangentPose,t(n)-this.interval.second);
-          end
-        end
-      end
+    function obj=copy(this)
+      obj=BoundedMarkov.BoundedMarkov();
+      obj.interval=this.interval;
+      obj.numInputs=this.numInputs;
+      obj.initialBlock=this.initialBlock;
+      obj.firstNewBlock=this.firstNewBlock;
+      obj.block=this.block;
+      obj.state=this.state;
+      obj.Ad=this.Ad;
+      obj.Bd=this.Bd;
+      obj.ABZ=this.ABZ;
     end
   end
   

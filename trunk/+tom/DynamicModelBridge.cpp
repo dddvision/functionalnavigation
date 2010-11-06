@@ -7,6 +7,9 @@ enum DynamicModelMember
     DynamicModelIsConnected,
     DynamicModelDescription,
     DynamicModelFactory,
+    domain,
+    evaluate,
+    tangent,
     numInitialLogical,
     numInitialUint32,
     numExtensionLogical,
@@ -23,9 +26,7 @@ enum DynamicModelMember
     computeInitialBlockCost,
     computeExtensionBlockCost,
     extend,
-    domain,
-    evaluate,
-    tangent
+    copy
 };
 
 void argcheck(int& narg, int n)
@@ -226,6 +227,9 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     memberMap["DynamicModelIsConnected"] = DynamicModelIsConnected;
     memberMap["DynamicModelDescription"] = DynamicModelDescription;
     memberMap["DynamicModelFactory"] = DynamicModelFactory;
+    memberMap["domain"] = domain;
+    memberMap["evaluate"] = evaluate;
+    memberMap["tangent"] = tangent;
     memberMap["numInitialLogical"] = numInitialLogical;
     memberMap["numInitialUint32"] = numInitialUint32;
     memberMap["numExtensionLogical"] = numExtensionLogical;
@@ -242,9 +246,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     memberMap["computeInitialBlockCost"] = computeInitialBlockCost;
     memberMap["computeExtensionBlockCost"] = computeExtensionBlockCost;
     memberMap["extend"] = extend;
-    memberMap["domain"] = domain;
-    memberMap["evaluate"] = evaluate;
-    memberMap["tangent"] = tangent;
+    memberMap["copy"] = copy;
     initialized = true;
   }
 
@@ -294,7 +296,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       }
       default:
       {
-        throw("DynamicModelBridge: invalid function call");
+        throw("DynamicModelBridge: invalid static function call");
       }
     }
   }
@@ -309,13 +311,45 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
     if(handle>=instance.size())
     {
-      throw("DynamicModelBridge: invalid function call");
+      throw("DynamicModelBridge: invalid instance");
     }
     switch(memberMap[functionName])
     {
       case undefined:
-        throw("DynamicModelBridge: invalid function call");
+        throw("DynamicModelBridge: undefined function call");
         break;
+
+      case extend:
+      {
+        instance[handle]->extend();
+        break;
+      }
+
+      case domain:
+        convert(instance[handle]->domain(), plhs[0]);
+        break;
+
+      case evaluate:
+      {
+        std::vector<tom::WorldTime> time;
+        std::vector<tom::Pose> pose;
+        argcheck(nrhs, 4);
+        convert(prhs[3], time);
+        instance[handle]->evaluate(time, pose);
+        convert(pose, prhs[2], plhs[0]);
+        break;
+      }
+
+      case tangent:
+      {
+        std::vector<tom::WorldTime> time;
+        std::vector<tom::TangentPose> tangentPose;
+        argcheck(nrhs, 4);
+        convert(prhs[3], time);
+        instance[handle]->tangent(time, tangentPose);
+        convert(tangentPose, prhs[2], plhs[0]);
+        break;
+      }
 
       case numInitialLogical:
         convert(instance[handle]->numInitialLogical(), plhs[0]);
@@ -438,40 +472,20 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         break;
       }
 
-      case extend:
+      case copy:
       {
-        instance[handle]->extend();
+        tom::DynamicModel* obj;
+        uint32_t numInstances = instance.size();      
+        obj = instance[handle]->copy();
+        instance.resize(numInstances+1);
+        instance[numInstances] = obj;
+        convert(numInstances, plhs[0]);
         break;
       }
 
-      case domain:
-        convert(instance[handle]->domain(), plhs[0]);
-        break;
-
-      case evaluate:
-      {
-        std::vector<tom::WorldTime> time;
-        std::vector<tom::Pose> pose;
-        argcheck(nrhs, 4);
-        convert(prhs[3], time);
-        instance[handle]->evaluate(time, pose);
-        convert(pose, prhs[2], plhs[0]);
-        break;
-      }
-
-      case tangent:
-      {
-        std::vector<tom::WorldTime> time;
-        std::vector<tom::TangentPose> tangentPose;
-        argcheck(nrhs, 4);
-        convert(prhs[3], time);
-        instance[handle]->tangent(time, tangentPose);
-        convert(tangentPose, prhs[2], plhs[0]);
-        break;
-      }
       default:
       {
-        throw("DynamicModelBridge: invalid function call");
+        throw("DynamicModelBridge: invalid member function call");
       }
     }
   }

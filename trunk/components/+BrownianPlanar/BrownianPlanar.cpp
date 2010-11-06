@@ -277,6 +277,35 @@ namespace BrownianPlanar
       return;
     }
 
+    tom::TimeInterval domain(void)
+    {
+      return (interval);
+    }
+
+    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
+    {
+      unsigned k;
+      unsigned K = time.size();
+      pose.resize(K);
+      for(k = 0; k<K; ++k)
+      {
+        evaluatePose(time[k], pose[k]);
+      }
+      return;
+    }
+
+    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
+    {
+      unsigned k;
+      unsigned K = time.size();
+      tangentPose.resize(K);
+      for(k = 0; k<K; ++k)
+      {
+        evaluateTangentPose(time[k], tangentPose[k]);
+      }
+      return;
+    }
+
     uint32_t numInitialLogical(void) const
     {
       return (0);
@@ -297,28 +326,6 @@ namespace BrownianPlanar
     uint32_t numExtensionBlocks(void)
     {
       return (static_cast<uint32_t>(px.size()));
-    }
-
-    void extend(void)
-    {
-      static const uint32_t halfIntMax = floor(4294967295.0/2.0);
-      static const double force = paramToForce(halfIntMax);
-      unsigned oldSize = x.size();
-      unsigned newSize = oldSize+1;
-      px.resize(oldSize, halfIntMax);
-      py.resize(oldSize, halfIntMax);
-      pa.resize(oldSize, halfIntMax);
-      fx.resize(oldSize, force);
-      fy.resize(oldSize, force);
-      fa.resize(oldSize, force);
-      x.resize(newSize);
-      y.resize(newSize);
-      a.resize(newSize);
-      xRate.resize(newSize);
-      yRate.resize(newSize);
-      aRate.resize(newSize);
-      interval.second = interval.first+static_cast<double>(oldSize)/rate;
-      return;
     }
 
     bool getInitialLogical(uint32_t parameterIndex)
@@ -419,33 +426,58 @@ namespace BrownianPlanar
       return (cost);
     }
 
-    tom::TimeInterval domain(void)
+    void extend(void)
     {
-      return (interval);
-    }
-
-    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
-    {
-      unsigned k;
-      unsigned K = time.size();
-      pose.resize(K);
-      for(k = 0; k<K; ++k)
-      {
-        evaluatePose(time[k], pose[k]);
-      }
+      static const uint32_t halfIntMax = floor(4294967295.0/2.0);
+      static const double force = paramToForce(halfIntMax);
+      unsigned oldSize = x.size();
+      unsigned newSize = oldSize+1;
+      px.resize(oldSize, halfIntMax);
+      py.resize(oldSize, halfIntMax);
+      pa.resize(oldSize, halfIntMax);
+      fx.resize(oldSize, force);
+      fy.resize(oldSize, force);
+      fa.resize(oldSize, force);
+      x.resize(newSize);
+      y.resize(newSize);
+      a.resize(newSize);
+      xRate.resize(newSize);
+      yRate.resize(newSize);
+      aRate.resize(newSize);
+      interval.second = interval.first+static_cast<double>(oldSize)/rate;
       return;
     }
 
-    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
+    tom::DynamicModel* copy(void)
     {
-      unsigned k;
-      unsigned K = time.size();
-      tangentPose.resize(K);
-      for(k = 0; k<K; ++k)
-      {
-        evaluateTangentPose(time[k], tangentPose[k]);
-      }
-      return;
+      tom::WorldTime initialTime = this->interval.first;
+      std::string uri = "";
+      BrownianPlanar* obj = new BrownianPlanar(initialTime, uri);
+      
+      // parameters
+      obj->px = this->px;
+      obj->py = this->py;
+      obj->pa = this->pa;
+
+      // forces
+      obj->fx = this->fx;
+      obj->fy = this->fy;
+      obj->fa = this->fa;
+
+      // positions
+      obj->x = this->x;
+      obj->y = this->y;
+      obj->a = this->a;
+
+      // rates
+      obj->xRate = this->xRate;
+      obj->yRate = this->yRate;
+      obj->aRate = this->aRate;
+
+      obj->interval = this->interval;
+      obj->firstNewBlock = this->firstNewBlock;
+
+      return (obj);
     }
 
   private:

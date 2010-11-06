@@ -105,6 +105,11 @@ namespace tom
 
   public:
     /**
+     * Alias for a pointer to a dynamic model that is not meant to be deleted
+     */
+    typedef DynamicModel* Handle;
+
+    /**
      * Check if a named subclass is connected with this base class
      *
      * @param[in] name component identifier
@@ -146,9 +151,10 @@ namespace tom
      * @param[in] name        component identifier
      * @param[in] initialTime finite lower bound of the trajectory time domain
      * @param[in] uri         (@see tom::Measure)
-     * @return                new object instance that must be deleted by the caller
+     * @return                pointer to a new instance
      *
      * NOTES
+     * Creates a new instance that must be deleted by the caller
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
@@ -233,7 +239,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual bool getInitialLogical(uint32_t parameterIndex) = 0;
+    virtual bool getInitialLogical(const uint32_t parameterIndex) = 0;
 
     /**
      * Get an integer parameter from the initial block
@@ -244,7 +250,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual uint32_t getInitialUint32(uint32_t parameterIndex) = 0;
+    virtual uint32_t getInitialUint32(const uint32_t parameterIndex) = 0;
 
     /**
      * Get a logical parameter from an extension block
@@ -256,7 +262,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual bool getExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex) = 0;
+    virtual bool getExtensionLogical(const uint32_t blockIndex, const uint32_t parameterIndex) = 0;
 
     /**
      * Get an integer parameter from an extension block
@@ -268,7 +274,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual uint32_t getExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex) = 0;
+    virtual uint32_t getExtensionUint32(const uint32_t blockIndex, const uint32_t parameterIndex) = 0;
 
     /**
      * Set a logical parameter in the initial block
@@ -279,7 +285,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual void setInitialLogical(uint32_t parameterIndex, bool value) = 0;
+    virtual void setInitialLogical(const uint32_t parameterIndex, const bool value) = 0;
 
     /**
      * Set an integer parameter in the initial block
@@ -290,7 +296,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual void setInitialUint32(uint32_t parameterIndex, uint32_t value) = 0;
+    virtual void setInitialUint32(const uint32_t parameterIndex, const uint32_t value) = 0;
 
     /**
      * Set a logical parameter in an extension block
@@ -302,7 +308,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual void setExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex, bool value) = 0;
+    virtual void setExtensionLogical(const uint32_t blockIndex, const uint32_t parameterIndex, const bool value) = 0;
 
     /**
      * Set an integer parameter in an extension block
@@ -314,7 +320,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual void setExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex, uint32_t value) = 0;
+    virtual void setExtensionUint32(const uint32_t blockIndex, const uint32_t parameterIndex, const uint32_t value) = 0;
 
     /**
      * Compute the cost associated with an initial block
@@ -341,8 +347,18 @@ namespace tom
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
      * @see numExtensionBlocks()
      */
-    virtual double computeExtensionBlockCost(uint32_t blockIndex) = 0;
-    
+    virtual double computeExtensionBlockCost(const uint32_t blockIndex) = 0;
+
+    /**
+     * Explicit deep copy
+     *
+     * @return pointer to a new instance that is a copy of this one
+     *
+     * NOTES
+     * Creates a new instance that must be deleted by the caller
+     */
+    virtual DynamicModel* copy(void) = 0;
+
     /**
      * Virtual base class destructor
      */
@@ -350,7 +366,5 @@ namespace tom
     {}
   };
 }
-
-#include "DynamicModelDefault.cpp"
 
 #endif
