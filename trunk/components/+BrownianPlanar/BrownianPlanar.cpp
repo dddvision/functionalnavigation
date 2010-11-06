@@ -328,25 +328,25 @@ namespace BrownianPlanar
       return (static_cast<uint32_t>(px.size()));
     }
 
-    bool getInitialLogical(uint32_t parameterIndex)
+    bool getInitialLogical(const uint32_t parameterIndex)
     {
       throw("BrownianPlanar: has no initial logical parameters");
       return (false);
     }
 
-    uint32_t getInitialUint32(uint32_t parameterIndex)
+    uint32_t getInitialUint32(const uint32_t parameterIndex)
     {
       throw("BrownianPlanar: has no initial integer parameters");
       return (0);
     }
 
-    bool getExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex)
+    bool getExtensionLogical(const uint32_t blockIndex, const uint32_t parameterIndex)
     {
       throw("BrownianPlanar: has no extension logical parameters");
       return (false);
     }
 
-    uint32_t getExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex)
+    uint32_t getExtensionUint32(const uint32_t blockIndex, const uint32_t parameterIndex)
     {
       if(blockIndex>=numExtensionBlocks())
       {
@@ -366,25 +366,25 @@ namespace BrownianPlanar
       }
     }
 
-    void setInitialLogical(uint32_t parameterIndex, bool value)
+    void setInitialLogical(const uint32_t parameterIndex, const bool value)
     {
       throw("BrownianPlanar: has no initial logical parameters");
       return;
     }
 
-    void setInitialUint32(uint32_t parameterIndex, uint32_t value)
+    void setInitialUint32(const uint32_t parameterIndex, const uint32_t value)
     {
       throw("BrownianPlanar: has no initial integer parameters");
       return;
     }
 
-    void setExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex, bool value)
+    void setExtensionLogical(const uint32_t blockIndex, const uint32_t parameterIndex, const bool value)
     {
       throw("BrownianPlanar: has no extension logical parameters");
       return;
     }
 
-    void setExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex, uint32_t value)
+    void setExtensionUint32(const uint32_t blockIndex, const uint32_t parameterIndex, const uint32_t value)
     {
       if(blockIndex>=numExtensionBlocks())
       {
@@ -415,7 +415,7 @@ namespace BrownianPlanar
       return (0.0);
     }
 
-    double computeExtensionBlockCost(uint32_t blockIndex)
+    double computeExtensionBlockCost(const uint32_t blockIndex)
     {
       double f0, f1, f2;
       double cost;
