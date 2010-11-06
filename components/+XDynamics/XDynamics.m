@@ -29,26 +29,70 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
   
   methods (Access=public)
     function this=XDynamics(initialTime,uri)
+      if(nargin==0)
+        initialTime=tom.WorldTime(0);
+        uri='';
+      end
       this=this@tom.DynamicModel(initialTime,uri);
-      this.initialTime=initialTime;
-      this.initialUint32=zeros(1,this.initialNumUint32,'uint32');
-
-      try
-        [scheme,resource]=strtok(uri,':');
-        resource=resource(2:end);
-        switch(scheme)
-          case 'antbed'
-            container=antbed.DataContainer.create(resource,initialTime);
-            if(hasReferenceTrajectory(container))
-              this.xRef=getReferenceTrajectory(container);
-            else
-              this.xRef=tom.DynamicModelDefault(initialTime, uri);
-            end
-          otherwise
-            error('Unrecognized resource identifier in URI');
+      if(nargin>0)
+        this.initialTime=initialTime;
+        this.initialUint32=zeros(1,this.initialNumUint32,'uint32');
+        try
+          [scheme,resource]=strtok(uri,':');
+          resource=resource(2:end);
+          switch(scheme)
+            case 'antbed'
+              container=antbed.DataContainer.create(resource,initialTime);
+              if(hasReferenceTrajectory(container))
+                this.xRef=getReferenceTrajectory(container);
+              else
+                this.xRef=tom.DynamicModelDefault(initialTime, uri);
+              end
+            otherwise
+              error('Unrecognized resource identifier in URI');
+          end
+        catch err
+          error('Failed to open data resource: %s',err.message);
         end
-      catch err
-        error('Failed to open data resource: %s',err.message);
+      end
+    end
+    
+    function interval=domain(this)
+      interval=this.xRef.domain();
+    end
+    
+    function pose=evaluate(this,t)
+      N=numel(t);
+      if(N==0)
+        pose=repmat(tom.Pose,[1,0]);
+      else
+        pose=evaluate(this.xRef,t);
+        z=initialBlock2deviation(this);
+        t=double(t);
+        t0=double(this.initialTime);
+        c1=this.positionOffset-this.positionDeviation*z(1);
+        c2=this.positionRateOffset-this.positionRateDeviation*z(2);
+        for n=1:N
+          pose(n).p(1)=pose(n).p(1)+c1+c2*(t(n)-t0);
+        end
+      end
+    end
+   
+    function tangentPose=tangent(this,t)
+      N=numel(t);
+      if(N==0);
+        tangentPose=repmat(tom.TangentPose,[1,0]);
+      else
+        tangentPose=tangent(this.xRef,t);
+        z=initialBlock2deviation(this);
+        t=double(t);
+        t0=double(this.initialTime);
+        c1=this.positionOffset-this.positionDeviation*z(1);
+        c2=this.positionRateOffset-this.positionRateDeviation*z(2);
+        for n=1:N
+          tangentPose(n).p(1)=tangentPose(n).p(1)+c1+c2*(t(n)-t0);
+          tangentPose(n).r(1)=tangentPose(n).r(1)+c2;
+        end
       end
     end
     
@@ -154,45 +198,13 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
     function extend(this)
       assert(isa(this,'tom.DynamicModel'));
     end
-     
-    function interval=domain(this)
-      interval=this.xRef.domain();
-    end
     
-    function pose=evaluate(this,t)
-      N=numel(t);
-      if(N==0)
-        pose=repmat(tom.Pose,[1,0]);
-      else
-        pose=evaluate(this.xRef,t);
-        z=initialBlock2deviation(this);
-        t=double(t);
-        t0=double(this.initialTime);
-        c1=this.positionOffset-this.positionDeviation*z(1);
-        c2=this.positionRateOffset-this.positionRateDeviation*z(2);
-        for n=1:N
-          pose(n).p(1)=pose(n).p(1)+c1+c2*(t(n)-t0);
-        end
-      end
-    end
-   
-    function tangentPose=tangent(this,t)
-      N=numel(t);
-      if(N==0);
-        tangentPose=repmat(tom.TangentPose,[1,0]);
-      else
-        tangentPose=tangent(this.xRef,t);
-        z=initialBlock2deviation(this);
-        t=double(t);
-        t0=double(this.initialTime);
-        c1=this.positionOffset-this.positionDeviation*z(1);
-        c2=this.positionRateOffset-this.positionRateDeviation*z(2);
-        for n=1:N
-          tangentPose(n).p(1)=tangentPose(n).p(1)+c1+c2*(t(n)-t0);
-          tangentPose(n).r(1)=tangentPose(n).r(1)+c2;
-        end
-      end
-    end
+    function obj=copy(this)
+      obj=XDynamics.XDynamics();
+      obj.initialTime=this.initialTime;
+      obj.initialUint32=this.initialUint32;
+      obj.xRef=this.xRef;
+    end    
   end
   
   methods (Access=private)

@@ -94,6 +94,11 @@ namespace tom
 
   public:
     /**
+     * Alias for a pointer to a measure that is not meant to be deleted
+     */
+    typedef Measure* Handle;
+
+    /**
      * Check if a named subclass is connected with this base class
      *
      * @param[in] name component identifier
@@ -134,9 +139,10 @@ namespace tom
      *
      * @param[in] name component identifier
      * @param[in] uri  (@see tom::Measure)
-     * @return         new object instance that must be deleted by the caller
+     * @return         pointer to a new instance
      *
      * NOTES
+     * Creates a new instance that must be deleted by the caller
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
@@ -216,7 +222,5 @@ namespace tom
     {}
   };
 }
-
-#include "MeasureDefault.cpp"
 
 #endif

@@ -1,6 +1,9 @@
 classdef DynamicModelBridge < tom.DynamicModel
 
-  properties (SetAccess = private, GetAccess = private)
+  properties (SetAccess = protected, GetAccess = protected)
+    name
+    initialTime
+    uri
     m % mex name without extension
     h % handle to instantiated C++ object
   end
@@ -23,19 +26,56 @@ classdef DynamicModelBridge < tom.DynamicModel
     end
 
     function this = DynamicModelBridge(name, initialTime, uri)
+      if(nargin==0)
+        initialTime = tom.WorldTime(0);
+        uri = '';
+      end
       this = this@tom.DynamicModel(initialTime, uri);
-      assert(isa(name, 'char'));
-      assert(isa(initialTime, 'tom.WorldTime'));
-      assert(isa(uri, 'char'));
-      compileOnDemand(name);
-      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];     
-      this.m = [className, 'Bridge'];
-      initialTime = double(initialTime); % workaround avoids array duplication
-      this.h = feval(this.m, 'DynamicModelFactory', name, initialTime, uri);
+      if(nargin>0)
+        assert(isa(name, 'char'));
+        assert(isa(initialTime, 'tom.WorldTime'));
+        assert(isa(uri, 'char'));
+        compileOnDemand(name);
+        className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
+        this.name = name;
+        this.initialTime = initialTime;
+        this.uri = uri;
+        this.m = [className, 'Bridge'];
+        initialTime = double(initialTime); % workaround avoids array duplication
+        this.h = feval(this.m, 'DynamicModelFactory', name, initialTime, uri);
+      end
     end
   end
     
   methods (Access = public, Static = false)
+    function interval = domain(this)
+      interval = feval(this.m, this.h, 'domain');
+    end
+   
+    function pose = evaluate(this, t)
+      assert(isa(t, 'tom.WorldTime'));
+      N = numel(t);
+      if(N==0);
+        pose = repmat(tom.Pose, [1, 0]);
+      else
+        t = double(t); % workaround avoids array duplication
+        pose(1, N) = tom.Pose; % workaround creates object externally
+      end
+      pose = feval(this.m, this.h, 'evaluate', pose, t);
+    end
+    
+    function tangentPose = tangent(this, t)
+      assert(isa(t, 'tom.WorldTime'));
+      N = numel(t);
+      if(N==0);
+        tangentPose = repmat(tom.TangentPose, [1, 0]);
+      else
+        t = double(t); % workaround avoids array duplication
+        tangentPose(1, N) = tom.TangentPose; % workaround creates object externally
+      end
+      tangentPose = feval(this.m, this.h, 'tangent', tangentPose, t);
+    end
+    
     function num = numInitialLogical(this)
       num = feval(this.m, this.h, 'numInitialLogical');
     end
@@ -98,34 +138,15 @@ classdef DynamicModelBridge < tom.DynamicModel
     
     function extend(this)
       feval(this.m, this.h, 'extend');
-    end
-     
-    function interval = domain(this)
-      interval = feval(this.m, this.h, 'domain');
-    end
-   
-    function pose = evaluate(this, t)
-      assert(isa(t, 'tom.WorldTime'));
-      N = numel(t);
-      if(N==0);
-        pose = repmat(tom.Pose, [1, 0]);
-      else
-        t = double(t); % workaround avoids array duplication
-        pose(1, N) = tom.Pose; % workaround creates object externally
-      end
-      pose = feval(this.m, this.h, 'evaluate', pose, t);
-    end
+    end  
     
-    function tangentPose = tangent(this, t)
-      assert(isa(t, 'tom.WorldTime'));
-      N = numel(t);
-      if(N==0);
-        tangentPose = repmat(tom.TangentPose, [1, 0]);
-      else
-        t = double(t); % workaround avoids array duplication
-        tangentPose(1, N) = tom.TangentPose; % workaround creates object externally
-      end
-      tangentPose = feval(this.m, this.h, 'tangent', tangentPose, t);
+    function obj = copy(this)
+      obj = tom.DynamicModelBridge();
+      obj.name = this.name;
+      obj.initialTime = this.initialTime;
+      obj.uri = this.uri;
+      obj.m = this.m;
+      obj.h = feval(this.m, this.h, 'copy');
     end
   end
   

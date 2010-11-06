@@ -1,3 +1,5 @@
+#include "Measure.h"
+
 namespace tom
 {
   class MeasureDefault : public Measure

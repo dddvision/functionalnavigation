@@ -29,6 +29,11 @@ namespace tom
 
   public:
     /**
+     * Alias for a pointer to a sensor that is not meant to be deleted
+     */
+    typedef Sensor* Handle;
+
+    /**
      * Incorporate new data and allow old data to expire
      *
      * @param[in] x best available estimate of body trajectory

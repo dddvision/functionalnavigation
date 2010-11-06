@@ -1,3 +1,5 @@
+#include "DynamicModel.h"
+
 namespace tom
 {
   class DynamicModelDefault : public DynamicModel

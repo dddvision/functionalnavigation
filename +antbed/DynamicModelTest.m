@@ -139,7 +139,19 @@ classdef DynamicModelTest
 
         antbed.TrajectoryTest(dynamicModel);
       end
-        
+      
+      fprintf('\n\ncopy = ');
+      interval = dynamicModel.domain();
+      pose = dynamicModel.evaluate(interval.second);
+      otherDynamicModel = dynamicModel.copy();
+      otherInterval = otherDynamicModel.domain();
+      assert(otherInterval.first==interval.first);
+      assert(otherInterval.second==interval.second);
+      otherPose = otherDynamicModel.evaluate(otherInterval.second);
+      assert(all(otherPose.p==pose.p));
+      assert(all(otherPose.q==pose.q));
+      fprintf(' ok');
+      
       fprintf('\n\n*** End DynamicModel Test ***');
     end
   end

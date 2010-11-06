@@ -17,6 +17,11 @@ namespace tom
   {
   public:
     /**
+     * Alias for a pointer to a trajectory that is not meant to be deleted
+     */
+    typedef Trajectory* Handle;
+
+    /**
      * Return the upper and lower bounds of the time domain of a trajectory
      *
      * @return time domain bounds
@@ -26,8 +31,8 @@ namespace tom
     /**
      * Evaluate a single trajectory at multiple instants
      *
-     * @param[in]     time vector of time stamps (MATLAB: 1-by-N)
-     * @param[in,out] pose vector of poses at each time (MATLAB: 1-by-N)
+     * @param[in]  time vector of time stamps (MATLAB: 1-by-N)
+     * @param[out] pose vector of poses at each time (MATLAB: 1-by-N)
      *
      * NOTES
      * Times before the lower bound of the domain return NaN in corresponding outputs
@@ -38,8 +43,8 @@ namespace tom
     /**
      * Evaluate a single trajectory and its time derivatives at multiple time instants
      *
-     * @param[in]     time        vector of time stamps (MATLAB: 1-by-N)
-     * @param[in,out] tangentPose vector of tangent poses at each time (MATLAB: 1-by-N)
+     * @param[in]  time        vector of time stamps (MATLAB: 1-by-N)
+     * @param[out] tangentPose vector of tangent poses at each time (MATLAB: 1-by-N)
      *
      * NOTES
      * Times before the lower bound of the domain return NaN in corresponding outputs

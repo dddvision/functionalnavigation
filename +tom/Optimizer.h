@@ -84,6 +84,11 @@ namespace tom
 
   public:
     /**
+     * Alias for a pointer to an optimizer that is not meant to be deleted
+     */
+    typedef Optimizer* Handle;
+
+    /**
      * Check if a named subclass is connected with this base class
      *
      * @param[in] name component identifier
@@ -123,9 +128,10 @@ namespace tom
      * Public method to construct a component instance
      *
      * @param[in] name component identifier
-     * @return         new instance that must be deleted by the caller
+     * @return         pointer to a new instance
      *
      * NOTES
+     * Creates a new instance that must be deleted by the caller
      * Do not shadow this function
      * Throws an error if the component is not connected
      */
@@ -175,7 +181,7 @@ namespace tom
      * @see refreshProblem()
      * @see numInitialConditions()
      */
-    virtual void defineProblem(std::vector<DynamicModel*>& dynamicModel, std::vector<Measure*>& measure,
+    virtual void defineProblem(std::vector<DynamicModel::Handle>& dynamicModel, std::vector<Measure::Handle>& measure,
       bool randomize) = 0;
 
     /**
@@ -210,10 +216,11 @@ namespace tom
      * @return      trajectory instance associated with the index
      *
      * NOTES
+     * The return value is a an alias for a pointer that should not be deleted
      * Throws an exception if index is greater than or equal to the number of solutions
      * @see numSolutions()
      */
-    virtual Trajectory* getSolution(const unsigned k) = 0;
+    virtual Trajectory::Handle getSolution(const unsigned k) = 0;
 
     /**
      * Get a cost estimate associated with a trajectory
@@ -248,7 +255,5 @@ namespace tom
     {}
   };
 }
-
-#include "OptimizerDefault.cpp"
 
 #endif
