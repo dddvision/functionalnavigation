@@ -33,24 +33,18 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
   
   methods (Access=public)
     function this=BoundedMarkov(initialTime,uri)
-      if(nargin==0)
-        initialTime=tom.WorldTime(0);
-        uri='';
-      end
       this=this@tom.DynamicModel(initialTime,uri);
-      if(nargin>0)
-        this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
-          'uint32',zeros(1,this.initialNumUint32,'uint32'));
-        this.firstNewBlock=1;
-        this.interval=tom.TimeInterval(initialTime,initialTime);
-        this.block=struct('logical',{},'uint32',{});
-        this.numInputs=size(this.B,2);
-        this.state=zeros(this.numStates,this.chunkSize);
-        this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
-        ABd=expmApprox(this.ABZ/this.rate);
-        this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
-        this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
-      end
+      this.initialBlock=struct('logical',false(1,this.initialNumLogical),...
+        'uint32',zeros(1,this.initialNumUint32,'uint32'));
+      this.firstNewBlock=1;
+      this.interval=tom.TimeInterval(initialTime,initialTime);
+      this.block=struct('logical',{},'uint32',{});
+      this.numInputs=size(this.B,2);
+      this.state=zeros(this.numStates,this.chunkSize);
+      this.ABZ=[this.A,this.B;sparse(this.numInputs,this.numStates+this.numInputs)];
+      ABd=expmApprox(this.ABZ/this.rate);
+      this.Ad=sparse(ABd(1:this.numStates,1:this.numStates));
+      this.Bd=sparse(ABd(1:this.numStates,(this.numStates+1):end));
     end
 
     function interval=domain(this)
@@ -174,7 +168,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
     end
      
     function obj=copy(this)
-      obj=BoundedMarkov.BoundedMarkov();
+      obj=BoundedMarkov.BoundedMarkov(tom.WorldTime(0),'');
       obj.interval=this.interval;
       obj.numInputs=this.numInputs;
       obj.initialBlock=this.initialBlock;

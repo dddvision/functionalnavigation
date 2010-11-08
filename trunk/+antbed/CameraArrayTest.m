@@ -40,7 +40,7 @@ function testCameraArrayProjection(cam, nb)
     % convert to grayscale
     switch( interpretLayers(cam, view) )
     case {'rgb', 'rgbi'}
-      gray = rgb2gray(gray(:, :, 1:3))/255;
+      gray = double(rgb2gray(gray(:, :, 1:3)))/255;
      case {'hsv', 'hsvi'}
       gray = double(gray(:, :, 3))/255;
      otherwise

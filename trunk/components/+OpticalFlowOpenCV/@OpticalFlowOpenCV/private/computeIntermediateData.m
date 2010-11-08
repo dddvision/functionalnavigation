@@ -6,8 +6,8 @@ function data=computeIntermediateData(this,na,nb)
   
   switch( interpretLayers(this.sensor) )
   case {'rgb','rgbi'}
-    ia=rgb2gray(ia(:,:,1:3));
-    ib=rgb2gray(ib(:,:,1:3));
+    ia=double(rgb2gray(ia(:,:,1:3)));
+    ib=double(rgb2gray(ib(:,:,1:3)));
   case {'hsv','hsvi'}
     ia=double(ia(:,:,3));
     ib=double(ib(:,:,3));
