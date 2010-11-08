@@ -20,33 +20,7 @@ classdef DynamicModelDefault < tom.DynamicModel
     end
   end
   
-  methods (Access = public, Static = false)
-    function interval = domain(this)
-      interval = this.interval;
-    end
-  
-    function pose = evaluate(this, t)
-      pose.p = [0; 0; 0];
-      pose.q = [1; 0; 0; 0];
-      pose = tom.Pose(pose);
-      pose = repmat(pose, [1, numel(t)]);
-      for k = find(t<this.interval.first)
-        pose(k) = tom.Pose;
-      end
-    end
-
-    function tangentPose = tangent(this, t)
-      tangentPose.p = [0; 0; 0];
-      tangentPose.q = [1; 0; 0; 0];
-      tangentPose.r = [0; 0; 0];
-      tangentPose.s = [0; 0; 0; 0];
-      tangentPose = tom.TangentPose(tangentPose);
-      tangentPose = repmat(tangentPose, [1, numel(t)]);
-      for k = find(t<this.interval.first)
-        tangentPose(k) = tom.TangentPose;
-      end
-    end
-    
+  methods (Access = public, Static = false)   
     function num = numInitialLogical(this)
       assert(isa(this, 'tom.DynamicModel'));
       num = uint32(0);
@@ -150,8 +124,39 @@ classdef DynamicModelDefault < tom.DynamicModel
       error('The default dynamic model has no extension blocks.');
     end
     
+    function interval = domain(this)
+      interval = this.interval;
+    end
+  
+    function pose = evaluate(this, t)
+      pose.p = [0; 0; 0];
+      pose.q = [1; 0; 0; 0];
+      pose = tom.Pose(pose);
+      pose = repmat(pose, [1, numel(t)]);
+      for k = find(t<this.interval.first)
+        pose(k) = tom.Pose;
+      end
+    end
+
+    function tangentPose = tangent(this, t)
+      tangentPose.p = [0; 0; 0];
+      tangentPose.q = [1; 0; 0; 0];
+      tangentPose.r = [0; 0; 0];
+      tangentPose.s = [0; 0; 0; 0];
+      tangentPose = tom.TangentPose(tangentPose);
+      tangentPose = repmat(tangentPose, [1, numel(t)]);
+      for k = find(t<this.interval.first)
+        tangentPose(k) = tom.TangentPose;
+      end
+    end
+    
     function extend(this)
       assert(isa(this, 'tom.DynamicModel'));
+    end
+    
+    function obj = copy(this)
+      obj = tom.DynamicModelDefault(tom.WorldTime(0),'');
+      obj.interval = this.interval;
     end
   end
   

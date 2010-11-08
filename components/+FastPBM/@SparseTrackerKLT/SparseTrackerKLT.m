@@ -213,8 +213,14 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         this.numLevels = uint32(1+ceil(log2(maxPix/this.halfwin)));
       end
       img = this.camera.getImage(node);
-      img = rgb2gray(img);
-      img = double(img)/255;
+      switch(this.camera.interpretLayers())
+      case {'rgb', 'rgbi'}
+        img = double(rgb2gray(img(:, :, 1:3)))/255;
+      case {'hsv', 'hsvi'}
+        img = double(img(:, :, 3))/255;
+      otherwise
+        img = double(img)/255;
+      end
       img(this.mask) = NaN;     
       multiple = 2^(this.numLevels-1);
       [M, N] = size(img);

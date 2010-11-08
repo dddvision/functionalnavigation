@@ -13,6 +13,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
   
   properties (GetAccess=private,SetAccess=private)
     initialTime
+    uri
     initialUint32
     xRef
   end
@@ -29,31 +30,26 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
   
   methods (Access=public)
     function this=XDynamics(initialTime,uri)
-      if(nargin==0)
-        initialTime=tom.WorldTime(0);
-        uri='';
-      end
       this=this@tom.DynamicModel(initialTime,uri);
-      if(nargin>0)
-        this.initialTime=initialTime;
-        this.initialUint32=zeros(1,this.initialNumUint32,'uint32');
-        try
-          [scheme,resource]=strtok(uri,':');
-          resource=resource(2:end);
-          switch(scheme)
-            case 'antbed'
-              container=antbed.DataContainer.create(resource,initialTime);
-              if(hasReferenceTrajectory(container))
-                this.xRef=getReferenceTrajectory(container);
-              else
-                this.xRef=tom.DynamicModelDefault(initialTime, uri);
-              end
-            otherwise
-              error('Unrecognized resource identifier in URI');
-          end
-        catch err
-          error('Failed to open data resource: %s',err.message);
+      this.initialTime=initialTime;
+      this.uri=uri;
+      this.initialUint32=zeros(1,this.initialNumUint32,'uint32');
+      try
+        [scheme,resource]=strtok(uri,':');
+        resource=resource(2:end);
+        switch(scheme)
+          case 'antbed'
+            container=antbed.DataContainer.create(resource,initialTime);
+            if(hasReferenceTrajectory(container))
+              this.xRef=getReferenceTrajectory(container);
+            else
+              this.xRef=tom.DynamicModelDefault(initialTime, uri);
+            end
+          otherwise
+            error('Unrecognized resource identifier in URI');
         end
+      catch err
+        error('Failed to open data resource: %s',err.message);
       end
     end
     
@@ -200,7 +196,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
     end
     
     function obj=copy(this)
-      obj=XDynamics.XDynamics();
+      obj=XDynamics.XDynamics(this.initialTime,this.uri);
       obj.initialTime=this.initialTime;
       obj.initialUint32=this.initialUint32;
       obj.xRef=this.xRef;

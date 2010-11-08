@@ -15,6 +15,90 @@ namespace tom
       return;
     }
 
+    uint32_t numInitialLogical(void) const
+    {
+      return (0);
+    }
+
+    uint32_t numInitialUint32(void) const
+    {
+      return (0);
+    }
+
+    uint32_t numExtensionLogical(void) const
+    {
+      return (0);
+    }
+
+    uint32_t numExtensionUint32(void) const
+    {
+      return (0);
+    }
+
+    uint32_t numExtensionBlocks(void)
+    {
+      return (0);
+    }
+
+    bool getInitialLogical(uint32_t parameterIndex)
+    {
+      throw("The default dynamic model has no input parameters");
+      return (false);
+    }
+
+    uint32_t getInitialUint32(uint32_t parameterIndex)
+    {
+      throw("The default dynamic model has no input parameters");
+      return (0);
+    }
+
+    bool getExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex)
+    {
+      throw("The default dynamic model has no input parameters");
+      return (false);
+    }
+
+    uint32_t getExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex)
+    {
+      throw("The default dynamic model has no input parameters");
+      return (0);
+    }
+
+    void setInitialLogical(uint32_t parameterIndex, bool value)
+    {
+      throw("The default dynamic model has no input parameters");
+      return;
+    }
+
+    void setInitialUint32(uint32_t parameterIndex, uint32_t value)
+    {
+      throw("The default dynamic model has no input parameters");
+      return;
+    }
+
+    void setExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex, bool value)
+    {
+      throw("The default dynamic model has no input parameters");
+      return;
+    }
+
+    void setExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex, uint32_t value)
+    {
+      throw("The default dynamic model has no input parameters");
+      return;
+    }
+
+    double computeInitialBlockCost(void)
+    {
+      return (0.0);
+    }
+
+    double computeExtensionBlockCost(uint32_t blockIndex)
+    {
+      throw("The default dynamic model has no extension blocks.");
+      return (0.0);
+    }
+
     TimeInterval domain(void)
     {
       return (interval);
@@ -79,93 +163,18 @@ namespace tom
       return;
     }
 
-    uint32_t numInitialLogical(void) const
-    {
-      return (0);
-    }
-
-    uint32_t numInitialUint32(void) const
-    {
-      return (0);
-    }
-
-    uint32_t numExtensionLogical(void) const
-    {
-      return (0);
-    }
-
-    uint32_t numExtensionUint32(void) const
-    {
-      return (0);
-    }
-
-    uint32_t numExtensionBlocks(void)
-    {
-      return (0);
-    }
-
     void extend(void)
     {
       return;
     }
 
-    bool getInitialLogical(uint32_t parameterIndex)
+    tom::DynamicModel* copy(void)
     {
-      throw("The default dynamic model has no input parameters");
-      return (false);
-    }
-
-    uint32_t getInitialUint32(uint32_t parameterIndex)
-    {
-      throw("The default dynamic model has no input parameters");
-      return (0);
-    }
-
-    bool getExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex)
-    {
-      throw("The default dynamic model has no input parameters");
-      return (false);
-    }
-
-    uint32_t getExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex)
-    {
-      throw("The default dynamic model has no input parameters");
-      return (0);
-    }
-
-    void setInitialLogical(uint32_t parameterIndex, bool value)
-    {
-      throw("The default dynamic model has no input parameters");
-      return;
-    }
-
-    void setInitialUint32(uint32_t parameterIndex, uint32_t value)
-    {
-      throw("The default dynamic model has no input parameters");
-      return;
-    }
-
-    void setExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex, bool value)
-    {
-      throw("The default dynamic model has no input parameters");
-      return;
-    }
-
-    void setExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex, uint32_t value)
-    {
-      throw("The default dynamic model has no input parameters");
-      return;
-    }
-
-    double computeInitialBlockCost(void)
-    {
-      return (0.0);
-    }
-
-    double computeExtensionBlockCost(uint32_t blockIndex)
-    {
-      throw("The default dynamic model has no extension blocks.");
-      return (0.0);
+      tom::WorldTime initialTime = this->interval.first;
+      std::string uri = "";
+      BrownianPlanar* obj = new BrownianPlanar(initialTime, uri);
+      obj->interval = this->interval;
+      return (obj);
     }
 
   private:
