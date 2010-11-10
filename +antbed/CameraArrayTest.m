@@ -48,7 +48,7 @@ function testCameraArrayProjection(cam, nb)
     end
 
     % show original image
-    imshow(gray, 'Parent', subplot(2, 3, 1));
+    imshow(gray, 'Parent', subplot(3, 3, 1));
 
     % set parameters for your desired camera
     HEIGHT = 200;
@@ -78,7 +78,7 @@ function testCameraArrayProjection(cam, nb)
       newImage(good) = interp2(gray, pix(1, good)+1, pix(2, good)+1, '*linear', NaN);
 
       % display the reprojected image
-      imshow(newImage, 'Parent', subplot(2, 3, 3));
+      imshow(newImage, 'Parent', subplot(3, 3, 2));
       title('Test Camera Array Projection');
       drawnow;
       pause(0.1);
@@ -96,7 +96,7 @@ function testCameraArrayProjectionRoundTrip(cam, nb)
     img = cam.getImage(nb, view);
 
     % show image
-    imshow(img, 'Parent', subplot(2, 3, 2));
+    imshow(img, 'Parent', subplot(3, 3, 3));
 
     % get image size
     HEIGHT = size(img, 1);
@@ -113,9 +113,11 @@ function testCameraArrayProjectionRoundTrip(cam, nb)
     c3 = reshape(ray(3, :), [HEIGHT, WIDTH]);
 
     % show the ray vector components
-    imshow([c1, c2, c3], [], 'Parent', subplot(2, 3, 4));
+    imshow(c1, [], 'Parent', subplot(3, 3, 4));
+    imshow(c2, [], 'Parent', subplot(3, 3, 5));
     title('Test Camera Array Inverse Projection');
-
+    imshow(c3, [], 'Parent', subplot(3, 3, 6));
+    
     % reproject the rays to pixel coordinates
     pixout = cam.projection(ray, nb, view);
     iout = reshape(pixout(2, :), [HEIGHT, WIDTH]);
@@ -126,7 +128,8 @@ function testCameraArrayProjectionRoundTrip(cam, nb)
     jdiff = abs(jout-jj);
 
     % display differences
-    imshow(1000*[idiff, jdiff]+0.5, 'Parent', subplot(2, 3, 5));
+    imshow(10000*idiff+0.5, 'Parent', subplot(3, 3, 7));
+    imshow(10000*jdiff+0.5, 'Parent', subplot(3, 3, 8));
     title('Test Camera Array Projection Round Trip (image area should be gray)');
   end
 end
