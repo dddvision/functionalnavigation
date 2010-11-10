@@ -152,7 +152,6 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
       flag = this.projectionDynamic;
     end
 
-    % MacBook camera has approximately 64 degrees horizontal FOV
     function pix = projection(this, ray, varargin)
       c1 = ray(1, :);
       c2 = ray(2, :);
@@ -162,7 +161,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
       mc = (m-1)/2;
       nc = (n-1)/2;
       c1((c1<=0)|(c1>1)) = NaN;
-      r=this.focal*sqrt(1-c1.*c1)./c1; % r = f*tan(acos(c1))
+      r = this.focal*sqrt(1-c1.*c1)./c1; % r = f*tan(acos(c1))
       theta = atan2(c3, c2);
       pm = r.*sin(theta)+mc;
       pn = r.*cos(theta)+nc;
