@@ -85,6 +85,27 @@ classdef MeasureTest < handle
           end
         end
       end
+      
+      [scheme,resource]=strtok(uri,':');
+      resource=resource(2:end);
+      dc = antbed.DataContainer.create(resource, initialTime);
+      
+      edgeList = findEdges(measure,measure.first(),measure.last(),measure.first(),measure.last());
+      
+      if hasReferenceTrajectory(dc)
+          groundTraj = getReferenceTrajectory(dc);          
+          interval = domain(groundTraj);
+          baseTrajectory = antbed.TrajectoryPerturbation(evaluate(groundTraj,interval.first),interval);
+          zeroPose = tom.Pose;
+          zeroPose.p = [0;0;0];
+          zeroPose.q = [1;0;0;0];
+          setPerturbation(baseTrajectory,zeroPose);
+          traj = evaluate(baseTrajectory,0);
+          traj
+      else
+          error('Need to test with a measure that has a refrence trajectory');
+      end
+      
         
       fprintf('\n\n*** End Measure Test ***');
     end

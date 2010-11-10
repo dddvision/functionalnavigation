@@ -1,18 +1,23 @@
-classdef TrajectoryPerturbation < Trajectory
+classdef TrajectoryPerturbation < tom.Trajectory
 
   properties (GetAccess = private, SetAccess = private)
       basePose
       deltaPose
+      domainInterval
   end
     
   methods (Access = public, Static = true)
     % base trajectory and rotation (ie ground truth) passed as a tom.pose
-    function this = TrajectoryPerturbation(pose)
+    function this = TrajectoryPerturbation(pose,interval)
         this.basePose = pose;
+        this.domainInterval = interval;
     end
   end
     
   methods (Access = public, Static = false)
+    function interval = domain(this)
+      interval = this.domainInterval;
+    end
     function setPerturbation(this, offsetPose)
       this.deltaPose = offsetPose;
     end
@@ -23,7 +28,7 @@ classdef TrajectoryPerturbation < Trajectory
         pose = repmat(tom.Pose, [1, 0]);
       else
         pose(1, N) = tom.Pose;
-        for k = find(t>=this.initialTime)
+        for k = find(t>=this.domainInterval.first)
           pose(k).p = this.basePose.p + this.deltaPose.p;
           pose(k).q = Quat2Homo(this.deltaPose.q) * this.basePose.q;
         end
