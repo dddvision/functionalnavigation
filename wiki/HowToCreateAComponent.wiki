@@ -7,11 +7,6 @@ This page will help you create a component that will seamlessly integrate with o
 
 === Interface Control Document ===
 
-Specific guidelines for each component:
-  * [InterfaceDynamicModels Interface for Dynamic Models]
-  * [InterfaceTrajectoryMeasures Interface for Trajectory Measures]
-  * [InterfaceOptimizationMethods Interface for Optimization Methods]
-
 General coding guidelines for all components including those that are hosted externally:
   * RULE: Component names and classes must be capitalized in {{{UpperCamelCase}}} (ex. {{{MyClass}}}), and other variables should use {{{lowerCamelCase}}} (ex. myVariable).
   * RULE: All implementation files for a component must be grouped within a single directory prefixed by a "+" sign (ex. {{{+MyComponent}}}).
