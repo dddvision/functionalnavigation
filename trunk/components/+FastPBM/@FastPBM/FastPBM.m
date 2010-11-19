@@ -18,6 +18,25 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
     function this = FastPBM(initialTime, uri)
       this = this@tom.Measure(initialTime, uri);
 
+      container = antbed.DataContainer.create('MiddleburyData', initialTime);
+      list = container.listSensors('antbed.Camera');
+      this.sensor = container.getSensor(list(1));
+      this.tracker = FastPBM.SparseTrackerKLT(initialTime, this.sensor);
+      eList = findEdges(this,0,7,0,7);
+      
+      for i=1:size(eList)
+          nA = eList(i).first;
+          nA = eList(i).second;
+          kA = (uint32(1):numA)-uint32(1);
+          kB = (uint32(1):numB)-uint32(1);
+          idA = this.tracker.getFeatureID(nA, kA);
+          idB = this.tracker.getFeatureID(nB, kB);
+          [idAB, indexA, indexB] = intersect(double(idA), double(idB)); % only supports double
+          kA = kA(indexA);
+          kB = kB(indexB);
+          %add gausian stuff here
+          
+      end
       try
         [scheme, resource] = strtok(uri, ':');
         resource = resource(2:end);
@@ -32,7 +51,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       catch err
         error('Failed to open data resource: %s', err.message);
       end                  
-
+      
       this.tracker = FastPBM.SparseTrackerKLT(initialTime, this.sensor);
     end
     
