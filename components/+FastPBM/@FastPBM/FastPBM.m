@@ -3,6 +3,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
     properties (SetAccess = private, GetAccess = private)
         sensor
         tracker
+        container
     end
     
     methods (Static = true, Access = public)
@@ -24,9 +25,9 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
                 resource = resource(2:end);
                 switch(scheme)
                     case 'antbed'
-                        container = antbed.DataContainer.create(resource, initialTime);
-                        list = container.listSensors('antbed.Camera');
-                        this.sensor = container.getSensor(list(1));
+                        this.container = antbed.DataContainer.create(resource, initialTime);
+                        list = this.container.listSensors('antbed.Camera');
+                        this.sensor = this.container.getSensor(list(1));
                     otherwise
                         error('Unrecognized resource identifier in URI');
                 end
@@ -75,10 +76,10 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         
         
         function cost = computeEdgeCost(this, x, graphEdge)
-            if exist([FastPBMConfig.trackerName '.mat'], 'file')==0
+            if exist([FastPBM.FastPBMConfig.trackerName '.mat'], 'file')==0
                 generateModel(this);
             end
-            load([FastPBMConfig.trackerName '.mat']);
+            load([FastPBM.FastPBMConfig.trackerName '.mat']);
             
             nA = graphEdge.first;
             nB = graphEdge.second;
@@ -127,8 +128,8 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         function generateModel( this )
             el = findEdges(this,this.tracker.first(),this.tracker.last(),this.tracker.first(),this.tracker.last());
             
-            if hasReferenceTrajectory(container)
-                groundTraj = getReferenceTrajectory(dc);
+            if hasReferenceTrajectory(this.container)
+                groundTraj = getReferenceTrajectory(this.container);
                 
                 for i = 1:numel(el)
                     nA = el(i).first;
@@ -178,9 +179,9 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
                     rayACorr = ARot * rayA;
                     rayBCorr = BRot * rayB;
                     
-                    model = getModel(poseB.p-poseA.p,[rayACorr rayBCorr]);
+                    model = ModelErrors(poseB.p-poseA.p,[rayACorr; rayBCorr]);
                     
-                    save([FastPBMConfig.trackerName '.mat'], 'model');
+                    save([FastPBM.FastPBMConfig.trackerName '.mat'], 'model');
                 end                
             else
                 error('DataContainer needs a refrence trajectory');
