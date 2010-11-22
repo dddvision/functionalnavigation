@@ -1,4 +1,4 @@
- function cost=computeCost2(this, T,rayA,rayB)
+ function cost=computeCost2(this, model,T,rayA,rayB)
 % Calculate the error for each ray-pair
 N = zeros(3,size(rayA,2));
 Errors = zeros(1,size(rayB,2));
@@ -9,12 +9,14 @@ for indVec=1:size(rayA,2)
     
     % normalize vectors
     n = N(:,indVec)./norm(N(:,indVec));
-    x = Vectors2(:,indVec)/norm(rayB(:,indVec)); 
+    x = rayB(:,indVec)/norm(rayB(:,indVec)); 
     
     % calculate the error 
     Errors(indVec) = n'*x;
 end
 
-
 % load the model and use that to get the cost
-cost = sum(Errors);
+M = model.parameters(1);
+S = model.parameters(2);
+Y = normpdf(Errors,M,S);
+cost = sum(Y);
