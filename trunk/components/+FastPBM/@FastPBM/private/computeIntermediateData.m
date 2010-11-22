@@ -22,7 +22,7 @@ function data = computeIntermediateData(this, nA, nB)
   pixB = this.sensor.projection(rayB, nB);
   
   % store pixel locations
-  data = struct('pixA', pixA', 'pixB', pixB');
+  data = struct('pixA', pixA', 'pixB', pixB', 'rayA', rayA, 'rayB', rayB);
   
 %   if(this.displayFlow)
 %     pixA=pixA+1;
