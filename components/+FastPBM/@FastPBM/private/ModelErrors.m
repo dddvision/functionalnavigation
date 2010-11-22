@@ -56,7 +56,6 @@ function model = getModel(T, rays)
     %TODO: Omar add a method to save the model into this varaible
     %      if you need multiple variables, use a struct
     model = [];
-    model.modelType = 1;
     model.parameters(1) = M;
     model.parameters(2) = S;
 end
