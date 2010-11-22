@@ -1,4 +1,7 @@
  function cost=computeCost(this,Vx_OF,Vy_OF,uvr,uvt)
+ 
+ %TODO: Modify to use model
+ 
   % Seperate flow components
   Vxr=uvr(1,:);
   Vyr=uvr(2,:);

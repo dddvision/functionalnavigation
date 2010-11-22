@@ -16,7 +16,7 @@ function data = computeIntermediateData(this, nA, nB)
   % get corresponding rays
   rayA = this.tracker.getFeatureRay(nA, kA);
   rayB = this.tracker.getFeatureRay(nB, kB);
-  
+    
   % project to image space
   pixA = this.sensor.projection(rayA, nA);
   pixB = this.sensor.projection(rayB, nB);
