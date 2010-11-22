@@ -73,7 +73,13 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       end
     end
     
+    
     function cost = computeEdgeCost(this, x, graphEdge)
+      if exist([FastPBMConfig.tracker '.mat'], 'file')==0
+          generateModel(this);
+      end
+      load([FastPBMConfig.tracker '.mat']);
+      
       nA = graphEdge.first;
       nB = graphEdge.second;
       
@@ -117,6 +123,71 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
 
       cost = computeCost(this, u, v, uvr, uvt);
     end
-  end
-  
+    
+    function generateModel( this )
+        el = findEdges(this,this.tracker.first(),this.tracker.last(),this.tracker.first(),this.tracker.last());
+                
+        if hasReferenceTrajectory(container)
+              groundTraj = getReferenceTrajectory(dc);          
+
+              for i = 1:numel(el)                  
+                  nA = el(i).first;
+                  nB = el(i).second;
+
+                  % return 0 if the specified edge is not found in the graph
+                  isAdjacent = (nA<nB) && ...
+                    hasData(this.tracker) && ...
+                    (nA>=first(this.tracker)) && ...
+                    (nB<=last(this.tracker));
+                  if(~isAdjacent)
+                    return;
+                  end
+
+                  % return NaN if the graph edge extends outside of the trajectory domain
+                  tA = getTime(this.tracker, nA);
+                  tB = getTime(this.tracker, nB);
+                  interval = domain(groundTraj);
+                  if(tA<interval.first)
+                    return;
+                  end
+
+                  poseA = evaluate(groundTraj, tA);
+                  poseB = evaluate(groundTraj, tB);
+                  
+                  numA = this.tracker.numFeatures(nA);
+                  numB = this.tracker.numFeatures(nB);
+                  kA = (uint32(1):numA)-uint32(1);
+                  kB = (uint32(1):numB)-uint32(1);
+                  idA = this.tracker.getFeatureID(nA, kA);
+                  idB = this.tracker.getFeatureID(nB, kB);
+                  
+                  % find features common to both images
+                  [idAB, indexA, indexB] = intersect(double(idA), double(idB)); % only supports double
+                  kA = kA(indexA);
+                  kB = kB(indexB);
+
+                  % get corresponding rays
+                  rayA = this.tracker.getFeatureRay(nA, kA);
+                  rayB = this.tracker.getFeatureRay(nB, kB);
+                  
+                  %translate to rotation matrix
+                  ARot = Quat2Matrix(poseA.q);
+                  BRot = Quat2Matrix(poseB.q);
+                  
+                  %correct for rotation
+                  rayACorr = ARot * rayA;
+                  rayBCorr = BRot * rayB;
+                  
+                  model = getModel(poseB.p-poseA.p,[rayACorr rayBCorr]);
+                  
+                  save([FastPBMConfig.tracker '.mat'], 'model');
+              end
+              
+          else
+              error('DataContainer needs a refrence trajectory');
+          end
+          
+      end
+    
+  end  
 end
