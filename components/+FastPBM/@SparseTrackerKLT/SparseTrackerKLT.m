@@ -1,12 +1,12 @@
 classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
-  properties (Constant=true,GetAccess=private)
+  properties (Constant = true, GetAccess = private)
     halfwin = 5;
     thresh = 0.96;
     cornerMethod = 'Harris';
   end
   
-  properties (GetAccess=private,SetAccess=private)
+  properties (GetAccess = private, SetAccess = private)
     camera
     mask
     nodeA
@@ -23,16 +23,16 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     plotHandle
   end
   
-  methods (Access=public, Static=true)
-    function this = SparseTrackerKLT(initialTime,camera)
+  methods (Access = public, Static = true)
+    function this = SparseTrackerKLT(initialTime, camera)
       this = this@FastPBM.SparseTracker(initialTime);
       
       % store camera handle
       this.camera = camera;
       
-      if(~exist('mexTrackFeaturesKLT','file'))
+      if(~exist('mexTrackFeaturesKLT', 'file'))
         userDirectory = pwd;
-        cd(fullfile(fileparts(mfilename('fullpath')),'private'));
+        cd(fullfile(fileparts(mfilename('fullpath')), 'private'));
         try
           mex('mexTrackFeaturesKLT.cpp');
         catch err
@@ -47,7 +47,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
   end
   
-  methods (Abstract=false, Access=public, Static=false)
+  methods (Abstract = false, Access = public, Static = false)
     function refresh(this, x)
       this.camera.refresh(x);
       this.track();
@@ -141,7 +141,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             % optionally display tracking results
             if(this.displayFeatures)
               if(isempty(this.figureHandle))
-                this.figureHandle=figure;
+                this.figureHandle = figure;
               else
                 figure(this.figureHandle);
                 if(~isempty(this.plotHandle))
@@ -151,7 +151,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
               imshow(pyramidB{1}.f, []);
               axis('image');
               hold('on');
-              this.plotHandle=plot([this.yA(good);yB(good)],[this.xA(good);xB(good)],'r');
+              this.plotHandle = plot([this.yA(good); yB(good)], [this.xA(good); xB(good)], 'r');
               drawnow;
             end
             
@@ -182,7 +182,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       end
       if(num>0)
         a = this.uniqueNext;
-        b = a + uint32(num-1);
+        b = a+uint32(num-1);
         id = a:b;
         this.uniqueNext = b+uint32(1);
       else
@@ -201,13 +201,13 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       if(this.firstTrack)
         steps = this.camera.numSteps();
         strides = this.camera.numStrides();
-        [stepGrid, strideGrid] = ndgrid(0:(double(steps)-1),0:(double(strides)-1));
+        [stepGrid, strideGrid] = ndgrid(0:(double(steps)-1), 0:(double(strides)-1));
         pix = [strideGrid(:)'; stepGrid(:)'];
         ray = this.camera.inverseProjection(pix,node);
         this.mask = find(isnan(ray(1, :)));
         pix = [double(strides)-2; double(steps)-1]/2;
         pix = [pix, pix+[1; 0]];
-        ray = this.camera.inverseProjection(pix,node);
+        ray = this.camera.inverseProjection(pix, node);
         angularSpacing = acos(dot(ray(:, 1), ray(:, 2)));
         maxPix = this.maxSearch/angularSpacing;
         this.numLevels = uint32(1+ceil(log2(maxPix/this.halfwin)));

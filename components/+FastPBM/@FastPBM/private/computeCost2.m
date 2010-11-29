@@ -1,25 +1,10 @@
-function cost=computeCost2(this, model,T,rayA,rayB)
-% Calculate the error for each ray-pair
-N = zeros(3,size(rayA,2));
-Errors = zeros(1,size(rayB,2));
-for indVec=1:size(rayA,2)
-    
-    % calculate the normal to the epipolar plane
-    N(:,indVec) = cross(T,rayA(:,indVec));
-    
-    % normalize vectors
-    n = N(:,indVec)./norm(N(:,indVec));
-    x = rayB(:,indVec)/norm(rayB(:,indVec));
-    
-    % calculate the error
-    Errors(indVec) = n'*x;
+% Compute the residual error for each pair of rays
+% TODO: ensure that mu=0 unless there is a strong theoretical argument against it
+% TODO: supply normpdf without depending on MATLAB toolboxes
+function cost = computeCost2(residual, mu, sigma)
+  YMax = normpdf(mu, mu, sigma);
+  Y = normpdf(residual, mu, sigma);
+  Y = Y/YMax;
+  cost = sum(-log(Y))/numel(Y);
+  % TODO: explain why this is divided by numel(Y)?
 end
-
-% load the model and use that to get the cost
-M = model.parameters(1);
-S = model.parameters(2);
-YMax = normpdf(M,M,S);
-Y = normpdf(Errors,M,S);
-Y = Y./YMax;
-cost = sum(-log(Y))./length(Y);
-
