@@ -1,7 +1,8 @@
 % TODO: supply normfit without relying on MATLAB toolboxes
 function modelErrors(translation, rayA, rayB)
   residual = computeResidual(translation, rayA, rayB);
-  [mu, sigma] = normfit(residual);
+  mu = mean(residual);
+  sigma = std(residual);
   fprintf('\n\n*** Computed Calibration Parameters ***\n');
   fprintf('\nmu = %f (radians)', mu);
   fprintf('\nsigma = %f (radians)', sigma);
