@@ -42,9 +42,9 @@ namespace tom
      * The input trajectory:
      *   May assist in efficient processing of sensor data
      *   May assist in fault detection and outlier removal
-     *   Is assumed to be a poor estimate of the actual body trajectory
-     *   Its accuracy has little or no effect on functions in derived classs
-     * This function does not wait for hardware events
+     *   May be a poor estimate of the body trajectory
+     *   Should have approximately no effect on functions in derived classs
+     * This function updates the object state without waiting for new data to be acquired
      */
     virtual void refresh(const Trajectory* x) = 0;
 
