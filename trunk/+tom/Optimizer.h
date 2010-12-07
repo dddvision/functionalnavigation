@@ -188,8 +188,8 @@ namespace tom
      * Refresh all measures and extend trajectory domains equally beyond the last measure
      *
      * NOTES
-     * Has no effect in the case that no measures have data
-     * Throws an exception if the problem had not been defined
+     * Has no effect in the case when no measures have data
+     * Throws an exception if the problem has not been defined
      * @see defineProblem()
      * @see tom::Measure::refresh()
      * @see tom::Measure::hasData()
