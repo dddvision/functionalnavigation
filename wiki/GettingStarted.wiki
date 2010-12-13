@@ -7,7 +7,8 @@ You will need MATLAB {{{R2009a}}} or later, and in order to make full use of the
 
 === Next Steps ===
 
-The framework comes with a few default examples of components that can be selected by editing DemoConfig.m. In addition, we plan to provide links to [http://code.google.com/p/functionalnavigation/downloads/list downloadable components] created by others to demonstrate more system configurations.
+The framework comes with a few default examples of components that can be selected by editing DemoConfig.m. In addition, here is a list of downloadable components created by others to demonstrate more system configurations:
+  * [http://code.google.com/p/functionalnavigation/downloads/list PointBasedMeasure] - The University of Central Florida has assembled a state-of-the-art visual measure that employs David Nister's five-point Structure From Motion (SFM) algorithm. In a calibrated framework, the algorithm finds SURF point correspondence between pairs of images, then computes the essential matrix, decomposes it into the camera rotation and translation, and then triangulates each set of point correspondences in order to obtain the 3D structure of the scene. This measure depends on OpenCV, SBA, and LAPACK.
 
 === Layer Diagram for Embedded Systems ===
 
