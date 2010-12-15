@@ -142,7 +142,7 @@ classdef DynamicModelDefault < tom.DynamicModel
       tangentPose.p = [0; 0; 0];
       tangentPose.q = [1; 0; 0; 0];
       tangentPose.r = [0; 0; 0];
-      tangentPose.s = [0; 0; 0; 0];
+      tangentPose.s = [0; 0; 0];
       tangentPose = tom.TangentPose(tangentPose);
       tangentPose = repmat(tangentPose, [1, numel(t)]);
       for k = find(t<this.interval.first)

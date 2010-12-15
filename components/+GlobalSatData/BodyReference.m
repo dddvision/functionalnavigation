@@ -67,7 +67,7 @@ classdef BodyReference < GlobalSatData.GlobalSatDataConfig & tom.Trajectory
             tangentPose(n).p = p(:, k);
             tangentPose(n).q = [1; 0; 0; 0];
             tangentPose(n).r = r(:, k);
-            tangentPose(n).s = [0; 0; 0; 0];
+            tangentPose(n).s = [0; 0; 0];
             k = k+1;
           else
             tangentPose(n) = tangent(this, interval.second);

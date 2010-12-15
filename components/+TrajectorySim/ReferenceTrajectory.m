@@ -37,7 +37,7 @@ classdef ReferenceTrajectory < tom.Trajectory & TrajectorySim.TrajectorySimConfi
       % convert rotation rates to axis-angle form
       this.wRef = zeros(3, K);
       for i = 1:K
-        this.wRef(:, i) = 2*invJexp(this.qRef(:, i))*this.sRef(:, i);
+        this.wRef(:, i) = this.sRef(:,i); % 2*invJexp(this.qRef(:, i))*this.sRef(:, i);
       end
     end
     
@@ -84,14 +84,15 @@ classdef ReferenceTrajectory < tom.Trajectory & TrajectorySim.TrajectorySimConfi
         upperBound = t<=interval.second;
         good = lowerBound&upperBound;
         [p, r] = cardinalSpline(this.tRef, this.pRef, t(good), this.splineTension);
-        [q, s] = QuatInterp(this.tRef, this.qRef, this.dqRef, this.wRef, t(good));
+        [q, qdot] = QuatInterp(this.tRef, this.qRef, this.dqRef, this.wRef, t(good));
         k = 1;
         for n = find(lowerBound)
           if(upperBound(n))
             tangentPose(n).p = p(:, k);
             tangentPose(n).q = q(:, k);
             tangentPose(n).r = r(:, k);
-            tangentPose(n).s = s(:, k);
+            w = Quat2Homo(QuatConj(q(:, k)))*(2*qdot(:, k)); % 2*conj(q)*qdot
+            tangentPose(n).s = w(2:4);
             k = k+1;
           else
             finalTangentPose = tangent(this, interval.second);
@@ -110,7 +111,7 @@ function [dt, p, q, r, s] = readTangentPoseFile(filename)
   p = data(:, 2:4)';
   q = data(:, 5:8)';
   r = data(:, 9:11)';
-  s = data(:, 12:15)';
+  s = data(:, 12:14)';
 end
 
 function pose = predictPose(tP, dt)
@@ -121,12 +122,11 @@ function pose = predictPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  w = Quat2Homo(QuatConj(tP.q))*(2*tP.s); % 2*conj(q)*qdot
-  dq = AxisAngle2Quat(w(2:4)*dt);
+  dq = AxisAngle2Quat(tP.s*dt);
   q = Quat2HomoReverse(tP.q)*dq; % dq*q
   
   pose(1, N) = tom.Pose;
-  for n=1:N
+  for n = 1:N
     pose(n).p = p(:, n);
     pose(n).q = q(:, n);
   end
@@ -140,17 +140,15 @@ function tangentPose = predictTangentPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  w = Quat2Homo(QuatConj(tP.q))*(2*tP.s); % 2*conj(q)*qdot
-  dq = AxisAngle2Quat(w(2:4)*dt); 
+  dq = AxisAngle2Quat(tP.s*dt); 
   q = Quat2HomoReverse(tP.q)*dq; % dq*q
-  s = 0.5*Quat2HomoReverse(w)*q; % 0.5*q*w
 
   tangentPose(1, N) = tP;
-  for n=1:N
+  for n = 1:N
     tangentPose(n).p = p(:, n);
     tangentPose(n).q = q(:, n);
     tangentPose(n).r = tP.r;
-    tangentPose(n).s = s(:, n);
+    tangentPose(n).s = tP.s;
   end
 end
 
@@ -193,7 +191,11 @@ function [qi, qidot] = QuatInterp(tRef, qRef, dqRef, wRef, t)
         qo*exp1*exp2*exp3*Homo2Quat(wbd3);
     end
   end
-  qi = QuatNorm(qi);
+  if(nargout>1)
+    [qi, qidot] = QuatNorm(qi, qidot);
+  else
+    qi = QuatNorm(qi);
+  end
 end
 
 function x = Bh(t)
@@ -390,7 +392,7 @@ function q = QuatConj(q)
  q(2:4, :) = -q(2:4, :);
 end
 
-function Q = QuatNorm(Q)
+function [Q, Qdot] = QuatNorm(Q, Qdot)
   q1 = Q(1, :);
   q2 = Q(2, :);
   q3 = Q(3, :);
@@ -406,5 +408,11 @@ function Q = QuatNorm(Q)
   Q(2, :) = q2./ns;
   Q(3, :) = q3./ns;
   Q(4, :) = q4./ns;
+  
+  if(nargout>1)
+    Qdot(1, :) = s.*Qdot(1, :);
+    Qdot(2, :) = s.*Qdot(2, :);
+    Qdot(3, :) = s.*Qdot(3, :);
+    Qdot(4, :) = s.*Qdot(4, :);
+  end
 end
-

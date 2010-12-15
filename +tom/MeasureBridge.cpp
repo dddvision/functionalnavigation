@@ -105,7 +105,6 @@ void convert(const mxArray* array, std::vector<tom::TangentPose>& tangentPose)
     pTangentPose->s[0] = ps[0];
     pTangentPose->s[1] = ps[1];
     pTangentPose->s[2] = ps[2];
-    pTangentPose->s[3] = ps[3];
   }
   return;
 }

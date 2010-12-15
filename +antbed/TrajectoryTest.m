@@ -60,7 +60,7 @@ classdef TrajectoryTest
       p = zeros(3, N);
       q = zeros(4, N);
       r = zeros(3, N);
-      s = zeros(4, N);
+      s = zeros(3, N);
       for n = 1:N
         pose = trajectory.evaluate(time(n));
         assert(all(isreal(pose.p)));
@@ -109,7 +109,7 @@ classdef TrajectoryTest
       pp = zeros(3, Np);
       qp = zeros(4, Np);
       rp = zeros(3, Np);
-      sp = zeros(4, Np);
+      sp = zeros(3, Np);
       for n = 1:Np
         pose = trajectory.evaluate(timep(n));
         assert(all(isreal(pose.p)));
@@ -179,8 +179,8 @@ classdef TrajectoryTest
         plot(timep, rp(d, :), 'r');
         ylabel(sprintf('r_%d', d));
       end
-      for d = 1:4
-        subplot(7, 2, 6+2*d);
+      for d = 1:3
+        subplot(7, 2, 8+2*d);
         cla;
         plot(time, s(d, :), 'b');
         hold('on');

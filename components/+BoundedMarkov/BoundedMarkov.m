@@ -84,7 +84,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
             tangentPose(n).p=substate(1:3)+this.initialPosition;
             tangentPose(n).q=Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
             tangentPose(n).r=substate(7:9)+this.initialPositionRate;
-            tangentPose(n).s=0.5*Quat2Homo(tangentPose(n).q)*([0;this.initialOmega+substate(10:12)]);
+            tangentPose(n).s=this.initialOmega+substate(10:12);
           else
             finalTangentPose=tangent(this,this.interval.second);
             tangentPose(n)=predictTangentPose(finalTangentPose,t(n)-this.interval.second);
@@ -237,12 +237,11 @@ function pose = predictPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  w = Quat2Homo(QuatConj(tP.q))*(2*tP.s); % 2*conj(q)*qdot
-  dq = AxisAngle2Quat(w(2:4)*dt);
+  dq = AxisAngle2Quat(tP.s*dt);
   q = Quat2HomoReverse(tP.q)*dq; % dq*q
   
   pose(1, N) = tom.Pose;
-  for n=1:N
+  for n = 1:N
     pose(n).p = p(:, n);
     pose(n).q = q(:, n);
   end
@@ -256,17 +255,15 @@ function tangentPose = predictTangentPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  w = Quat2Homo(QuatConj(tP.q))*(2*tP.s); % 2*conj(q)*qdot
-  dq = AxisAngle2Quat(w(2:4)*dt); 
+  dq = AxisAngle2Quat(tP.s*dt); 
   q = Quat2HomoReverse(tP.q)*dq; % dq*q
-  s = 0.5*Quat2HomoReverse(w)*q; % 0.5*q*w
 
   tangentPose(1, N) = tP;
-  for n=1:N
+  for n = 1:N
     tangentPose(n).p = p(:, n);
     tangentPose(n).q = q(:, n);
     tangentPose(n).r = tP.r;
-    tangentPose(n).s = s(:, n);
+    tangentPose(n).s = tP.s;
   end
 end
 
@@ -290,10 +287,6 @@ function h = Quat2Homo(q)
        [q2,  q1, -q4,  q3]
        [q3,  q4,  q1, -q2]
        [q4, -q3,  q2,  q1]];
-end
-
-function q = QuatConj(q)
- q(2:4, :) = -q(2:4, :);
 end
 
 function q = AxisAngle2Quat(v)

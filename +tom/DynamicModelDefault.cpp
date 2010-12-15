@@ -157,7 +157,6 @@ namespace tom
           tangentPose[k].s[0] = 0.0;
           tangentPose[k].s[1] = 0.0;
           tangentPose[k].s[2] = 0.0;
-          tangentPose[k].s[3] = 0.0;
         }
       }
       return;
