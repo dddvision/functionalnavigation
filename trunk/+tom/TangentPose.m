@@ -2,7 +2,7 @@ classdef TangentPose < tom.Pose
   
   properties (SetAccess = public, GetAccess = public)
     r = nan(3, 1);
-    s = nan(4, 1);
+    s = nan(3, 1);
   end
   
   methods (Access = public)
@@ -25,7 +25,7 @@ classdef TangentPose < tom.Pose
         fprintf('\n%s.p = [%f; %f; %f]', name, this(n).p(1), this(n).p(2), this(n).p(3));
         fprintf('\n%s.q = [%f; %f; %f; %f]', name, this(n).q(1), this(n).q(2), this(n).q(3), this(n).q(4));
         fprintf('\n%s.r = [%f; %f; %f]', name, this(n).r(1), this(n).r(2), this(n).r(3));
-        fprintf('\n%s.s = [%f; %f; %f; %f]\n', name, this(n).s(1), this(n).s(2), this(n).s(3), this(n).s(4));
+        fprintf('\n%s.s = [%f; %f; %f]\n', name, this(n).s(1), this(n).s(2), this(n).s(3));
       end
     end
   end

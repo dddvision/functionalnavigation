@@ -78,14 +78,15 @@ classdef BodyReference < tom.Trajectory
         interval = domain(this);
         lowerBound = t>=interval.first;
         upperBound = t<=interval.second;
-        [pq, rs] = cardinalSpline(this.T_imu, this.x_imu, t(lowerBound&upperBound));
+        [pq, pqdot] = cardinalSpline(this.T_imu, this.x_imu, t(lowerBound&upperBound));
         k = 1;
         for n = find(lowerBound)
           if(upperBound(n))
             tangentPose(n).p = pq(1:3, k);
             tangentPose(n).q = pq(4:7, k);
-            tangentPose(n).r = rs(1:3, k);
-            tangentPose(n).s = rs(4:7, k);
+            tangentPose(n).r = pqdot(1:3, k);
+            w = Quat2Homo(QuatConj(pq(4:7, k)))*(2*pqdot(4:7, k)); % 2*conj(q)*qdot
+            tangentPose(n).s = w(2:4);
             k = k+1;
           else
             finalTangentPose = tangent(this, interval.second);
@@ -256,12 +257,11 @@ function pose = predictPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  w = Quat2Homo(QuatConj(tP.q))*(2*tP.s); % 2*conj(q)*qdot
-  dq = AxisAngle2Quat(w(2:4)*dt);
+  dq = AxisAngle2Quat(tP.s*dt);
   q = Quat2HomoReverse(tP.q)*dq; % dq*q
   
   pose(1, N) = tom.Pose;
-  for n=1:N
+  for n = 1:N
     pose(n).p = p(:, n);
     pose(n).q = q(:, n);
   end
@@ -275,17 +275,15 @@ function tangentPose = predictTangentPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  w = Quat2Homo(QuatConj(tP.q))*(2*tP.s); % 2*conj(q)*qdot
-  dq = AxisAngle2Quat(w(2:4)*dt); 
+  dq = AxisAngle2Quat(tP.s*dt); 
   q = Quat2HomoReverse(tP.q)*dq; % dq*q
-  s = 0.5*Quat2HomoReverse(w)*q; % 0.5*q*w
 
   tangentPose(1, N) = tP;
-  for n=1:N
+  for n = 1:N
     tangentPose(n).p = p(:, n);
     tangentPose(n).q = q(:, n);
     tangentPose(n).r = tP.r;
-    tangentPose(n).s = s(:, n);
+    tangentPose(n).s = tP.s;
   end
 end
 
@@ -312,7 +310,7 @@ function h = Quat2Homo(q)
 end
 
 function q = QuatConj(q)
- q(2:4, :) = -q(2:4, :);
+  q(2:4, :) = -q(2:4, :);
 end
 
 function q = AxisAngle2Quat(v)

@@ -68,27 +68,6 @@ namespace BrownianPlanar
       return;
     }
 
-    void transformTangentPose(tom::TangentPose& tangentPose)
-    {
-      double i0 = initialQuaternion[0];
-      double i1 = initialQuaternion[1];
-      double i2 = initialQuaternion[2];
-      double i3 = initialQuaternion[3];
-
-      double s0 = tangentPose.s[0];
-      double s1 = tangentPose.s[1];
-      double s2 = tangentPose.s[2];
-      double s3 = tangentPose.s[3];
-
-      transformPose(tangentPose);
-      tangentPose.s[0] = s0*i0-s1*i1-s2*i2-s3*i3;
-      tangentPose.s[1] = s1*i0+s0*i1-s3*i2+s2*i3;
-      tangentPose.s[2] = s2*i0+s3*i1+s0*i2-s1*i3;
-      tangentPose.s[3] = s3*i0-s2*i1+s1*i2+s0*i3;
-
-      return;
-    }
-
     void evaluateGeneral(const tom::WorldTime& time, tom::Pose& pose, uint32_t& dkFloor, double& dtRemain,
       double& halfAngle)
     {
@@ -161,7 +140,7 @@ namespace BrownianPlanar
       {
         evaluateTangentPose(interval.second, tP);
         dt = time-interval.second;
-        halfAngleRate = tP.q[0]*tP.s[3]-tP.q[3]*tP.s[0];
+        halfAngleRate = tP.s[2]/2.0;
         halfAngle = atan2(tP.q[3],tP.q[0])+halfAngleRate*dt;
         tangentPose.p[0] = tP.p[0]+tP.r[0]*dt;
         tangentPose.p[1] = tP.p[1]+tP.r[1]*dt;
@@ -173,10 +152,9 @@ namespace BrownianPlanar
         tangentPose.r[0] = tP.r[0];
         tangentPose.r[1] = tP.r[1];
         tangentPose.r[2] = tP.r[2];
-        tangentPose.s[0] = -sin(halfAngle)*halfAngleRate;
+        tangentPose.s[0] = 0.0;
         tangentPose.s[1] = 0.0;
-        tangentPose.s[2] = 0.0;
-        tangentPose.s[3] = cos(halfAngle)*halfAngleRate;
+        tangentPose.s[2] = tP.s[2];
       }
       else
       {
@@ -190,12 +168,11 @@ namespace BrownianPlanar
         tangentPose.r[1] = yRate[dkFloor]+ct2*fy[dkFloor];
         tangentPose.r[2] = 0.0;
         halfAngleRate = 0.5*(aRate[dkFloor]+ct3*fa[dkFloor]);
-        tangentPose.s[0] = -sin(halfAngle)*halfAngleRate;
+        tangentPose.s[0] = 0.0;
         tangentPose.s[1] = 0.0;
-        tangentPose.s[2] = 0.0;
-        tangentPose.s[3] = cos(halfAngle)*halfAngleRate;
+        tangentPose.s[2] = 2.0*halfAngleRate;
 
-        transformTangentPose(tangentPose);
+        transformPose(tangentPose);
       }
       return;
     }

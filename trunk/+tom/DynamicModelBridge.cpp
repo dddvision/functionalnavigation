@@ -189,7 +189,7 @@ void convert(const std::vector<tom::TangentPose>& tangentPose, const mxArray*& s
     p = mxCreateDoubleMatrix(3, 1, mxREAL);
     q = mxCreateDoubleMatrix(4, 1, mxREAL);
     r = mxCreateDoubleMatrix(3, 1, mxREAL);
-    s = mxCreateDoubleMatrix(4, 1, mxREAL);
+    s = mxCreateDoubleMatrix(3, 1, mxREAL);
     pp = mxGetPr(p);
     pq = mxGetPr(q);
     pr = mxGetPr(r);
@@ -207,7 +207,6 @@ void convert(const std::vector<tom::TangentPose>& tangentPose, const mxArray*& s
     ps[0] = tangentPose[n].s[0];
     ps[1] = tangentPose[n].s[1];
     ps[2] = tangentPose[n].s[2];
-    ps[3] = tangentPose[n].s[3];
     mxSetProperty(array, n, "p", p);
     mxSetProperty(array, n, "q", q);
     mxSetProperty(array, n, "r", r);

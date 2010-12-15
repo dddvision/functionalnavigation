@@ -27,6 +27,7 @@ classdef TrajectoryPerturbation < tom.Trajectory
       if(N==0)
         pose = repmat(tom.Pose, [1, 0]);
       else
+        pose(1, N) = tom.Pose;
         %TODO: Add interpolation for non-diecrete time values
         for k = 1:N
           pose(k).p = this.basePose.p + this.deltaPose.p;
@@ -47,7 +48,7 @@ classdef TrajectoryPerturbation < tom.Trajectory
           tangentPose(k).p = this.basePose.p + this.deltaPose.p;
           tangentPose(k).q = Quat2Homo(this.deltaPose.q) * this.basePose.q;
           tangentPose(k).r = [0; 0; 0];
-          tangentPose(k).s = [0; 0; 0; 0];
+          tangentPose(k).s = [0; 0; 0];
         end
       end
     end

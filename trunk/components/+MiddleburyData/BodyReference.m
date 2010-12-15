@@ -50,7 +50,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
           tangentPose(k).p = [0; this.speed*dt(k); 0];
           tangentPose(k).q = [1; 0; 0; 0];
           tangentPose(k).r = [0; this.speed; 0];
-          tangentPose(k).s = [0; 0; 0; 0];
+          tangentPose(k).s = [0; 0; 0];
         end
       end
     end

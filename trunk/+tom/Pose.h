@@ -27,7 +27,7 @@ namespace tom
   {
   public:
     double p[3]; /// position of the body frame
-    double q[4]; /// orientation of the body frame as a quaternion in scalar-first format
+    double q[4]; /// orientation of the body frame as a quaternion with a non-negative scalar first element
 
     /**
      * Construct a pose initialized to NaN

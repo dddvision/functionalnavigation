@@ -15,7 +15,7 @@ namespace tom
   {
   public:
     double r[3]; /// time derivative of body position
-    double s[4]; /// time derivative of body orientation
+    double s[3]; /// angular rate vector (2*conjugate(q)*dq/dt)
 
     /**
      * Construct a tangent pose initialized to NaN
@@ -28,7 +28,6 @@ namespace tom
       s[0] = NAN;
       s[1] = NAN;
       s[2] = NAN;
-      s[3] = NAN;
     }
 
     /**
@@ -52,7 +51,6 @@ namespace tom
       this->s[0] = tangentPose.s[0];
       this->s[1] = tangentPose.s[1];
       this->s[2] = tangentPose.s[2];
-      this->s[3] = tangentPose.s[3];
       return (*this);
     }
   };

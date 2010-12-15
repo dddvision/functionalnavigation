@@ -90,23 +90,25 @@ classdef MeasureTest < handle
       resource=resource(2:end);
       dc = antbed.DataContainer.create(resource, initialTime);
       
-      edgeList = findEdges(measure,measure.first(),measure.last(),measure.first(),measure.last());
-      
-      if hasReferenceTrajectory(dc)
-          groundTraj = getReferenceTrajectory(dc);          
+      if(measure.hasData())
+        edgeList = findEdges(measure,measure.first(),measure.last(),measure.first(),measure.last());
+        
+        if(hasReferenceTrajectory(dc))
+          groundTraj = getReferenceTrajectory(dc);
           interval = domain(groundTraj);
           baseTrajectory = antbed.TrajectoryPerturbation(evaluate(groundTraj,interval.first),interval);
           zeroPose = tom.Pose;
           zeroPose.p = [0;0;0];
           zeroPose.q = [1;0;0;0];
           setPerturbation(baseTrajectory,zeroPose);
-          traj = evaluate(baseTrajectory,0);
-          traj
-      else
-          error('Need to test with a measure that has a refrence trajectory');
+          basePose = evaluate(baseTrajectory,0);
+          display(basePose);
+        else
+          fprintf('warning: Skipping measure characterization. No reference trajectory is available.');
+        end
+        fprintf('warning: Skipping measure characterization. Measure has no data.');
       end
       
-        
       fprintf('\n\n*** End Measure Test ***');
     end
   end
