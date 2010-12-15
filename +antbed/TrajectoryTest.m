@@ -39,12 +39,18 @@ classdef TrajectoryTest
       pose = trajectory.evaluate(time(1));
       assert(isa(pose, 'tom.Pose'));
       pose.display();
+      assert(all(isreal(pose.p)));
+      assert(all(isreal(pose.q)));
       assert(~any(isnan(pose.p)));
       assert(~any(isnan(pose.q)));
-
+      
       tangentPose = trajectory.tangent(time(1));
       assert(isa(tangentPose, 'tom.TangentPose'));
       tangentPose.display();
+      assert(all(isreal(tangentPose.p)));
+      assert(all(isreal(tangentPose.q)));
+      assert(all(isreal(tangentPose.r)));
+      assert(all(isreal(tangentPose.s)));
       assert(~any(isnan(tangentPose.p)));
       assert(~any(isnan(tangentPose.q)));
       assert(~any(isnan(tangentPose.r)));
@@ -57,9 +63,22 @@ classdef TrajectoryTest
       s = zeros(4, N);
       for n = 1:N
         pose = trajectory.evaluate(time(n));
+        assert(all(isreal(pose.p)));
+        assert(all(isreal(pose.q)));
+        assert(~any(isnan(pose.p)));
+        assert(~any(isnan(pose.q)));
+        
         p(:, n) = pose.p;
         q(:, n) = pose.q;
         tangentPose = trajectory.tangent(time(n));
+        assert(all(isreal(tangentPose.p)));
+        assert(all(isreal(tangentPose.q)));
+        assert(all(isreal(tangentPose.r)));
+        assert(all(isreal(tangentPose.s)));
+        assert(~any(isnan(tangentPose.p)));
+        assert(~any(isnan(tangentPose.q)));
+        assert(~any(isnan(tangentPose.r)));
+        assert(~any(isnan(tangentPose.s)));
         r(:, n) = tangentPose.r;
         s(:, n) = tangentPose.s;
       end
@@ -69,12 +88,18 @@ classdef TrajectoryTest
       pose = trajectory.evaluate(time(end));
       assert(isa(pose, 'tom.Pose'));
       pose.display();
+      assert(all(isreal(pose.p)));
+      assert(all(isreal(pose.q)));
       assert(~any(isnan(pose.p)));
       assert(~any(isnan(pose.q)));
 
       tangentPose = trajectory.tangent(time(end));
       assert(isa(tangentPose, 'tom.TangentPose'));
       tangentPose.display();
+      assert(all(isreal(tangentPose.p)));
+      assert(all(isreal(tangentPose.q)));
+      assert(all(isreal(tangentPose.r)));
+      assert(all(isreal(tangentPose.s)));
       assert(~any(isnan(tangentPose.p)));
       assert(~any(isnan(tangentPose.q)));
       assert(~any(isnan(tangentPose.r)));
@@ -87,9 +112,22 @@ classdef TrajectoryTest
       sp = zeros(4, Np);
       for n = 1:Np
         pose = trajectory.evaluate(timep(n));
+        assert(all(isreal(pose.p)));
+        assert(all(isreal(pose.q)));
+        assert(~any(isnan(pose.p)));
+        assert(~any(isnan(pose.q)));
         pp(:, n) = pose.p;
         qp(:, n) = pose.q;
+        
         tangentPose = trajectory.tangent(timep(n));
+        assert(all(isreal(tangentPose.p)));
+        assert(all(isreal(tangentPose.q)));
+        assert(all(isreal(tangentPose.r)));
+        assert(all(isreal(tangentPose.s)));
+        assert(~any(isnan(tangentPose.p)));
+        assert(~any(isnan(tangentPose.q)));
+        assert(~any(isnan(tangentPose.r)));
+        assert(~any(isnan(tangentPose.s)));
         rp(:, n) = tangentPose.r;
         sp(:, n) = tangentPose.s;
       end
@@ -99,12 +137,18 @@ classdef TrajectoryTest
       pose = trajectory.evaluate(timep(end));
       assert(isa(pose, 'tom.Pose'));
       pose.display();
+      assert(all(isreal(pose.p)));
+      assert(all(isreal(pose.q)));
       assert(~any(isnan(pose.p)));
       assert(~any(isnan(pose.q)));
 
       tangentPose = trajectory.tangent(timep(end));
       assert(isa(tangentPose, 'tom.TangentPose'));
       tangentPose.display();
+      assert(all(isreal(tangentPose.p)));
+      assert(all(isreal(tangentPose.q)));
+      assert(all(isreal(tangentPose.r)));
+      assert(all(isreal(tangentPose.s)));
       assert(~any(isnan(tangentPose.p)));
       assert(~any(isnan(tangentPose.q)));
       assert(~any(isnan(tangentPose.r)));
