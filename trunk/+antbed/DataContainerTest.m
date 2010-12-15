@@ -27,6 +27,7 @@ classdef DataContainerTest < handle
       fprintf('\n\nlistSensors =');
       list = dataContainer.listSensors('tom.Sensor');
       assert(isa(list, 'antbed.SensorIndex'));
+      assert(size(list,2)==1);
       fprintf(' [');
       for s = 1:numel(list)
         if(s~=1)
