@@ -100,11 +100,15 @@ classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
         end
       end
       interval=this.dynamicModel(1).domain();
+      initialUpperBound=interval.second;
       while(interval.second<currentTime)
         for k=1:numel(this.dynamicModel)
           this.dynamicModel(k).extend();
         end
         interval=this.dynamicModel(1).domain();
+        if(interval.second<=initialUpperBound)
+          break;
+        end
       end
     end
     

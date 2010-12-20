@@ -86,15 +86,18 @@ classdef MeasureTest < handle
         end
       end
       
-      [scheme,resource]=strtok(uri,':');
-      resource=resource(2:end);
-      dc = antbed.DataContainer.create(resource, initialTime);
-      
-      if(measure.hasData())
-        edgeList = findEdges(measure,measure.first(),measure.last(),measure.first(),measure.last());
-        
-        if(hasReferenceTrajectory(dc))
-          groundTraj = getReferenceTrajectory(dc);
+      if(~measure.hasData())
+        fprintf('\nwarning: Skipping measure characterization. Measure has no data.');
+      elseif(~strncmp(uri, 'antbed:', 7))
+        fprintf('\nwarning: Skipping measure characterization. URI scheme not recognized');
+      else
+        resource = uri(8:end);
+        container = antbed.DataContainer.create(resource, initialTime);
+        if(~hasReferenceTrajectory(container))
+          fprintf('\nwarning: Skipping measure characterization. No reference trajectory is available.');
+        else
+          edgeList = findEdges(measure,measure.first(),measure.last(),measure.first(),measure.last());
+          groundTraj = getReferenceTrajectory(container);
           interval = domain(groundTraj);
           baseTrajectory = antbed.TrajectoryPerturbation(evaluate(groundTraj,interval.first),interval);
           zeroPose = tom.Pose;
@@ -103,10 +106,7 @@ classdef MeasureTest < handle
           setPerturbation(baseTrajectory,zeroPose);
           basePose = evaluate(baseTrajectory,0);
           display(basePose);
-        else
-          fprintf('warning: Skipping measure characterization. No reference trajectory is available.');
         end
-        fprintf('warning: Skipping measure characterization. Measure has no data.');
       end
       
       fprintf('\n\n*** End Measure Test ***');

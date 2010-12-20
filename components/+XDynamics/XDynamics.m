@@ -34,22 +34,14 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
       this.initialTime=initialTime;
       this.uri=uri;
       this.initialUint32=zeros(1,this.initialNumUint32,'uint32');
-      try
-        [scheme,resource]=strtok(uri,':');
-        resource=resource(2:end);
-        switch(scheme)
-          case 'antbed'
-            container=antbed.DataContainer.create(resource,initialTime);
-            if(hasReferenceTrajectory(container))
-              this.xRef=getReferenceTrajectory(container);
-            else
-              this.xRef=tom.DynamicModelDefault(initialTime, uri);
-            end
-          otherwise
-            error('Unrecognized resource identifier in URI');
-        end
-      catch err
-        error('Failed to open data resource: %s',err.message);
+      if(~strncmp(uri,'antbed:',7))
+        error('URI scheme not recognized');
+      end
+      container=antbed.DataContainer.create(uri(8:end),initialTime);
+      if(hasReferenceTrajectory(container))
+        this.xRef=getReferenceTrajectory(container);
+      else
+        this.xRef=tom.DynamicModelDefault(initialTime,uri);
       end
     end
     

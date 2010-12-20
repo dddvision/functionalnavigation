@@ -136,6 +136,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       end
       K=numel(this.dynamicModel);
       interval=domain(this.dynamicModel(1));
+      initialUpperBound=interval.second;
       while(interval.second<tb)
         for k=1:K
           Fk=this.dynamicModel(k);
@@ -151,6 +152,9 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
           end
         end
         interval=domain(Fk);
+        if(interval.second<=initialUpperBound)
+          break;
+        end
       end
     end
     

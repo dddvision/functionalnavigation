@@ -41,17 +41,16 @@ classdef DemoDisplay < DemoConfig & handle
       this.qRef = [];
 
       if(nargin>0)
-        [scheme, resource] = strtok(uri, ':');
-        resource = resource(2:end);
-        if(strcmp(scheme, 'antbed'))
-          container = antbed.DataContainer.create(resource, initialTime);
-          if(hasReferenceTrajectory(container))
-            xRef = getReferenceTrajectory(container);
-            this.tRef = generateSampleTimes(this, xRef);
-            poseRef = evaluate(xRef, this.tRef);
-            this.pRef = cat(2, poseRef.p);
-            this.qRef = cat(2, poseRef.q);
-          end
+        if(~strncmp(uri, 'antbed:', 7))
+          error('URI scheme not recognized');
+        end
+        container = antbed.DataContainer.create(uri(8:end), initialTime);
+        if(hasReferenceTrajectory(container))
+          xRef = getReferenceTrajectory(container);
+          this.tRef = generateSampleTimes(this, xRef);
+          poseRef = evaluate(xRef, this.tRef);
+          this.pRef = cat(2, poseRef.p);
+          this.qRef = cat(2, poseRef.q);
         end
       end
     end

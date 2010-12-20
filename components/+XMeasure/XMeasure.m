@@ -23,22 +23,14 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
   methods (Access=public)
     function this=XMeasure(initialTime,uri)
       this=this@tom.Measure(initialTime,uri);
-      try
-        [scheme,resource]=strtok(uri,':');
-        resource=resource(2:end);
-        switch(scheme)
-          case 'antbed'
-            container=antbed.DataContainer.create(resource,initialTime);
-            if(hasReferenceTrajectory(container))
-              this.xRef=getReferenceTrajectory(container);
-            else
-              this.xRef=tom.DynamicModelDefault(initialTime, uri);
-            end
-          otherwise
-            error('Unrecognized resource identifier in URI');
-        end
-      catch err
-        error('Failed to open data resource: %s',err.message);
+      if(~strncmp(uri,'antbed:',7))
+        error('URI scheme not recognized');
+      end
+      container=antbed.DataContainer.create(uri(8:end),initialTime);
+      if(hasReferenceTrajectory(container))
+        this.xRef=getReferenceTrajectory(container);
+      else
+        this.xRef=tom.DynamicModelDefault(initialTime,uri);
       end
       interval=this.xRef.domain();
       this.ta=interval.first;

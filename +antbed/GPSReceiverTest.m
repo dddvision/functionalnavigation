@@ -79,15 +79,11 @@ function M = Euler2Matrix(Y)
   M(3, 3) = c2.*c1;
 end
 
-% Converts from LOLAH to ECEF
+% Convert from Longitude Latitude Height to Earth Centered Earth Fixed coordinates
 %
-% INPUT
-% lolah = [ Longitude (radians) ; Latitude (radians) ; Height (meters) ], 3-by-N
+% @param[in]  lolah position in longitude, latitude and height, radians and meters, (MATLAB: 3-by-N)
+% @param[out] ecef  position in Earth Centered Earth Fixed coordinates, meters, (MATLAB: 3-by-N)
 %
-% OUTPUT
-% ecef = Earth Centered Earth Fixed coordinates
-%        UEN orientation at the meridian/equator origin (meters), 3-by-N
-% 
 % NOTES
 % http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
 %   Retrieved 11/30/2009
@@ -109,7 +105,7 @@ function ecef = lolah2ecef(lolah)
           ((b2./a2)*N+alt).*slat];
 end
 
-% Converts ECEF coordinates to longitude, latitude, height
+% Converts Earth Centered Earth Fixed coordinates to Longitude Latitude Height
 %
 % INPUT
 % ecef = points in ECEF coordinates, 3-by-N
@@ -121,6 +117,10 @@ end
 %   lolah(3, :) = height above the WGS84 Earth ellipsoid in meters
 %
 % NOTES
+% Using an Earth Centered Earth Fixed (ECEF) frame convention:
+%   Axis 1 goes through the equator at the prime meridian
+%   Axis 2 completes the frame using the right-hand-rule
+%   Axis 3 goes through the north pole
 % J. Zhu, "Conversion of Earth-centered Earth-fixed coordinates to geodetic
 %   coordinates," Aerospace and Electronic Systems, vol. 30, pp. 957-961, 1994.
 function lolah = ecef2lolah(ecef)
@@ -135,17 +135,17 @@ function lolah = ecef2lolah(ecef)
   ep2 = f*(2-f)/((1-f)^2);
   r2 = X.^2+Y.^2;
   r = sqrt(r2);
-  E2 = a^2 - b^2;
+  E2 = a^2-b^2;
   F = 54*b^2*Z.^2;
-  G = r2 + (1-e2)*Z.^2 - e2*E2;
+  G = r2+(1-e2)*Z.^2-e2*E2;
   c = (e2*e2*F.*r2)./(G.*G.*G);
-  s = ( 1 + c + sqrt(c.*c + 2*c) ).^(1/3);
+  s = ( 1+c+sqrt(c.*c+2*c) ).^(1/3);
   P = F./(3*(s+1./s+1).^2.*G.*G);
   Q = sqrt(1+2*e2*e2*P);
-  ro = -(e2*P.*r)./(1+Q) + sqrt((a*a/2)*(1+1./Q) - ((1-e2)*P.*Z.^2)./(Q.*(1+Q)) - P.*r2/2);
-  tmp = (r - e2*ro).^2;
-  U = sqrt( tmp + Z.^2 );
-  V = sqrt( tmp + (1-e2)*Z.^2 );
+  ro = -(e2*P.*r)./(1+Q)+sqrt((a*a/2)*(1+1./Q)-((1-e2)*P.*Z.^2)./(Q.*(1+Q))-P.*r2/2);
+  tmp = (r-e2*ro).^2;
+  U = sqrt(tmp+Z.^2);
+  V = sqrt(tmp+(1-e2)*Z.^2);
   zo = (b^2*Z)./(a*V);
-  lolah = [atan2(Y, X); atan( (Z + ep2*zo)./r ); U.*( 1 - b^2./(a*V))];
+  lolah = [atan2(Y, X); atan2(Z+ep2*zo, r); U.*(1-b^2./(a*V))];
 end
