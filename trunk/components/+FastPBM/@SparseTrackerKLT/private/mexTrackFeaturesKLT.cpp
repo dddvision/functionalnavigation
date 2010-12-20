@@ -212,7 +212,7 @@ public:
       det = xx*yy-xy*xy;
 
       /* deal with small determinants or NAN */
-      if((det<EPSILON)||mxIsNaN(det))
+      if((fabs(det)<EPSILON)||mxIsNaN(det))
       {
         (*xb) = NAN;
         (*yb) = NAN;
