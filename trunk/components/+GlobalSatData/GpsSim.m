@@ -1,15 +1,12 @@
 classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
   
   properties
-    refData
     na
     nb
     time
     lat
     lon
     alt
-    hDOP
-    vDOP
     refTraj
     measurementTimes
     noise
@@ -19,21 +16,28 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
   end
   
   methods (Access = public, Static = true)
-    function this = GpsSim(initialTime)
+    function this = GpsSim(initialTime, uri)
       this = this@antbed.GPSReceiver(initialTime);
       
-      % Read the configuration file
-      this.refData = readGPSdataFile(this.referenceTrajectoryFile);
-      
-      % Read the noise errors from real Global Sat gps data file
-      this.noise = readNoiseData('gtGPSdata.txt'); % (time, easting, northing, altitude)
-      this.refTraj = GlobalSatData.BodyReference(initialTime);
+      if(~strncmp(uri, 'antbed:', 7))
+        error('URI scheme not recognized');
+      end
+      container = antbed.DataContainer.create(uri(8:end), initialTime);
+
+      if(hasReferenceTrajectory(container))
+         this.refTraj = getReferenceTrajectory(container);
+      else
+         this.refTraj = tom.DynamicModelDefault(initialTime, uri);
+      end
+           
+      % Read the noise errors from real Global Sat GPS data file
+      this.noise = readNoiseData(this.rawGPSfile); % (time, easting, northing, altitude)
       interval = domain(this.refTraj);
       tdelta = interval.second-interval.first;
-      this.noise = this.noise(:, this.noise(1,:)<tdelta);
+      this.noise = this.noise(:, this.noise(1, :)<tdelta);
       this.precisionFlag = true;
       this.offset = [0;0;0];
-      N=size(this.noise,2);
+      N = size(this.noise, 2);
       this.na = uint32(1);
       this.nb = uint32(N);
       this.ready = logical(N>0);
@@ -75,29 +79,22 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
       
       % Evaluate the reference trajectory at the measurement time
       pose = evaluate(this.refTraj, getTime(this, n));
-      p = cat(2, pose.p);
-      [lon, lat, alt] = GlobalSatData.ecef2lolah(p(1, :), p(2, :), p(3, :));
+      lolah = GlobalSatData.ecef2lolah(pose.p);
       
       % Add error based on real Global Sat gps data
-      lon = lon+this.noise(2, n);
-      lat = lat+this.noise(3, n);
-      alt = alt+this.noise(4, n);
+      lon = lolah(1)+this.noise(2, n);
+      lat = lolah(2)+this.noise(3, n);
+      alt = lolah(3)+this.noise(4, n);
     end
     
     function flag = hasPrecision(this)
       flag = this.precisionFlag;
     end
     
-    % Picks the closest vDOP and hDOP in the data to the requested index
-    function [vDOP, hDOP, sigmaR] = getPrecision(this, n)
-      assert(this.ready);
-      assert(n>=this.na);
-      assert(n<=this.nb);
-      
-      timeDiff = abs(getTime(this, n)-this.refData.time);
-      nearestDataIndx = find(timeDiff==min(timeDiff));
-      vDOP = this.refData.vDOP(nearestDataIndx);
-      hDOP = this.refData.hDOP(nearestDataIndx);
+    function [hDOP, vDOP, sigmaR] = getPrecision(this, n)
+      assert(isa(n,'uint32'));
+      hDOP = this.hDOP;
+      vDOP = this.vDOP;
       sigmaR = this.sigmaR;
     end
     
@@ -105,34 +102,6 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
       offset = this.offset;
     end
   end
-end
-
-% Read a csv file that contains ascii GPS data
-% Each line has the
-% Time Lon Lat Alt hDop vDop
-% Time --> Seconds since midnight on Jan 6, 1980 (double)
-% Lon  --> Longitude in radians  (double)
-% Lat --> Latitude in radians (double)
-% Alt --> Altitude in meters (double)
-% hDop --> Horizontal dilution of precision (double)
-% vDop --> Vertical dilution of precision (double)
-function refData = readGPSdataFile(fname)
-  currdir = fileparts(mfilename('fullpath'));
-  full_fname = fullfile(currdir, fname);
-
-  csvdata = csvread(full_fname);
-
-  % Only keep measurements that are made in increasing order of time
-  gpsTime = csvdata(:, 1);
-  keepIndx = logical([diff(gpsTime); 1] >= 0);
-  csvdata = csvdata(keepIndx, :);
-
-  refData.time = csvdata(:, 1);
-  refData.lon = csvdata(:, 2);
-  refData.lat = csvdata(:, 3);
-  refData.alt = csvdata(:, 4);
-  refData.hDOP = csvdata(:, 5);
-  refData.vDOP = csvdata(:, 6);
 end
 
 % Read a text file that contains an ascii GPS data stream

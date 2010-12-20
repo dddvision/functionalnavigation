@@ -1,25 +1,18 @@
 classdef GlobalSatDataConfig < handle
-  
-  properties (Constant = true, GetAccess = protected)
-    % File containing a list of points that define a reference trajectory
-    % Must contain comma separated data in the following form:
-    %   time, lon, lat, alt, hDOP, vDOP
-    %   time =  GPS time (seconds since 1980 JAN 06 T00:00:00)
-    %   lon  =  longitude in  radians
-    %   lat  =  latitude in radians
-    %   alt  =  height above WGS84 ellipsoid in meters
-    %   hDOP =  horizontal  dilution of precision
-    %   vDOP =  vertical dilution of precision
-    referenceTrajectoryFile = 'testTraj.txt';
-    
+  properties (Constant = true, GetAccess = protected)   
     % Raw GPS data file recorded from a stationary sensor
     %   Used to generate a realistic simulation of errors
     %   Must contain NMEA formatted $GPGGA strings
     %   Lines that do not begin with $GPGGA are skipped
     rawGPSfile = 'gtGPSdata.txt';
+
+    % horizontal  dilution of precision
+    hDOP = 5.5; % (5.5)
     
-    % Standard deviation of equivalent circular error (meters)
-    sigmaR = 6.7; % should be based on environment and hardware
+    % vertical dilution of precision
+    vDOP = 5.4; % (5.4)
+    
+    % Standard deviation of equivalent circular error based on environment and hardware (meters)
+    sigmaR = 6.7; % (6.7)
   end
-  
 end
