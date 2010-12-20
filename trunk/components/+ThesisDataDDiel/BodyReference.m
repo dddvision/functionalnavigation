@@ -231,6 +231,14 @@ function M = Euler2Matrix(Y)
   M(3, 3) = c2.*c1;
 end
 
+% Convert from Longitude Latitude Height to Earth Centered Earth Fixed coordinates
+%
+% @param[in]  lolah position in longitude, latitude and height, radians and meters, (MATLAB: 3-by-N)
+% @param[out] ecef  position in Earth Centered Earth Fixed coordinates, meters, (MATLAB: 3-by-N)
+%
+% NOTES
+% http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
+%   Retrieved 11/30/2009
 function ecef = lolah2ecef(lolah)
   lon = lolah(1, :);
   lat = lolah(2, :);

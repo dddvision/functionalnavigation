@@ -1,18 +1,18 @@
 % This class defines a single receiver in a global positioning system
 classdef GPSReceiver < tom.Sensor
     
-  methods (Access=public)
-    function this=GPSReceiver(initialTime)
-      this=this@tom.Sensor(initialTime);
+  methods (Access = public)
+    function this = GPSReceiver(initialTime)
+      this = this@tom.Sensor(initialTime);
     end
   end
   
-  methods (Abstract=true)
+  methods (Abstract = true)
     % Get antenna offset relative to the body frame
     %
     % OUTPUT
     % offset = position of antenna origin in the body frame, double 3-by-1
-    offset=getAntennaOffset(this);
+    offset = getAntennaOffset(this);
     
     % Get a position measurement
     %
@@ -26,27 +26,28 @@ classdef GPSReceiver < tom.Sensor
     %
     % NOTES
     % Throws an exception if the data index is out of range
-    [lon,lat,alt]=getGlobalPosition(this,n);
+    [lon, lat, alt] = getGlobalPosition(this, n);
  
     % Check whether precision information is available
     % 
     % OUTPUT
-    % flag = true if precision data is available and false otherwise, logical scalar
-    flag=hasPrecision(this);
+    % flag = true if precision information is available and false otherwise, logical scalar
+    flag = hasPrecision(this);
     
     % Get precision information
     %
     % INPUT
-    % n= data index, uint32 scalar
+    % n = data index, uint32 scalar
     %
     % OUTPUT 
-    % hDop = horizontal dilution of precision (unitless), double scalar
-    % vDop = vertical dilution of precision (unitless), double scalar
+    % hDOP = horizontal dilution of precision (unitless), double scalar
+    % vDOP = vertical dilution of precision (unitless), double scalar
     % sigmaR = standard deviation of equivalent circular error (meters), double scalar
     %
     % NOTES
+    % Throws an exception if precision information is not available
     % Throws an exception if the data index is out of range
-    [hDop,vDop,sigmaR]=getPrecision(this,n);
+    [hDOP, vDOP, sigmaR] = getPrecision(this, n);
   end 
  
 end

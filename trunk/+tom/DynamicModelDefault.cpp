@@ -118,7 +118,7 @@ namespace tom
         }
         else
         {
-          pose[k].p[0] = 0.0;
+          pose[k].p[0] = 6378137.0;
           pose[k].p[1] = 0.0;
           pose[k].p[2] = 0.0;
           pose[k].q[0] = 1.0;
@@ -144,7 +144,7 @@ namespace tom
         }
         else
         {
-          tangentPose[k].p[0] = 0.0;
+          tangentPose[k].p[0] = 6378137.0;
           tangentPose[k].p[1] = 0.0;
           tangentPose[k].p[2] = 0.0;
           tangentPose[k].q[0] = 1.0;

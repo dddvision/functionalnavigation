@@ -129,7 +129,7 @@ classdef DynamicModelDefault < tom.DynamicModel
     end
   
     function pose = evaluate(this, t)
-      pose.p = [0; 0; 0];
+      pose.p = [6378137.0; 0; 0];
       pose.q = [1; 0; 0; 0];
       pose = tom.Pose(pose);
       pose = repmat(pose, [1, numel(t)]);
@@ -139,7 +139,7 @@ classdef DynamicModelDefault < tom.DynamicModel
     end
 
     function tangentPose = tangent(this, t)
-      tangentPose.p = [0; 0; 0];
+      tangentPose.p = [6378137.0; 0; 0];
       tangentPose.q = [1; 0; 0; 0];
       tangentPose.r = [0; 0; 0];
       tangentPose.s = [0; 0; 0];

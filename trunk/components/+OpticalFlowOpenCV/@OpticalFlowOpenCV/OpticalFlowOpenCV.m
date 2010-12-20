@@ -75,20 +75,12 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
         end
       end
       
-      try
-        [scheme, resource] = strtok(uri, ':');
-        resource = resource(2:end);
-        switch(scheme)
-          case 'antbed'
-            container = antbed.DataContainer.create(resource, initialTime);
-            list = listSensors(container, 'antbed.Camera');
-            this.sensor = getSensor(container, list(1));
-          otherwise
-            error('Unrecognized resource identifier in URI');
-        end
-      catch err
-        error('Failed to open data resource: %s', err.message);
-      end                  
+      if(~strncmp(uri, 'antbed:', 7))
+        error('URI scheme not recognized');
+      end
+      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      list = listSensors(container, 'antbed.Camera');
+      this.sensor = getSensor(container, list(1));                 
     end
     
     function refresh(this, x)
