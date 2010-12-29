@@ -20,7 +20,9 @@ classdef TrajectorySim < antbed.DataContainer
 
     function this = TrajectorySim(initialTime)
       this = this@antbed.DataContainer(initialTime);
-      this.trajectory = TrajectorySim.ReferenceTrajectory(initialTime);
+      filename = fullfile(fileparts(mfilename('fullpath')), this.tangentPoseFileName);
+      [t, p, q, r, s] = readTangentPoseFile(filename, initialTime);
+      this.trajectory = TrajectorySim.ReferenceTrajectory(t, p, q, r, s);
     end
   end
     
@@ -51,4 +53,13 @@ classdef TrajectorySim < antbed.DataContainer
     end
   end
   
+end
+
+function [t, p, q, r, s] = readTangentPoseFile(filename, initialTime)
+  data = dlmread(filename);
+  t = initialTime+data(:, 1)';
+  p = data(:, 2:4)';
+  q = data(:, 5:8)';
+  r = data(:, 9:11)';
+  s = data(:, 12:14)';
 end

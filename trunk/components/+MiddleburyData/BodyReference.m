@@ -2,7 +2,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
 
   properties (Constant = true,GetAccess = private)
     speed = 0.160; % Reference: http://vision.middlebury.edu/stereo/data/scenes2005/
-    earthMajorRadius = 6378137.0;
+    earthMajorRadius = 6378137.0; % WGS84
   end
 
   properties (Access = private)
