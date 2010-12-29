@@ -1,6 +1,6 @@
 classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & antbed.DataContainer
 
-  properties (GetAccess=private,SetAccess=private)
+  properties (GetAccess = private, SetAccess = private)
     sensor
     sensorDescription
     hasRef
