@@ -102,15 +102,17 @@ classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & antbed.Dat
           error('requested pose index (%d) not found in file (%s)', k, filename);
         end
         Rinv = reshape(data(kk, 11:19), [3, 3]);
-        R = Rinv';
         T = data(kk, 20:22)';
         p(:, k) = Rinv*T;
-        q(:, k) = Euler2Quat(Matrix2Euler(R));
+        % Convert from right-up-backward to forward-right-down
+        Rinv = [-Rinv(:, 3), Rinv(:, 1), -Rinv(:, 2)];
+        q(:, k) = Euler2Quat(Matrix2Euler(Rinv));
         frewind(fid);
         fgetl(fid);
       end
       fclose(fid);
-      p(1, :) = this.scale*p(1, :)+this.earthMajorRadius;
+      p = this.scale*p;
+      p(1, :) = p(1, :)+this.earthMajorRadius;
     end
   end
   
