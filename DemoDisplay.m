@@ -73,8 +73,13 @@ classdef DemoDisplay < DemoConfig & handle
         x = this.xDefault;
       end
 
-      % compute minimium cost
+      % handle case of no trajectories
       K = numel(x);
+      if(K<1)
+        return;
+      end
+      
+      % compute minimium cost
       costBest = min(c);
       kBest = find(c==costBest, 1, 'first');
       alpha = cost2alpha(this, c);
@@ -95,38 +100,19 @@ classdef DemoDisplay < DemoConfig & handle
       % clear the figure
       figure(this.hfigure);
       cla(this.haxes);
-      
-      % compute scene origin
-      if(isempty(this.pRef))
-        interval = domain(x(kBest));
-        pose = evaluate(x(kBest), interval.first);
-        origin = pose.p;
-      else
-        origin = this.pRef(:, 1);
-      end
         
-      % plot trajectories and highlight the best one in a different color
-      for k = 1:K
-        if(k==kBest)
-          poseBest = evaluate(x(k), t);
-          pBest = cat(2, poseBest.p);
-          qBest = cat(2, poseBest.q);
-          plotIndividual(this, origin, pBest, qBest, alpha(k), this.colorHighlight, 'LineWidth', 1);
-        elseif(~this.bestOnly)
-          posek = evaluate(x(k), t);
-          pk = cat(2, posek.p);
-          qk = cat(2, posek.q);
-          plotIndividual(this, origin, pk, qk, alpha(k), 1-this.colorBackground, 'LineWidth', 1);
-        end
-      end
-      
-      % compare to ground truth if available
+      % evaluate the best trajectory
+      k = kBest;
+      poseBest = evaluate(x(k), t);
+      pBest = cat(2, poseBest.p);
+      qBest = cat(2, poseBest.q);
+
+      % compute scene parameters from best trajectory or ground truth if available
       if(isempty(this.pRef))
-        pScene = pBest;
+        [origin, avgSiz, avgPos, cameraPosition] = computeScene(pBest, index);
         summaryText = sprintf('cost = %0.6f', costBest);
       else
-        pScene = this.pRef;
-        plotIndividual(this, origin, this.pRef, this.qRef, 1, this.colorReference, 'LineWidth', 1);
+        [origin, avgSiz, avgPos, cameraPosition] = computeScene(this.pRef, index);
         pDif = pBest-this.pRef; % position comparison
         pDif = sqrt(sum(pDif.*pDif, 1));
         qDif = acos(sum(qBest.*this.qRef, 1)); % quaternion comparison
@@ -134,22 +120,36 @@ classdef DemoDisplay < DemoConfig & handle
         pInfNorm = infNorm(pDif);
         qTwoNorm = twoNorm(qDif);
         qInfNorm = infNorm(qDif);
-        
+
         summaryText = sprintf(['       costBest = %0.6f\npositionTwoNorm = %0.6f\npositionInfNorm = %0.6f', ...
           '\nrotationTwoNorm = %0.6f\nrotationInfNorm = %0.6f', ...
           '\n        originX = %0.2f\n        originY = %0.2f\n        originZ = %0.2f'], ...
           costBest, pTwoNorm, pInfNorm, qTwoNorm, qInfNorm, origin(1), origin(2), origin(3));
       end
       
-      % set axes properties being careful with large numbers
-      avgPos = sum(pScene/numel(t), 2)-origin;
-      avgSiz = twoNorm(max(pScene, [], 2)-min(pScene, [], 2));
-      if(avgSiz<eps)
-        avgSiz = 1;
+      % plot ground truth if available in reference color
+      if(~isempty(this.pRef))
+        plotIndividual(this, origin, this.pRef, this.qRef, avgSiz, 1, this.colorReference, 'LineWidth', 1);
       end
+        
+      % plot best trajectory in a highlight color
+      plotIndividual(this, origin, pBest, qBest, avgSiz, alpha(k), this.colorHighlight, 'LineWidth', 1);
+      
+      % plot other trajectories in background contrast color
+      if(~this.bestOnly)
+        for k = 1:K
+          if(k~=kBest)
+            posek = evaluate(x(k), t);
+            pk = cat(2, posek.p);
+            qk = cat(2, posek.q);
+            plotIndividual(this, origin, pk, qk, avgSiz, alpha(k), 1-this.colorBackground, 'LineWidth', 1);
+          end
+        end
+      end
+      
+      % set axes properties being careful with large numbers
       text(avgPos(1), avgPos(2), avgPos(3)+avgSiz, summaryText, 'FontName', 'Courier', 'FontSize', 9);
       set(this.haxes, 'CameraTarget', avgPos');
-      cameraPosition = avgPos'+avgSiz*[8*cos(double(index)/30), 8*sin(double(index)/30), 4];
       set(this.haxes, 'CameraPosition', cameraPosition);
       set(this.haxes, 'XLim', avgPos(1)+avgSiz*[-1, 1]);
       set(this.haxes, 'YLim', avgPos(2)+avgSiz*[-1, 1]);
@@ -191,19 +191,19 @@ classdef DemoDisplay < DemoConfig & handle
       end
     end
     
-    function plotIndividual(this, origin, p, q, alpha, color, varargin)
+    function plotIndividual(this, origin, p, q, scale, alpha, color, varargin)
       p = p-repmat(origin, [1, size(p, 2)]);
       plot3(p(1, :), p(2, :), p(3, :), 'Color', alpha*color+(1-alpha)*ones(1, 3), 'Clipping', 'off', varargin{:});
-      plotFrame(this, p(:, 1), q(:, 1), alpha); % plot first frame
+      plotFrame(this, p(:, 1), q(:, 1), scale, alpha); % plot first frame
       for bs = 1:this.bigSteps
         ksub = (bs-1)*this.subSteps+(1:(this.subSteps+1));
-        plotFrame(this, p(:, ksub(end)), q(:, ksub(end)), alpha);
+        plotFrame(this, p(:, ksub(end)), q(:, ksub(end)), scale, alpha);
       end
     end
 
     % Plot a triangle indicating body axes as in "the tail of an airplane"
-    function plotFrame(this, p, q, alpha)
-      M = this.scale*Quat2Matrix(q);
+    function plotFrame(this, p, q, scale, alpha)
+      M = (0.05*scale)*Quat2Matrix(q);
       xp = p(1)+[M(1, 1); 0; -0.5*M(1, 3)];
       yp = p(2)+[M(2, 1); 0; -0.5*M(2, 3)];
       zp = p(3)+[M(3, 1); 0; -0.5*M(3, 3)];
@@ -211,6 +211,16 @@ classdef DemoDisplay < DemoConfig & handle
     end
   end
   
+end
+
+function [origin, avgSiz, avgPos, cameraPosition] = computeScene(pScene, index)
+  origin = pScene(:, 1);
+  avgPos = sum(pScene/size(pScene, 2), 2)-origin;
+  avgSiz = twoNorm(max(pScene, [], 2)-min(pScene, [], 2));
+  if(avgSiz<eps)
+    avgSiz = 1;
+  end
+  cameraPosition = avgPos'+avgSiz*[8*cos(double(index)/30), 8*sin(double(index)/30), 4];
 end
 
 function y = twoNorm(x)

@@ -1,7 +1,6 @@
 classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & antbed.Camera
   
   properties (Constant = true, GetAccess = private)
-    rho = 3740/(1390/2); % Reference: http://vision.middlebury.edu/stereo/data/scenes2005/
     layers = 'rgb';
     frameDynamic = false;
     projectionDynamic = false;
@@ -16,6 +15,10 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & antbed.Camera
     M
     N
     refreshCount
+    fHorizontal
+    fVertical
+    cHorizontal
+    cVertical
   end
   
   methods (Access = public, Static = true)
@@ -32,6 +35,18 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & antbed.Camera
       this.M = uint32(size(this.im{1},1));
       this.N = uint32(size(this.im{1},2)); 
       this.refreshCount = uint32(0);
+      
+      filename = fullfile(fileparts(mfilename('fullpath')), this.dataSetName, [this.fileStub, '_par.txt']);
+      fid = fopen(filename, 'rt');
+      fgetl(fid); % discard first line
+      format = [this.fileStub, '%04d.png %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f'];
+      str = fgetl(fid);
+      data = sscanf(str, format);
+      this.fHorizontal = data(2);
+      this.fVertical = data(6);
+      this.cHorizontal = data(4);
+      this.cVertical = data(7);
+      fclose(fid);
     end
   end
   
@@ -108,24 +123,28 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & antbed.Camera
       assert(this.hasData());
       assert(node>=this.na);
       assert(node<=this.nb);
-      m = double(this.M);
-      n = double(this.N);
-      coef = this.rho./ray(1,:);
-      u1 = ((n-1)/(m-1))*coef.*ray(3, :);
-      u2 = coef.*ray(2, :);
-      pix = [(u2+1)*((n-1)/2); (u1+1)*((m-1)/2)];
+      ray(1, ray(1, :)<eps) = NaN; % behind the camera
+      pix = [this.fHorizontal*ray(2, :)./ray(1, :)+this.cHorizontal;
+        this.fVertical*ray(3, :)./ray(1, :)+this.cVertical];
+      bad = (pix(1, :)<-0.5)|(pix(1, :)>(double(this.N)-0.5))|(pix(2, :)<-0.5)|(pix(2, :)>(double(this.M)-0.5));
+      pix(1, bad) = NaN;
+      pix(2, bad) = NaN;
     end
     
     function ray = inverseProjection(this, pix, node, varargin)
       assert(this.hasData());
       assert(node>=this.na);
       assert(node<=this.nb);
-      m = double(this.M);
-      n = double(this.N);
-      u1 = ((m-1)/(n-1))*(pix(2,:)*(2/(m-1))-1);
-      u2 = pix(1, :)*(2/(n-1))-1;
-      den = sqrt(u1.*u1+u2.*u2+this.rho*this.rho);
-      ray = [this.rho./den; u2./den; u1./den];
+      bad = (pix(1, :)<-0.5)|(pix(1, :)>(double(this.N)-0.5))|(pix(2, :)<-0.5)|(pix(2, :)>(double(this.M)-0.5));
+      pix(1, bad) = NaN;
+      pix(2, bad) = NaN;
+      ray = [ones(1, size(pix, 2));
+        (pix(1, :)-this.cHorizontal)/this.fHorizontal;
+        (pix(2, :)-this.cVertical)/this.fVertical];
+      den = sqrt(1+ray(2, :).*ray(2, :)+ray(3, :).*ray(3, :));
+      ray(1, :) = ray(1, :)./den;
+      ray(2, :) = ray(2, :)./den;
+      ray(3, :) = ray(3, :)./den;
     end
   end
   

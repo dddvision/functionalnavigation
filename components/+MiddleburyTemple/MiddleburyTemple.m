@@ -104,8 +104,8 @@ classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & antbed.Dat
         Rinv = reshape(data(kk, 11:19), [3, 3]);
         T = data(kk, 20:22)';
         p(:, k) = Rinv*T;
-        % Convert from right-up-backward to forward-right-down
-        Rinv = [-Rinv(:, 3), Rinv(:, 1), -Rinv(:, 2)];
+        % Convert from left-down-backward to forward-right-down
+        Rinv = [-Rinv(:, 3), -Rinv(:, 1), Rinv(:, 2)];
         q(:, k) = Euler2Quat(Matrix2Euler(Rinv));
         frewind(fid);
         fgetl(fid);
