@@ -8,8 +8,8 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
     function initialize(name)
       function text = componentDescription
         text = ['Implements a trajectory measure based on the computation of optical flow between image pairs. ', ...
-          'Depends on the OpenCV library.', ...
-          'Depends on a antbed.DataContainer that has at least one antbed.Camera object.'];
+          'Depends on the OpenCV 2.0.0 library. ', ...
+          'Depends on a antbed DataContainer that has at least one antbed Camera object.'];
       end
       tom.Measure.connect(name, @componentDescription, @OpticalFlowOpenCV.OpticalFlowOpenCV);
     end
@@ -55,7 +55,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
           end
         catch err
           details = err.message;
-          details = [details, ' Failed to compile against local OpenCV libraries.'];
+          details = [details, ' Failed to compile against local OpenCV 2.0.0 libraries.'];
           details = [details, ' Please see the Readme file distributed with OpenCV.'];
           details = [details, ' The following files must be either in the system PATH'];
           details = [details, ' or LD_LIBRARY_PATH:'];

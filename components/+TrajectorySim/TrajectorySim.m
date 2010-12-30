@@ -1,4 +1,4 @@
-classdef TrajectorySim < antbed.DataContainer
+classdef TrajectorySim < antbed.DataContainer & TrajectorySim.TrajectorySimConfig
 
   properties (Constant = true, GetAccess = private)
     list = antbed.SensorIndex(zeros(0, 1));
