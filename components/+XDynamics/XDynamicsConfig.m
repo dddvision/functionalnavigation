@@ -1,4 +1,5 @@
 classdef XDynamicsConfig < handle
+  
   properties (Constant = true, GetAccess = public)
     % dynamic model parameters
     positionOffset = -1.2; % (-1.2) simulated offset in first position coordinate
@@ -6,4 +7,5 @@ classdef XDynamicsConfig < handle
     positionDeviation = 2; % (2) standard deviation of initial position distribution
     positionRateDeviation = 0.1; % (1) standard deviation of initial position rate distribution
   end
+  
 end
