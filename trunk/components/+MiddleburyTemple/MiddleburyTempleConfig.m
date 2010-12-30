@@ -6,7 +6,7 @@ classdef MiddleburyTempleConfig  < handle
     % data selection    
     dataSetName = 'temple';
     fileStub = 'temple';
-    poseList = [263:271,89:-1:85,105:-1:90,272:276,257:262];
+    poseList = [262:-1:257, 276:-1:272, 90:105, 85:89, 271:-1:263];
     
     % simulation parameters
     scale = 100; % (100) translation scale multiplier
