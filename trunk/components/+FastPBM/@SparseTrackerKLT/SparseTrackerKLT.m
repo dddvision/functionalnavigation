@@ -2,7 +2,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
   properties (Constant = true, GetAccess = private)
     halfwin = 5;
-    thresh = 0.96;
+    thresh = 0.95;
     cornerMethod = 'Harris';
   end
   
@@ -171,7 +171,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     
     % randomly select new image features
     function [x, y] = selectFeatures(this, gx, gy, num)
-      kappa = computeCornerStrength(gx, gy, 0, this.cornerMethod);
+      kappa = computeCornerStrength(gx, gy, 1, this.cornerMethod);
       [x, y] = findPeaks(kappa, this.halfwin, num);
     end
     

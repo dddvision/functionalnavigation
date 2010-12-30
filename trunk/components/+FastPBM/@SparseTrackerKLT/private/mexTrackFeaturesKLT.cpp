@@ -6,7 +6,7 @@ static const double NAN = sqrt(static_cast<double>(-1.0));
 #endif
 
 static const double MAX_ITERATIONS = 10;
-static const double EPSILON = 0.00000001;
+static const double EPSILON = 0.000000001;
 static const double DELTA_THRESH = 0.01;
 
 /**
