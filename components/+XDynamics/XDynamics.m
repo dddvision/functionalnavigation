@@ -55,7 +55,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
         pose = repmat(tom.Pose, [1, 0]);
       else
         pose = evaluate(this.xRef, t);
-        z = initialBlock2deviation(this);
+        z = block2deviation(this.initialUint32);
         t = double(t);
         t0 = double(this.initialTime);
         c1 = this.positionOffset-this.positionDeviation*z(1);
@@ -72,7 +72,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
         tangentPose = repmat(tom.TangentPose, [1, 0]);
       else
         tangentPose = tangent(this.xRef, t);
-        z = initialBlock2deviation(this);
+        z = block2deviation(this.initialUint32);
         t = double(t);
         t0 = double(this.initialTime);
         c1 = this.positionOffset-this.positionDeviation*z(1);
@@ -173,7 +173,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
     end
     
     function cost = computeInitialBlockCost(this)
-      z = initialBlock2deviation(this);
+      z = block2deviation(this.initialUint32);
       cost = 0.5*dot(z, z);
     end
 
@@ -189,17 +189,19 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
     
     function obj = copy(this)
       obj = XDynamics.XDynamics(this.initialTime, this.uri);
-      obj.initialTime = this.initialTime;
-      obj.initialUint32 = this.initialUint32;
-      obj.xRef = this.xRef;
+      mc = metaclass(this);
+      prop = mc.Properties;
+      for p = 1:numel(prop)
+        if(~prop{p}.Constant)
+          obj.(prop{p}.Name) = this.(prop{p}.Name);
+        end
+      end
     end    
   end
   
-  methods (Access = private)
-    function z = initialBlock2deviation(this)
-      sixthIntMax = 715827882.5;
-      z = double(this.initialUint32)/sixthIntMax-3;
-    end
-  end
-  
+end
+
+function z = block2deviation(block)
+  sixthIntMax = 715827882.5;
+  z = double(block)/sixthIntMax-3;
 end

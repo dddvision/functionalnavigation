@@ -62,7 +62,7 @@ classdef BodyReference < tom.Trajectory
             pose(n).q = pq(4:7, k);
             k = k+1;
           else
-            finalTangentPose = tangent(this, interval.second);
+            finalTangentPose = this.tangent(interval.second);
             pose(n) = predictPose(finalTangentPose, t(n)-interval.second);
           end
         end
@@ -89,7 +89,7 @@ classdef BodyReference < tom.Trajectory
             tangentPose(n).s = w(2:4);
             k = k+1;
           else
-            finalTangentPose = tangent(this, interval.second);
+            finalTangentPose = this.tangent(interval.second);
             tangentPose(n) = predictTangentPose(finalTangentPose, t(n)-interval.second);
           end
         end

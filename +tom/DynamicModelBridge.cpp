@@ -252,14 +252,14 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   argcheck(nrhs, 1);
   if(mxIsChar(prhs[0])) // call static function or constructor
   {
-    std::string functionName;
+    static std::string functionName;
 
     convert(prhs[0], functionName);
     switch(memberMap[functionName])
     {
       case DynamicModelIsConnected:
       {
-        std::string name;
+        static std::string name;
 
         argcheck(nrhs, 2);
         convert(prhs[1], name);
@@ -268,7 +268,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       }
       case DynamicModelDescription:
       {
-        std::string name;
+        static std::string name;
 
         argcheck(nrhs, 2);
         convert(prhs[1], name);
@@ -277,17 +277,18 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       }
       case DynamicModelFactory:
       {
-        std::string name;
-        tom::WorldTime initialTime;
-        std::string uri;
+        static std::string name;
+        static tom::WorldTime initialTime;
+        static std::string uri;
+        static uint32_t numInstances;
         tom::DynamicModel* obj;
-        uint32_t numInstances = instance.size();
-
+        
         argcheck(nrhs, 4);
         convert(prhs[1], name);
         convert(prhs[2], initialTime);
         convert(prhs[3], uri);
         obj = tom::DynamicModel::create(name, initialTime, uri);
+        numInstances = instance.size();
         instance.resize(numInstances+1);
         instance[numInstances] = obj;
         convert(numInstances, plhs[0]);
@@ -330,8 +331,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case evaluate:
       {
-        std::vector<tom::WorldTime> time;
-        std::vector<tom::Pose> pose;
+        static std::vector<tom::WorldTime> time;
+        static std::vector<tom::Pose> pose;
         argcheck(nrhs, 4);
         convert(prhs[3], time);
         instance[handle]->evaluate(time, pose);
@@ -341,8 +342,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case tangent:
       {
-        std::vector<tom::WorldTime> time;
-        std::vector<tom::TangentPose> tangentPose;
+        static std::vector<tom::WorldTime> time;
+        static std::vector<tom::TangentPose> tangentPose;
         argcheck(nrhs, 4);
         convert(prhs[3], time);
         instance[handle]->tangent(time, tangentPose);
@@ -372,7 +373,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case getInitialLogical:
       {
-        uint32_t p;
+        static uint32_t p;
         argcheck(nrhs, 3);
         convert(prhs[2], p);
         convert(instance[handle]->getInitialLogical(p), plhs[0]);
@@ -381,7 +382,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case getInitialUint32:
       {
-        uint32_t p;
+        static uint32_t p;
         argcheck(nrhs, 3);
         convert(prhs[2], p);
         convert(instance[handle]->getInitialUint32(p), plhs[0]);
@@ -390,8 +391,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case getExtensionLogical:
       {
-        uint32_t b;
-        uint32_t p;
+        static uint32_t b;
+        static uint32_t p;
         argcheck(nrhs, 4);
         convert(prhs[2], b);
         convert(prhs[3], p);
@@ -401,8 +402,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case getExtensionUint32:
       {
-        uint32_t b;
-        uint32_t p;
+        static uint32_t b;
+        static uint32_t p;
         argcheck(nrhs, 4);
         convert(prhs[2], b);
         convert(prhs[3], p);
@@ -412,8 +413,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case setInitialLogical:
       {
-        uint32_t p;
-        bool v;
+        static uint32_t p;
+        static bool v;
         argcheck(nrhs, 4);
         convert(prhs[2], p);
         convert(prhs[3], v);
@@ -423,8 +424,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case setInitialUint32:
       {
-        uint32_t p;
-        uint32_t v;
+        static uint32_t p;
+        static uint32_t v;
         argcheck(nrhs, 4);
         convert(prhs[2], p);
         convert(prhs[3], v);
@@ -434,9 +435,9 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case setExtensionLogical:
       {
-        uint32_t b;
-        uint32_t p;
-        bool v;
+        static uint32_t b;
+        static uint32_t p;
+        static bool v;
         argcheck(nrhs, 5);
         convert(prhs[2], b);
         convert(prhs[3], p);
@@ -447,9 +448,9 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case setExtensionUint32:
       {
-        uint32_t b;
-        uint32_t p;
-        uint32_t v;
+        static uint32_t b;
+        static uint32_t p;
+        static uint32_t v;
         argcheck(nrhs, 5);
         convert(prhs[2], b);
         convert(prhs[3], p);
@@ -464,7 +465,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case computeExtensionBlockCost:
       {
-        uint32_t b;
+        static uint32_t b;
         argcheck(nrhs, 3);
         convert(prhs[2], b);
         convert(instance[handle]->computeExtensionBlockCost(b), plhs[0]);
@@ -473,8 +474,9 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case copy:
       {
+        static uint32_t numInstances;
         tom::DynamicModel* obj;
-        uint32_t numInstances = instance.size();      
+        numInstances = instance.size();      
         obj = instance[handle]->copy();
         instance.resize(numInstances+1);
         instance[numInstances] = obj;
