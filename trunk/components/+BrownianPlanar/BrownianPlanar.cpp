@@ -2,6 +2,8 @@
 #include <cmath>
 #include <string>
 
+#include "mex.h"
+
 #include "DynamicModel.h"
 
 namespace BrownianPlanar
@@ -68,8 +70,7 @@ namespace BrownianPlanar
       return;
     }
 
-    void evaluateGeneral(const tom::WorldTime& time, tom::Pose& pose, uint32_t& dkFloor, double& dtRemain,
-      double& halfAngle)
+    void evaluateGeneral(const double k, tom::Pose& pose)
     {
       // position and velocity A=[1,tau;0,1] B=[0.5*tau*tau;tau]
       static const double tau = 1/rate;
@@ -78,73 +79,108 @@ namespace BrownianPlanar
       static const double c2 = tau/normalizedMass;
       static const double c3 = tau/normalizedRotationalMass;
 
-      double dt;
       double ct0;
       double ct1;
-      double dk;
-      double dtFloor;
-      uint32_t K;
-      uint32_t k;
+      double halfAngle;
+            
+      double tRemain;
+      uint32_t bBase;
+      uint32_t b;
 
-      dt = time-interval.first;
-      dk = dt*rate;
-      K = static_cast<uint32_t>(ceil(dk));
-      for(k = firstNewBlock; k<K; ++k)
+      bBase = static_cast<uint32_t>(ceil(k))-1;
+      tRemain = (k-static_cast<double>(bBase))/rate;
+      
+      for(b = firstNewBlock; b<bBase; ++b)
       {
-        x[k+1] = x[k]+tau*xRate[k]+c0*fx[k];
-        y[k+1] = y[k]+tau*yRate[k]+c0*fy[k];
-        a[k+1] = a[k]+tau*aRate[k]+c1*fa[k];
-        xRate[k+1] = xRate[k]+c2*fx[k];
-        yRate[k+1] = yRate[k]+c2*fy[k];
-        aRate[k+1] = aRate[k]+c3*fa[k];
+        x[b+1] = x[b]+tau*xRate[b]+c0*fx[b];
+        y[b+1] = y[b]+tau*yRate[b]+c0*fy[b];
+        a[b+1] = a[b]+tau*aRate[b]+c1*fa[b];
+        xRate[b+1] = xRate[b]+c2*fx[b];
+        yRate[b+1] = yRate[b]+c2*fy[b];
+        aRate[b+1] = aRate[b]+c3*fa[b];
       }
-      firstNewBlock = K;
+      firstNewBlock = std::max(firstNewBlock, bBase);
 
-      dkFloor = static_cast<uint32_t>(floor(dk));
-      dtFloor = static_cast<double>(dkFloor)/rate;
-      dtRemain = dt-dtFloor;
-
-      ct0 = 0.5*dtRemain*dtRemain;
+      ct0 = 0.5*tRemain*tRemain;
       ct1 = ct0/normalizedRotationalMass;
       ct0 /= normalizedMass;
-
-      pose.p[0] = x[dkFloor]+dtRemain*xRate[dkFloor]+ct0*fx[dkFloor];
-      pose.p[1] = y[dkFloor]+dtRemain*yRate[dkFloor]+ct0*fy[dkFloor];
+      
+      halfAngle = 0.5*(a[bBase]+tRemain*aRate[bBase]+ct1*fa[bBase]);
+      pose.p[0] = x[bBase]+tRemain*xRate[bBase]+ct0*fx[bBase];
+      pose.p[1] = y[bBase]+tRemain*yRate[bBase]+ct0*fy[bBase];
       pose.p[2] = 0.0;
-      halfAngle = 0.5*(a[dkFloor]+dtRemain*aRate[dkFloor]+ct1*fa[dkFloor]);
       pose.q[0] = cos(halfAngle);
       pose.q[1] = 0.0;
       pose.q[2] = 0.0;
       pose.q[3] = sin(halfAngle);
+      
+//       mexPrintf("\nfx.size() = %d", fx.size());
+//       mexPrintf("\ntau = %0.16f", tau);
+//       mexPrintf("\nc0 = %0.16f", c0);
+//       mexPrintf("\nc1 = %0.16f", c1);
+//       mexPrintf("\nc2 = %0.16f", c2);
+//       mexPrintf("\nc3 = %0.16f", c3);
+//       mexPrintf("\nct0 = %0.16f", ct0);
+//       mexPrintf("\nct1 = %0.16f", ct1);
+//       mexPrintf("\nbBase = %u", bBase);
+//       mexPrintf("\nhalfAngle = %0.16f", halfAngle);
+//       mexPrintf("\nk = %0.16f", k);
+//       mexPrintf("\nx[bBase] = %0.16f", x[bBase]);
+//       mexPrintf("\ntRemain = %0.16f", tRemain);
+//       mexPrintf("\nxRate[bBase] = %0.16f", xRate[bBase]);
+//       mexPrintf("\nfx[bBase] = %0.16f", fx[bBase]);
+//       mexPrintf("\npose.p[0] = %0.16f", pose.p[0]);
+//       mexPrintf("\npose.p[1] = %0.16f", pose.p[1]);
+//       mexPrintf("\npose.p[2] = %0.16f", pose.p[2]);
+//       mexPrintf("\npose.q[0] = %0.16f", pose.q[0]);
+//       mexPrintf("\npose.q[1] = %0.16f", pose.q[1]);
+//       mexPrintf("\npose.q[2] = %0.16f", pose.q[2]);
+//       mexPrintf("\npose.q[3] = %0.16f", pose.q[3]);
 
       return;
     }
 
-    void evaluateTangentPose(const tom::WorldTime& time, tom::TangentPose& tangentPose)
+    void evaluateTangentPose(const double k, tom::TangentPose& tangentPose)
     {
       static const tom::TangentPose nullTangentPose;
       static tom::TangentPose tP;
-      uint32_t dkFloor;
-      double dtRemain;
+      double K;
       double halfAngle;
-      double halfAngleRate;
       double ct2;
       double ct3;
-      tom::WorldTime dt;
+      double tRemain;
+      uint32_t bBase;
 
-      if(time<interval.first)
+      K = static_cast<double>(px.size());
+      
+      if(k<0.0)
       {
         tangentPose = nullTangentPose;
       }
-      else if(time>interval.second)
+      else if(k==0.0)
       {
-        evaluateTangentPose(interval.second, tP);
-        dt = time-interval.second;
-        halfAngleRate = tP.s[2]/2.0;
-        halfAngle = atan2(tP.q[3],tP.q[0])+halfAngleRate*dt;
-        tangentPose.p[0] = tP.p[0]+tP.r[0]*dt;
-        tangentPose.p[1] = tP.p[1]+tP.r[1]*dt;
-        tangentPose.p[2] = tP.p[2]+tP.r[2]*dt;
+        tangentPose.p[0] = 0.0;
+        tangentPose.p[1] = 0.0;
+        tangentPose.p[2] = 0.0;
+        tangentPose.q[0] = 1.0;
+        tangentPose.q[1] = 0.0;
+        tangentPose.q[2] = 0.0;
+        tangentPose.q[3] = 0.0;
+        tangentPose.r[0] = 0.0;
+        tangentPose.r[1] = 0.0;
+        tangentPose.r[2] = 0.0;
+        tangentPose.s[0] = 0.0;
+        tangentPose.s[1] = 0.0;
+        tangentPose.s[2] = 0.0;
+      }
+      else if(k>K)
+      {
+        evaluateTangentPose(K, tP);
+        tRemain = (k-K)/rate;
+        halfAngle = atan2(tP.q[3],tP.q[0])+0.5*tRemain*tP.s[2];
+        tangentPose.p[0] = tP.p[0]+tP.r[0]*tRemain;
+        tangentPose.p[1] = tP.p[1]+tP.r[1]*tRemain;
+        tangentPose.p[2] = tP.p[2]+tP.r[2]*tRemain;
         tangentPose.q[0] = cos(halfAngle);
         tangentPose.q[1] = 0.0;
         tangentPose.q[2] = 0.0;
@@ -158,45 +194,55 @@ namespace BrownianPlanar
       }
       else
       {
-        evaluateGeneral(time, tangentPose, dkFloor, dtRemain, halfAngle);
-
-        ct2 = dtRemain;
+        evaluateGeneral(k, tangentPose);
+        
+        bBase = static_cast<uint32_t>(ceil(k))-1;
+        tRemain = (k-static_cast<double>(bBase))/rate;
+        
+        ct2 = tRemain;
         ct3 = ct2/normalizedRotationalMass;
         ct2 /= normalizedMass;
 
-        tangentPose.r[0] = xRate[dkFloor]+ct2*fx[dkFloor];
-        tangentPose.r[1] = yRate[dkFloor]+ct2*fy[dkFloor];
+        tangentPose.r[0] = xRate[bBase]+ct2*fx[bBase];
+        tangentPose.r[1] = yRate[bBase]+ct2*fy[bBase];
         tangentPose.r[2] = 0.0;
-        halfAngleRate = 0.5*(aRate[dkFloor]+ct3*fa[dkFloor]);
         tangentPose.s[0] = 0.0;
         tangentPose.s[1] = 0.0;
-        tangentPose.s[2] = 2.0*halfAngleRate;
-
-        transformPose(tangentPose);
+        tangentPose.s[2] = aRate[bBase]+ct3*fa[bBase];
       }
+      transformPose(tangentPose);
       return;
     }
 
-    void evaluatePose(const tom::WorldTime& time, tom::Pose& pose)
+    void evaluatePose(const double k, tom::Pose& pose)
     {
       static const tom::Pose nullPose;
       static tom::TangentPose tP;
-      uint32_t dkFloor;
-      double dtRemain;
+      double K;
       double halfAngle;
-      double halfAngleRate;
       tom::WorldTime dt;
 
-      if(time<interval.first)
+      K = static_cast<double>(px.size());
+      
+      if(k<0.0)
       {
         pose = nullPose;
       }
-      else if(time>interval.second)
+      else if(k==0.0)
       {
-        evaluateTangentPose(interval.second, tP);
-        dt = time-interval.second;
-        halfAngleRate = tP.q[0]*tP.s[3]-tP.q[3]*tP.s[0];
-        halfAngle = atan2(tP.q[3],tP.q[0])+halfAngleRate*dt;
+        pose.p[0] = 0.0;
+        pose.p[1] = 0.0;
+        pose.p[2] = 0.0;
+        pose.q[0] = 1.0;
+        pose.q[1] = 0.0;
+        pose.q[2] = 0.0;
+        pose.q[3] = 0.0;
+      }
+      else if(k>K)
+      {
+        evaluateTangentPose(K, tP);
+        dt = (k-K)/rate;
+        halfAngle = atan2(tP.q[3],tP.q[0])+0.5*dt*tP.s[2];
         pose.p[0] = tP.p[0]+tP.r[0]*dt;
         pose.p[1] = tP.p[1]+tP.r[1]*dt;
         pose.p[2] = tP.p[2]+tP.r[2]*dt;
@@ -207,9 +253,9 @@ namespace BrownianPlanar
       }
       else
       {
-        evaluateGeneral(time, pose, dkFloor, dtRemain, halfAngle);
-        transformPose(pose);
+        evaluateGeneral(k, pose);
       }
+      transformPose(pose);
       return;
     }
 
@@ -217,7 +263,7 @@ namespace BrownianPlanar
     BrownianPlanar(const tom::WorldTime initialTime, const std::string uri) :
       tom::DynamicModel(initialTime, uri)
     {
-      const unsigned reserve = 1024;
+      static const unsigned reserve = 1024;
       interval.first = initialTime;
       interval.second = initialTime;
       firstNewBlock = 0;
@@ -261,24 +307,31 @@ namespace BrownianPlanar
 
     void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
     {
-      unsigned k;
-      unsigned K = time.size();
-      pose.resize(K);
-      for(k = 0; k<K; ++k)
+      static double k;
+      unsigned n;
+      unsigned N;
+      N = time.size();
+      pose.resize(N);
+      for(n = 0; n<N; ++n)
       {
-        evaluatePose(time[k], pose[k]);
+        k = rate*(time[n]-interval.first);
+        evaluatePose(k, pose[n]);
       }
+      
       return;
     }
 
     void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
     {
-      unsigned k;
-      unsigned K = time.size();
-      tangentPose.resize(K);
-      for(k = 0; k<K; ++k)
+      static double k;
+      unsigned n;
+      unsigned N;
+      N = time.size();
+      tangentPose.resize(N);
+      for(n = 0; n<N; ++n)
       {
-        evaluateTangentPose(time[k], tangentPose[k]);
+        k = rate*(time[n]-interval.first);
+        evaluateTangentPose(k, tangentPose[n]);
       }
       return;
     }
@@ -430,7 +483,7 @@ namespace BrownianPlanar
       tom::WorldTime initialTime = this->interval.first;
       std::string uri = "";
       BrownianPlanar* obj = new BrownianPlanar(initialTime, uri);
-      
+            
       // parameters
       obj->px = this->px;
       obj->py = this->py;
@@ -453,7 +506,7 @@ namespace BrownianPlanar
 
       obj->interval = this->interval;
       obj->firstNewBlock = this->firstNewBlock;
-
+      
       return (obj);
     }
 

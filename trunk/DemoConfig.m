@@ -3,9 +3,9 @@ classdef DemoConfig < handle
   properties (Constant = true, GetAccess = public)
     % trajectory optimization parameters
     uri = 'antbed:MiddleburyTemple'; % ('antbed:MiddleburyTemple') select hardware resource or data container
-    dynamicModelName = 'tom'; % ('tom') name of a single DynamicModel component
-    measureNames = {'tom'}; % ({'tom'}) cell array of zero or more names of Measure components
-    optimizerName = 'tom'; % ('tom') name of a single Optimizer component
+    dynamicModelName = 'InertialTDMSim'; % ('tom') name of a single DynamicModel component
+    measureNames = {'FastPBM'}; % ({'tom'}) cell array of zero or more names of Measure components
+    optimizerName = 'MatlabGA'; % ('tom') name of a single Optimizer component
     numSteps = uint32(1E9); % (uint32(1E9)) number of optimization steps until termination
     
     % display parameters

@@ -10,8 +10,9 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
     numStates = 12;
   end
   
-  properties (GetAccess = private, SetAccess = private)
+  properties (Access = protected)
     interval
+    uri
     numInputs
     initialBlock
     firstNewBlock % one-based indexing
@@ -38,6 +39,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
         'uint32', zeros(1, this.initialNumUint32, 'uint32'));
       this.firstNewBlock = 1;
       this.interval = tom.TimeInterval(initialTime, initialTime);
+      this.uri = uri;
       this.block = struct('logical', {}, 'uint32', {});
       this.numInputs = size(this.B, 2);
       this.state = zeros(this.numStates, this.chunkSize);
@@ -56,15 +58,15 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
       if(N==0)
         pose = repmat(tom.Pose, [1, 0]);
       else
-        [lowerBound, upperBound, dkFloor, dtRemain] = preEvaluate(this, t);
+        [lowerBound, upperBound, dkFloor, dtRemain] = this.preEvaluate(t);
         pose(1, N) = tom.Pose;
         for n = find(lowerBound)
           if(upperBound(n))
-            substate = subIntegrate(this, dkFloor(n), dtRemain(n));
+            substate = this.subIntegrate(dkFloor(n), dtRemain(n));
             pose(n).p = substate(1:3)+this.initialPosition;
             pose(n).q = Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
           else
-            finalTangentPose = tangent(this, this.interval.second);
+            finalTangentPose = this.tangent(this.interval.second);
             pose(n) = predictPose(finalTangentPose, t(n)-this.interval.second);
           end
         end
@@ -76,17 +78,17 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
       if(N==0)
         tangentPose = repmat(tom.TangentPose, [1, 0]);
       else
-        [lowerBound, upperBound, dkFloor, dtRemain] = preEvaluate(this, t);
+        [lowerBound, upperBound, dkFloor, dtRemain] = this.preEvaluate(t);
         tangentPose(1, N) = tom.TangentPose;
         for n = find(lowerBound)
           if(upperBound(n))
-            substate = subIntegrate(this, dkFloor(n), dtRemain(n));
+            substate = this.subIntegrate(dkFloor(n), dtRemain(n));
             tangentPose(n).p = substate(1:3)+this.initialPosition;
             tangentPose(n).q = Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
             tangentPose(n).r = substate(7:9)+this.initialPositionRate;
             tangentPose(n).s = this.initialOmega+substate(10:12);
           else
-            finalTangentPose = tangent(this, this.interval.second);
+            finalTangentPose = this.tangent(this.interval.second);
             tangentPose(n) = predictTangentPose(finalTangentPose, t(n)-this.interval.second);
           end
         end
@@ -168,16 +170,14 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
     end
      
     function obj = copy(this)
-      obj = BoundedMarkov.BoundedMarkov(tom.WorldTime(0), '');
-      obj.interval = this.interval;
-      obj.numInputs = this.numInputs;
-      obj.initialBlock = this.initialBlock;
-      obj.firstNewBlock = this.firstNewBlock;
-      obj.block = this.block;
-      obj.state = this.state;
-      obj.Ad = this.Ad;
-      obj.Bd = this.Bd;
-      obj.ABZ = this.ABZ;
+      obj = BoundedMarkov.BoundedMarkov(this.interval.first, this.uri);
+      mc = metaclass(this);
+      prop = mc.Properties;
+      for p = 1:numel(prop)
+        if(~prop{p}.Constant)
+          obj.(prop{p}.Name) = this.(prop{p}.Name);
+        end
+      end
     end
   end
   
