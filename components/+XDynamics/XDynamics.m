@@ -54,7 +54,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
       if(N==0)
         pose = repmat(tom.Pose, [1, 0]);
       else
-        pose = evaluate(this.xRef, t);
+        pose = this.xRef.evaluate(t);
         z = block2deviation(this.initialUint32);
         t = double(t);
         t0 = double(this.initialTime);
@@ -71,7 +71,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
       if(N==0);
         tangentPose = repmat(tom.TangentPose, [1, 0]);
       else
-        tangentPose = tangent(this.xRef, t);
+        tangentPose = this.xRef.tangent(t);
         z = block2deviation(this.initialUint32);
         t = double(t);
         t0 = double(this.initialTime);

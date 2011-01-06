@@ -79,8 +79,8 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
         error('URI scheme not recognized');
       end
       container = antbed.DataContainer.create(uri(8:end), initialTime);
-      list = listSensors(container, 'antbed.Camera');
-      this.sensor = getSensor(container, list(1));                 
+      list = container.listSensors('antbed.Camera');
+      this.sensor = container.getSensor(list(1));                 
     end
     
     function refresh(this, x)
@@ -88,26 +88,26 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
     end
     
     function flag = hasData(this)
-      flag = hasData(this.sensor);
+      flag = this.sensor.hasData();
     end
     
     function na = first(this)
-      na = first(this.sensor);
+      na = this.sensor.first();
     end
     
     function na = last(this)
-      na = last(this.sensor);
+      na = this.sensor.last();
     end
     
     function time = getTime(this, n)
-      time = getTime(this.sensor, n);
+      time = this.sensor.getTime(n);
     end
     
     function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)
       edgeList = repmat(tom.GraphEdge, [0, 1]);
-      if(hasData(this.sensor))
-        naMin = max([naMin, first(this.sensor), nbMin-uint32(1)]);
-        naMax = min([naMax, last(this.sensor)-uint32(1), nbMax-uint32(1)]);
+      if(this.sensor.hasData())
+        naMin = max([naMin, this.sensor.first(), nbMin-uint32(1)]);
+        naMax = min([naMax, this.sensor.last()-uint32(1), nbMax-uint32(1)]);
         a = naMin:naMax;
         if(naMax>=naMin)
           edgeList = tom.GraphEdge(a, a+uint32(1));
@@ -120,26 +120,26 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       nodeB = graphEdge.second;
       
       % return 0 if the specified edge is not found in the graph
-      isAdjacent = ((nodeA+uint32(1))==nodeB) && hasData(this.sensor) && ...
-        (nodeA>=first(this.sensor)) && (nodeB<=last(this.sensor));
+      isAdjacent = ((nodeA+uint32(1))==nodeB) && this.sensor.hasData() && ...
+        (nodeA>=this.sensor.first()) && (nodeB<=this.sensor.last());
       if(~isAdjacent)
         cost = 0;
         return;
       end
 
       % return NaN if the graph edge extends outside of the trajectory domain
-      ta = getTime(this.sensor, nodeA);
-      tb = getTime(this.sensor, nodeB);
-      interval = domain(x);
+      ta = this.sensor.getTime(nodeA);
+      tb = this.sensor.getTime(nodeB);
+      interval = x.domain();
       if(ta<interval.first)
         cost = NaN;
         return;
       end
 
-      poseA = evaluate(x, ta);
-      poseB = evaluate(x, tb);
+      poseA = x.evaluate(ta);
+      poseB = x.evaluate(tb);
 
-      data = computeIntermediateDataCache(this, nodeA, nodeB);
+      data = this.computeIntermediateDataCache(nodeA, nodeB);
 
       u = transpose(data.pixB(:, 1)-data.pixA(:, 1));
       v = transpose(data.pixB(:, 2)-data.pixA(:, 2));
@@ -153,9 +153,9 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       rotation = [Eb(1)-Ea(1);
         Eb(2)-Ea(2);
         Eb(3)-Ea(3)];
-      [uvr, uvt] = generateFlowSparse(this, translation, rotation, transpose(data.pixA), nodeA);
+      [uvr, uvt] = this.generateFlowSparse(translation, rotation, transpose(data.pixA), nodeA);
 
-      cost = computeCost(this, u, v, uvr, uvt);
+      cost = this.computeCost(u, v, uvr, uvt);
     end  
   end
   

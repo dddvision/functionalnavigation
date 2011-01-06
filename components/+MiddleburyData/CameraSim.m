@@ -24,7 +24,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & antbed.Camera
       this.tn = tom.WorldTime(initialTime+double(1:this.numImages-1)/this.fps);
       this.im = cell(this.numImages, 1);
       for n = 1:this.numImages
-        this.im{n} = getMiddleburyArt(this, n-1);
+        this.im{n} = this.getMiddleburyArt(n-1);
       end
       this.na = uint32(0);
       this.nb = this.na;

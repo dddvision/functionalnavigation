@@ -64,7 +64,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
     
     function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)
       edgeList = repmat(tom.GraphEdge, [0, 1]);
-      if(hasData(this.tracker))
+      if(this.tracker.hasData())
         nMin = max([naMin, this.tracker.first(), nbMin-uint32(1)]);
         nMax = min([naMax+uint32(1), this.tracker.last(), nbMax]);
         nList = nMin:nMax;
@@ -84,27 +84,27 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       
       % return 0 if the specified edge is not found in the graph
       isAdjacent = (nA<nB) && ...
-        hasData(this.tracker) && ...
-        (nA>=first(this.tracker)) && ...
-        (nB<=last(this.tracker));
+        this.tracker.hasData() && ...
+        (nA>=this.tracker.first()) && ...
+        (nB<=this.tracker.last());
       if(~isAdjacent)
         cost = 0;
         return;
       end
       
       % return NaN if the graph edge extends outside of the trajectory domain
-      tA = getTime(this.tracker, nA);
-      tB = getTime(this.tracker, nB);
-      interval = domain(x);
+      tA = this.tracker.getTime(nA);
+      tB = this.tracker.getTime(nB);
+      interval = x.domain();
       if(tA<interval.first)
         cost = NaN;
         return;
       end
       
-      poseA = evaluate(x, tA);
-      poseB = evaluate(x, tB);
+      poseA = x.evaluate(tA);
+      poseB = x.evaluate(tB);
       
-      data = computeIntermediateDataCache(this, graphEdge.first, graphEdge.second);
+      data = this.computeIntermediateDataCache(graphEdge.first, graphEdge.second);
       
       translation = [poseB.p(1)-poseA.p(1);
         poseB.p(2)-poseA.p(2);
@@ -123,7 +123,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
 
       nFirst = this.tracker.first();
       nLast = this.tracker.last();
-      edgeList = findEdges(this, nFirst, nLast, nFirst, nLast);
+      edgeList = this.findEdges(nFirst, nLast, nFirst, nLast);
 
       for i = 1:numel(edgeList)
         nA = edgeList(i).first;
@@ -131,23 +131,23 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
 
         % return 0 if the specified edge is not found in the graph
         isAdjacent = (nA<nB) && ...
-          hasData(this.tracker) && ...
-          (nA>=first(this.tracker)) && ...
-          (nB<=last(this.tracker));
+          this.tracker.hasData() && ...
+          (nA>=this.tracker.first()) && ...
+          (nB<=this.tracker.last());
         if(~isAdjacent)
           return;
         end
 
         % return NaN if the graph edge extends outside of the trajectory domain
-        tA = getTime(this.tracker, nA);
-        tB = getTime(this.tracker, nB);
-        interval = domain(groundTraj);
+        tA = this.tracker.getTime(nA);
+        tB = this.tracker.getTime(nB);
+        interval = groundTraj.domain();
         if(tA<interval.first)
           return;
         end
 
-        poseA = evaluate(groundTraj, tA);
-        poseB = evaluate(groundTraj, tB);
+        poseA = groundTraj.evaluate(tA);
+        poseB = groundTraj.evaluate(tB);
 
         numA = this.tracker.numFeatures(nA);
         numB = this.tracker.numFeatures(nB);

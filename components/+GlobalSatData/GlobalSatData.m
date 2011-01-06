@@ -43,9 +43,9 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.Measure
       
     function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)
       edgeList = repmat(tom.GraphEdge, [0, 1]);
-      if(hasData(this.sensor))
-        naMin = max([naMin, nbMin, first(this.sensor)]);
-        naMax = min([naMax, nbMax, last(this.sensor)]);
+      if(this.sensor.hasData())
+        naMin = max([naMin, nbMin, this.sensor.first()]);
+        naMax = min([naMax, nbMax, this.sensor.last()]);
         a = naMin:naMax;
         if(naMax>=naMin)
           edgeList = tom.GraphEdge(a, a);

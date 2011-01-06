@@ -51,7 +51,7 @@ classdef BodyReference < tom.Trajectory
         pose = repmat(tom.Pose, [1, N]);
       else
         pose(1, N) = tom.Pose;
-        interval = domain(this);
+        interval = this.domain();
         lowerBound = t>=interval.first;
         upperBound = t<=interval.second;
         pq = cardinalSpline(this.T_imu, this.x_imu, t(lowerBound&upperBound));
@@ -75,7 +75,7 @@ classdef BodyReference < tom.Trajectory
         tangentPose = repmat(tom.TangentPose, [1, 0]);
       else
         tangentPose(1, N) = tom.TangentPose;
-        interval = domain(this);
+        interval = this.domain();
         lowerBound = t>=interval.first;
         upperBound = t<=interval.second;
         [pq, pqdot] = cardinalSpline(this.T_imu, this.x_imu, t(lowerBound&upperBound));

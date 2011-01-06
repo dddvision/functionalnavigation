@@ -2,8 +2,6 @@
 #include <cmath>
 #include <string>
 
-#include "mex.h"
-
 #include "DynamicModel.h"
 
 namespace BrownianPlanar
@@ -114,28 +112,28 @@ namespace BrownianPlanar
       pose.q[2] = 0.0;
       pose.q[3] = sin(halfAngle);
       
-//       mexPrintf("\nfx.size() = %d", fx.size());
-//       mexPrintf("\ntau = %0.16f", tau);
-//       mexPrintf("\nc0 = %0.16f", c0);
-//       mexPrintf("\nc1 = %0.16f", c1);
-//       mexPrintf("\nc2 = %0.16f", c2);
-//       mexPrintf("\nc3 = %0.16f", c3);
-//       mexPrintf("\nct0 = %0.16f", ct0);
-//       mexPrintf("\nct1 = %0.16f", ct1);
-//       mexPrintf("\nbBase = %u", bBase);
-//       mexPrintf("\nhalfAngle = %0.16f", halfAngle);
-//       mexPrintf("\nk = %0.16f", k);
-//       mexPrintf("\nx[bBase] = %0.16f", x[bBase]);
-//       mexPrintf("\ntRemain = %0.16f", tRemain);
-//       mexPrintf("\nxRate[bBase] = %0.16f", xRate[bBase]);
-//       mexPrintf("\nfx[bBase] = %0.16f", fx[bBase]);
-//       mexPrintf("\npose.p[0] = %0.16f", pose.p[0]);
-//       mexPrintf("\npose.p[1] = %0.16f", pose.p[1]);
-//       mexPrintf("\npose.p[2] = %0.16f", pose.p[2]);
-//       mexPrintf("\npose.q[0] = %0.16f", pose.q[0]);
-//       mexPrintf("\npose.q[1] = %0.16f", pose.q[1]);
-//       mexPrintf("\npose.q[2] = %0.16f", pose.q[2]);
-//       mexPrintf("\npose.q[3] = %0.16f", pose.q[3]);
+//       printf("\nfx.size() = %d", fx.size());
+//       printf("\ntau = %0.16f", tau);
+//       printf("\nc0 = %0.16f", c0);
+//       printf("\nc1 = %0.16f", c1);
+//       printf("\nc2 = %0.16f", c2);
+//       printf("\nc3 = %0.16f", c3);
+//       printf("\nct0 = %0.16f", ct0);
+//       printf("\nct1 = %0.16f", ct1);
+//       printf("\nbBase = %u", bBase);
+//       printf("\nhalfAngle = %0.16f", halfAngle);
+//       printf("\nk = %0.16f", k);
+//       printf("\nx[bBase] = %0.16f", x[bBase]);
+//       printf("\ntRemain = %0.16f", tRemain);
+//       printf("\nxRate[bBase] = %0.16f", xRate[bBase]);
+//       printf("\nfx[bBase] = %0.16f", fx[bBase]);
+//       printf("\npose.p[0] = %0.16f", pose.p[0]);
+//       printf("\npose.p[1] = %0.16f", pose.p[1]);
+//       printf("\npose.p[2] = %0.16f", pose.p[2]);
+//       printf("\npose.q[0] = %0.16f", pose.q[0]);
+//       printf("\npose.q[1] = %0.16f", pose.q[1]);
+//       printf("\npose.q[2] = %0.16f", pose.q[2]);
+//       printf("\npose.q[3] = %0.16f", pose.q[3]);
 
       return;
     }
