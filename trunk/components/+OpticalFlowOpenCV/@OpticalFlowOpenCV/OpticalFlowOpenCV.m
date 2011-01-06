@@ -139,7 +139,7 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       poseA = x.evaluate(ta);
       poseB = x.evaluate(tb);
 
-      data = this.computeIntermediateDataCache(nodeA, nodeB);
+      data = computeIntermediateDataCache(this, nodeA, nodeB);
 
       u = transpose(data.pixB(:, 1)-data.pixA(:, 1));
       v = transpose(data.pixB(:, 2)-data.pixA(:, 2));
@@ -153,9 +153,9 @@ classdef OpticalFlowOpenCV < OpticalFlowOpenCV.OpticalFlowOpenCVConfig & tom.Mea
       rotation = [Eb(1)-Ea(1);
         Eb(2)-Ea(2);
         Eb(3)-Ea(3)];
-      [uvr, uvt] = this.generateFlowSparse(translation, rotation, transpose(data.pixA), nodeA);
+      [uvr, uvt] = generateFlowSparse(this, translation, rotation, transpose(data.pixA), nodeA);
 
-      cost = this.computeCost(u, v, uvr, uvt);
+      cost = computeCost(this, u, v, uvr, uvt);
     end  
   end
   

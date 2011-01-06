@@ -104,7 +104,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       poseA = x.evaluate(tA);
       poseB = x.evaluate(tB);
       
-      data = this.computeIntermediateDataCache(graphEdge.first, graphEdge.second);
+      data = computeIntermediateDataCache(this, graphEdge.first, graphEdge.second); % old calling syntax
       
       translation = [poseB.p(1)-poseA.p(1);
         poseB.p(2)-poseA.p(2);
