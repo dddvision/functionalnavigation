@@ -47,8 +47,8 @@ classdef DemoDisplay < DemoConfig & handle
         container = antbed.DataContainer.create(uri(8:end), initialTime);
         if(hasReferenceTrajectory(container))
           xRef = getReferenceTrajectory(container);
-          this.tRef = generateSampleTimes(this, xRef);
-          poseRef = evaluate(xRef, this.tRef);
+          this.tRef = this.generateSampleTimes(xRef);
+          poseRef = xRef.evaluate(this.tRef);
           this.pRef = cat(2, poseRef.p);
           this.qRef = cat(2, poseRef.q);
         end
@@ -82,7 +82,7 @@ classdef DemoDisplay < DemoConfig & handle
       % compute minimium cost
       costBest = min(c);
       kBest = find(c==costBest, 1, 'first');
-      alpha = cost2alpha(this, c);
+      alpha = this.cost2alpha(c);
       
       % text display
       fprintf('\n');
@@ -95,7 +95,7 @@ classdef DemoDisplay < DemoConfig & handle
       end
       
       % generate sample times assuming all trajectories have the same domain
-      t = generateSampleTimes(this, x(1));
+      t = this.generateSampleTimes(x(1));
         
       % clear the figure
       figure(this.hfigure);
@@ -103,7 +103,7 @@ classdef DemoDisplay < DemoConfig & handle
         
       % evaluate the best trajectory
       k = kBest;
-      poseBest = evaluate(x(k), t);
+      poseBest = x(k).evaluate(t);
       pBest = cat(2, poseBest.p);
       qBest = cat(2, poseBest.q);
 
@@ -129,20 +129,20 @@ classdef DemoDisplay < DemoConfig & handle
       
       % plot ground truth if available in reference color
       if(~isempty(this.pRef))
-        plotIndividual(this, origin, this.pRef, this.qRef, avgSiz, 1, this.colorReference, 'LineWidth', 1);
+        this.plotIndividual(origin, this.pRef, this.qRef, avgSiz, 1, this.colorReference, 'LineWidth', 1);
       end
         
       % plot best trajectory in a highlight color
-      plotIndividual(this, origin, pBest, qBest, avgSiz, alpha(k), this.colorHighlight, 'LineWidth', 1);
+      this.plotIndividual(origin, pBest, qBest, avgSiz, alpha(k), this.colorHighlight, 'LineWidth', 1);
       
       % plot other trajectories in background contrast color
       if(~this.bestOnly)
         for k = 1:K
           if(k~=kBest)
-            posek = evaluate(x(k), t);
+            posek = x(k).evaluate(t);
             pk = cat(2, posek.p);
             qk = cat(2, posek.q);
-            plotIndividual(this, origin, pk, qk, avgSiz, alpha(k), 1-this.colorBackground, 'LineWidth', 1);
+            this.plotIndividual(origin, pk, qk, avgSiz, alpha(k), 1-this.colorBackground, 'LineWidth', 1);
           end
         end
       end
@@ -176,7 +176,7 @@ classdef DemoDisplay < DemoConfig & handle
     
     function t = generateSampleTimes(this, x)
       assert(numel(x)==1);
-      interval = domain(x);
+      interval = x.domain();
       tmin = interval.first;
       tmax = interval.second;
       if(~isempty(this.tRef))
@@ -194,10 +194,10 @@ classdef DemoDisplay < DemoConfig & handle
     function plotIndividual(this, origin, p, q, scale, alpha, color, varargin)
       p = p-repmat(origin, [1, size(p, 2)]);
       plot3(p(1, :), p(2, :), p(3, :), 'Color', alpha*color+(1-alpha)*ones(1, 3), 'Clipping', 'off', varargin{:});
-      plotFrame(this, p(:, 1), q(:, 1), scale, alpha); % plot first frame
+      this.plotFrame(p(:, 1), q(:, 1), scale, alpha); % plot first frame
       for bs = 1:this.bigSteps
         ksub = (bs-1)*this.subSteps+(1:(this.subSteps+1));
-        plotFrame(this, p(:, ksub(end)), q(:, ksub(end)), scale, alpha);
+        this.plotFrame(p(:, ksub(end)), q(:, ksub(end)), scale, alpha);
       end
     end
 

@@ -56,7 +56,7 @@ classdef ReferenceTrajectory < tom.Trajectory
       else
         t = double(t);
         pose(1, N) = tom.Pose;
-        interval = domain(this);
+        interval = this.domain();
         lowerBound = t>=interval.first;
         upperBound = t<=interval.second;
         good = lowerBound&upperBound;
@@ -69,7 +69,7 @@ classdef ReferenceTrajectory < tom.Trajectory
             pose(n).q = q(:, k);
             k = k+1;
           else
-            finalTangentPose = tangent(this, interval.second);
+            finalTangentPose = this.tangent(interval.second);
             pose(n) = predictPose(finalTangentPose, t(n)-interval.second);
           end
         end
@@ -83,7 +83,7 @@ classdef ReferenceTrajectory < tom.Trajectory
       else
         t = double(t);
         tangentPose(1, N) = tom.TangentPose;
-        interval = domain(this);
+        interval = this.domain();
         lowerBound = t>=interval.first;
         upperBound = t<=interval.second;
         good = lowerBound&upperBound;
@@ -99,7 +99,7 @@ classdef ReferenceTrajectory < tom.Trajectory
             tangentPose(n).s = w(2:4);
             k = k+1;
           else
-            finalTangentPose = tangent(this, interval.second);
+            finalTangentPose = this.tangent(interval.second);
             tangentPose(n) = predictTangentPose(finalTangentPose, t(n)-interval.second);
           end
         end

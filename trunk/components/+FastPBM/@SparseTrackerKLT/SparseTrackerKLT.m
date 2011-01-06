@@ -102,8 +102,8 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
           this.nodeA = this.camera.first();
           this.nodePrevious = this.nodeA;
           this.pyramidA = buildPyramid(this.prepareImage(this.nodeA), this.numLevels);
-          [this.xA, this.yA] = selectFeatures(this, this.pyramidA{1}.gx, this.pyramidA{1}.gy, this.maxFeatures);
-          this.uniqueIndex = getUniqueIndices(this, numel(this.xA));
+          [this.xA, this.yA] = this.selectFeatures(this.pyramidA{1}.gx, this.pyramidA{1}.gy, this.maxFeatures);
+          this.uniqueIndex = this.getUniqueIndices(numel(this.xA));
           this.features.id = this.uniqueIndex;
           this.features.ray = this.camera.inverseProjection([this.yA;this.xA]-1, this.nodeA);
           this.firstTrack = false;
@@ -133,8 +133,8 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
 
             % select new features
             deficit = numel(good)-sum(good);
-            [xBnew, yBnew] = selectFeatures(this, pyramidB{1}.gx, pyramidB{1}.gy, deficit);
-            this.uniqueIndex(bad) = getUniqueIndices(this, deficit);
+            [xBnew, yBnew] = this.selectFeatures(pyramidB{1}.gx, pyramidB{1}.gy, deficit);
+            this.uniqueIndex(bad) = this.getUniqueIndices(deficit);
             xB(bad) = xBnew;
             yB(bad) = yBnew;
             

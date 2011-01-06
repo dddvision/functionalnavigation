@@ -32,11 +32,11 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
            
       % Read the noise errors from real Global Sat GPS data file
       this.noise = readNoiseData(this.rawGPSfile); % (time, easting, northing, altitude)
-      interval = domain(this.refTraj);
+      interval = this.refTraj.domain();
       tdelta = interval.second-interval.first;
       this.noise = this.noise(:, this.noise(1, :)<tdelta);
       this.precisionFlag = true;
-      this.offset = [0;0;0];
+      this.offset = [0; 0; 0];
       N = size(this.noise, 2);
       this.na = uint32(1);
       this.nb = uint32(N);
@@ -68,7 +68,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
       assert(this.ready);
       assert(n>=this.na);
       assert(n<=this.nb);
-      interval = domain(this.refTraj);
+      interval = this.refTraj.domain();
       time = tom.WorldTime(interval.first+this.noise(1, n));
     end
 
@@ -78,7 +78,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
       assert(n<=this.nb);
       
       % Evaluate the reference trajectory at the measurement time
-      pose = evaluate(this.refTraj, getTime(this, n));
+      pose = this.refTraj.evaluate(getTime(this, n));
       lolah = GlobalSatData.ecef2lolah(pose.p);
       
       % Add error based on real Global Sat gps data

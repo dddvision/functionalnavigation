@@ -140,7 +140,7 @@ classdef DynamicModelTest
         antbed.TrajectoryTest(dynamicModel);
       end
       
-      fprintf('\ncopy = ');
+      fprintf('\n\ncopy = ');
       interval = dynamicModel.domain();
       pose = dynamicModel.evaluate(interval.second);
       tangentPose = dynamicModel.tangent(interval.second);

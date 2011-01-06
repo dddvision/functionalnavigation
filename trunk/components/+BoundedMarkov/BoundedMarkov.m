@@ -160,7 +160,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
     end
     
     function extend(this)
-      blank = struct('logical', false(0, 1), 'uint32', zeros(1, numExtensionUint32(this), 'uint32'));
+      blank = struct('logical', false(0, 1), 'uint32', zeros(1, this.numExtensionUint32(), 'uint32'));
       this.block = cat(2, this.block, blank);
       N = numel(this.block);
       if((N+1)>size(this.state, 2))
@@ -193,7 +193,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
       lowerBound = (t>=ta);
       upperBound = (t<=tb);
       dkMax = max(dk(upperBound));
-      blockIntegrate(this, ceil(dkMax)); % ceil is not floor+1 for integers
+      this.blockIntegrate(ceil(dkMax)); % ceil is not floor+1 for integers
     end
     
     function blockIntegrate(this, K)

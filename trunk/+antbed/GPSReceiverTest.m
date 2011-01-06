@@ -19,7 +19,7 @@ classdef GPSReceiverTest
       trueECEF = zeros(3, K);
       for indx = 1:K
         currTime = gpsHandle.getTime(indx);
-        pose = evaluate(trajectory, currTime);
+        pose = trajectory.evaluate(currTime);
         trueECEF(:, indx) = cat(2, pose.p);
         [gpsLonLatAlt(1, indx), gpsLonLatAlt(2, indx), gpsLonLatAlt(3, indx)] = gpsHandle.getGlobalPosition(na+indx-1);
       end

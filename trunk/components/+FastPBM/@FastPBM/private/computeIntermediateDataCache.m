@@ -10,7 +10,7 @@ function data = computeIntermediateDataCache(this, na, nb)
   if(isfield(cache,nastr)&&isfield(cache.(nastr), nbstr))
     data = cache.(nastr).(nbstr);
   else
-    data = computeIntermediateData(this, na, nb);
+    data = this.computeIntermediateData(na, nb);
     cache.(nastr).(nbstr) = data;
   end
 
