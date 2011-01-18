@@ -19,10 +19,9 @@ General coding guidelines for all components including those that are hosted ext
 Additional coding guidelines for all code hosted in this repository:
   * RULE: Only upload plain text, C++, or MATLAB files ({{{makefile, .c, .cpp, .h, .m, .txt}}})
   * RULE: Do not upload binaries ({{{.jpg, .png, .dll, .lib, .mexglx, .mexw32, .vc, .icc., pl, .w32}}})
-  * RULE: Bugs in components should be noted using {{{TODO}}} statements within code or in a {{{TODO.txt}}} file that accompanies the component.
+  * RULE: Bugs should be noted using {{{TODO}}} statements within code or posted using the online Issue Tracker.
   * RULE: Use two spaces for each indentation level.
   * RULE: At least one blank line should separate functions in files that define multiple functions.
-  * RULE: Don't put an empty comment on a line by itself unless it separates other comments.
   * RULE: Use no more than 120 characters per line.
   * RULE: Place constants in configuration files or headers whenever possible.
   * RULE: Avoid using global variables.
