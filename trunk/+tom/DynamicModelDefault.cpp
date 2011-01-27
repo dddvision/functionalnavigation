@@ -15,85 +15,51 @@ namespace tom
       return;
     }
 
-    uint32_t numInitialLogical(void) const
+    uint32_t numInitial(void) const
     {
       return (0);
     }
 
-    uint32_t numInitialUint32(void) const
+    uint32_t numExtension(void) const
     {
       return (0);
     }
 
-    uint32_t numExtensionLogical(void) const
+    uint32_t numBlocks(void)
     {
       return (0);
     }
 
-    uint32_t numExtensionUint32(void) const
-    {
-      return (0);
-    }
-
-    uint32_t numExtensionBlocks(void)
-    {
-      return (0);
-    }
-
-    bool getInitialLogical(uint32_t parameterIndex)
-    {
-      throw("The default dynamic model has no input parameters");
-      return (false);
-    }
-
-    uint32_t getInitialUint32(uint32_t parameterIndex)
+    uint32_t getInitial(uint32_t parameterIndex)
     {
       throw("The default dynamic model has no input parameters");
       return (0);
     }
 
-    bool getExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex)
-    {
-      throw("The default dynamic model has no input parameters");
-      return (false);
-    }
-
-    uint32_t getExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex)
+    uint32_t getExtension(uint32_t blockIndex, uint32_t parameterIndex)
     {
       throw("The default dynamic model has no input parameters");
       return (0);
     }
 
-    void setInitialLogical(uint32_t parameterIndex, bool value)
+    void setInitial(uint32_t parameterIndex, uint32_t value)
     {
       throw("The default dynamic model has no input parameters");
       return;
     }
 
-    void setInitialUint32(uint32_t parameterIndex, uint32_t value)
+    void setExtension(uint32_t blockIndex, uint32_t parameterIndex, uint32_t value)
     {
       throw("The default dynamic model has no input parameters");
       return;
     }
 
-    void setExtensionLogical(uint32_t blockIndex, uint32_t parameterIndex, bool value)
-    {
-      throw("The default dynamic model has no input parameters");
-      return;
-    }
-
-    void setExtensionUint32(uint32_t blockIndex, uint32_t parameterIndex, uint32_t value)
-    {
-      throw("The default dynamic model has no input parameters");
-      return;
-    }
-
-    double computeInitialBlockCost(void)
+    double computeInitialCost(void)
     {
       return (0.0);
     }
 
-    double computeExtensionBlockCost(uint32_t blockIndex)
+    double computeExtensionCost(uint32_t blockIndex)
     {
       throw("The default dynamic model has no extension blocks.");
       return (0.0);

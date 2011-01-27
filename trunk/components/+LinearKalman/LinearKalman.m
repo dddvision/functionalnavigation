@@ -12,8 +12,7 @@ classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
   methods (Static = true, Access = public)
     function initialize(name)
       function text = componentDescription
-        text = ['Applies a linear Kalman filter algorithm to optimize over initial Uint32 parameters only. ', ...
-          'All logical parameters are set to false. ', ...
+        text = ['Applies a linear Kalman filter algorithm to optimize over initial integer parameters only. ', ...
           'Extension blocks are ignored. ', ...
           'Only the last on-diagonal element of each measure is evaluated.'];
       end
@@ -41,7 +40,7 @@ classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
       
       % optionally randomize initial parameters
       if(randomize)
-        nIU = this.dynamicModel(1).numInitialUint32();
+        nIU = this.dynamicModel(1).numInitial();
         for k = 1:numel(this.dynamicModel)
           this.state{k} = rand(nIU, 1); % range is within the interval [0, 1]
           this.putParam(k, state2param(this.state{k}));
@@ -50,29 +49,19 @@ classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
       
 % alternate randomization method
 %       if(randomize)
-%         nIL = this.dynamicModel(1).numInitialLogical(); 
-%         nIU = this.dynamicModel(1).numInitialUint32();
-%         nEL = this.dynamicModel(1).numExtensionLogical();
-%         nEU = this.dynamicModel(1).numExtensionUint32();
-%         nEB = this.dynamicModel(1).numExtensionBlocks();
+%         nIU = this.dynamicModel(1).numInitial();
+%         nEU = this.dynamicModel(1).numExtension();
+%         nEB = this.dynamicModel(1).numBlocks();
 %         for k = 1:numel(this.dynamicModel)
 %           x = this.dynamicModel(k);
-%           vIL = rand(1, nIL)>=0.5;
 %           vIU = randi([uint32(0), intmax('uint32')], 1, nIU, 'uint32');
-%           vEL = rand(nEB, nEL)>=0.5;
 %           vEU = randi([uint32(0), intmax('uint32')], nEB, nIU, 'uint32');
-%           for p = uint32(1):nIL
-%             x.setInitialLogical(p-1, vIL(p));
-%           end
 %           for p = uint32(1):nIU
-%             x.setInitialUint32(p-1, vIU(p));
+%             x.setInitial(p-1, vIU(p));
 %           end
 %           for b = uint32(1):nEB
-%             for p = uint32(1):nEL
-%               x.setExtensionLogical(b-1, p-1, vEL(b, p));
-%             end
 %             for p = uint32(1):nEU
-%               x.setExtensionUint32(b-1, p-1, vEU(b, p));
+%               x.setExtension(b-1, p-1, vEU(b, p));
 %             end
 %           end
 %         end
@@ -207,7 +196,7 @@ classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
     
     function y = initialCost(this, k, v)
       this.putParam(k, v);
-      y = this.dynamicModel(k).computeInitialBlockCost();
+      y = this.dynamicModel(k).computeInitialCost();
     end
     
     function y = measurementCost(this, k, v)
@@ -230,7 +219,7 @@ classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
     
     function putParam(this, k, v)
       for p = uint32(1):uint32(numel(v))
-        this.dynamicModel(k).setInitialUint32(p-1, v(p));
+        this.dynamicModel(k).setInitial(p-1, v(p));
       end
     end
   end

@@ -3,13 +3,9 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
   properties (GetAccess = private, SetAccess = private)
     isDefined
     nSpan
-    nIL
     nIU
-    nEL
     nEU
-    iIL
     iIU
-    iEL
     iEU
     iU
     dynamicModel
@@ -93,26 +89,18 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       this.measure = measure;
       
       % get parameter structure
-      this.nIL = dynamicModel(1).numInitialLogical();
-      this.nIU = dynamicModel(1).numInitialUint32();
-      this.nEL = dynamicModel(1).numExtensionLogical();
-      this.nEU = dynamicModel(1).numExtensionUint32();
-      this.iIL = uint32(1):this.nIL;
+      this.nIU = dynamicModel(1).numInitial();
+      this.nEU = dynamicModel(1).numExtension();
       this.iIU = uint32(1):this.nIU;
-      this.iEL = uint32(1):this.nEL;
       this.iEU = uint32(1):this.nEU;
       this.iU = uint32(1):uint32(32);
       
       % randomize initial parameters
       if(randomize)
         for k = 1:this.popSize
-          L = randLogical(this.nIL);
-          for p = this.iIL
-            this.dynamicModel(k).setInitialLogical(p-uint32(1), L(p));
-          end
           U = randUint32(this.nIU);
           for p = this.iIU
-            this.dynamicModel(k).setInitialUint32(p-uint32(1), U(p));
+            this.dynamicModel(k).setInitial(p-uint32(1), U(p));
           end
         end
       end
@@ -141,14 +129,10 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
         for k = 1:K
           Fk = this.dynamicModel(k);
           extend(Fk);
-          b = Fk.numExtensionBlocks();
-          L = randLogical(this.nEL);
-          for p = this.iEL
-            Fk.setExtensionLogical(b-uint32(1), p-uint32(1), L(p));
-          end
+          b = Fk.numBlocks();
           U = randUint32(this.nEU);
           for p = this.iEU
-            Fk.setExtensionUint32(b-uint32(1), p-uint32(1), U(p));
+            Fk.setExtension(b-uint32(1), p-uint32(1), U(p));
           end
         end
         interval = Fk.domain();
@@ -187,36 +171,25 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
   
   methods (Access = private)
     % Each bit string is packed in the following order:
-    %   initial logical
     %   initial uint32
-    %   extension 1 logical
     %   extension 1 uint32
-    %   extension 2 logical
     %   extension 2 uint32
     %   ...   
     function bits = getBits(this)
       K = numel(this.dynamicModel);
-      B = this.dynamicModel(1).numExtensionBlocks();
-      bits = false(K, this.nIL+this.nIU+B*(this.nEL+this.nEU));
+      B = this.dynamicModel(1).numBlocks();
+      bits = false(K, this.nIU+B*this.nEU);
       iB = uint32(1):uint32(B);
       for k = 1:K
         Fk = this.dynamicModel(k);
         base = uint32(0);
-        for p = this.iIL
-          bits(k, base+p) = Fk.getInitialLogical(p-1);
-        end
-        base = base+this.nIL;
         for p = this.iIU
-          bits(k, base+this.iU) = uints2bits(Fk.getInitialUint32(p-1));
+          bits(k, base+this.iU) = uints2bits(Fk.getInitial(p-1));
           base = base+uint32(32);
         end
         for b = iB
-          for p = this.iEL
-            bits(k, base+p) = Fk.getExtensionLogical(b-1, p-1);
-          end
-          base = base+this.nEL;
           for p = this.iEU
-            bits(k, base+this.iU) = uints2bits(Fk.getExtensionUint32(b-1, p-1));
+            bits(k, base+this.iU) = uints2bits(Fk.getExtension(b-1, p-1));
             base = base+uint32(32);
           end
         end
@@ -225,26 +198,18 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     
     function putBits(this, bits)
       K = numel(this.dynamicModel);
-      B = this.dynamicModel(1).numExtensionBlocks();
+      B = this.dynamicModel(1).numBlocks();
       iB = uint32(1):uint32(B);
       for k = 1:K
         Fk = this.dynamicModel(k);
         base = uint32(0);
-        for p = this.iIL
-          Fk.setInitialLogical(p-1, bits(k, base+p));
-        end
-        base = base+this.nIL;
         for p = this.iIU
-          Fk.setInitialUint32(p-1, bits2uints(bits(k, base+this.iU)));
+          Fk.setInitial(p-1, bits2uints(bits(k, base+this.iU)));
           base = base+uint32(32);
         end
         for b = iB
-          for p = this.iEL
-            Fk.setExtensionLogical(b-1, p-1, bits(k, base+p));
-          end
-          base = base+this.nEL;
           for p = this.iEU
-            Fk.setExtensionUint32(b-1, p-1, bits2uints(bits(k, base+this.iU)));
+            Fk.setExtension(b-1, p-1, bits2uints(bits(k, base+this.iU)));
             base = base+uint32(32);
           end
         end
@@ -254,16 +219,16 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     function cost = computeCostMean(this, nSpan)
       K = numel(this.dynamicModel);
       M = numel(this.measure);
-      B = double(this.dynamicModel(1).numExtensionBlocks());
+      B = double(this.dynamicModel(1).numBlocks());
       allGraphs = cell(K, M+1);
 
       % build cost graph from prior
       for k = 1:K
         Fk = this.dynamicModel(k);
         cost = zeros(1, B+1);
-        cost(1) = Fk.computeInitialBlockCost();
+        cost(1) = Fk.computeInitialCost();
         for b = uint32(1):uint32(B)
-          cost(b+1) = Fk.computeExtensionBlockCost(b-1);
+          cost(b+1) = Fk.computeExtensionCost(b-1);
         end
         cost = sparse([1, 1:B], 1:(B+1), cost, B+1, B+1, B+1);
         allGraphs{k, 1} = cost;
@@ -331,10 +296,6 @@ end
 function bits = uints2bits(uints)
   bits = rem(floor(transpose(pow2(-31:0))*double(uints)), 2);
   bits = bits(:);
-end
-
-function v = randLogical(num)
-  v = logical(rand(1, num)>0.5);
 end
 
 function v = randUint32(num)

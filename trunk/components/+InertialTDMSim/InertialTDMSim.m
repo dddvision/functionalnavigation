@@ -1,13 +1,11 @@
 classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
 
   properties (Constant = true, GetAccess = private)
-    nIL = uint32(0);
     nIU = uint32(0);
-    nEL = uint32(0);
     nEU = uint32(6);
     numStates = uint32(13);
     numData = uint32(8);
-    errorText = 'This dynamic model has no initial parameters or logical extension parameters';
+    errorText = 'This dynamic model has no initial parameters';
   end
   
   properties (Access = protected)
@@ -116,65 +114,32 @@ classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
         end
       end
     end
-    
-    function num = numInitialLogical(this)
-      num = this.nIL;
-    end
 
-    function num = numInitialUint32(this)
+    function num = numInitial(this)
       num = this.nIU;
     end
-
-    function num = numExtensionLogical(this)
-      num = this.nEL;
-    end
-
-    function num = numExtensionUint32(this)
+    function num = numExtension(this)
       num = this.nEU;
     end
 
-    function num = numExtensionBlocks(this)
+    function num = numBlocks(this)
       num = this.nEB;
     end
 
-    function vp = getInitialLogical(this, p)
-      assert(isa(p, 'uint32'));
-      assert(numel(p)==1);
-      vp = false;
-      error(this.errorText);
-    end
-
-    function vp = getInitialUint32(this, p)
+    function vp = getInitial(this, p)
       assert(isa(p, 'uint32'));
       assert(numel(p)==1);
       vp = uint32(0);
       error(this.errorText);
     end
 
-    function vbp = getExtensionLogical(this, b, p)
-      assert(isa(b, 'uint32'));
-      assert(numel(b)==1);
-      assert(isa(p, 'uint32'));
-      assert(numel(p)==1);
-      vbp = false;
-      error(this.errorText);
-    end
-
-    function vbp = getExtensionUint32(this, b, p)
+    function vbp = getExtension(this, b, p)
       assert(b<this.nEB);
       assert(p<this.nEU);
       vbp = this.v(p+1, b+1);
     end
 
-    function setInitialLogical(this, p, vp)
-      assert(isa(p, 'uint32'));
-      assert(numel(p)==1);
-      assert(isa(vp, 'logical'));
-      assert(numel(vp)==1);
-      error(this.errorText);
-    end
-
-    function setInitialUint32(this, p, vp)        
+    function setInitial(this, p, vp)        
       assert(isa(p, 'uint32'));
       assert(numel(p)==1);
       assert(isa(vp, 'uint32'));
@@ -182,29 +147,19 @@ classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
       error(this.errorText);
     end
 
-    function setExtensionLogical(this, b, p, vbp)
-      assert(isa(b,'uint32'));
-      assert(numel(b)==1);
-      assert(isa(p, 'uint32'));
-      assert(numel(p)==1);
-      assert(isa(vbp, 'logical'));
-      assert(numel(vbp)==1);
-      error(this.errorText);
-    end
-
-    function setExtensionUint32(this, b, p, vbp)
+    function setExtension(this, b, p, vbp)
       assert(b<this.nEB);
       assert(p<this.nEU);
       this.v(p+1, b+1) = vbp;
       this.firstNewBlock = min(this.firstNewBlock, b+1);
     end
 
-    function cost = computeInitialBlockCost(this)
+    function cost = computeInitialCost(this)
       z = block2deviation(this.vi);
       cost = 0.5*(z'*z);
     end
 
-    function cost = computeExtensionBlockCost(this, b)
+    function cost = computeExtensionCost(this, b)
       z = block2deviation(this.v(:, b+1));
       cost = 0.5*(z'*z);
     end
