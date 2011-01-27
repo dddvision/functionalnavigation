@@ -334,49 +334,30 @@ namespace BrownianPlanar
       return;
     }
 
-    uint32_t numInitialLogical(void) const
+    uint32_t numInitial(void) const
     {
       return (0);
     }
-    uint32_t numInitialUint32(void) const
-    {
-      return (0);
-    }
-    uint32_t numExtensionLogical(void) const
-    {
-      return (0);
-    }
-    uint32_t numExtensionUint32(void) const
+    
+    uint32_t numExtension(void) const
     {
       return (3);
     }
 
-    uint32_t numExtensionBlocks(void)
+    uint32_t numBlocks(void)
     {
       return (static_cast<uint32_t>(px.size()));
     }
 
-    bool getInitialLogical(const uint32_t parameterIndex)
-    {
-      throw("BrownianPlanar: has no initial logical parameters");
-      return (false);
-    }
-
-    uint32_t getInitialUint32(const uint32_t parameterIndex)
+    uint32_t getInitial(const uint32_t parameterIndex)
     {
       throw("BrownianPlanar: has no initial integer parameters");
       return (0);
     }
 
-    bool getExtensionLogical(const uint32_t blockIndex, const uint32_t parameterIndex)
+    uint32_t getExtension(const uint32_t blockIndex, const uint32_t parameterIndex)
     {
-      throw("BrownianPlanar: has no extension logical parameters");
-      return (false);
-    }
-
-    uint32_t getExtensionUint32(const uint32_t blockIndex, const uint32_t parameterIndex)
-    {
-      if(blockIndex>=numExtensionBlocks())
+      if(blockIndex>=numBlocks())
       {
         throw("BrownianPlanar: extension integer block index is out of range");
       }
@@ -394,27 +375,15 @@ namespace BrownianPlanar
       }
     }
 
-    void setInitialLogical(const uint32_t parameterIndex, const bool value)
-    {
-      throw("BrownianPlanar: has no initial logical parameters");
-      return;
-    }
-
-    void setInitialUint32(const uint32_t parameterIndex, const uint32_t value)
+    void setInitial(const uint32_t parameterIndex, const uint32_t value)
     {
       throw("BrownianPlanar: has no initial integer parameters");
       return;
     }
 
-    void setExtensionLogical(const uint32_t blockIndex, const uint32_t parameterIndex, const bool value)
+    void setExtension(const uint32_t blockIndex, const uint32_t parameterIndex, const uint32_t value)
     {
-      throw("BrownianPlanar: has no extension logical parameters");
-      return;
-    }
-
-    void setExtensionUint32(const uint32_t blockIndex, const uint32_t parameterIndex, const uint32_t value)
-    {
-      if(blockIndex>=numExtensionBlocks())
+      if(blockIndex>=numBlocks())
       {
         throw("BrownianPlanar: extension integer block index is out of range");
       }
@@ -438,12 +407,12 @@ namespace BrownianPlanar
       firstNewBlock = std::min(firstNewBlock, blockIndex);
     }
 
-    double computeInitialBlockCost(void)
+    double computeInitialCost(void)
     {
       return (0.0);
     }
 
-    double computeExtensionBlockCost(const uint32_t blockIndex)
+    double computeExtensionCost(const uint32_t blockIndex)
     {
       double f0, f1, f2;
       double cost;

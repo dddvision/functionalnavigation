@@ -28,43 +28,20 @@ classdef DynamicModelTest
       assert(interval.first==initialTime);
       fprintf(' ok');
 
-      fprintf('\n\nnumInitialLogical =');
-      nIL = dynamicModel.numInitialLogical();
-      assert(isa(nIL, 'uint32'));
-      fprintf(' %u', nIL);
-
-      fprintf('\nnumInitialUint32 =');
-      nIU = dynamicModel.numInitialUint32();
+      fprintf('\nnumInitial =');
+      nIU = dynamicModel.numInitial();
       assert(isa(nIU, 'uint32'));
       fprintf(' %u', nIU);  
 
-      fprintf('\nnumExtensionLogical =');
-      nEL = dynamicModel.numExtensionLogical();
-      assert(isa(nEL, 'uint32'));
-      fprintf(' %u', nEL); 
-
-      fprintf('\nnumExtensionUint32 =');
-      nEU = dynamicModel.numExtensionUint32();
+      fprintf('\nnumExtension =');
+      nEU = dynamicModel.numExtension();
       assert(isa(nEU, 'uint32'));
       fprintf(' %u', nEU);
 
-      fprintf('\n\ngetInitialLogical = [');
-      vIL = false(nIL, 1);
-      for p = uint32(1):nIL
-        v = dynamicModel.getInitialLogical(p-uint32(1));
-        assert(isa(v, 'logical'));
-        if(p~=uint32(1))
-          fprintf(', ');
-        end
-        fprintf('%u', v);
-        vIL(p) = v;
-      end
-      fprintf(']');
-
-      fprintf('\ngetInitialUint32 = [');
+      fprintf('\ngetInitial = [');
       vIU = zeros(nIU, 1, 'uint32');
       for p = uint32(1):nIU
-        v = dynamicModel.getInitialUint32(p-uint32(1));
+        v = dynamicModel.getInitial(p-uint32(1));
         assert(isa(v, 'uint32'));
         if(p~=uint32(1))
           fprintf(', ');
@@ -81,27 +58,14 @@ classdef DynamicModelTest
         dynamicModel.extend();
         
         fprintf('\nnumBlocks =');
-        numBlocks = dynamicModel.numExtensionBlocks();
+        numBlocks = dynamicModel.numBlocks();
         assert(isa(numBlocks, 'uint32'));
         fprintf(' %u', numBlocks);
-        
-        fprintf('\n\ngetExtensionLogical(%u) = [', b);
-        vEL = false(nEL, 1);
-        for p = uint32(1):nEL
-          v = dynamicModel.getExtensionLogical(b, p-uint32(1));
-          assert(isa(v, 'logical'));
-          if(p~=uint32(1))
-            fprintf(', ');
-          end
-          fprintf('%u', v);
-          vEL(p) = v;
-        end
-        fprintf(']');
 
-        fprintf('\ngetExtensionUint32(%u) = [', b);
+        fprintf('\ngetExtension(%u) = [', b);
         vEU = zeros(nEU, 1, 'uint32');
         for p = uint32(1):nEU
-          v = dynamicModel.getExtensionUint32(b, p-uint32(1));
+          v = dynamicModel.getExtension(b, p-uint32(1));
           assert(isa(v, 'uint32'));
           if(p~=uint32(1))
             fprintf(', ');
@@ -115,21 +79,10 @@ classdef DynamicModelTest
       end
       
       for b = uint32(0:2)   
-        fprintf('\n\nsetExtensionLogical(%u) = [', b);
-        v = true;
-        for p = uint32(1):nEL
-          dynamicModel.setExtensionLogical(b, p-uint32(1), v);
-          if(p~=uint32(1))
-            fprintf(', ');
-          end
-          fprintf('%u', v);
-        end
-        fprintf(']');
-
-        fprintf('\nsetExtensionUint32(%u) = [', b);
+        fprintf('\nsetExtension(%u) = [', b);
         v = intmax('uint32');
         for p = uint32(1):nEU
-          dynamicModel.setExtensionUint32(b, p-uint32(1), v);
+          dynamicModel.setExtension(b, p-uint32(1), v);
           if(p~=uint32(1))
             fprintf(', ');
           end

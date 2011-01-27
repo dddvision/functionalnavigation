@@ -10,21 +10,15 @@ enum DynamicModelMember
     domain,
     evaluate,
     tangent,
-    numInitialLogical,
-    numInitialUint32,
-    numExtensionLogical,
-    numExtensionUint32,
-    numExtensionBlocks,
-    getInitialLogical,
-    getInitialUint32,
-    getExtensionLogical,
-    getExtensionUint32,
-    setInitialLogical,
-    setInitialUint32,
-    setExtensionLogical,
-    setExtensionUint32,
-    computeInitialBlockCost,
-    computeExtensionBlockCost,
+    numInitial,
+    numExtension,
+    numBlocks,
+    getInitial,
+    getExtension,
+    setInitial,
+    setExtension,
+    computeInitialCost,
+    computeExtensionCost,
     extend,
     copy
 };
@@ -55,16 +49,6 @@ void convert(const mxArray*& array, uint32_t& value)
     throw("DynamicModelBridge: array must be uint32");
   }
   value = (*static_cast<uint32_t*>(mxGetData(array)));
-  return;
-}
-
-void convert(const mxArray*& array, bool& value)
-{
-  if(mxGetClassID(array)!=mxLOGICAL_CLASS)
-  {
-    throw("DynamicModelBridge: array must be logical");
-  }
-  value = (*static_cast<bool*>(mxGetLogicals(array)));
   return;
 }
 
@@ -229,21 +213,15 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     memberMap["domain"] = domain;
     memberMap["evaluate"] = evaluate;
     memberMap["tangent"] = tangent;
-    memberMap["numInitialLogical"] = numInitialLogical;
-    memberMap["numInitialUint32"] = numInitialUint32;
-    memberMap["numExtensionLogical"] = numExtensionLogical;
-    memberMap["numExtensionUint32"] = numExtensionUint32;
-    memberMap["numExtensionBlocks"] = numExtensionBlocks;
-    memberMap["getInitialLogical"] = getInitialLogical;
-    memberMap["getInitialUint32"] = getInitialUint32;
-    memberMap["getExtensionLogical"] = getExtensionLogical;
-    memberMap["getExtensionUint32"] = getExtensionUint32;
-    memberMap["setInitialLogical"] = setInitialLogical;
-    memberMap["setInitialUint32"] = setInitialUint32;
-    memberMap["setExtensionLogical"] = setExtensionLogical;
-    memberMap["setExtensionUint32"] = setExtensionUint32;
-    memberMap["computeInitialBlockCost"] = computeInitialBlockCost;
-    memberMap["computeExtensionBlockCost"] = computeExtensionBlockCost;
+    memberMap["numInitial"] = numInitial;
+    memberMap["numExtension"] = numExtension;
+    memberMap["numBlocks"] = numBlocks;
+    memberMap["getInitial"] = getInitial;
+    memberMap["getExtension"] = getExtension;
+    memberMap["setInitial"] = setInitial;
+    memberMap["setExtension"] = setExtension;
+    memberMap["computeInitialCost"] = computeInitialCost;
+    memberMap["computeExtensionCost"] = computeExtensionCost;
     memberMap["extend"] = extend;
     memberMap["copy"] = copy;
     initialized = true;
@@ -319,12 +297,6 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         throw("DynamicModelBridge: undefined function call");
         break;
 
-      case extend:
-      {
-        instance[handle]->extend();
-        break;
-      }
-
       case domain:
         convert(instance[handle]->domain(), plhs[0]);
         break;
@@ -351,102 +323,50 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         break;
       }
 
-      case numInitialLogical:
-        convert(instance[handle]->numInitialLogical(), plhs[0]);
+      case numInitial:
+        convert(instance[handle]->numInitial(), plhs[0]);
         break;
 
-      case numInitialUint32:
-        convert(instance[handle]->numInitialUint32(), plhs[0]);
+      case numExtension:
+        convert(instance[handle]->numExtension(), plhs[0]);
         break;
 
-      case numExtensionLogical:
-        convert(instance[handle]->numExtensionLogical(), plhs[0]);
+      case numBlocks:
+        convert(instance[handle]->numBlocks(), plhs[0]);
         break;
 
-      case numExtensionUint32:
-        convert(instance[handle]->numExtensionUint32(), plhs[0]);
-        break;
-
-      case numExtensionBlocks:
-        convert(instance[handle]->numExtensionBlocks(), plhs[0]);
-        break;
-
-      case getInitialLogical:
+      case getInitial:
       {
         static uint32_t p;
         argcheck(nrhs, 3);
         convert(prhs[2], p);
-        convert(instance[handle]->getInitialLogical(p), plhs[0]);
+        convert(instance[handle]->getInitial(p), plhs[0]);
         break;
       }
 
-      case getInitialUint32:
-      {
-        static uint32_t p;
-        argcheck(nrhs, 3);
-        convert(prhs[2], p);
-        convert(instance[handle]->getInitialUint32(p), plhs[0]);
-        break;
-      }
-
-      case getExtensionLogical:
+      case getExtension:
       {
         static uint32_t b;
         static uint32_t p;
         argcheck(nrhs, 4);
         convert(prhs[2], b);
         convert(prhs[3], p);
-        convert(instance[handle]->getExtensionLogical(b, p), plhs[0]);
+        convert(instance[handle]->getExtension(b, p), plhs[0]);
         break;
       }
 
-      case getExtensionUint32:
-      {
-        static uint32_t b;
-        static uint32_t p;
-        argcheck(nrhs, 4);
-        convert(prhs[2], b);
-        convert(prhs[3], p);
-        convert(instance[handle]->getExtensionUint32(b, p), plhs[0]);
-        break;
-      }
-
-      case setInitialLogical:
-      {
-        static uint32_t p;
-        static bool v;
-        argcheck(nrhs, 4);
-        convert(prhs[2], p);
-        convert(prhs[3], v);
-        instance[handle]->setInitialLogical(p, v);
-        break;
-      }
-
-      case setInitialUint32:
+      case setInitial:
       {
         static uint32_t p;
         static uint32_t v;
         argcheck(nrhs, 4);
         convert(prhs[2], p);
         convert(prhs[3], v);
-        instance[handle]->setInitialUint32(p, v);
+        instance[handle]->setInitial(p, v);
         break;
       }
 
-      case setExtensionLogical:
-      {
-        static uint32_t b;
-        static uint32_t p;
-        static bool v;
-        argcheck(nrhs, 5);
-        convert(prhs[2], b);
-        convert(prhs[3], p);
-        convert(prhs[4], v);
-        instance[handle]->setExtensionLogical(b, p, v);
-        break;
-      }
-
-      case setExtensionUint32:
+      case setExtension:
       {
         static uint32_t b;
         static uint32_t p;
@@ -455,23 +375,29 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         convert(prhs[2], b);
         convert(prhs[3], p);
         convert(prhs[4], v);
-        instance[handle]->setExtensionUint32(b, p, v);
+        instance[handle]->setExtension(b, p, v);
         break;
       }
 
-      case computeInitialBlockCost:
-        convert(instance[handle]->computeInitialBlockCost(), plhs[0]);
+      case computeInitialCost:
+        convert(instance[handle]->computeInitialCost(), plhs[0]);
         break;
 
-      case computeExtensionBlockCost:
+      case computeExtensionCost:
       {
         static uint32_t b;
         argcheck(nrhs, 3);
         convert(prhs[2], b);
-        convert(instance[handle]->computeExtensionBlockCost(b), plhs[0]);
+        convert(instance[handle]->computeExtensionCost(b), plhs[0]);
         break;
       }
 
+      case extend:
+      {
+        instance[handle]->extend();
+        break;
+      }
+      
       case copy:
       {
         static uint32_t numInstances;

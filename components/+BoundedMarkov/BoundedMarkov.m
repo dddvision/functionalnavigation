@@ -95,72 +95,47 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
       end
     end
     
-    function num = numInitialLogical(this)
-      num = this.initialNumLogical;
-    end
-    
-    function num = numInitialUint32(this)
+    function num = numInitial(this)
       num = this.initialNumUint32;      
     end
     
-    function num = numExtensionLogical(this)
-      num = this.extensionNumLogical;
-    end
-    
-    function num = numExtensionUint32(this)
+    function num = numExtension(this)
       num = uint32(size(this.B, 2));
     end
     
-    function num = numExtensionBlocks(this)
+    function num = numBlocks(this)
       num = uint32(numel(this.block));
     end
     
-    function v = getInitialLogical(this, p)
-      v = this.initialBlock.logical(p+1);
-    end
-    
-    function v = getInitialUint32(this, p)
+    function v = getInitial(this, p)
       v = this.initialBlock.uint32(p+1);
     end
     
-    function v = getExtensionLogical(this, b, p)
-      v = this.block(b+1).logical(p+1);
-    end
-    
-    function v = getExtensionUint32(this, b, p)
+    function v = getExtension(this, b, p)
       v = this.block(b+1).uint32(p+1);
     end
     
-    function setInitialLogical(this, p, v)
-      this.initialBlock.logical(p+1) = v;
-    end
-    
-    function setInitialUint32(this, p, v)
+    function setInitial(this, p, v)
       this.initialBlock.uint32(p+1) = v;
     end
     
-    function setExtensionLogical(this, b, p, v)
-      this.block(b+1).logical(p+1) = v;
-      this.firstNewBlock = min(this.firstNewBlock, b+1);
-    end
-    
-    function setExtensionUint32(this, b, p, v)
+    function setExtension(this, b, p, v)
       this.block(b+1).uint32(p+1) = v;
       this.firstNewBlock = min(this.firstNewBlock, b+1);
     end
 
-    function cost = computeInitialBlockCost(this)
+    function cost = computeInitialCost(this)
       cost = this.initialBlockCost;
     end
 
-    function cost = computeExtensionBlockCost(this, b)
+    function cost = computeExtensionCost(this, b)
       assert(isa(b, 'uint32'));
       assert(numel(b)==1);
       cost = this.extensionBlockCost;
     end
     
     function extend(this)
-      blank = struct('logical', false(0, 1), 'uint32', zeros(1, this.numExtensionUint32(), 'uint32'));
+      blank = struct('logical', false(0, 1), 'uint32', zeros(1, this.numExtension(), 'uint32'));
       this.block = cat(2, this.block, blank);
       N = numel(this.block);
       if((N+1)>size(this.state, 2))

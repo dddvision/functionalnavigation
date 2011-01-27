@@ -31,9 +31,9 @@ namespace tom
    * A component can connect to multiple framework classes
    * Several member functions interact with groups of parameters called blocks
    * There are seperate block descriptions for initial and extension blocks
-   * Each block has zero or more logical parameters and zero or more uint32 parameters
+   * Each block has zero or more uint32 parameters
    * Each uint32 parameter may be treated as range-bounded double via static casting
-   * The range of uint32 is [0,4294967295]
+   * The range of uint32 is [0, 4294967295]
    */
   class DynamicModel : public Trajectory
   {
@@ -185,32 +185,18 @@ namespace tom
     {}
 
     /**
-     * Get number of logical parameters in the initial block
-     *
-     * @return number of parameters
-     */
-    virtual uint32_t numInitialLogical(void) const = 0;
-
-    /**
      * Get number of integer parameters in the initial block
      *
      * @return number of parameters
      */
-    virtual uint32_t numInitialUint32(void) const = 0;
-
-    /**
-     * Get number of logical parameters in each extension
-     *
-     * @return number of parameters
-     */
-    virtual uint32_t numExtensionLogical(void) const = 0;
+    virtual uint32_t numInitial(void) const = 0;
 
     /**
      * Get number of integer parameters in each extension block
      *
      * @return number of parameters
      */
-    virtual uint32_t numExtensionUint32(void) const = 0;
+    virtual uint32_t numExtension(void) const = 0;
 
     /**
      * Get the number of extension blocks
@@ -220,26 +206,7 @@ namespace tom
      * NOTES
      * The return value increments by one when extend() is called
      */
-    virtual uint32_t numExtensionBlocks(void) = 0;
-
-    /**
-     * Extend the time domain by incrementing the number of extension blocks by one
-     *
-     * NOTES
-     * Has no effect if the upper bound of the domain is infinite
-     */
-    virtual void extend(void) = 0;
-
-    /**
-     * Get a logical parameter from the initial block
-     *
-     * @param[in] parameterIndex zero-based parameter index within each block
-     * @return                   parameter value
-     *
-     * NOTES
-     * Throws an exception if any index is outside of the range specified by other member functions
-     */
-    virtual bool getInitialLogical(const uint32_t parameterIndex) = 0;
+    virtual uint32_t numBlocks(void) = 0;
 
     /**
      * Get an integer parameter from the initial block
@@ -250,19 +217,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual uint32_t getInitialUint32(const uint32_t parameterIndex) = 0;
-
-    /**
-     * Get a logical parameter from an extension block
-     *
-     * @param[in] blockIndex     zero-based block index
-     * @param[in] parameterIndex zero-based parameter index within each block
-     * @return                   parameter value
-     *
-     * NOTES
-     * Throws an exception if any index is outside of the range specified by other member functions
-     */
-    virtual bool getExtensionLogical(const uint32_t blockIndex, const uint32_t parameterIndex) = 0;
+    virtual uint32_t getInitial(const uint32_t parameterIndex) = 0;
 
     /**
      * Get an integer parameter from an extension block
@@ -274,18 +229,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual uint32_t getExtensionUint32(const uint32_t blockIndex, const uint32_t parameterIndex) = 0;
-
-    /**
-     * Set a logical parameter in the initial block
-     *
-     * @param[in] parameterIndex zero-based parameter index within each block
-     * @param[in] parameter      value
-     *
-     * NOTES
-     * Throws an exception if any index is outside of the range specified by other member functions
-     */
-    virtual void setInitialLogical(const uint32_t parameterIndex, const bool value) = 0;
+    virtual uint32_t getExtension(const uint32_t blockIndex, const uint32_t parameterIndex) = 0;
 
     /**
      * Set an integer parameter in the initial block
@@ -296,19 +240,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual void setInitialUint32(const uint32_t parameterIndex, const uint32_t value) = 0;
-
-    /**
-     * Set a logical parameter in an extension block
-     *
-     * @param[in] blockIndex     zero-based block index
-     * @param[in] parameterIndex zero-based parameter index within each block
-     * @param[in] parameter      value
-     *
-     * NOTES
-     * Throws an exception if any index is outside of the range specified by other member functions
-     */
-    virtual void setExtensionLogical(const uint32_t blockIndex, const uint32_t parameterIndex, const bool value) = 0;
+    virtual void setInitial(const uint32_t parameterIndex, const uint32_t value) = 0;
 
     /**
      * Set an integer parameter in an extension block
@@ -320,7 +252,7 @@ namespace tom
      * NOTES
      * Throws an exception if any index is outside of the range specified by other member functions
      */
-    virtual void setExtensionUint32(const uint32_t blockIndex, const uint32_t parameterIndex, const uint32_t value) = 0;
+    virtual void setExtension(const uint32_t blockIndex, const uint32_t parameterIndex, const uint32_t value) = 0;
 
     /**
      * Compute the cost associated with an initial block
@@ -332,7 +264,7 @@ namespace tom
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
      */
-    virtual double computeInitialBlockCost(void) = 0;
+    virtual double computeInitialCost(void) = 0;
 
     /**
      * Compute the cost associated with an extension block
@@ -345,10 +277,18 @@ namespace tom
      * A block with zero parameters returns zero cost
      * Cost is the negative natural log of the probability mass function P normalized by its peak value Pinf
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
-     * @see numExtensionBlocks()
+     * @see numBlocks()
      */
-    virtual double computeExtensionBlockCost(const uint32_t blockIndex) = 0;
+    virtual double computeExtensionCost(const uint32_t blockIndex) = 0;
 
+    /**
+     * Extend the time domain by incrementing the number of extension blocks by one
+     *
+     * NOTES
+     * Has no effect if the upper bound of the domain is infinite
+     */
+    virtual void extend(void) = 0;
+    
     /**
      * Explicit deep copy
      *

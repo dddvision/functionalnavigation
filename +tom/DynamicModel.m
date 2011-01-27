@@ -81,25 +81,18 @@ classdef DynamicModel < tom.Trajectory
   end
   
   methods (Abstract = true, Access = public, Static = false)
-    num = numInitialLogical(this);
-    num = numInitialUint32(this);
-    num = numExtensionLogical(this);
-    num = numExtensionUint32(this);
-
-    num = numExtensionBlocks(this);
+    num = numInitial(this);
+    num = numExtension(this);
+    num = numBlocks(this);
     
-    v = getInitialLogical(this, p);
-    v = getInitialUint32(this, p);
-    v = getExtensionLogical(this, b, p);
-    v = getExtensionUint32(this, b, p);
+    v = getInitial(this, p);
+    v = getExtension(this, b, p);
     
-    setInitialLogical(this, p, v);
-    setInitialUint32(this, p, v);
-    setExtensionLogical(this, b, p, v);
-    setExtensionUint32(this, b, p, v);
+    setInitial(this, p, v);
+    setExtension(this, b, p, v);
 
-    cost = computeInitialBlockCost(this);
-    cost = computeExtensionBlockCost(this, b);
+    cost = computeInitialCost(this);
+    cost = computeExtensionCost(this, b);
 
     extend(this);
     obj = copy(this);

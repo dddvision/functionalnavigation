@@ -9,6 +9,6 @@ int main()
     << "trajectories in an infinite loop. See DemoConfig for options." << std::endl;
   
   tom::DynamicModel* dynamicModel = tom::DynamicModel::create("BrownianPlanar", 0.0, "uri");
-  std::cout << dynamicModel->numExtensionBlocks() << std::endl;
+  std::cout << dynamicModel->numBlocks() << std::endl;
   return(0);
 }

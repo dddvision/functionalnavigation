@@ -1,20 +1,17 @@
 classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
   
   properties (Constant = true, GetAccess = private)
-    initialNumLogical = uint32(0);
-    initialNumUint32 = uint32(2);
-    extensionNumLogical = uint32(0);
-    extensionNumUint32 = uint32(0);
+    initialNum = uint32(2);
+    extensionNum = uint32(0);
     extensionBlockCost = 0;
-    numExtension = uint32(0);
-    parameterErrorText = 'This dynamic model has no initial logical parameters';
+    blockNum = uint32(0);
     extensionErrorText = 'This dynamic model has no extension blocks';
   end
   
   properties (GetAccess = private, SetAccess = private)
     initialTime
     uri
-    initialUint32
+    initial
     xRef
   end
   
@@ -33,7 +30,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
       this = this@tom.DynamicModel(initialTime, uri);
       this.initialTime = initialTime;
       this.uri = uri;
-      this.initialUint32 = zeros(1, this.initialNumUint32, 'uint32');
+      this.initial = zeros(1, this.initialNum, 'uint32');
       if(~strncmp(uri, 'antbed:', 7))
         error('URI scheme not recognized');
       end
@@ -55,7 +52,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
         pose = repmat(tom.Pose, [1, 0]);
       else
         pose = this.xRef.evaluate(t);
-        z = block2deviation(this.initialUint32);
+        z = block2deviation(this.initial);
         t = double(t);
         t0 = double(this.initialTime);
         c1 = this.positionOffset-this.positionDeviation*z(1);
@@ -72,7 +69,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
         tangentPose = repmat(tom.TangentPose, [1, 0]);
       else
         tangentPose = this.xRef.tangent(t);
-        z = block2deviation(this.initialUint32);
+        z = block2deviation(this.initial);
         t = double(t);
         t0 = double(this.initialTime);
         c1 = this.positionOffset-this.positionDeviation*z(1);
@@ -84,49 +81,25 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
       end
     end
     
-    function num = numInitialLogical(this)
-      num = this.initialNumLogical;
+    function num = numInitial(this)
+      num = this.initialNum;      
     end
     
-    function num = numInitialUint32(this)
-      num = this.initialNumUint32;      
-    end
-  
-    function num = numExtensionLogical(this)
-      num = this.extensionNumLogical;
-    end
-    
-    function num = numExtensionUint32(this)
-      num = this.extensionNumUint32;
+    function num = numExtension(this)
+      num = this.extensionNum;
     end
 
-    function num = numExtensionBlocks(this)
-      num = this.numExtension;
+    function num = numBlocks(this)
+      num = this.blockNum;
     end
-    
-    function v = getInitialLogical(this, p)
+
+    function v = getInitial(this, p)
       assert(isa(p, 'uint32'));
       assert(numel(p)==1);
-      v = false;
-      error(this.parameterErrorText);
+      v = this.initial(p+1);
     end
 
-    function v = getInitialUint32(this, p)
-      assert(isa(p, 'uint32'));
-      assert(numel(p)==1);
-      v = this.initialUint32(p+1);
-    end
-
-    function v = getExtensionLogical(this, b, p)
-      assert(isa(b, 'uint32'));
-      assert(numel(b)==1);
-      assert(isa(p, 'uint32'));
-      assert(numel(p)==1);
-      v = false;
-      error(this.extensionErrorText);
-    end
-
-    function v = getExtensionUint32(this, b, p)
+    function v = getExtension(this, b, p)
       assert(isa(b, 'uint32'));
       assert(numel(b)==1);
       assert(isa(p, 'uint32'));
@@ -135,34 +108,16 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
       error(this.extensionErrorText);
     end
 
-    function setInitialLogical(this, p, v)
-      assert(isa(p, 'uint32'));
-      assert(numel(p)==1);
-      assert(isa(v, 'logical'));
-      assert(numel(v)==1);
-      error(this.parameterErrorText);
-    end
-
-    function setInitialUint32(this, p, v)
+    function setInitial(this, p, v)
       assert(isa(p, 'uint32'));
       assert(numel(p)==1);
       assert(isa(v, 'uint32'));
       assert(numel(v)==1);
-      % assert(p<this.initialNumUint32); % removed for speed
-      this.initialUint32(p+1) = v;
+      % assert(p<this.initialNum); % removed for speed
+      this.initial(p+1) = v;
     end
     
-    function setExtensionLogical(this, b, p, v)
-      assert(isa(b, 'uint32'));
-      assert(numel(b)==1);
-      assert(isa(p, 'uint32'));
-      assert(numel(p)==1);
-      assert(isa(v, 'logical'));
-      assert(numel(v)==1);
-      error(this.extensionErrorText);
-    end
-    
-   function setExtensionUint32(this, b, p, v)
+    function setExtension(this, b, p, v)
       assert(isa(b, 'uint32'));
       assert(numel(b)==1);
       assert(isa(p, 'uint32'));
@@ -172,12 +127,12 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
       error(this.extensionErrorText);
     end
     
-    function cost = computeInitialBlockCost(this)
-      z = block2deviation(this.initialUint32);
+    function cost = computeInitialCost(this)
+      z = block2deviation(this.initial);
       cost = 0.5*dot(z, z);
     end
 
-    function cost = computeExtensionBlockCost(this, b)
+    function cost = computeExtensionCost(this, b)
       assert(isa(b, 'uint32'));
       assert(numel(b)==1);
       cost = this.extensionBlockCost;

@@ -76,64 +76,40 @@ classdef DynamicModelBridge < tom.DynamicModel
       tangentPose = feval(this.m, this.h, 'tangent', tangentPose, t);
     end
     
-    function num = numInitialLogical(this)
-      num = feval(this.m, this.h, 'numInitialLogical');
+    function num = numInitial(this)
+       num = feval(this.m, this.h, 'numInitial');
     end
     
-    function num = numInitialUint32(this)
-       num = feval(this.m, this.h, 'numInitialUint32');
+    function num = numExtension(this)
+       num = feval(this.m, this.h, 'numExtension');
     end
     
-    function num = numExtensionLogical(this)
-       num = feval(this.m, this.h, 'numExtensionLogical');
+    function num = numBlocks(this)
+       num = feval(this.m, this.h, 'numBlocks');
     end
     
-    function num = numExtensionUint32(this)
-       num = feval(this.m, this.h, 'numExtensionUint32');
-    end
-    
-    function num = numExtensionBlocks(this)
-       num = feval(this.m, this.h, 'numExtensionBlocks');
-    end
-    
-    function v = getInitialLogical(this, p)
-      v = feval(this.m, this.h, 'getInitialLogical', p);
-    end
-    
-    function v = getInitialUint32(this, p)
+    function v = getInitial(this, p)
       v = feval(this.m, this.h, 'getInitialUint32', p);
     end
     
-    function v = getExtensionLogical(this, b, p)
-      v = feval(this.m, this.h, 'getExtensionLogical', b, p);
+    function v = getExtension(this, b, p)
+      v = feval(this.m, this.h, 'getExtension', b, p);
     end
     
-    function v = getExtensionUint32(this, b, p)
-      v = feval(this.m, this.h, 'getExtensionUint32', b, p);
+    function setInitial(this, p, v)
+      feval(this.m, this.h, 'setInitial', p, v);
     end
     
-    function setInitialLogical(this, p, v)
-      feval(this.m, this.h, 'setInitialLogical', p, v);
-    end
-    
-    function setInitialUint32(this, p, v)
-      feval(this.m, this.h, 'setInitialUint32', p, v);
-    end
-    
-    function setExtensionLogical(this, b, p, v)
-      feval(this.m, this.h, 'setExtensionLogical', b, p, v);
-    end
-    
-    function setExtensionUint32(this, b, p, v)
-      feval(this.m, this.h, 'setExtensionUint32', b, p, v);
+    function setExtension(this, b, p, v)
+      feval(this.m, this.h, 'setExtension', b, p, v);
     end
 
-    function cost = computeInitialBlockCost(this)
-      cost = feval(this.m, this.h, 'computeInitialBlockCost');
+    function cost = computeInitialCost(this)
+      cost = feval(this.m, this.h, 'computeInitialCost');
     end
 
-    function cost = computeExtensionBlockCost(this, b)
-      cost = feval(this.m, this.h, 'computeExtensionBlockCost', b);
+    function cost = computeExtensionCost(this, b)
+      cost = feval(this.m, this.h, 'computeExtensionCost', b);
     end
     
     function extend(this)

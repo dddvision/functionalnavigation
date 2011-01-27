@@ -21,40 +21,22 @@ classdef DynamicModelDefault < tom.DynamicModel
   end
   
   methods (Access = public, Static = false)   
-    function num = numInitialLogical(this)
+    function num = numInitial(this)
       assert(isa(this, 'tom.DynamicModel'));
       num = uint32(0);
     end
     
-    function num = numInitialUint32(this)
-      assert(isa(this, 'tom.DynamicModel'));
-      num = uint32(0);
-    end
-  
-    function num = numExtensionLogical(this)
-      assert(isa(this, 'tom.DynamicModel'));
-      num = uint32(0);
-    end
-    
-    function num = numExtensionUint32(this)
+    function num = numExtension(this)
       assert(isa(this, 'tom.DynamicModel'));
       num = uint32(0);
     end
 
-    function num = numExtensionBlocks(this)
+    function num = numBlocks(this)
       assert(isa(this, 'tom.DynamicModel'));
       num = uint32(0);
     end
-    
-    function v = getInitialLogical(this, p)
-      assert(isa(this, 'tom.DynamicModel'));
-      assert(isa(p, 'uint32'));
-      v = false;
-      assert(isa(v, 'logical'));
-      error('The default dynamic model has no input parameters.');
-    end
 
-    function v = getInitialUint32(this, p)
+    function v = getInitial(this, p)
       assert(isa(this, 'tom.DynamicModel'));
       assert(isa(p, 'uint32'));
       v = uint32(0);
@@ -62,16 +44,7 @@ classdef DynamicModelDefault < tom.DynamicModel
       error('The default dynamic model has no input parameters.');
     end
 
-    function v = getExtensionLogical(this, b, p)
-      assert(isa(this, 'tom.DynamicModel'));
-      assert(isa(b, 'uint32'));
-      assert(isa(p, 'uint32'));
-      v = false;
-      assert(isa(v, 'logical'));
-      error('The default dynamic model has no input parameters.');
-    end
-
-    function v = getExtensionUint32(this, b, p)
+    function v = getExtension(this, b, p)
       assert(isa(this, 'tom.DynamicModel'));
       assert(isa(b, 'uint32'));
       assert(isa(p, 'uint32'));
@@ -80,29 +53,14 @@ classdef DynamicModelDefault < tom.DynamicModel
       error('The default dynamic model has no input parameters.');
     end
 
-    function setInitialLogical(this, p, v)
+    function setInitial(this, p, v)
       assert(isa(this, 'tom.DynamicModel'));
       assert(isa(p, 'uint32'));
-      assert(isa(v, 'logical'));
+      assert(isa(v, 'uint32'));
       error('The default dynamic model has no input parameters.');
     end
 
-    function setInitialUint32(this, p, v)
-      assert(isa(this, 'tom.DynamicModel'));
-      assert(isa(p, 'uint32'));
-      assert(isa(v, 'uint32'));
-      error('The default dynamic model has no input parameters.');
-    end
-    
-    function setExtensionLogical(this, b, p, v)
-      assert(isa(this, 'tom.DynamicModel'));
-      assert(isa(b, 'uint32'));
-      assert(isa(p, 'uint32'));
-      assert(isa(v, 'logical'));
-      error('The default dynamic model has no input parameters.');
-    end
-    
-   function setExtensionUint32(this, b, p, v)
+    function setExtension(this, b, p, v)
       assert(isa(this, 'tom.DynamicModel'));
       assert(isa(b, 'uint32'));
       assert(isa(p, 'uint32'));
@@ -110,13 +68,13 @@ classdef DynamicModelDefault < tom.DynamicModel
       error('The default dynamic model has no input parameters.');
     end
     
-    function cost = computeInitialBlockCost(this)
+    function cost = computeInitialCost(this)
       assert(isa(this, 'tom.DynamicModel'));
       cost = 0;
       assert(isa(cost, 'double'));
     end
 
-    function cost = computeExtensionBlockCost(this, b)
+    function cost = computeExtensionCost(this, b)
       assert(isa(this, 'tom.DynamicModel'));
       assert(isa(b, 'uint32'));
       cost = 0;
