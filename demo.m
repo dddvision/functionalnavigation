@@ -85,8 +85,8 @@ end
 % define the problem
 optimizer.defineProblem(dynamicModel, measure, true);
 
-% optimize for a number of steps
-for index = uint32(0):config.numSteps
+% optimize forever
+while(true)
   % check number of solutions
   K = optimizer.numSolutions();
   
@@ -101,10 +101,10 @@ for index = uint32(0):config.numSteps
     end
     
     % update graphical display
-    gui.put(index, trajectory, cost);
+    gui.put(trajectory, cost);
   else
     % update graphical display
-    gui.put(index);
+    gui.put();
   end
   
   % refresh the problem
