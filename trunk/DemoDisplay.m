@@ -3,6 +3,7 @@ classdef DemoDisplay < DemoConfig & handle
   properties (SetAccess = private, GetAccess = private)
     hfigure
     haxes
+    index
     tRef
     pRef
     qRef
@@ -33,6 +34,7 @@ classdef DemoDisplay < DemoConfig & handle
       set(this.haxes, 'ZLimMode', 'manual');
       set(this.haxes, 'Visible', 'on');
       set(this.haxes, 'NextPlot', 'add');
+      this.index = uint32(0);
       
       this.xDefault = tom.DynamicModel.create('tom', initialTime, uri);
       
@@ -60,16 +62,16 @@ classdef DemoDisplay < DemoConfig & handle
     % Visualize a set of trajectories with optional transparency
     %
     % INPUT
-    % index  =  plot index,  double scalar
     % x  =  trajectory instances,  tom.Trajectory N-by-1
     % c  =  costs,  double N-by-1
-    function put(this, index, x, c)
+    function put(this, x, c)
+      this.index = this.index+uint32(1);
       
       % fill missing arguments with defaults
-      if(nargin<4)
+      if(nargin<3)
         c=0;
       end
-      if(nargin<3)
+      if(nargin<2)
         x = this.xDefault;
       end
 
@@ -86,7 +88,7 @@ classdef DemoDisplay < DemoConfig & handle
       
       % text display
       fprintf('\n');
-      fprintf('\nindex: %d', index);
+      fprintf('\nindex: %d', this.index);
       fprintf('\ncost(%d): %0.6f', [1:numel(c); c']);
       fprintf('\nbest(%d): %0.6f', kBest, costBest);
       
@@ -109,10 +111,10 @@ classdef DemoDisplay < DemoConfig & handle
 
       % compute scene parameters from best trajectory or ground truth if available
       if(isempty(this.pRef))
-        [origin, avgSiz, avgPos, cameraPosition] = computeScene(pBest, index);
+        [origin, avgSiz, avgPos, cameraPosition] = computeScene(pBest, this.index);
         summaryText = sprintf('cost = %0.6f', costBest);
       else
-        [origin, avgSiz, avgPos, cameraPosition] = computeScene(this.pRef, index);
+        [origin, avgSiz, avgPos, cameraPosition] = computeScene(this.pRef, this.index);
         pDif = pBest-this.pRef; % position comparison
         pDif = sqrt(sum(pDif.*pDif, 1));
         qDif = acos(sum(qBest.*this.qRef, 1)); % quaternion comparison
@@ -158,7 +160,7 @@ classdef DemoDisplay < DemoConfig & handle
 
       % save snapshot
       if(this.saveFigure)
-        imwrite(fbuffer(this.hfigure), sprintf('%06d.png', index));
+        imwrite(fbuffer(this.hfigure), sprintf('%06d.png', this.index));
       end
     end
   end
