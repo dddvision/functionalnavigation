@@ -3,8 +3,8 @@
 % TODO: supply normpdf without depending on MATLAB toolboxes
 function cost = computeCost2(residual, mu, sigma)
   y = sum( ( (residual - mu)/sigma ).^2 ); % Sum of normalized squared differences 
-  Pux = chi2pdf(y,length(residual)); % P(u|x)
-  infN = chi2pdf(length(residual)-2,length(residual)); % ||P(u|x)||_inf
+  Pux = chisqpdf(y,length(residual)); % P(u|x)
+  infN = chisqpdf(length(residual)-2,length(residual)); % ||P(u|x)||_inf
   cost = -log(Pux/infN);
   
   %YMax = normProb(mu, mu, sigma);
