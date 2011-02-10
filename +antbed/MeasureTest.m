@@ -123,8 +123,8 @@ classdef MeasureTest < handle
             %Set Trajectory Perturbation to matlab machine eps
             epsPose = tom.Pose;
             epsPose.p = [eps('double'); eps('double'); eps('double')];
-            eulerAng = [eps('double'), eps('double'), eps('double')];
-            epsPose.q = Euler2Quat(eulerAng);
+            axisAng = [eps('double'), eps('double'), eps('double')];
+            epsPose.q = Euler2Quat(axisAng);
             baseTrajectory.setPerturbation(epsPose); 
             %double eps utill a different cost is returned
             while 1            
@@ -135,8 +135,8 @@ classdef MeasureTest < handle
                 end
               end
               epsPose.p = 2 * epsPose.p;
-              eulerAng = 2 * eulerAng;
-              epsPose.q = Euler2Quat(eulerAng);
+              axisAng = 2 * axisAng;
+              epsPose.q = Axis2Quat(axisAng);
               baseTrajectory.setPerturbation(zeroPose);      
             end
                        
@@ -158,8 +158,8 @@ classdef MeasureTest < handle
                 edgeCosts(k) = tmp;
               end
               epsPose.p = 2 * epsPose.p;
-              eulerAng = 2 * eulerAng;
-              epsPose.q = Euler2Quat(eulerAng);
+              axisAng = 2 * axisAng;
+              epsPose.q = Axis2Quat(axisAng);
               baseTrajectory.setPerturbation(zeroPose);      
             end
             
@@ -170,9 +170,9 @@ classdef MeasureTest < handle
             fprintf('\nwarning: Skipping measure characterization. Measure has no edges.');              
           end
           
-          
         end
       end
+      
       
       fprintf('\n\n*** End Measure Test ***');
     end
