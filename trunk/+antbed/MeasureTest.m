@@ -47,44 +47,53 @@ classdef MeasureTest < handle
         
         antbed.SensorTest(measure);
         fprintf('\n');
-        
-        if(measure.hasData())
-          first = measure.first();
-          last = measure.last();
-          edges = measure.findEdges(first, last, first, last);
-          display(edges);
-        
-          numEdges = numel(edges);
-          if(numEdges>0)
-            nA = zeros(numel(edges),1);
-            nB = zeros(numel(edges),1);
-            for k = 1:numEdges
-              nA(k) = edges(k).first;
-              nB(k) = edges(k).second;
-            end
-            nMin = min(nA);
-            nMax = max(nB);
-            span = nMax-nMin+uint32(1);
             
-            adjacencyImage = false(span,span);
-            costImage = zeros(span,span);
-            for k = 1:numEdges
-              adjacencyImage(nA(k)-nMin+1,nB(k)-nMin+1) = true;
-              costImage(nA(k)-nMin+1,nB(k)-nMin+1) = measure.computeEdgeCost(trajectory, edges(k));
-            end
-            
-            figure(this.figureHandle);
-            subplot(1, 2, 1);
-            cla;
-            imshow(adjacencyImage);
-            title('Adjacency');
-            subplot(1, 2, 2);
-            cla;
-            imshow(costImage/9);
-            title('Cost');
+      if(measure.hasData())
+        first = measure.first();
+        last = measure.last();
+                
+        edges = measure.findEdges(first, last, first, last);
+        display(edges);
+
+        numEdges = numel(edges);
+        if(numEdges>0)
+          nA = zeros(numel(edges),1);
+          nB = zeros(numel(edges),1);
+          for k = 1:numEdges
+            nA(k) = edges(k).first;
+            nB(k) = edges(k).second;
           end
+          nMin = min(nA);
+          nMax = max(nB);
+          span = nMax-nMin+uint32(1);
+
+          adjacencyImage = false(span,span);
+          costImage = zeros(span,span);
+          for k = 1:numEdges
+            adjacencyImage(nA(k)-nMin+1,nB(k)-nMin+1) = true;
+            costImage(nA(k)-nMin+1,nB(k)-nMin+1) = measure.computeEdgeCost(trajectory, edges(k));
+          end
+
+          figure(this.figureHandle);
+          subplot(1, 2, 1);
+          cla;
+          imshow(adjacencyImage);
+          title('Adjacency');
+          subplot(1, 2, 2);
+          cla;
+          imshow(costImage/9);
+          title('Cost');
         end
       end
+      end
+      
+     %refresh measure while last is increasing
+     last = measure.last();
+     measure.refresh(trajectory);
+     while last~=measure.last()
+        last = measure.last();
+        measure.refresh(trajectory);
+     end
       
       %TODO: Figure out why FastPBM returns no edges to this function, use
       %another measure for now
@@ -105,6 +114,8 @@ classdef MeasureTest < handle
           interval = groundTraj.domain();
           baseTrajectory = antbed.TrajectoryPerturbation(groundTraj.evaluate(interval.first), interval);
           
+          edgeList
+          
           if numel(edgeList) ~= 0
             zeroPose = tom.Pose;
             zeroPose.p = [0; 0; 0];
@@ -123,8 +134,8 @@ classdef MeasureTest < handle
             %Set Trajectory Perturbation to matlab machine eps
             epsPose = tom.Pose;
             epsPose.p = [eps('double'); eps('double'); eps('double')];
-            axisAng = [eps('double'), eps('double'), eps('double')];
-            epsPose.q = Euler2Quat(axisAng);
+            axisAng = [eps('double'); eps('double'); eps('double')];
+            epsPose.q = AxisAngle2Quat(axisAng);
             baseTrajectory.setPerturbation(epsPose); 
             %double eps utill a different cost is returned
             while 1            
@@ -136,8 +147,9 @@ classdef MeasureTest < handle
               end
               epsPose.p = 2 * epsPose.p;
               axisAng = 2 * axisAng;
-              epsPose.q = Axis2Quat(axisAng);
-              baseTrajectory.setPerturbation(zeroPose);      
+              epsPose.q = AxisAngle2Quat(axisAng);
+              baseTrajectory.setPerturbation(zeroPose);  
+              fprintf('Testing with value %f, cost: %f\n', epsPose.p(1), edgeCosts(1));
             end
                        
             %This becomes the granularity
@@ -159,7 +171,7 @@ classdef MeasureTest < handle
               end
               epsPose.p = 2 * epsPose.p;
               axisAng = 2 * axisAng;
-              epsPose.q = Axis2Quat(axisAng);
+              epsPose.q = AxisAngle2Quat(axisAng);
               baseTrajectory.setPerturbation(zeroPose);      
             end
             
@@ -176,6 +188,33 @@ classdef MeasureTest < handle
       
       fprintf('\n\n*** End Measure Test ***');
     end
+        
+    
+    
   end
   
 end
+function q = AxisAngle2Quat(v)
+  v1 = v(1, :);
+  v2 = v(2, :);
+  v3 = v(3, :);
+  n = sqrt(v1.*v1+v2.*v2+v3.*v3);
+  good = n>eps;
+  ngood = n(good);
+  N = numel(n);
+  a = zeros(1, N);
+  b = zeros(1, N);
+  c = zeros(1, N);
+  th2 = zeros(1, N);
+  a(good) = v1(good)./ngood;
+  b(good) = v2(good)./ngood;
+  c(good) = v3(good)./ngood;
+  th2(good) = ngood/2;
+  s = sin(th2);
+  q1 = cos(th2);
+  q2 = s.*a;
+  q3 = s.*b;
+  q4 = s.*c;
+  q = [q1; q2; q3; q4];
+end
+    
