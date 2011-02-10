@@ -86,6 +86,10 @@ classdef MeasureTest < handle
         end
       end
       
+      %TODO: Figure out why FastPBM returns no edges to this function, use
+      %another measure for now
+      
+      
       if(~measure.hasData())
         fprintf('\nwarning: Skipping measure characterization. Measure has no data.');
       elseif(~strncmp(uri, 'antbed:', 7))
@@ -100,12 +104,73 @@ classdef MeasureTest < handle
           groundTraj = container.getReferenceTrajectory();
           interval = groundTraj.domain();
           baseTrajectory = antbed.TrajectoryPerturbation(groundTraj.evaluate(interval.first), interval);
-          zeroPose = tom.Pose;
-          zeroPose.p = [0; 0; 0];
-          zeroPose.q = [1; 0; 0; 0];
-          baseTrajectory.setPerturbation(zeroPose);
-          basePose = baseTrajectory.evaluate(0);
-          display(basePose);
+          
+          if numel(edgeList) ~= 0
+            zeroPose = tom.Pose;
+            zeroPose.p = [0; 0; 0];
+            zeroPose.q = [1; 0; 0; 0];
+            baseTrajectory.setPerturbation(zeroPose);          
+            basePose = baseTrajectory.evaluate(0);
+            display(basePose);         
+            edgeCosts = 0:size(edgeList);
+            
+            %Compute cost at ground truth, save for bias and granularity
+            %computations
+            for k = 1:numel(edgeList)
+              edgeCosts(k) = measure.computeEdgeCost(baseTrajectory, edgeList(k));
+            end
+            
+            %Set Trajectory Perturbation to matlab machine eps
+            epsPose = tom.Pose;
+            epsPose.p = [eps('double'); eps('double'); eps('double')];
+            eulerAng = [eps('double'), eps('double'), eps('double')];
+            epsPose.q = Euler2Quat(eulerAng);
+            baseTrajectory.setPerturbation(epsPose); 
+            %double eps utill a different cost is returned
+            while 1            
+              for k = 1:numel(edgeList)
+                tmp = measure.computeEdgeCost(baseTrajectory, edgeList(k));
+                if tmp ~= edgeCosts(k)
+                  break;
+                end
+              end
+              epsPose.p = 2 * epsPose.p;
+              eulerAng = 2 * eulerAng;
+              epsPose.q = Euler2Quat(eulerAng);
+              baseTrajectory.setPerturbation(zeroPose);      
+            end
+                       
+            %This becomes the granularity
+            Granularity = epsPose.p(1);
+            Bias =  mean(edgeCosts);
+            
+            
+            fprintf('Granularity: %f', Granularity);
+            fprintf('Bias: %f', Bias);
+            
+            %Compute Monotonicity
+            %construct sample space based off granularity
+            MonotinicityAry = zeros(10, size(edgeList));
+            for i = 1:10        
+              for k = 1:numel(edgeList)
+                tmp = measure.computeEdgeCost(baseTrajectory, edgeList(k));
+                MonotinicityAry(i,k) = 2* (tmp - edgeCosts(k)) / epsPose.p(1);
+                edgeCosts(k) = tmp;
+              end
+              epsPose.p = 2 * epsPose.p;
+              eulerAng = 2 * eulerAng;
+              epsPose.q = Euler2Quat(eulerAng);
+              baseTrajectory.setPerturbation(zeroPose);      
+            end
+            
+            Monotinicity = mean(mean(MonotinicityAry));
+            fprintf('Monotinicity: %f', Monotinicity);
+            
+          else
+            fprintf('\nwarning: Skipping measure characterization. Measure has no edges.');              
+          end
+          
+          
         end
       end
       
