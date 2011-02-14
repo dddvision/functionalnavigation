@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <tchar.h>
 #include "mex.h"
 #include "cv.h"
 #include "cxcore.h"

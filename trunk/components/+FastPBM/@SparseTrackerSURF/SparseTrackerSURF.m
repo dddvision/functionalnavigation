@@ -30,7 +30,7 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             if(~exist([fileparts(mfilename('fullpath')),filesep,'private',filesep,'MEXSURF.',mexext],'file'))
                 
                 % Locate OpenCV libraries
-                fprintf('\SparseTrackerSURF::Mexing SURF....');
+                fprintf('\nSparseTrackerSURF: Mexing SURF...');
                 userPath = path;
                 userWarnState = warning('off', 'all'); % see MATLAB Solution ID 1-5JUPSQ
                 addpath(getenv('LD_LIBRARY_PATH'), '-END');
