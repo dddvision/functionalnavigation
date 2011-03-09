@@ -7,12 +7,12 @@ classdef FastPBMConfig < handle
     
     % parameters related to calibration
     calibrate = false; % (false) compute calibration
-    trackerName = 'SparseTrackerSURF';%;'SparseTrackerKLT'; % ('SparseTrackerKLT') name of the tracker implementation to use
+    trackerName = 'SparseTrackerKLT';%;'SparseTrackerKLT'; % ('SparseTrackerKLT') name of the tracker implementation to use
     angularDeviation = 0.005; % angular deviation of the tracker in radians
     % TODO: Manually change this calibration model.
     %       It should not be automatic, because human-validation is a part of modeling.
 
     % parameters related to visualization
-    displayFeatures = false; % (false) show tracked features
+    displayFeatures = true; % (false) show tracked features
   end
 end

@@ -113,7 +113,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         poseB.p(3)-poseA.p(3)];
       
       residual = computeResidual(translation, data.rayA, data.rayB);
-      cost = computeCost2(residual, 0, this.angularDeviation);
+      cost = computeCost2(residual, 0, this.angularDeviation, this.maxCost);
     end
   end
     

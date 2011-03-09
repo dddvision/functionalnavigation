@@ -14,6 +14,6 @@ classdef MiddleburyTempleConfig  < handle
     secondsPerRefresh = 1; % (1) seconds per call to the refresh function
     
     % display warnings and other diagnostic information (true)
-    verbose = true;
+    verbose = true; % (true)
   end
 end
