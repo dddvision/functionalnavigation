@@ -4,7 +4,7 @@ classdef DemoConfig < handle
     % trajectory optimization parameters
     uri = 'antbed:MiddleburyTemple'; % ('antbed:MiddleburyTemple') select hardware resource or data container
     dynamicModelName = 'InertialTDMSim'; % ('tom') name of a single DynamicModel component
-    measureNames = {'FastPBM'}; % ({'tom'}) cell array of zero or more names of Measure components
+    measureNames = {'OpticalFlowOpenCV'}; % ({'tom'}) cell array of zero or more names of Measure components
     optimizerName = 'MatlabGA'; % ('tom') name of a single Optimizer component
     
     % display parameters

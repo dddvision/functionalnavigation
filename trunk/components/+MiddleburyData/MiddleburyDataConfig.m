@@ -13,6 +13,6 @@ classdef MiddleburyDataConfig  < handle
     secondsPerRefresh = 1; % (1) seconds per call to the refresh function
     
     % diagnostic parameters
-    verbose = false; % (false) display warnings and other diagnostic information
+    verbose = true; % (true) display warnings and other diagnostic information
   end
 end
