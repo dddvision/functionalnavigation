@@ -77,7 +77,7 @@ namespace antbed
    * NOTES
    * @see tom::WorldTime
    */
-  WorldTime getCurrentTime(void)
+  tom::WorldTime getCurrentTime(void)
   {
     timeval tv;
     long int offset = 315964800; // difference between Jan 6 1980 and Jan 1 1979
