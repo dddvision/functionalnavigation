@@ -1,22 +1,22 @@
 function data = computeIntermediateData(this, na, nb)
   persistent handle
 
-  ia = this.sensor.getImage(na);
-  ib = this.sensor.getImage(nb);
+  imageA = this.sensor.getImage(na);
+  imageB = this.sensor.getImage(nb);
   
   switch( this.sensor.interpretLayers() )
   case {'rgb', 'rgbi'}
-    ia = double(rgb2gray(ia(:, :, 1:3)));
-    ib = double(rgb2gray(ib(:, :, 1:3)));
+    imageA = double(rgb2gray(imageA(:, :, 1:3)));
+    imageB = double(rgb2gray(imageB(:, :, 1:3)));
   case {'hsv', 'hsvi'}
-    ia = double(ia(:, :, 3));
-    ib = double(ib(:, :, 3));
+    imageA = double(imageA(:, :, 3));
+    imageB = double(imageB(:, :, 3));
   otherwise
-    ia = double(ia);
-    ib = double(ib);
+    imageA = double(imageA);
+    imageB = double(imageB);
   end
 
-  [pixA, pixB] = mexOpticalFlowOpenCV(double(ia), double(ib), double(this.isDense), this.windowSize, this.levels);
+  [pixA, pixB] = mexOpticalFlowOpenCV(double(imageA), double(imageB), double(this.isDense), this.windowSize, this.levels);
   data = struct('pixA', pixA, 'pixB', pixB);
   
   if(this.displayFlow)
@@ -26,14 +26,11 @@ function data = computeIntermediateData(this, na, nb)
       figure(handle);
       clf(handle);
     end
-    imshow(cat(3, zeros(size(ia)), ia/512, ib/255));
+    imshow(cat(3, zeros(size(imageA)), imageA/512, imageB/255));
     hold('on');
     pixA = pixA+1;
     pixB = pixB+1;
-    for ind = 1:size(pixA, 1)
-      plot([pixA(ind, 1), pixB(ind, 1)], [pixA(ind, 2), pixB(ind, 2)], 'r');
-    end
-    colormap('gray');
+    line([pixA(:, 1), pixB(:, 1)]', [pixA(:, 2), pixB(:, 2)]', 'Color', 'r');
     hold('off');
     drawnow;
   end
