@@ -10,10 +10,4 @@ function cost = computeCost2(residual, mu, sigma, maxCost)
   else
     cost = maxCost;
   end
-  
-  %YMax = normProb(mu, mu, sigma);
-  %Y = normProb(residual, mu, sigma);
-  %Y = Y/YMax;
-  %cost = sum(-log(Y))/numel(Y);
-  % TODO: explain why this is divided by numel(Y)?
 end
