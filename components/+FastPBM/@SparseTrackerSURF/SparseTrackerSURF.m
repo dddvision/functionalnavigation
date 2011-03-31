@@ -135,9 +135,9 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
           % process all new images
           for nodeB = nodeB:nodeLast
             
-            im1 = double(rgb2gray(this.camera.getImage(this.nodeA)));
-            im2 = double(rgb2gray(this.camera.getImage(nodeB)));
-            [r1 r2] = MEXSURF(im1, im2, this.matchThreshold);
+            im1 = this.prepareImage(this.nodeA);
+            im2 = this.prepareImage(nodeB);
+            [r1, r2] = MEXSURF(im1, im2, this.matchThreshold);
 
             this.yA = r1(:, 1)'+1;
             this.xA = r1(:, 2)'+1;
@@ -154,7 +154,7 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
                   delete(this.plotHandle);
                 end
               end
-              imshow(this.camera.getImage(this.nodeA), []);
+              imshow(cat(3, zeros(size(im1)), im1/512, im2/255));
               axis('image');
               hold('on');
               this.plotHandle = plot([this.yA; yB], [this.xA; xB], 'r');
@@ -195,50 +195,15 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
     
     % Prepare an image for processing
-    %
-    % Computes number of pyramid levels if this.firstTrack is true
-    % Gets an image from the camera
-    % Converts to grayscale and normalizes to the range [0,1]
-    % Applies NaN mask outside of the projection area
-    % Pads the bottom and right sides with NaN based on pyramid levels (does not affect pixel coordinates)
     function img = prepareImage(this, node)
-      if(this.firstTrack)
-        steps = this.camera.numSteps();
-        strides = this.camera.numStrides();
-        [stepGrid, strideGrid] = ndgrid(0:(double(steps)-1), 0:(double(strides)-1));
-        pix = [strideGrid(:)'; stepGrid(:)'];
-        ray = this.camera.inverseProjection(pix,node);
-        this.mask = find(isnan(ray(1, :)));
-        pix = [double(strides)-2; double(steps)-1]/2;
-        pix = [pix, pix+[1; 0]];
-        ray = this.camera.inverseProjection(pix, node);
-        angularSpacing = acos(dot(ray(:, 1), ray(:, 2)));
-        maxPix = this.maxSearch/angularSpacing;
-        this.numLevels = uint32(1+ceil(log2(maxPix/this.halfwin)));
-        this.firstTrack = false;
-      end
       img = this.camera.getImage(node);
       switch(this.camera.interpretLayers())
         case {'rgb', 'rgbi'}
-          img = double(rgb2gray(img(:, :, 1:3)))/255;
+          img = double(rgb2gray(img(:, :, 1:3)));
         case {'hsv', 'hsvi'}
-          img = double(img(:, :, 3))/255;
+          img = double(img(:, :, 3));
         otherwise
-          img = double(img)/255;
-      end
-      img(this.mask) = NaN;
-      multiple = 2^(this.numLevels-1);
-      [M, N] = size(img);
-      Mpad = multiple-mod(M, multiple);
-      Npad = multiple-mod(N, multiple);
-      if((Mpad>0)||(Npad>0))
-        img(M+Mpad, N+Npad) = 0; % allocates memory for padded image
-      end
-      if(Mpad>0)
-        img((M+1):(M+Mpad), :) = NaN;
-      end
-      if(Npad>0)
-        img(:, (N+1):(N+Npad)) = NaN;
+          img = double(img);
       end
     end
   end

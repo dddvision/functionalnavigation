@@ -26,12 +26,12 @@ function data = computeIntermediateData(this, na, nb)
       figure(handle);
       clf(handle);
     end
-    imagesc(ia);
+    imshow(cat(3, zeros(size(ia)), ia/512, ib/255));
     hold('on');
     pixA = pixA+1;
     pixB = pixB+1;
     for ind = 1:size(pixA, 1)
-      line([pixA(ind, 1), pixB(ind, 1)], [pixA(ind, 2), pixB(ind, 2)], 'Color', 'c');
+      plot([pixA(ind, 1), pixB(ind, 1)], [pixA(ind, 2), pixB(ind, 2)], 'r');
     end
     colormap('gray');
     hold('off');
