@@ -135,9 +135,9 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
           % process all new images
           for nodeB = nodeB:nodeLast
             
-            im1 = this.prepareImage(this.nodeA);
-            im2 = this.prepareImage(nodeB);
-            [r1, r2] = MEXSURF(im1, im2, this.matchThreshold);
+            imageA = this.prepareImage(this.nodeA);
+            imageB = this.prepareImage(nodeB);
+            [r1, r2] = MEXSURF(imageA, imageB, this.matchThreshold);
 
             this.yA = r1(:, 1)'+1;
             this.xA = r1(:, 2)'+1;
@@ -154,10 +154,10 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
                   delete(this.plotHandle);
                 end
               end
-              imshow(cat(3, zeros(size(im1)), im1/512, im2/255));
+              imshow(cat(3, zeros(size(imageA)), imageA/512, imageB/255));
               axis('image');
               hold('on');
-              this.plotHandle = plot([this.yA; yB], [this.xA; xB], 'r');
+              this.plotHandle = line([this.yA; yB], [this.xA; xB], 'Color', 'r');
               drawnow;
             end
             
