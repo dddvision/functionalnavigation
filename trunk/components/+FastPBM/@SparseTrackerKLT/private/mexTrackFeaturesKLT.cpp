@@ -100,7 +100,7 @@ public:
     double xo, yo, xr, yr;
     double a00, a01, a10, a11;
     double gx, gy, gt, xx, yy, xy, xt, yt;
-    double det, dx, dy, residue;
+    double det, dx, dy, interpb, sumab, residue;
     int iteration;
     int xf, yf;
     int p00, p01, p10, p11;
@@ -260,11 +260,14 @@ public:
     /* run through and sum absolute intensity differences */
     p = 0;
     residue = 0.0;
+    sumab = 0.0;
     for(j = 0; j<win; ++j)
     {
       for(i = 0; i<win; ++i)
       {
-        residue += fabs(Ib[p00]*a00+Ib[p01]*a01+Ib[p10]*a10+Ib[p11]*a11-Iap[p]);
+        interpb = Ib[p00]*a00+Ib[p01]*a01+Ib[p10]*a10+Ib[p11]*a11;
+        sumab += interpb+Iap[p]; 
+        residue += fabs(interpb-Iap[p]);
         p++;
         p00++;
         p01++;
@@ -276,10 +279,9 @@ public:
       p10 += strideMinusWin;
       p11 += strideMinusWin;
     }
-    residue /= static_cast<double>(win2);
         
     /* check sum of absolute difference residue threshold */
-    if(residue>(1.0-thresh))
+    if(residue>(sumab*(1.0-thresh)))
     {
       (*xb) = NAN;
       (*yb) = NAN;

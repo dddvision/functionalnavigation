@@ -2,7 +2,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
   properties (Constant = true, GetAccess = private)
     halfwin = 5;
-    thresh = 0.95;
+    thresh = 0.92;
     cornerMethod = 'Harris';
   end
   
@@ -140,8 +140,8 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             
             % optionally display tracking results
             if(this.displayFeatures)
-              imageA = this.pyramidA{1}.f*255;
-              imageB = pyramidB{1}.f*255;
+              imageA = this.pyramidA{1}.f;
+              imageB = pyramidB{1}.f;
               if(isempty(this.figureHandle))
                 this.figureHandle = figure;
               else
@@ -150,7 +150,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
                   delete(this.plotHandle);
                 end
               end
-              imshow(cat(3, zeros(size(imageA)), imageA/512, imageB/255));
+              imshow(cat(3, zeros(size(imageA)), 0.5+(imageA-imageB)/2, 0.5+(imageB-imageA)));
               axis('image');
               hold('on');
               this.plotHandle = line([this.yA(good); yB(good)], [this.xA(good); xB(good)], 'Color', 'r');
