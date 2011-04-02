@@ -20,13 +20,15 @@ function data = computeIntermediateData(this, na, nb)
   data = struct('pixA', pixA, 'pixB', pixB);
   
   if(this.displayFlow)
+    imageA = imageA/255;
+    imageB = imageB/255;
     if(isempty(handle))
       handle = figure;
     else
       figure(handle);
       clf(handle);
     end
-    imshow(cat(3, zeros(size(imageA)), imageA/512, imageB/255));
+    imshow(cat(3, zeros(size(imageA)), 0.5+(imageA-imageB)/2, 0.5+(imageB-imageA)));
     hold('on');
     pixA = pixA+1;
     pixB = pixB+1;
