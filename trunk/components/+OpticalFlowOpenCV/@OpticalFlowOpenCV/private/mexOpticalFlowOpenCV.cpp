@@ -15,8 +15,8 @@ void runOF(IplImage* imgA, IplImage* imgB,bool isDense,int windowsSize,int level
 
 	// Get features' locations for tracking
 	if (isDense){
-		cornersA = new CvPoint2D32f[ img_sz.height*img_sz.width];
-		cornersB = new CvPoint2D32f[  img_sz.height*img_sz.width ];
+		cornersA = new CvPoint2D32f[img_sz.height*img_sz.width];
+		cornersB = new CvPoint2D32f[img_sz.height*img_sz.width];
 		int cnt = 0;
 		for(int row=0;row<img_sz.height;row++){
 			for(int col=0;col<img_sz.width;col++){
@@ -30,8 +30,8 @@ void runOF(IplImage* imgA, IplImage* imgB,bool isDense,int windowsSize,int level
 	else{
 		IplImage* eig_image = cvCreateImage( img_sz, IPL_DEPTH_32F, 1 );
 		IplImage* tmp_image = cvCreateImage( img_sz, IPL_DEPTH_32F, 1 );
-		cornersA = new CvPoint2D32f[ MAX_CORNERS];
-		cornersB = new CvPoint2D32f[  MAX_CORNERS];
+		cornersA = new CvPoint2D32f[MAX_CORNERS];
+		cornersB = new CvPoint2D32f[MAX_CORNERS];
 		corner_count = MAX_CORNERS;
 
 		cvGoodFeaturesToTrack( imgA, eig_image, tmp_image, cornersA, &corner_count,
