@@ -17,12 +17,12 @@ function [x, y] = findPeaks(img, halfwin, num)
   ry = (rand(1,num)+rand(1,num))/2;
   x = round(xMin+rx*(xMax-xMin));
   y = round(yMin+ry*(yMax-yMin));
-  for n=1:num
-    xn=x(n);
-    yn=y(n);
-    region=img(xn+w,yn+w);
-    [v,p]=max(region(:));
-    x(n)=xn+xx(p);
-    y(n)=yn+yy(p);
+  for n = 1:num
+    xn = x(n);
+    yn = y(n);
+    region = img(xn+w, yn+w);
+    [v, p] = max(region(:));
+    x(n) = xn+xx(p);
+    y(n) = yn+yy(p);
   end
 end

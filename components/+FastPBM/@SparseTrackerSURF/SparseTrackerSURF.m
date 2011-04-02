@@ -1,7 +1,9 @@
 classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
   properties (Constant = true, GetAccess = private)
-    matchThreshold = 0.4;
+    openSurfOptions = struct('tresh',  0.00005,...
+              'init_sample', 1,...
+              'octaves',  3);
   end
   
   properties (GetAccess = private, SetAccess = private)
@@ -17,57 +19,12 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     firstTrack
     figureHandle
     plotHandle
-    numLevels
   end
   
   methods (Access = public, Static = true)
     function this = SparseTrackerSURF(initialTime, camera)
       this = this@FastPBM.SparseTracker(initialTime);
-      
-      % store camera handle
       this.camera = camera;
-      
-      if(~exist([fileparts(mfilename('fullpath')),filesep,'private',filesep,'MEXSURF.',mexext],'file'))
-        
-        % Locate OpenCV libraries
-        fprintf('\nSparseTrackerSURF: Mexing SURF...');
-        userPath = path;
-        userWarnState = warning('off', 'all'); % see MATLAB Solution ID 1-5JUPSQ
-        addpath(getenv('LD_LIBRARY_PATH'), '-END');
-        addpath(getenv('PATH'), '-END');
-        warning(userWarnState);
-        if(ispc)
-          libdir=fileparts(which('cv110.lib'));
-          %libdir = fileparts(which('cv.lib'));
-        elseif(ismac)
-          libdir = fileparts(which('libcv.dylib'));
-        else
-          libdir = fileparts(which('libcv.so'));
-        end
-        path(userPath);
-        
-        % Compile and link against OpenCV libraries
-        userDirectory = pwd;
-        cd(fullfile(fileparts(mfilename('fullpath')), 'private'));
-        
-        try
-          if(ispc)
-            mex('MEXSURF.cpp',['-L"',libdir,'"'],'-lcv110','-lcxcore110', '-lhighgui110', '-lcvaux110');
-            %mex('MEXSURF.cpp',['-L"',libdir,'"'],'-lcvd','-lcxcored', '-lhighguid', '-lcvauxd');
-          elseif(ismac)
-            mex('MEXSURF.cpp',['-L"',libdir,'"'],'-lcv','-lcxcore', '-lhighgui', '-lcvaux');
-          else
-            mex('MEXSURF.cpp',['-L"',libdir,'"'],'-lcv','-lcxcore', '-lhighgui', '-lcvaux');
-          end
-        catch err
-          details =['mex fail' err.message];
-          cd(userDirectory);
-          error(details);
-        end
-        cd(userDirectory);
-        fprintf('Done\n');
-      end
-      
       this.firstTrack = true;
       this.track();
     end
@@ -137,12 +94,14 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             
             imageA = this.prepareImage(this.nodeA);
             imageB = this.prepareImage(nodeB);
-            [r1, r2] = MEXSURF(imageA, imageB, this.matchThreshold);
-
-            this.yA = r1(:, 1)'+1;
-            this.xA = r1(:, 2)'+1;
-            yB = r2(:, 1)'+1;
-            xB = r2(:, 2)'+1;
+            
+            keyA = OpenSurf(imageA, this.openSurfOptions);
+            keyB = OpenSurf(imageB, this.openSurfOptions);
+            [a, b] = MatchSurf(keyA, keyB);
+            this.xA = [keyA(a).y];
+            this.yA = [keyA(a).x];
+            xB = [keyB(b).y];
+            yB = [keyB(b).x];
             
             % optionally display tracking results
             if(this.displayFeatures)
@@ -154,7 +113,7 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
                   delete(this.plotHandle);
                 end
               end
-              imshow(cat(3, zeros(size(imageA)), imageA/512, imageB/255));
+              imshow(cat(3, zeros(size(imageA)), 0.5+(imageA-imageB)/2, 0.5+(imageB-imageA)));
               axis('image');
               hold('on');
               this.plotHandle = line([this.yA; yB], [this.xA; xB], 'Color', 'r');
@@ -171,12 +130,6 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
           this.nodePrevious = nodeB;
         end
       end
-    end
-    
-    % randomly select new image features
-    function [x, y] = selectFeatures(this, gx, gy, num)
-      kappa = computeCornerStrength(gx, gy, 1, this.cornerMethod);
-      [x, y] = findPeaks(kappa, this.halfwin, num);
     end
     
     % get unique indices
@@ -199,11 +152,11 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       img = this.camera.getImage(node);
       switch(this.camera.interpretLayers())
         case {'rgb', 'rgbi'}
-          img = double(rgb2gray(img(:, :, 1:3)));
+          img = double(rgb2gray(img(:, :, 1:3)))/255;
         case {'hsv', 'hsvi'}
-          img = double(img(:, :, 3));
+          img = double(img(:, :, 3))/255;
         otherwise
-          img = double(img);
+          img = double(img)/255;
       end
     end
   end
