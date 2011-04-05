@@ -105,19 +105,43 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       
       poseA = x.evaluate(tA);
       poseB = x.evaluate(tB);
-      
-      data = computeIntermediateDataCache(this, graphEdge.first, graphEdge.second); % old calling syntax
-      
-      translation = [poseB.p(1)-poseA.p(1);
-        poseB.p(2)-poseA.p(2);
-        poseB.p(3)-poseA.p(3)];
-      
-      residual = computeResidual(translation, data.rayA, data.rayB);
-      cost = computeCost2(residual, 0, this.angularDeviation, this.maxCost);
+      data = edgeCache(nA, nB, this);
+      cost = computeCost(poseA, poseB, data.rayA, data.rayB, 0, this.angularDeviation, this.maxCost);     
     end
   end
     
   methods (Access = private)
+    function data = processNode(this, n)
+      % enumerate features at this node
+      num = this.tracker.numFeatures(n);
+      k = (uint32(1):num)-uint32(1);
+
+      % get feature identifiers  
+      id = this.tracker.getFeatureID(n, k);
+
+      % get rays
+      ray = this.tracker.getFeatureRay(n, k);
+
+      % store results
+      data = struct('id', id, 'ray', ray);
+    end
+
+    function data = processEdge(this, nA, nB)
+      % process individual nodes to extract features
+      dataA = nodeCache(nA, this);
+      dataB = nodeCache(nB, this);
+
+      % find features common to both images, inputs must be double, first output is not needed
+      [idAB, indexA, indexB] = intersect(double(dataA.id), double(dataB.id));
+
+      % select data common to both images
+      rayA = dataA.ray(:, indexA);
+      rayB = dataB.ray(:, indexB);
+
+      % store results
+      data = struct('rayA', rayA, 'rayB', rayB);
+    end
+    
     function generateModel(this, groundTraj)      
       for k = 1:100
         this.tracker.refresh(groundTraj);
@@ -180,4 +204,33 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
     end
   end
   
+end
+
+% Caches data indexed by individual indices
+function data = nodeCache(n, obj)
+  persistent cache
+
+  nKey = ['n', sprintf('%d', n)];
+
+  if( isfield(cache, nKey) )
+    data = cache.(nKey);
+  else
+    data = obj.processNode(n);
+    cache.(nKey) = data;
+  end
+end
+
+% Caches data indexed by pairs of indices
+function data = edgeCache(nA, nB, obj)
+  persistent cache
+
+  nAKey = ['a', sprintf('%d', nA)];
+  nBKey = ['b', sprintf('%d', nB)];
+
+  if( isfield(cache, nAKey)&&isfield(cache.(nAKey), nBKey) )
+    data = cache.(nAKey).(nBKey);
+  else
+    data = obj.processEdge(nA, nB);
+    cache.(nAKey).(nBKey) = data;
+  end
 end
