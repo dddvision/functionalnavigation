@@ -1,7 +1,6 @@
 classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
   
   properties (SetAccess = private, GetAccess = private)
-    container
     sensor
     tracker
   end
@@ -76,14 +75,14 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       if(~strncmp(uri, 'antbed:', 7))
         error('URI scheme not recognized');
       end
-      this.container = antbed.DataContainer.create(uri(8:end), initialTime);
-      list = this.container.listSensors('antbed.Camera');
+      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      list = container.listSensors('antbed.Camera');
       if(isempty(list))
         error('At least one camera must be present in the data container');
       end
       
       % get the first camera
-      this.sensor = this.container.getSensor(list(1));
+      this.sensor = container.getSensor(list(1));
 
       % instantiate the tracker by name
       switch(this.trackerName)

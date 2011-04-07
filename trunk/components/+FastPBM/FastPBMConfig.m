@@ -4,7 +4,7 @@ classdef FastPBMConfig < handle
     maxCost = 20; % (20) maximum cost for a single graph edge
     maxFeatures = 500; % (500) maximum integer number of features per frame to find
     maxSearch = 0.02; % (0.02) approximate maximum angle to search for a feature in radians
-    trackerName = 'SparseTrackerSURF'; % ('SparseTrackerKLT') name of the tracker implementation to use
+    trackerName = 'SparseTrackerKLT'; % ('SparseTrackerKLT') name of the tracker implementation to use
     angularDeviation = 0.003; % angular deviation of the tracker in radians
 
     % parameters that do not affect the measure
