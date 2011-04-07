@@ -18,7 +18,7 @@ function test(name)
   
   % add component repository to the path
   componentPath = fullfile(fileparts(mfilename('fullpath')), 'components');
-  if(isempty(findstr(componentPath, path)))
+  if(isempty(strfind(path, componentPath)))
     fprintf('\naddpath =');
     addpath(componentPath);
     fprintf(' %s', componentPath);

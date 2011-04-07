@@ -1,6 +1,7 @@
 classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
   
   properties (SetAccess = private, GetAccess = private)
+    container
     sensor
     tracker
   end
@@ -14,15 +15,75 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
     end
   end
   
+  methods (Static = true, Access = public)
+    % Perform calibration without using cache functions
+    function calibrate()
+      close('all');
+      
+      this = tom.Measure.create('FastPBM', tom.WorldTime(0), 'antbed:MiddleburyData');
+      fprintf('\n\n*** Computing Calibration Parameters (radians) ***\n');
+      
+      groundTraj = this.container.getReferenceTrajectory();
+        
+      for k = 1:100
+        this.tracker.refresh(groundTraj);
+      end
+
+      nFirst = this.tracker.first();
+      nLast = this.tracker.last();
+      edgeList = this.findEdges(nFirst, nLast, nFirst, nLast);
+
+      residual = [];
+      for i = 1:numel(edgeList)
+        nA = edgeList(i).first;
+        nB = edgeList(i).second;
+
+        tA = this.tracker.getTime(nA);
+        tB = this.tracker.getTime(nB);
+
+        poseA = groundTraj.evaluate(tA);
+        poseB = groundTraj.evaluate(tB);
+
+        numA = this.tracker.numFeatures(nA);
+        numB = this.tracker.numFeatures(nB);
+        kA = (uint32(1):numA)-uint32(1);
+        kB = (uint32(1):numB)-uint32(1);
+        idA = this.tracker.getFeatureID(nA, kA);
+        idB = this.tracker.getFeatureID(nB, kB);
+
+        % find features common to both images
+        [idAB, indexA, indexB] = intersect(double(idA), double(idB)); % only supports double
+        kA = kA(indexA);
+        kB = kB(indexB);
+
+        % get corresponding rays
+        rayA = this.tracker.getFeatureRay(nA, kA);
+        rayB = this.tracker.getFeatureRay(nB, kB);
+
+        residual = [residual, computeResidual(poseA, poseB, rayA, rayB)];
+        
+        mu = mean(residual);
+        sigma = sqrt(sum(residual.*residual)/numel(residual));
+        fprintf('\nmean = %f , deviation = %f', mu, sigma);
+      end
+    end
+  end
+  
   methods (Access = public)
     function this = FastPBM(initialTime, uri)
-      this = this@tom.Measure(initialTime, uri);     
+      this = this@tom.Measure(initialTime, uri);
+      
       if(~strncmp(uri, 'antbed:', 7))
         error('URI scheme not recognized');
       end
-      container = antbed.DataContainer.create(uri(8:end), initialTime);
-      list = container.listSensors('antbed.Camera');
-      this.sensor = container.getSensor(list(1));
+      this.container = antbed.DataContainer.create(uri(8:end), initialTime);
+      list = this.container.listSensors('antbed.Camera');
+      if(isempty(list))
+        error('At least one camera must be present in the data container');
+      end
+      
+      % get the first camera
+      this.sensor = this.container.getSensor(list(1));
 
       % instantiate the tracker by name
       switch(this.trackerName)
@@ -32,14 +93,6 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         this.tracker = FastPBM.SparseTrackerSURF(initialTime, this.sensor);
       otherwise
         error('unrecognized tracker');
-      end
-      
-      if(this.calibrate)
-        if(hasReferenceTrajectory(container))
-          this.generateModel(getReferenceTrajectory(container));
-        else
-          error('must supply a reference trajectory to perform calibration');
-        end
       end
     end
     
@@ -140,93 +193,8 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       % store results
       data = struct('rayA', rayA, 'rayB', rayB);
     end
-    
-    function generateModel(this, groundTraj)      
-      for k = 1:100
-        this.tracker.refresh(groundTraj);
-      end
-
-      nFirst = this.tracker.first();
-      nLast = this.tracker.last();
-      edgeList = this.findEdges(nFirst, nLast, nFirst, nLast);
-
-      for i = 1:numel(edgeList)
-        nA = edgeList(i).first;
-        nB = edgeList(i).second;
-
-        % return 0 if the specified edge is not found in the graph
-        isAdjacent = (nA<nB) && ...
-          this.tracker.hasData() && ...
-          (nA>=this.tracker.first()) && ...
-          (nB<=this.tracker.last());
-        if(~isAdjacent)
-          return;
-        end
-
-        % return NaN if the graph edge extends outside of the trajectory domain
-        tA = this.tracker.getTime(nA);
-        tB = this.tracker.getTime(nB);
-        interval = groundTraj.domain();
-        if(tA<interval.first)
-          return;
-        end
-
-        poseA = groundTraj.evaluate(tA);
-        poseB = groundTraj.evaluate(tB);
-
-        numA = this.tracker.numFeatures(nA);
-        numB = this.tracker.numFeatures(nB);
-        kA = (uint32(1):numA)-uint32(1);
-        kB = (uint32(1):numB)-uint32(1);
-        idA = this.tracker.getFeatureID(nA, kA);
-        idB = this.tracker.getFeatureID(nB, kB);
-
-        % find features common to both images
-        [idAB, indexA, indexB] = intersect(double(idA), double(idB)); % only supports double
-        kA = kA(indexA);
-        kB = kB(indexB);
-
-        % get corresponding rays
-        rayA = this.tracker.getFeatureRay(nA, kA);
-        rayB = this.tracker.getFeatureRay(nB, kB);
-
-        modelErrors(poseA, poseB, rayA, rayB);
-      end
-    end
   end
-  
-end
 
-function modelErrors(poseA, poseB, rayA, rayB)
-  residual = computeResidual(poseA, poseB, rayA, rayB);
-  mu = mean(residual);
-  sigma = sqrt(sum(residual.*residual)/numel(residual));
-  fprintf('\n\n*** Computed Calibration Parameters ***\n');
-  fprintf('\nmu = %f (radians)', mu);
-  fprintf('\nsigma = %f (radians)', sigma);
-
-  % Y = normpdf(range,M,S);
-  % Y = Y./max(Y);
-  % figure(1),clf;
-  % plot(range,Y,'.');
-  % hold on;
-  % plot(range,Nn,'.','Color','r');
-  % hold off;
-  % legend('Gaussian','Data');
-  % SSE1 = sum((Nn-Y).^2)./length(range);
-  % title(sprintf('SSE = %.4d%',SSE1));
-
-  % % KDE METHOD
-  % f = ksdensity(Errors,range);
-  % f = f./max(f);
-  % figure(3),clf;
-  % plot(range,f,'.');
-  % hold on;
-  % plot(range,Nn,'.','Color','r');
-  % hold off;
-  % legend('KDE','Data');
-  % SSE2 = sum((Nn-f).^2)./length(range);
-  % title(sprintf('SSE = %.4d%',SSE2));
 end
 
 % Compute the residual error for each pair of rays
@@ -258,15 +226,12 @@ function residual = computeResidual(poseA, poseB, rayA, rayB)
   end
 end
 
-% TODO: ensure that mu=0 unless there is a strong theoretical argument against it
-% TODO: supply normpdf without depending on MATLAB toolboxes
 function cost = computeCost(poseA, poseB, rayA, rayB, sigma, maxCost)
   residual = computeResidual(poseA, poseB, rayA, rayB);
   residualNorm = residual/sigma;
   y = sum(residualNorm.*residualNorm); % sum of normalized squared residuals
   Pux = chisqpdf(y, length(residual)); % P(u|x)
   infN = chisqpdf(length(residual)-2, length(residual)); % ||P(u|x)||_inf
-  
   if(infN*exp(-maxCost)<Pux)
     cost = -log(Pux/infN);
   else
@@ -279,10 +244,6 @@ function y = chisqpdf(x, nu)
   b = 2^a;
   c = b*gamma(a);
   y = ((x.^(a-1))./exp(x/2))./c;
-end
-
-function prob = normProb(x, mu, sigma)
-  prob = exp(-0.5 * ((x - mu)./sigma).^2) ./ (sqrt(2*pi) .* sigma);
 end
 
 % Converts a quaternion to a rotation matrix

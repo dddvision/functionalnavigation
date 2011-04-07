@@ -24,7 +24,7 @@ dbstop(breakpoints);
 
 % add component repository to the path
 componentPath = fullfile(fileparts(mfilename('fullpath')), 'components');
-if(isempty(findstr(componentPath, path)))
+if(isempty(strfind(path, componentPath)))
   addpath(componentPath);
   fprintf('\naddpath = %s', componentPath);
 end
