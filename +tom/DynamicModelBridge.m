@@ -133,9 +133,7 @@ function compileOnDemand(name)
   bridgecpp = [bridge, '.cpp'];
   include = fileparts(bridge);
   base = fullfile(['+', name], name);
-  if(~exist([base, 'Bridge'], 'file'))
-    basecpp = [base, '.cpp'];
-    cpp = which(basecpp);
-    mex(['-I"', include, '"'], bridgecpp, cpp, '-output', [cpp(1:(end-4)), 'Bridge']);
-  end
+  basecpp = [base, '.cpp'];
+  cpp = which(basecpp);
+  mex(['-I"', include, '"'], bridgecpp, cpp, '-output', [cpp(1:(end-4)), 'Bridge']);
 end

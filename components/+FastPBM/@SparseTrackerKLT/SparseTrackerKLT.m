@@ -30,7 +30,8 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       % store camera handle
       this.camera = camera;
       
-      if(~exist('mexTrackFeaturesKLT', 'file'))
+      % compile mex file if necessary
+      if(this.overwriteMEX)
         userDirectory = pwd;
         cd(fullfile(fileparts(mfilename('fullpath')), 'private'));
         try
