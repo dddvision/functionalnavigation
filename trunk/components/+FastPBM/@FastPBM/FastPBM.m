@@ -3,7 +3,6 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
   properties (SetAccess = private, GetAccess = private)
     sensor
     tracker
-    groundTraj
   end
   
   methods (Static = true, Access = public)
@@ -106,7 +105,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       poseA = x.evaluate(tA);
       poseB = x.evaluate(tB);
       data = edgeCache(nA, nB, this);
-      cost = computeCost(poseA, poseB, data.rayA, data.rayB, 0, this.angularDeviation, this.maxCost);     
+      cost = computeCost(poseA, poseB, data.rayA, data.rayB, this.angularDeviation, this.maxCost);     
     end
   end
     
@@ -191,19 +190,136 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         rayA = this.tracker.getFeatureRay(nA, kA);
         rayB = this.tracker.getFeatureRay(nB, kB);
 
-        %translate to rotation matrix
-        ARot = Quat2Matrix(poseA.q);
-        BRot = Quat2Matrix(poseB.q);
-
-        %correct for rotation
-        rayACorr = ARot*rayA;
-        rayBCorr = BRot*rayB;
-
-        modelErrors(poseB.p-poseA.p, rayACorr, rayBCorr);
+        modelErrors(poseA, poseB, rayA, rayB);
       end
     end
   end
   
+end
+
+function modelErrors(poseA, poseB, rayA, rayB)
+  residual = computeResidual(poseA, poseB, rayA, rayB);
+  mu = mean(residual);
+  sigma = sqrt(sum(residual.*residual)/numel(residual));
+  fprintf('\n\n*** Computed Calibration Parameters ***\n');
+  fprintf('\nmu = %f (radians)', mu);
+  fprintf('\nsigma = %f (radians)', sigma);
+
+  % Y = normpdf(range,M,S);
+  % Y = Y./max(Y);
+  % figure(1),clf;
+  % plot(range,Y,'.');
+  % hold on;
+  % plot(range,Nn,'.','Color','r');
+  % hold off;
+  % legend('Gaussian','Data');
+  % SSE1 = sum((Nn-Y).^2)./length(range);
+  % title(sprintf('SSE = %.4d%',SSE1));
+
+  % % KDE METHOD
+  % f = ksdensity(Errors,range);
+  % f = f./max(f);
+  % figure(3),clf;
+  % plot(range,f,'.');
+  % hold on;
+  % plot(range,Nn,'.','Color','r');
+  % hold off;
+  % legend('KDE','Data');
+  % SSE2 = sum((Nn-f).^2)./length(range);
+  % title(sprintf('SSE = %.4d%',SSE2));
+end
+
+% Compute the residual error for each pair of rays
+function residual = computeResidual(poseA, poseB, rayA, rayB)
+  % adjust for rotation
+  RA = Quat2Matrix(poseA.q);
+  RB = Quat2Matrix(poseB.q);
+  rayA = RA*rayA;
+  rayB = RB*rayB;
+
+  % evaluate translation component
+  translation = poseB.p-poseA.p;
+  if( norm(translation)<eps )
+    residual = acos(dot(rayA, rayB));
+  else
+    % calculate the normal to the epipolar plane
+    normals = cross(repmat(translation, 1, size(rayA, 2)), rayA);
+
+    % normalize the normals
+    nNormals = normals./repmat(sqrt(sum(normals.^2)), 3, 1);
+    % TODO: set the residual to zero when the absolute value of the
+    % denominator is less than eps
+
+    % calculate the error
+    residual = dot(nNormals, rayB);
+    % TODO: Consider taking the acos of the dot product to get angular error in radians.
+    %       This change is debatable because it affects the shape of the distribution.
+    % NOTE: rayB is guaranteed to have unit magnitude
+  end
+end
+
+% TODO: ensure that mu=0 unless there is a strong theoretical argument against it
+% TODO: supply normpdf without depending on MATLAB toolboxes
+function cost = computeCost(poseA, poseB, rayA, rayB, sigma, maxCost)
+  residual = computeResidual(poseA, poseB, rayA, rayB);
+  residualNorm = residual/sigma;
+  y = sum(residualNorm.*residualNorm); % sum of normalized squared residuals
+  Pux = chisqpdf(y, length(residual)); % P(u|x)
+  infN = chisqpdf(length(residual)-2, length(residual)); % ||P(u|x)||_inf
+  
+  if(infN*exp(-maxCost)<Pux)
+    cost = -log(Pux/infN);
+  else
+    cost = maxCost;
+  end
+end
+
+function y = chisqpdf(x, nu)
+  a = nu/2;
+  b = 2^a;
+  c = b*gamma(a);
+  y = ((x.^(a-1))./exp(x/2))./c;
+end
+
+function prob = normProb(x, mu, sigma)
+  prob = exp(-0.5 * ((x - mu)./sigma).^2) ./ (sqrt(2*pi) .* sigma);
+end
+
+% Converts a quaternion to a rotation matrix
+%
+% Q = body orientation in quaternion <scalar, vector> form,  double 4-by-1
+% R = matrix that represents the body frame in the world frame,  double 3-by-3
+function R = Quat2Matrix(Q)
+  q1 = Q(1);
+  q2 = Q(2);
+  q3 = Q(3);
+  q4 = Q(4);
+
+  q11 = q1*q1;
+  q22 = q2*q2;
+  q33 = q3*q3;
+  q44 = q4*q4;
+
+  q12 = q1*q2;
+  q23 = q2*q3;
+  q34 = q3*q4;
+  q14 = q1*q4;
+  q13 = q1*q3;
+  q24 = q2*q4;
+
+  R = zeros(3, 3);
+
+  R(1, 1) = q11+q22-q33-q44;
+  R(2, 1) = 2*(q23+q14);
+  R(3, 1) = 2*(q24-q13);
+
+  R(1, 2) = 2*(q23-q14);
+  R(2, 2) = q11-q22+q33-q44;
+  R(3, 2) = 2*(q34+q12);
+
+  R(1, 3) = 2*(q24+q13);
+  R(2, 3) = 2*(q34-q12);
+  R(3, 3) = q11-q22-q33+q44;
 end
 
 % Caches data indexed by individual indices
