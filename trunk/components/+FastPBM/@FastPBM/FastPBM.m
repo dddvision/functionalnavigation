@@ -209,9 +209,7 @@ end
 % Caches data indexed by individual indices
 function data = nodeCache(n, obj)
   persistent cache
-
   nKey = ['n', sprintf('%d', n)];
-
   if( isfield(cache, nKey) )
     data = cache.(nKey);
   else
@@ -223,10 +221,8 @@ end
 % Caches data indexed by pairs of indices
 function data = edgeCache(nA, nB, obj)
   persistent cache
-
   nAKey = ['a', sprintf('%d', nA)];
   nBKey = ['b', sprintf('%d', nB)];
-
   if( isfield(cache, nAKey)&&isfield(cache.(nAKey), nBKey) )
     data = cache.(nAKey).(nBKey);
   else
