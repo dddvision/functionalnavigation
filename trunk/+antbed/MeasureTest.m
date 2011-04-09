@@ -16,8 +16,24 @@ classdef MeasureTest < handle
   end
   
   methods (Access = public, Static = true)
-    function this = MeasureTest(name, trajectory, uri)
+    function this = MeasureTest(name, initialTime, uri)
       fprintf('\n\n*** Begin Measure Test ***\n');
+      
+      fprintf('\nuri =');
+      assert(isa(uri, 'char'));
+      fprintf(' ''%s''', uri);
+      
+      fprintf('\ntom.Measure.description =');
+      text = tom.Measure.description(name);
+      assert(isa(text, 'char'));
+      fprintf(' %s', text);
+      
+      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      if(container.hasReferenceTrajectory())
+        trajectory = container.getReferenceTrajectory();
+      else
+        trajectory = tom.DynamicModel.create('tom', initialTime, '');
+      end
       
       fprintf('\ntrajectory =');
       assert(isa(trajectory, 'tom.Trajectory'));
@@ -28,15 +44,6 @@ classdef MeasureTest < handle
       initialTime = interval.first;
       assert(isa(initialTime, 'tom.WorldTime'));
       fprintf(' %f', double(initialTime));
-      
-      fprintf('\nuri =');
-      assert(isa(uri, 'char'));
-      fprintf(' ''%s''', uri);
-      
-      fprintf('\ntom.Measure.description =');
-      text = tom.Measure.description(name);
-      assert(isa(text, 'char'));
-      fprintf(' %s', text);
       
       fprintf('\ntom.Measure.create =');
       measure = tom.Measure.create(name, initialTime, uri);
@@ -98,13 +105,11 @@ classdef MeasureTest < handle
 %       else
 %         resource = uri(8:end);
 %         container = antbed.DataContainer.create(resource, initialTime);
-%         if(~hasReferenceTrajectory(container))
+%         if(~container.hasReferenceTrajectory())
 %           fprintf('\nwarning: Skipping measure characterization. No reference trajectory is available.');
 %         else
 %           edgeList = measure.findEdges(measure.first(), measure.last(), measure.first(), measure.last());
-%           groundTraj = container.getReferenceTrajectory();
-%           interval = groundTraj.domain();
-%           baseTrajectory = antbed.TrajectoryPerturbation(groundTraj.evaluate(interval.first), interval);
+%           baseTrajectory = antbed.TrajectoryPerturbation(trajectory.evaluate(interval.first), interval);
 %           
 %           edgeList
 %           

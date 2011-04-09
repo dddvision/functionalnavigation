@@ -1,18 +1,8 @@
 classdef DataContainerTest < handle
   
   methods (Access = public, Static = true)
-    function this = DataContainerTest(name, trajectory)
+    function this = DataContainerTest(name, initialTime)
       fprintf('\n\n*** Begin DataContainer Test ***\n');
-      
-      fprintf('\ntrajectory =');
-      assert(isa(trajectory, 'tom.Trajectory'));
-      fprintf(' ok');
-      
-      fprintf('\ninitialTime =');
-      interval = trajectory.domain();
-      initialTime = interval.first;
-      assert(isa(initialTime, 'tom.WorldTime'));
-      fprintf(' %f', double(initialTime));
       
       fprintf('\nantbed.DataContainer.description =');
       text = antbed.DataContainer.description(name);
@@ -50,6 +40,7 @@ classdef DataContainerTest < handle
         
         antbed.TrajectoryTest(referenceTrajectory);
       else
+        referenceTrajectory = tom.DynamicModel.create('tom', initialTime, '');
         fprintf(' false');
       end
 

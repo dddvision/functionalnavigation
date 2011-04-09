@@ -15,14 +15,22 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
   end
   
   methods (Static = true, Access = public)
-    % Perform calibration without using cache functions
-    function calibrate()
-      close('all');
-      
-      this = tom.Measure.create('FastPBM', tom.WorldTime(0), 'antbed:MiddleburyData');
+    % Perform calibration using MiddleburyData
+    function calibrate(initialTime, uri)
       fprintf('\n\n*** Computing Calibration Parameters (radians) ***\n');
+      breakpoints = dbstatus('-completenames');
+      save('temp.mat', 'breakpoints', 'initialTime', 'uri');
+      close('all');
+      clear('classes');
+      load('temp.mat');
+      dbstop(breakpoints);
       
-      groundTraj = this.container.getReferenceTrajectory();
+      % initialize the default pseudorandom number generator
+      RandStream.getDefaultStream.reset();
+      
+      this = tom.Measure.create('FastPBM', initialTime, uri);
+      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      groundTraj = container.getReferenceTrajectory();
         
       for k = 1:100
         this.tracker.refresh(groundTraj);
@@ -43,21 +51,9 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         poseA = groundTraj.evaluate(tA);
         poseB = groundTraj.evaluate(tB);
 
-        numA = this.tracker.numFeatures(nA);
-        numB = this.tracker.numFeatures(nB);
-        kA = (uint32(1):numA)-uint32(1);
-        kB = (uint32(1):numB)-uint32(1);
-        idA = this.tracker.getFeatureID(nA, kA);
-        idB = this.tracker.getFeatureID(nB, kB);
-
-        % find features common to both images
-        [idAB, indexA, indexB] = intersect(double(idA), double(idB)); % only supports double
-        kA = kA(indexA);
-        kB = kB(indexB);
-
-        % get corresponding rays
-        rayA = this.tracker.getFeatureRay(nA, kA);
-        rayB = this.tracker.getFeatureRay(nB, kB);
+        [indexA, indexB] = this.tracker.findMatches(nA, nB);
+        rayA = this.tracker.getFeatureRay(nA, indexA);
+        rayB = this.tracker.getFeatureRay(nB, indexB);
 
         residual = [residual, computeResidual(poseA, poseB, rayA, rayB)];
         
@@ -156,47 +152,21 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       
       poseA = x.evaluate(tA);
       poseB = x.evaluate(tB);
-      data = edgeCache(nA, nB, this);
-      cost = computeCost(poseA, poseB, data.rayA, data.rayB, this.angularDeviation, this.maxCost);     
-    end
-  end
-    
-  methods (Access = private)
-    function data = processNode(this, n)
-      % enumerate features at this node
-      num = this.tracker.numFeatures(n);
-      k = (uint32(1):num)-uint32(1);
-
-      % get feature identifiers  
-      id = this.tracker.getFeatureID(n, k);
-
-      % get rays
-      ray = this.tracker.getFeatureRay(n, k);
-
-      % store results
-      data = struct('id', id, 'ray', ray);
-    end
-
-    function data = processEdge(this, nA, nB)
-      % process individual nodes to extract features
-      dataA = nodeCache(nA, this);
-      dataB = nodeCache(nB, this);
-
-      % find features common to both images, inputs must be double, first output is not needed
-      [idAB, indexA, indexB] = intersect(double(dataA.id), double(dataB.id));
-
-      % select data common to both images
-      rayA = dataA.ray(:, indexA);
-      rayB = dataB.ray(:, indexB);
-
-      % store results
-      data = struct('rayA', rayA, 'rayB', rayB);
+      
+      [indexA, indexB] = this.tracker.findMatches(nA, nB);
+      rayA = this.tracker.getFeatureRay(nA, indexA);
+      rayB = this.tracker.getFeatureRay(nB, indexB);
+      
+      cost = computeCost(poseA, poseB, rayA, rayB, this.angularDeviation, this.maxCost);     
     end
   end
 
 end
 
 % Compute the residual error for each pair of rays
+%
+% NOTES
+% The input rays are assumed to have a unit magnitude
 function residual = computeResidual(poseA, poseB, rayA, rayB)
   % adjust for rotation
   RA = Quat2Matrix(poseA.q);
@@ -210,18 +180,13 @@ function residual = computeResidual(poseA, poseB, rayA, rayB)
     residual = acos(dot(rayA, rayB));
   else
     % calculate the normal to the epipolar plane
-    normals = cross(repmat(translation, 1, size(rayA, 2)), rayA);
-
-    % normalize the normals
-    nNormals = normals./repmat(sqrt(sum(normals.^2)), 3, 1);
-    % TODO: set the residual to zero when the absolute value of the
-    % denominator is less than eps
-
-    % calculate the error
-    residual = dot(nNormals, rayB);
-    % TODO: Consider taking the acos of the dot product to get angular error in radians.
-    %       This change is debatable because it affects the shape of the distribution.
-    % NOTE: rayB is guaranteed to have unit magnitude
+    normals = bsxfun(@cross, translation, rayA);
+    magnitude = sqrt(sum(normals.*normals));
+    magnitude(magnitude<eps) = eps;
+    normals = bsxfun(@rdivide, normals, magnitude);
+    
+    % calculate the error in radians
+    residual = asin(dot(normals, rayB));
   end
 end
 
@@ -229,20 +194,38 @@ function cost = computeCost(poseA, poseB, rayA, rayB, sigma, maxCost)
   residual = computeResidual(poseA, poseB, rayA, rayB);
   residualNorm = residual/sigma;
   y = sum(residualNorm.*residualNorm); % sum of normalized squared residuals
-  Pux = chisqpdf(y, length(residual)); % P(u|x)
-  infN = chisqpdf(length(residual)-2, length(residual)); % ||P(u|x)||_inf
-  if(infN*exp(-maxCost)<Pux)
-    cost = -log(Pux/infN);
-  else
+  N = numel(residual);
+  switch(N)
+    case 0
+      cost = 0;
+    case 1
+      cost = y/(2*N);
+    otherwise
+      cost = y/(2*N);
+%      infN = chisqpdf(N-2, N); % ||P(u|x)||_inf
+%      epsilon = infN*exp(-maxCost)/(1-exp(-maxCost)); % caps cost for robustness
+%      infN = infN+epsilon;
+%      Pux = chisqpdf(y, N)+epsilon; % P(u|x)
+%      cost = -log(Pux/infN);
+  end
+  if(cost>maxCost)
     cost = maxCost;
   end
 end
 
+% Central chi-square probability density function
 function y = chisqpdf(x, nu)
   a = nu/2;
   b = 2^a;
   c = b*gamma(a);
-  y = ((x.^(a-1))./exp(x/2))./c;
+  d = x.^(a-1);
+  f = exp(x/2);
+  g = f.*c;
+  y = d./g;
+  bad = (nu>100)|(d>(1/eps))|(g<eps); % correct numerical instability
+  z = x(bad)-nu+2; % adjust for degrees of freedom
+  s = 4*nu;
+  y(bad) = exp(-z.*z/s)/sqrt(pi*s);
 end
 
 % Converts a quaternion to a rotation matrix
@@ -280,29 +263,4 @@ function R = Quat2Matrix(Q)
   R(1, 3) = 2*(q24+q13);
   R(2, 3) = 2*(q34-q12);
   R(3, 3) = q11-q22-q33+q44;
-end
-
-% Caches data indexed by individual indices
-function data = nodeCache(n, obj)
-  persistent cache
-  nKey = ['n', sprintf('%d', n)];
-  if( isfield(cache, nKey) )
-    data = cache.(nKey);
-  else
-    data = obj.processNode(n);
-    cache.(nKey) = data;
-  end
-end
-
-% Caches data indexed by pairs of indices
-function data = edgeCache(nA, nB, obj)
-  persistent cache
-  nAKey = ['a', sprintf('%d', nA)];
-  nBKey = ['b', sprintf('%d', nB)];
-  if( isfield(cache, nAKey)&&isfield(cache.(nAKey), nBKey) )
-    data = cache.(nAKey).(nBKey);
-  else
-    data = obj.processEdge(nA, nB);
-    cache.(nAKey).(nBKey) = data;
-  end
 end

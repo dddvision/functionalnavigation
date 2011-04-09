@@ -34,15 +34,16 @@ classdef SparseTracker < tom.Sensor
     % Throws an exception when the data index is invalid
     num = numFeatures(this, node);
     
-    % Get unique identifier of a feature
+    % Find matching features given a pair of nodes
     %
-    % @param[in] node       data index (MATLAB: uint32 scalar)
-    % @param[in] localIndex zero-based feature indices relative to the specified node (MATLAB: uint32 1-by-P)
-    % @return               unique feature identifiers (MATLAB: uint32 1-by-P)
+    % @param[in]  nodeA       first data index (MATLAB: uint32 scalar)
+    % @param[in]  nodeB       second data index (MATLAB: uint32 scalar)
+    % @param[out] localIndexA zero-based feature indices local to the first node (MATLAB: uint32 1-by-P)
+    % @param[out] localIndexB zero-based feature indices local to the second node (MATLAB: uint32 1-by-P)
     %
     % NOTES
-    % Throws an exception when the data index is invalid
-    id = getFeatureID(this, node, localIndex);
+    % Throws an exception if either node index is invalid
+    [localIndexA, localIndexB] = findMatches(this, nodeA, nodeB);
     
     % Get ray vector corresponding to the direction of a feature relative to the sensor frame
     %
