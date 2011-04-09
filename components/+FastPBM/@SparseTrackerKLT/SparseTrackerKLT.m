@@ -51,7 +51,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   methods (Abstract = false, Access = public, Static = false)
     function refresh(this, x)
       this.camera.refresh(x);
-      this.track();
+      this.track(); 
     end
     
     function flag = hasData(this)
@@ -86,16 +86,20 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       id = this.features(node-this.nodeA+uint32(1)).id(localIndex+uint32(1));
     end
     
+    function [localIndexA, localIndexB] = findMatches(this, nodeA, nodeB)
+      data = edgeCache(nodeA, nodeB, this);
+      localIndexA = data.localIndexA;
+      localIndexB = data.localIndexB;
+    end
+    
     function ray = getFeatureRay(this, node, localIndex)
       ray = this.features(node-this.nodeA+uint32(1)).ray(:, localIndex+uint32(1));
     end
   end
   
-  methods (Access=private)
-    % perform tracking
+  methods (Access = private)
     function track(this)
-      
-      % only attempt to track if the camera has data
+       % track features if the camera has data
       if(this.camera.hasData())
         
         % process first image
@@ -172,6 +176,26 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       end
     end
     
+    function data = processEdge(this, nA, nB)
+      % process individual nodes to extract features
+      numA = this.numFeatures(nA);
+      numB = this.numFeatures(nB);
+      
+      % enumerate features
+      kA = (uint32(1):numA)-uint32(1);
+      kB = (uint32(1):numB)-uint32(1);
+      
+      % get feature identifiers  
+      idA = this.getFeatureID(nA, kA);
+      idB = this.getFeatureID(nB, kB);
+
+      % find features common to both images, inputs must be double, first output is not needed
+      [idAB, indexA, indexB] = intersect(double(idA), double(idB));
+
+      % store results, adjusting for zero-based indices
+      data = struct('localIndexA', uint32(indexA-1), 'localIndexB', uint32(indexB-1));
+    end    
+     
     % randomly select new image features
     function [x, y] = selectFeatures(this, gx, gy, num)
       kappa = computeCornerStrength(gx, gy, 1, this.cornerMethod);
@@ -241,4 +265,17 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
   end
   
+end
+
+% Caches data indexed by pairs of indices
+function data = edgeCache(nA, nB, obj)
+  persistent cache
+  nAKey = ['a', sprintf('%d', nA)];
+  nBKey = ['b', sprintf('%d', nB)];
+  if( isfield(cache, nAKey)&&isfield(cache.(nAKey), nBKey) )
+    data = cache.(nAKey).(nBKey);
+  else
+    data = obj.processEdge(nA, nB);
+    cache.(nAKey).(nBKey) = data;
+  end
 end

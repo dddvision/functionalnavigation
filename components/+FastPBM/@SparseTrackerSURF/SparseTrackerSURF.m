@@ -161,3 +161,28 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
   end
 end
+
+% Caches data indexed by individual indices
+function data = nodeCache(n, obj)
+  persistent cache
+  nKey = ['n', sprintf('%d', n)];
+  if( isfield(cache, nKey) )
+    data = cache.(nKey);
+  else
+    data = obj.processNode(n);
+    cache.(nKey) = data;
+  end
+end
+
+% Caches data indexed by pairs of indices
+function data = edgeCache(nA, nB, obj)
+  persistent cache
+  nAKey = ['a', sprintf('%d', nA)];
+  nBKey = ['b', sprintf('%d', nB)];
+  if( isfield(cache, nAKey)&&isfield(cache.(nAKey), nBKey) )
+    data = cache.(nAKey).(nBKey);
+  else
+    data = obj.processEdge(nA, nB);
+    cache.(nAKey).(nBKey) = data;
+  end
+end

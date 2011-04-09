@@ -104,20 +104,17 @@ function testComponent(name, dynamicModelName, measureName, initialTime, uri)
       uri = ['antbed:', name];
     end
 
-    if(isMeasure||isDataContainer)
-      dynamicModel = tom.DynamicModel.create(dynamicModelName, initialTime, uri);
-    end
     if(isDynamicModel)
       antbed.DynamicModelTest(name, initialTime, uri);
     end
     if(isMeasure)
-      antbed.MeasureTest(name, dynamicModel, uri);
+      antbed.MeasureTest(name, initialTime, uri);
     end
     if(isOptimizer)
       antbed.OptimizerTest(name, dynamicModelName, measureName, initialTime, uri);
     end
     if(isDataContainer)
-      antbed.DataContainerTest(name, dynamicModel);
+      antbed.DataContainerTest(name, initialTime);
     end
 
     fprintf('\n\n*** End Component Test ***');
