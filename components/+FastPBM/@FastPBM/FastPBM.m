@@ -56,11 +56,37 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         rayB = this.tracker.getFeatureRay(nB, indexB);
 
         residual = [residual, computeResidual(poseA, poseB, rayA, rayB)];
-        
-        mu = mean(residual);
-        sigma = sqrt(sum(residual.*residual)/numel(residual));
-        fprintf('\nmean = %f , deviation = %f', mu, sigma);
       end
+      
+      N = numel(residual);
+      
+      B = 5; % number of bins
+      r = sort(abs(residual));
+      partitions = [0, r(floor(N*(1:(B-1))/B)), pi]
+      densities = histc(abs(residual), partitions)/N
+      
+%       partition = 0:0.0001:0.04;
+%       pdf = histc(abs(residual), partition)/N;
+%       figure(2);
+%       npdf = pdf/max(pdf);
+%       plot(partition, npdf, 'r');
+%       xlim([0, 0.04]);
+%       ylim([0, 1]);
+
+%       a = 0.5;
+%       b = 6000;
+%       Pux = a./(b*partition+a);
+      
+%       figure(3);
+%       c = interp1([0, this.deciles],(0:9)/10, [0, partition], 'linear', 'extrap');
+%       plot([0, partition], c);
+%       xlim([0, 0.04]);
+%       ylim([0, 1]);
+      
+%       figure(4);
+%       plot(sort(abs(residual)), (1:N)/N);
+%       xlim([0, 0.04]);
+%       ylim([0, 1]);
     end
   end
   
@@ -157,7 +183,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       rayA = this.tracker.getFeatureRay(nA, indexA);
       rayB = this.tracker.getFeatureRay(nB, indexB);
       
-      cost = computeCost(poseA, poseB, rayA, rayB, this.angularDeviation, this.maxCost);     
+      cost = computeCost(poseA, poseB, rayA, rayB, this.partitions);     
     end
   end
 
@@ -190,41 +216,30 @@ function residual = computeResidual(poseA, poseB, rayA, rayB)
   end
 end
 
-function cost = computeCost(poseA, poseB, rayA, rayB, sigma, maxCost)
+function cost = computeCost(poseA, poseB, rayA, rayB, partitions)
   residual = computeResidual(poseA, poseB, rayA, rayB);
-  residualNorm = residual/sigma;
-  y = sum(residualNorm.*residualNorm); % sum of normalized squared residuals
   N = numel(residual);
-  switch(N)
-    case 0
-      cost = 0;
-    case 1
-      cost = y/(2*N);
-    otherwise
-      cost = y/(2*N);
-%      infN = chisqpdf(N-2, N); % ||P(u|x)||_inf
-%      epsilon = infN*exp(-maxCost)/(1-exp(-maxCost)); % caps cost for robustness
-%      infN = infN+epsilon;
-%      Pux = chisqpdf(y, N)+epsilon; % P(u|x)
-%      cost = -log(Pux/infN);
-  end
-  if(cost>maxCost)
-    cost = maxCost;
-  end
+  d = histc(abs(residual), partitions)/N;
+  B = numel(d)-1; % bins
+  density = 1/B;
+  chi = sum(((d(1:B)-density-0.5).^2)./density); % includes Yates correction
+  Pux = chisqpdf(chi, B);
+  infN = chisqpdf(B-2, B);
+  cost = -log(Pux/infN);
 end
 
 % Central chi-square probability density function
-function y = chisqpdf(x, nu)
-  a = nu/2;
+function y = chisqpdf(x, k)
+  a = k/2;
   b = 2^a;
   c = b*gamma(a);
   d = x.^(a-1);
   f = exp(x/2);
   g = f.*c;
   y = d./g;
-  bad = (nu>100)|(d>(1/eps))|(g<eps); % correct numerical instability
-  z = x(bad)-nu+2; % adjust for degrees of freedom
-  s = 4*nu;
+  bad = (k>100)|(d>(1/eps))|(g<eps); % identify numerical instability
+  z = x(bad)-k+2; % adjust for degrees of freedom
+  s = 4*k;
   y(bad) = exp(-z.*z/s)/sqrt(pi*s);
 end
 

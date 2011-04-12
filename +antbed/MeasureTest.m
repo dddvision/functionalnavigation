@@ -92,7 +92,7 @@ classdef MeasureTest < handle
             title('Adjacency');
             subplot(1, 2, 2);
             cla;
-            imshow(costImage/9);
+            imshow(costImage/4.5);
             title('Cost');
           end
         end
