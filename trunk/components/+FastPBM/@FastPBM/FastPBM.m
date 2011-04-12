@@ -41,7 +41,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       edgeList = this.findEdges(nFirst, nLast, nFirst, nLast);
       numEdges = numel(edgeList);
 
-      partialResidual = {};
+      partialResidual = cell(0, numEdges);
       residual = [];
       for i = 1:numEdges
         nA = edgeList(i).first;
@@ -67,16 +67,14 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       B = 5; % number of bins
       r = sort(abs(residual));
       partitions = [0, r(floor(N*(1:(B-1))/B)), pi]
-      densities = histc(abs(residual), partitions)/N;
-      densities = densities(1:B)
       
       partialDensities = zeros(numEdges, B+1);
       for i = 1:numEdges
         N = numel(partialResidual{i});
         partialDensities(i, :) = histc(abs(partialResidual{i}), partitions)/N;
       end
-      deviations = std(partialDensities);
-      deviations = deviations(1:B)
+      deviations = sqrt(sum((partialDensities-1/B).^2)/(B-1));
+      deviations = deviations(1:(end-1))
       
 %       partition = 0:0.0001:0.04;
 %       pdf = histc(abs(residual), partition)/N;
@@ -221,15 +219,28 @@ function residual = computeResidual(poseA, poseB, rayA, rayB)
     % calculate the error in radians
     residual = asin(dot(normals, rayB));
   end
+  
+%   DT = translation;
+%   N = size(rayA, 2);
+%   figure;
+%   plot3([0, DT(1)], [0, DT(2)], [0, DT(3)], 'k');
+%   scale = 10*norm(DT);
+%   hold('on');
+%   color = 'bgr';
+%   for n = 1:numel(color)
+%     plot3([0, rayA(1, n)*scale], [0, rayA(2, n)*scale], [0, rayA(3, n)*scale], color(n));
+%     plot3(DT(1)+[0, rayB(1, n)*scale], DT(2)+[0, rayB(2, n)*scale], DT(3)+[0, rayB(3, n)*scale], color(n));
+%   end
+%   axis('equal');
 end
 
-function cost = computeCost(poseA, poseB, rayA, rayB, partitions, deviations)
+function cost = computeCost(poseA, poseB, rayA, rayB, partition, deviation)
   residual = computeResidual(poseA, poseB, rayA, rayB);
   N = numel(residual);
-  d = histc(abs(residual), partitions)/N;
+  d = histc(abs(residual), partition)/N;
   B = numel(d)-1; % number of bins
-  density = 1/B; % density per bin
-  chisq = sum(((d(1:B)-density).^2)./deviations);
+  zscore = (d(1:B)-1/B)./deviation;
+  chisq = sum(zscore.*zscore);
   Pux = chisqpdf(chisq, B);
   infN = chisqpdf(B-2, B);
   cost = -log(Pux/infN);
