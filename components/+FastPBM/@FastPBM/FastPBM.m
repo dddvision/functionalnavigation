@@ -39,9 +39,11 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       nFirst = this.tracker.first();
       nLast = this.tracker.last();
       edgeList = this.findEdges(nFirst, nLast, nFirst, nLast);
+      numEdges = numel(edgeList);
 
+      partialResidual = {};
       residual = [];
-      for i = 1:numel(edgeList)
+      for i = 1:numEdges
         nA = edgeList(i).first;
         nB = edgeList(i).second;
 
@@ -54,8 +56,10 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         [indexA, indexB] = this.tracker.findMatches(nA, nB);
         rayA = this.tracker.getFeatureRay(nA, indexA);
         rayB = this.tracker.getFeatureRay(nB, indexB);
+        
+        partialResidual{i} = computeResidual(poseA, poseB, rayA, rayB);
 
-        residual = [residual, computeResidual(poseA, poseB, rayA, rayB)];
+        residual = [residual, partialResidual{i}];
       end
       
       N = numel(residual);
@@ -63,7 +67,16 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       B = 5; % number of bins
       r = sort(abs(residual));
       partitions = [0, r(floor(N*(1:(B-1))/B)), pi]
-      densities = histc(abs(residual), partitions)/N
+      densities = histc(abs(residual), partitions)/N;
+      densities = densities(1:B)
+      
+      partialDensities = zeros(numEdges, B+1);
+      for i = 1:numEdges
+        N = numel(partialResidual{i});
+        partialDensities(i, :) = histc(abs(partialResidual{i}), partitions)/N;
+      end
+      deviations = std(partialDensities);
+      deviations = deviations(1:B)
       
 %       partition = 0:0.0001:0.04;
 %       pdf = histc(abs(residual), partition)/N;
@@ -76,12 +89,6 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
 %       a = 0.5;
 %       b = 6000;
 %       Pux = a./(b*partition+a);
-      
-%       figure(3);
-%       c = interp1([0, this.deciles],(0:9)/10, [0, partition], 'linear', 'extrap');
-%       plot([0, partition], c);
-%       xlim([0, 0.04]);
-%       ylim([0, 1]);
       
 %       figure(4);
 %       plot(sort(abs(residual)), (1:N)/N);
@@ -183,7 +190,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       rayA = this.tracker.getFeatureRay(nA, indexA);
       rayB = this.tracker.getFeatureRay(nB, indexB);
       
-      cost = computeCost(poseA, poseB, rayA, rayB, this.partitions);     
+      cost = computeCost(poseA, poseB, rayA, rayB, this.partitions, this.deviations);     
     end
   end
 
@@ -216,14 +223,14 @@ function residual = computeResidual(poseA, poseB, rayA, rayB)
   end
 end
 
-function cost = computeCost(poseA, poseB, rayA, rayB, partitions)
+function cost = computeCost(poseA, poseB, rayA, rayB, partitions, deviations)
   residual = computeResidual(poseA, poseB, rayA, rayB);
   N = numel(residual);
   d = histc(abs(residual), partitions)/N;
-  B = numel(d)-1; % bins
-  density = 1/B;
-  chi = sum(((d(1:B)-density-0.5).^2)./density); % includes Yates correction
-  Pux = chisqpdf(chi, B);
+  B = numel(d)-1; % number of bins
+  density = 1/B; % density per bin
+  chisq = sum(((d(1:B)-density).^2)./deviations);
+  Pux = chisqpdf(chisq, B);
   infN = chisqpdf(B-2, B);
   cost = -log(Pux/infN);
 end
