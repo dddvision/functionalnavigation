@@ -87,13 +87,33 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
     
     function [localIndexA, localIndexB] = findMatches(this, nodeA, nodeB)
-      data = edgeCache(nodeA, nodeB, this);
+      data = FastPBM.edgeCache(nodeA, nodeB, this);
       localIndexA = data.localIndexA;
       localIndexB = data.localIndexB;
     end
     
     function ray = getFeatureRay(this, node, localIndex)
       ray = this.features(node-this.nodeA+uint32(1)).ray(:, localIndex+uint32(1));
+    end
+      
+    function data = processEdge(this, nA, nB)
+      % process individual nodes to extract features
+      numA = this.numFeatures(nA);
+      numB = this.numFeatures(nB);
+      
+      % enumerate features
+      kA = (uint32(1):numA)-uint32(1);
+      kB = (uint32(1):numB)-uint32(1);
+      
+      % get feature identifiers  
+      idA = this.getFeatureID(nA, kA);
+      idB = this.getFeatureID(nB, kB);
+
+      % find features common to both images, inputs must be double, first output is not needed
+      [idAB, indexA, indexB] = intersect(double(idA), double(idB));
+
+      % store results, adjusting for zero-based indices
+      data = struct('localIndexA', uint32(indexA-1), 'localIndexB', uint32(indexB-1));
     end
   end
   
@@ -147,19 +167,9 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
             if(this.displayFeatures)
               imageA = this.pyramidA{1}.f;
               imageB = pyramidB{1}.f;
-              if(isempty(this.figureHandle))
-                this.figureHandle = figure;
-              else
-                figure(this.figureHandle);
-                if(~isempty(this.plotHandle))
-                  delete(this.plotHandle);
-                end
-              end
-              imshow(cat(3, zeros(size(imageA)), 0.5+(imageA-imageB)/2, 0.5+(imageB-imageA)));
-              axis('image');
-              hold('on');
-              this.plotHandle = line([this.yA(good); yB(good)], [this.xA(good); xB(good)], 'Color', 'r');
-              drawnow;
+              pixA = [this.yA(good); this.xA(good)];
+              pixB = [yB(good); xB(good)];
+              FastPBM.displayFeatures(imageA, imageB, pixA, pixB);
             end
             
             % store both tracked and new features
@@ -174,27 +184,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
           this.nodePrevious = nodeB;
         end
       end
-    end
-    
-    function data = processEdge(this, nA, nB)
-      % process individual nodes to extract features
-      numA = this.numFeatures(nA);
-      numB = this.numFeatures(nB);
-      
-      % enumerate features
-      kA = (uint32(1):numA)-uint32(1);
-      kB = (uint32(1):numB)-uint32(1);
-      
-      % get feature identifiers  
-      idA = this.getFeatureID(nA, kA);
-      idB = this.getFeatureID(nB, kB);
-
-      % find features common to both images, inputs must be double, first output is not needed
-      [idAB, indexA, indexB] = intersect(double(idA), double(idB));
-
-      % store results, adjusting for zero-based indices
-      data = struct('localIndexA', uint32(indexA-1), 'localIndexB', uint32(indexB-1));
-    end    
+    end   
      
     % randomly select new image features
     function [x, y] = selectFeatures(this, gx, gy, num)
@@ -265,17 +255,4 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
   end
   
-end
-
-% Caches data indexed by pairs of indices
-function data = edgeCache(nA, nB, obj)
-  persistent cache
-  nAKey = ['a', sprintf('%d', nA)];
-  nBKey = ['b', sprintf('%d', nB)];
-  if( isfield(cache, nAKey)&&isfield(cache.(nAKey), nBKey) )
-    data = cache.(nAKey).(nBKey);
-  else
-    data = obj.processEdge(nA, nB);
-    cache.(nAKey).(nBKey) = data;
-  end
 end
