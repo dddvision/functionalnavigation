@@ -10,7 +10,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       function text = componentDescription
         text = ['Implements multiple visual feature trackers and trajectory measures. ', ...
           'Tracker choices include SURF, OpenCV KLT 2.0.0, and a faster version of KLT that is less accurate. ', ...
-          'This measure depends on at least one antbed.Camera object.'];
+          'This measure depends on at least one antbed Camera object.'];
       end
       tom.Measure.connect(name, @componentDescription, @FastPBM.FastPBM);
     end
