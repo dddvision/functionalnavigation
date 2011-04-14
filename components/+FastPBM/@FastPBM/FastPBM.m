@@ -53,9 +53,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         poseA = groundTraj.evaluate(tA);
         poseB = groundTraj.evaluate(tB);
 
-        [indexA, indexB] = this.tracker.findMatches(nA, nB);
-        rayA = this.tracker.getFeatureRay(nA, indexA);
-        rayB = this.tracker.getFeatureRay(nB, indexB);
+        [rayA, rayB] = this.tracker.findMatches(nA, nB);
         
         partialResidual{i} = computeResidual(poseA, poseB, rayA, rayB);
 
@@ -163,9 +161,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       poseA = x.evaluate(tA);
       poseB = x.evaluate(tB);
       
-      [indexA, indexB] = this.tracker.findMatches(nA, nB);
-      rayA = this.tracker.getFeatureRay(nA, indexA);
-      rayB = this.tracker.getFeatureRay(nB, indexB);
+      [rayA, rayB] = this.tracker.findMatches(nA, nB);
       
       cost = computeCost(poseA, poseB, rayA, rayB, this.deviation);     
     end
