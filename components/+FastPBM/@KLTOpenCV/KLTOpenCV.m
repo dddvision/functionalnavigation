@@ -1,4 +1,4 @@
-classdef SparseTrackerKLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
+classdef KLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
   properties (Constant = true, GetAccess = private)
     halfwin = 5;
@@ -10,7 +10,7 @@ classdef SparseTrackerKLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   end
   
   methods (Access = public, Static = true)
-    function this = SparseTrackerKLTOpenCV(initialTime, camera)
+    function this = KLTOpenCV(initialTime, camera)
       this = this@FastPBM.SparseTracker(initialTime);
       
       % store camera handle
