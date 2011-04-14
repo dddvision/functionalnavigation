@@ -111,6 +111,8 @@ classdef SparseTrackerKLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       imageA = this.prepareImage(nodeA);
       imageB = this.prepareImage(nodeB);
       [pixA, pixB] = mexOpticalFlowOpenCV(imageA, imageB, 0, this.halfwin*2+1, this.numLevels);
+      pixA = pixA';
+      pixB = pixB';
       xA = pixA(2, :);
       yA = pixA(1, :);
       xB = pixB(2, :);
@@ -129,7 +131,7 @@ classdef SparseTrackerKLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
 
       % optionally display tracking results
       if(this.displayFeatures)
-        FastPBM.displayFeatures(imageA, imageB, pixA, pixB);
+        FastPBM.displayFeatures(imageA/255, imageB/255, pixA, pixB);
       end
     end
     
