@@ -46,20 +46,12 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       pose = this.camera.getFrame(node);
     end
     
-    function num = numFeatures(this, node)
-      data = FastPBM.nodeCache(node, this);
-      num = size(data.ray, 2);
-    end
-    
-    function [localIndexA, localIndexB] = findMatches(this, nodeA, nodeB)
-      data = FastPBM.edgeCache(nodeA, nodeB, this);
-      localIndexA = data.localIndexA;
-      localIndexB = data.localIndexB;
-    end
-    
-    function ray = getFeatureRay(this, node, localIndex)
-      data = FastPBM.nodeCache(node, this);
-      ray = data.ray(:, localIndex+uint32(1));
+    function [rayA, rayB] = findMatches(this, nodeA, nodeB)
+      dataA = FastPBM.nodeCache(nodeA, this);
+      dataB = FastPBM.nodeCache(nodeB, this);
+      dataAB = FastPBM.edgeCache(nodeA, nodeB, this);
+      rayA = dataA.ray(:, dataAB.matchA+uint32(1));
+      rayB = dataB.ray(:, dataAB.matchB+uint32(1));
     end
   
     function data = processNode(this, node)
@@ -75,7 +67,7 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       keyA = dataA.key;
       keyB = dataB.key;
       [iA, iB] = MatchSurf(keyA, keyB);
-      data = struct('localIndexA', uint32(iA-1), 'localIndexB', uint32(iB-1));
+      data = struct('matchA', uint32(iA-1), 'matchB', uint32(iB-1));
 
       % optionally display tracking results
       if(this.displayFeatures)

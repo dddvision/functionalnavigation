@@ -9,18 +9,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   properties (GetAccess = private, SetAccess = private)
     camera
     mask
-    nodeA
-    nodePrevious
-    pyramidA
-    xA
-    yA
-    features
-    uniqueIndex
-    uniqueNext
-    firstTrack
     numLevels
-    figureHandle
-    plotHandle
   end
   
   methods (Access = public, Static = true)
@@ -42,16 +31,12 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         end
         cd(userDirectory);
       end
-      
-      this.firstTrack = true;
-      this.track();
     end
   end
   
   methods (Abstract = false, Access = public, Static = false)
-    function refresh(this, x)
+   function refresh(this, x)
       this.camera.refresh(x);
-      this.track(); 
     end
     
     function flag = hasData(this)
@@ -72,138 +57,58 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     
     function flag = isFrameDynamic(this)
       flag = this.camera.isFrameDynamic();
-    end    
+    end
     
     function pose = getFrame(this, node)
       pose = this.camera.getFrame(node);
     end
     
-    function num = numFeatures(this, node)
-      num = numel(this.features(node-this.nodeA+uint32(1)).id);
-    end
-    
-    function id = getFeatureID(this, node, localIndex)
-      id = this.features(node-this.nodeA+uint32(1)).id(localIndex+uint32(1));
-    end
-    
-    function [localIndexA, localIndexB] = findMatches(this, nodeA, nodeB)
+    function [rayA, rayB] = findMatches(this, nodeA, nodeB)
       data = FastPBM.edgeCache(nodeA, nodeB, this);
-      localIndexA = data.localIndexA;
-      localIndexB = data.localIndexB;
+      rayA = data.rayA;
+      rayB = data.rayB;
     end
-    
-    function ray = getFeatureRay(this, node, localIndex)
-      ray = this.features(node-this.nodeA+uint32(1)).ray(:, localIndex+uint32(1));
-    end
-      
-    function data = processEdge(this, nA, nB)
-      % process individual nodes to extract features
-      numA = this.numFeatures(nA);
-      numB = this.numFeatures(nB);
-      
-      % enumerate features
-      kA = (uint32(1):numA)-uint32(1);
-      kB = (uint32(1):numB)-uint32(1);
-      
-      % get feature identifiers  
-      idA = this.getFeatureID(nA, kA);
-      idB = this.getFeatureID(nB, kB);
-
-      % find features common to both images, inputs must be double, first output is not needed
-      [idAB, indexA, indexB] = intersect(double(idA), double(idB));
-
-      % store results, adjusting for zero-based indices
-      data = struct('localIndexA', uint32(indexA-1), 'localIndexB', uint32(indexB-1));
-    end
-  end
   
-  methods (Access = private)
-    function track(this)
-       % track features if the camera has data
-      if(this.camera.hasData())
-        
-        % process first image
-        if(this.firstTrack)
-          this.nodeA = this.camera.first();
-          this.nodePrevious = this.nodeA;
-          this.pyramidA = buildPyramid(this.prepareImage(this.nodeA), this.numLevels);
-          [this.xA, this.yA] = this.selectFeatures(this.pyramidA{1}.gx, this.pyramidA{1}.gy, this.maxFeatures);
-          this.uniqueIndex = this.getUniqueIndices(numel(this.xA));
-          this.features.id = this.uniqueIndex;
-          this.features.ray = this.camera.inverseProjection([this.yA;this.xA]-1, this.nodeA);
-          this.firstTrack = false;
-        end
-
-        % if there are any new images
-        nodeLast = this.camera.last();
-        nodeB = this.nodePrevious+uint32(1);
-        if(nodeLast>=nodeB)
-          
-          % estimate the feature locations in imageB
-          xB = this.xA;
-          yB = this.yA;
-          
-          % process all new images
-          for nodeB = nodeB:nodeLast
-            
-            % build the image pyramid with gradients
-            pyramidB = buildPyramid(this.prepareImage(nodeB), this.numLevels);
-
-            % call the mex function that performs sparse tracking
-            [xB, yB] = TrackFeaturesKLT(this.pyramidA, this.xA, this.yA, pyramidB, xB, yB, this.halfwin, this.thresh);
-
-            % identify tracked and mistracked features
-            bad = isnan(xB);
-            good = ~bad;
-
-            % select new features
-            deficit = numel(good)-sum(good);
-            [xBnew, yBnew] = this.selectFeatures(pyramidB{1}.gx, pyramidB{1}.gy, deficit);
-            this.uniqueIndex(bad) = this.getUniqueIndices(deficit);
-            xB(bad) = xBnew;
-            yB(bad) = yBnew;
-            
-            % optionally display tracking results
-            if(this.displayFeatures)
-              imageA = this.pyramidA{1}.f;
-              imageB = pyramidB{1}.f;
-              pixA = [this.yA(good); this.xA(good)];
-              pixB = [yB(good); xB(good)];
-              FastPBM.displayFeatures(imageA, imageB, pixA, pixB);
-            end
-            
-            % store both tracked and new features
-            this.features(nodeB-this.nodeA+uint32(1)).id = this.uniqueIndex;
-            this.features(nodeB-this.nodeA+uint32(1)).ray = this.camera.inverseProjection([yB; xB]-1, nodeB);
-
-            % store the image pyramid and feature locations
-            this.pyramidA = pyramidB;
-            this.xA = xB;
-            this.yA = yB;            
-          end
-          this.nodePrevious = nodeB;
-        end
-      end
-    end   
-     
-    % randomly select new image features
-    function [x, y] = selectFeatures(this, gx, gy, num)
-      kappa = computeCornerStrength(gx, gy, 1, this.cornerMethod);
-      [x, y] = findPeaks(kappa, this.halfwin, num);
+    function data = processNode(this, node)
+      img = this.prepareImage(node);
+      pyramid = buildPyramid(img, this.numLevels);
+      kappa = computeCornerStrength(pyramid{1}.gx, pyramid{1}.gy, 1, this.cornerMethod);
+      [x, y] = findPeaks(kappa, this.halfwin, this.maxFeatures);
+      pix = [y; x];
+      data.pyramid = pyramid; % different result from using struct()
+      data.pix = pix;
     end
-    
-    % get unique indices
-    function id = getUniqueIndices(this, num)
-      if(isempty(this.uniqueNext))
-        this.uniqueNext = uint32(0);
-      end
-      if(num>0)
-        a = this.uniqueNext;
-        b = a+uint32(num-1);
-        id = a:b;
-        this.uniqueNext = b+uint32(1);
-      else
-        id = zeros(1, 0, 'uint32');
+
+    function data = processEdge(this, nodeA, nodeB)
+      dataA = FastPBM.nodeCache(nodeA, this);
+      dataB = FastPBM.nodeCache(nodeB, this);
+      pyramidA = dataA.pyramid;
+      pyramidB = dataB.pyramid;
+      xA = dataA.pix(2, :);
+      yA = dataA.pix(1, :);
+      
+      % call the mex function that performs sparse tracking
+      % TODO: include prediction of feature locations
+      [xB, yB] = TrackFeaturesKLT(pyramidA, xA, yA, pyramidB, xA, yA, this.halfwin, this.thresh);
+      
+      % keep valid points only
+      good = ~(isnan(xB)|isnan(yB));
+      xB = xB(good);
+      yB = yB(good);
+      xA = xA(good);
+      yA = yA(good);
+
+      rayA = this.camera.inverseProjection([yA; xA], nodeA);
+      rayB = this.camera.inverseProjection([yB; xB], nodeA);
+      data = struct('rayA', rayA, 'rayB', rayB);
+
+      % optionally display tracking results
+      if(this.displayFeatures)
+        imageA = pyramidA{1}.f;
+        imageB = pyramidB{1}.f;
+        pixA = [yA; xA];
+        pixB = [yB; xB];
+        FastPBM.displayFeatures(imageA, imageB, pixA, pixB);
       end
     end
     
@@ -215,7 +120,7 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     % Applies NaN mask outside of the projection area
     % Pads the bottom and right sides with NaN based on pyramid levels (does not affect pixel coordinates)
     function img = prepareImage(this, node)
-      if(this.firstTrack)
+      if(isempty(this.numLevels))
         steps = this.camera.numSteps();
         strides = this.camera.numStrides();
         [stepGrid, strideGrid] = ndgrid(0:(double(steps)-1), 0:(double(strides)-1));
@@ -255,4 +160,138 @@ classdef SparseTrackerKLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
   end
   
+end
+
+% Select semi-uniformly spaced pixels that represent the local maximum within a window
+%
+% @param[in]  img     image to process
+% @param[in]  halfwin half of the window size to process
+% @param[in]  num     number of feature locations to select
+% @param[out] x       one-based position of peak in the contiguous dimension
+% @param[out] y       one-based position of peak in the non-contiguous dimension
+function [x, y] = findPeaks(img, halfwin, num)
+  [M, N] = size(img);
+  w = -halfwin:halfwin;
+  [xx,yy] = ndgrid(w, w);
+  xMin = 1+halfwin;
+  yMin = 1+halfwin;
+  xMax = M-halfwin;
+  yMax = N-halfwin;
+  rx = (rand(1, num)+rand(1, num))/2; % random, centrally weighted, in [0,1]
+  ry = (rand(1, num)+rand(1, num))/2;
+  x = round(xMin+rx*(xMax-xMin));
+  y = round(yMin+ry*(yMax-yMin));
+  for n = 1:num
+    xn = x(n);
+    yn = y(n);
+    region = img(xn+w, yn+w);
+    [v, p] = max(region(:));
+    x(n) = xn+xx(p);
+    y(n) = yn+yy(p);
+  end
+end
+
+% Computes corner strength given image gradients
+%
+% @param[in] gi      image gradient along the contiguous dimension
+% @param[in] gj      image gradient along the non-contiguous dimension
+% @param[in] halfwin radius in pixels to use for a smoothing window
+% @param[in] method  method to use to compute corner feature ('Harris', 'EigMin', 'EigBalance')
+% @return            corner strength image
+%
+% NOTES
+% All methods are based on the following symmetric 2x2 matrix consisting of sums of local image gradients
+%   [xx xy]
+%   [xy yy]
+function kappa = computeCornerStrength(gi, gj, halfwin, method)
+
+  % window to use for smoothing
+  win = (2*halfwin+1)*[1, 1];
+
+  % formulate the gradient products
+  gxx = gi.*gi;
+  gyy = gj.*gj;
+  gxy = gi.*gj;
+
+  % perform gaussian smoothing over a window
+  if(halfwin>=1)
+    mask = fspecial('gaussian', win, halfwin/4);
+    gxx = filter2(mask, gxx);
+    gyy = filter2(mask, gyy);
+    gxy = filter2(mask, gxy);
+  end
+    
+  % calculate corner intensity
+  switch(method)
+    case 'Harris'
+      kappa = Harris(gxx, gyy, gxy);
+    case 'EigMin'
+      kappa = EigMin(gxx, gyy, gxy);
+    case 'EigBalance'
+      kappa = EigBalance(gxx, gyy, gxy);
+    otherwise
+      error('Unrecognized corner computation method');
+  end
+end
+
+% The corner detector of Harris and Stephens
+function val = Harris(xx, yy, xy)
+  val = (xx.*yy-xy.*xy)./(xx+yy+eps);
+end
+
+% Calculates the minimum (and maximum) eigenvalues
+function lam1 = EigMin(xx, yy, xy)
+  dif = xx-yy;
+  a = (xx+yy)/2;
+  b = sqrt(dif.*dif+4*xy.*xy)/2;
+  lam1 = a-b;
+%  lam2 = a+b;
+end
+
+% Finds corners with balanced eigenvalues
+function val = EigBalance(xx, yy, xy)
+  pow = 1.5;
+  val = (xx.*yy-xy.*xy)./((xx+yy+eps).^pow);
+end
+
+% Builds a pyramid of images and computes their gradients at multiple resolutions
+%
+% @param[in] f         image to process with dimensions that are a multiple of 2^(numLevels-1)
+% @param[in] numLevels number of pyramid levels to create
+% @return              pyramid structure with a cell for each level and fields for the image and its gradients
+%
+% NOTES
+% Gradients are computed using the central difference formula
+% gx is the gradient along the contiguous image dimension
+% gy is the gradient along the non-contiguous image dimension
+function pyramid = buildPyramid(f, numLevels)
+  pyramid = cell(numLevels, 1);
+  for level = 1:numLevels
+    if(level>1)
+      f = imageReduce(f);
+    end
+    [gx, gy] = imageGradient(f);
+    pyramid{level}.f = f;
+    pyramid{level}.gx = gx;
+    pyramid{level}.gy = gy;
+  end
+end
+
+% Computes the gradient using the central difference formula
+function [gx, gy] = imageGradient(f)
+  gx = diff(f, 1, 1);
+  gy = diff(f, 1, 2);
+  gx = ([gx(1, :); gx]+[gx; gx(end, :)])/2;
+  gy = ([gy(:, 1), gy]+[gy, gy(:, end)])/2;
+end
+
+% Reduces image to half resolution
+function x = imageReduce(x)
+  [m,n] = size(x);
+  if(mod(m,2)||mod(n,2))
+    error('Image height and width must be multiples of 2');
+  end
+  x = x(1:2:end,:)+x(2:2:end, :);
+  x = x(:,1:2:end)+x(:, 2:2:end);
+  x = x/4;
 end
