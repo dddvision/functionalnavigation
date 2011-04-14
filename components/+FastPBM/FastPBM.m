@@ -97,12 +97,12 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
 
       % instantiate the tracker by name
       switch(this.trackerName)
-      case 'SparseTrackerKLT'
-        this.tracker = FastPBM.SparseTrackerKLT(initialTime, this.sensor);
-      case 'SparseTrackerKLTOpenCV'
-        this.tracker = FastPBM.SparseTrackerKLTOpenCV(initialTime, this.sensor);
-      case 'SparseTrackerSURF'
-        this.tracker = FastPBM.SparseTrackerSURF(initialTime, this.sensor);
+      case 'KLT'
+        this.tracker = FastPBM.KLT(initialTime, this.sensor);
+      case 'KLTOpenCV'
+        this.tracker = FastPBM.KLTOpenCV(initialTime, this.sensor);
+      case 'SURF'
+        this.tracker = FastPBM.SURF(initialTime, this.sensor);
       otherwise
         error('unrecognized tracker');
       end
