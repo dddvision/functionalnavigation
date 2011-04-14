@@ -1,4 +1,4 @@
-classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
+classdef SURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   
   properties (Constant = true, GetAccess = private)
     openSurfOptions = struct(...
@@ -12,7 +12,7 @@ classdef SparseTrackerSURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
   end
   
   methods (Access = public, Static = true)
-    function this = SparseTrackerSURF(initialTime, camera)
+    function this = SURF(initialTime, camera)
       this = this@FastPBM.SparseTracker(initialTime);
       this.camera = camera;
     end
