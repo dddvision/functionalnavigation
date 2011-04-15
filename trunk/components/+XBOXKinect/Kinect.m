@@ -35,16 +35,52 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
         delete(fullfile(this.localCache, 'depth*.dat'));
         delete(fullfile(this.localCache, 'video*.dat'));
         delete(fullfile(this.localCache, 'time*.dat'));
-        
-        userPath = pwd;
-        cd(this.localCache);
-        try
-          unix(fullfile(this.localCache, 'kinectapp &'));
-        catch err
-          cd(userPath);
-          error(err.message);
+
+        % Locate freenect libraries
+        userPath = path;
+        userWarnState = warning('off', 'all'); % see MATLAB Solution ID 1-5JUPSQ
+        addpath(getenv('LD_LIBRARY_PATH'), '-END');
+        addpath(getenv('PATH'), '-END');
+        warning(userWarnState);
+        if(ispc)
+          libdir = fileparts(which('freenect.lib'));
+        elseif(ismac)
+          libdir = fileparts(which('libfreenect.dylib'));
+        else
+          libdir = fileparts(which('libfreenect.so'));
         end
-        cd(userPath);
+        path(userPath);
+
+        % Compile and link against freenect libraries
+        userDirectory = pwd;
+        cd(this.localCache);
+        if(this.overwriteMEX||(~exist(this.appName, 'file')))
+          if(this.verbose)
+            fprintf('\nCompiling mex wrapper for Kinect sensor...');
+          end
+          try
+            mex([this.appName,'.cpp'], ['-L"', libdir, '"'], '-lfreenect');
+          catch err
+            details = err.message;
+            details = [details, ' Failed to compile kinectapp using local freenect libraries.'];
+            details = [details, ' The following files must be either in the system PATH'];
+            details = [details, ' or LD_LIBRARY_PATH:'];
+            if(ispc)
+              details = [details, ' freenect.dll'];
+            elseif(ismac)
+              details = [details, ' libfreenect.dylib'];           
+            else
+              details = [details, ' libfreenect.so'];
+            end
+            cd(userDirectory);
+            error(details);
+          end
+          if(this.verbose)
+            fprintf('done');
+          end
+        end
+        unix(fullfile(this.localCache, [this.appName,' &']));
+        cd(userDirectory);
       end
       
       this.na = uint32(0);
@@ -59,7 +95,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
         end
       end
       
-      this.refresh(tom.DynamicModelDefault(initialTime, ''));
+      this.refresh(tom.DynamicModel.create('tom', initialTime, ''));
     end
 
     function refresh(this, x)

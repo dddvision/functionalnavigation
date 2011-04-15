@@ -9,6 +9,9 @@ classdef XBOXKinectConfig < handle
     % Maximum time in seconds to wait for individual sensor initialization (10)
     timeOut = 10;
     
+    % Replace mex files if they already exist (false)
+    overwriteMEX = false;
+    
     % Overwrite stored images (false)
     overwrite = true;
     
