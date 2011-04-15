@@ -34,13 +34,13 @@ classdef DataContainerTest < handle
         fprintf(' true');
         
         fprintf('\ngetReferenceTrajectory =');
-        referenceTrajectory = dataContainer.getReferenceTrajectory();
-        assert(isa(referenceTrajectory, 'tom.Trajectory'));
+        trajectory = dataContainer.getReferenceTrajectory();
+        assert(isa(trajectory, 'tom.Trajectory'));
         fprintf(' ok');
         
-        antbed.TrajectoryTest(referenceTrajectory);
+        antbed.TrajectoryTest(trajectory);
       else
-        referenceTrajectory = tom.DynamicModel.create('tom', initialTime, '');
+        trajectory = tom.DynamicModel.create('tom', initialTime, '');
         fprintf(' false');
       end
 
@@ -73,7 +73,7 @@ classdef DataContainerTest < handle
         % tests that require a reference trajectory
         if(flag)
           if(isa(sensor, 'antbed.GPSReceiver'))
-            antbed.GPSReceiverTest(sensor, referenceTrajectory);
+            antbed.GPSReceiverTest(sensor, trajectory);
           end
         end
       end

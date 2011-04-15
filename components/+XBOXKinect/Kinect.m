@@ -8,6 +8,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
     maxDepth = 4.9; % sensitive parameter
     minDepth = 0.8; % sensitive parameter
     maxInt = 2^11;
+    localCache = fileparts(mfilename('fullpath'));
   end
   
   properties
@@ -30,9 +31,6 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
       this.imageFocal = double(this.strides)*cot(this.imageFieldOfView/2);
       this.depthFocal = double(this.strides)*cot(this.depthFieldOfView/2);      
       
-      if(~exist(this.localCache, 'dir'))
-        mkdir(this.localCache);
-      end
       if(this.overwrite)
         delete(fullfile(this.localCache, 'depth*.dat'));
         delete(fullfile(this.localCache, 'video*.dat'));
@@ -92,11 +90,11 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
     end
     
     function num = numStrides(this)
-      num = uint32(640);
+      num = this.strides;
     end
       
     function num = numSteps(this)
-      num = uint32(480);
+      num = this.steps;
     end
     
     function data = getImage(this, n)
