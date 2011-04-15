@@ -1,68 +1,57 @@
 classdef XBOXKinect < XBOXKinect.XBOXKinectConfig & antbed.DataContainer
-  properties (Constant=true,GetAccess=private)
-    hasRef=false;
-    bodyRef=[];
-    noRefText='MacBook cannot supply a reference trajectory';
-    notMacText='This data source depends on MacBook or MacBook Pro laptop hardware';
-    camDescription=['MacBook builtin iSight camera in low resolution mode. ',...
-        'Depends on VLC for access. Clear the sensor instance to stop recording.'];
-    kinectDescription='XBOX Kinect';
+  properties (Constant = true, GetAccess = private)
+    hasRef = false;
+    bodyRef = [];
+    noRefText = 'This data container has no reference trajectory.';
+    kinectDescription = 'XBOX Kinect';
   end
   
-  properties (Access=private)
-    sensors
+  properties (Access = private)
+    sensor
     sensorDescription
   end
   
-  methods (Static=true,Access=public)
+  methods (Static = true, Access = public)
     function initialize(name)
-      function text=componentDescription
-        text=['Provides data from the built-in camera in most MacBook and MacBook Pro laptops ',...
-          'and an XBOX Kinect sensor.'];
+      function text = componentDescription
+        text = 'Provides data from an XBOX Kinect sensor using the libfreenect library.';
       end
-      antbed.DataContainer.connect(name,@componentDescription,@XBOXKinect.XBOXKinect);
+      antbed.DataContainer.connect(name, @componentDescription, @XBOXKinect.XBOXKinect);
     end
   end
   
-  methods (Access=public)
-    function this=XBOXKinect(initialTime)
-      this=this@antbed.DataContainer(initialTime);
-
-      if(~ismac)
-        error(this.notMacText);
-      end
-
-      this.sensorDescription{1}=this.camDescription;
-      this.sensorDescription{2}=this.kinectDescription;
-      this.sensors{1}=XBOXKinect.MacCam(initialTime);
-      this.sensors{2}=XBOXKinect.Kinect(initialTime);
+  methods (Access = public)
+    function this = XBOXKinect(initialTime)
+      this = this@antbed.DataContainer(initialTime);
+      this.sensorDescription{1} = this.kinectDescription;
+      this.sensor{1} = XBOXKinect.Kinect(initialTime);
     end
     
-    function list=listSensors(this,type)
-      K=numel(this.sensors);
-      flag=false(K,1);
-      for k=1:K
-        if(isa(this.sensors{k},type))
-          flag(k)=true;
+    function list = listSensors(this, type)
+      K = numel(this.sensor);
+      flag = false(K, 1);
+      for k = 1:K
+        if(isa(this.sensor{k}, type))
+          flag(k) = true;
         end
       end
-      list=antbed.SensorIndex(find(flag)-1);
+      list = antbed.SensorIndex(find(flag)-1);
     end
     
-    function text=getSensorDescription(this,id)
-      text=this.sensorDescription{id+1};
+    function text = getSensorDescription(this, id)
+      text = this.sensorDescription{id+1};
     end
     
-    function obj=getSensor(this,id)
-      obj=this.sensors{id+1};
+    function obj = getSensor(this, id)
+      obj = this.sensor{id+1};
     end
     
-    function flag=hasReferenceTrajectory(this)
-      flag=this.hasRef;
+    function flag = hasReferenceTrajectory(this)
+      flag = this.hasRef;
     end
     
-    function x=getReferenceTrajectory(this)
-      x=this.bodyRef;
+    function x = getReferenceTrajectory(this)
+      x = this.bodyRef;
       error(this.noRefText);
     end
   end
