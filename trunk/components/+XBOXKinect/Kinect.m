@@ -36,42 +36,19 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
         delete(fullfile(this.localCache, 'video*.dat'));
         delete(fullfile(this.localCache, 'time*.dat'));
 
-        % Locate freenect libraries
-        userPath = path;
-        userWarnState = warning('off', 'all'); % see MATLAB Solution ID 1-5JUPSQ
-        addpath(getenv('LD_LIBRARY_PATH'), '-END');
-        addpath(getenv('PATH'), '-END');
-        warning(userWarnState);
-        if(ispc)
-          libdir = fileparts(which('freenect.lib'));
-        elseif(ismac)
-          libdir = fileparts(which('libfreenect.dylib'));
-        else
-          libdir = fileparts(which('libfreenect.so'));
-        end
-        path(userPath);
-
         % Compile and link against freenect libraries
         userDirectory = pwd;
         cd(this.localCache);
-        if(this.overwriteMEX||(~exist(this.appName, 'file')))
+        if(this.recompile||(~exist(this.appName, 'file')))
           if(this.verbose)
-            fprintf('\nCompiling mex wrapper for Kinect sensor...');
+            fprintf('\nCompiling application for Kinect sensor...');
           end
           try
-            mex([this.appName,'.cpp'], ['-L"', libdir, '"'], '-lfreenect');
+            unix(['gcc ', this.appName,'.cpp -o ', this.appName]);
           catch err
             details = err.message;
-            details = [details, ' Failed to compile kinectapp using local freenect libraries.'];
-            details = [details, ' The following files must be either in the system PATH'];
-            details = [details, ' or LD_LIBRARY_PATH:'];
-            if(ispc)
-              details = [details, ' freenect.dll'];
-            elseif(ismac)
-              details = [details, ' libfreenect.dylib'];           
-            else
-              details = [details, ' libfreenect.so'];
-            end
+            details = [details, ' Failed to compile using local freenect libraries.'];
+            details = [details, ' Try compiling ', this.appName, 'externally.'];
             cd(userDirectory);
             error(details);
           end
