@@ -21,6 +21,9 @@ classdef MacBookBuiltInSensorsConfig < handle
     % Path to temporary folder for caching data (fullfile(fileparts(mfilename('fullpath')),'tmp'))
     localCache = fullfile(fileparts(mfilename('fullpath')), 'tmp');
     
+    % Overwrite images or use existing ones (true)
+    overwrite = true;
+    
     % Maximum time in seconds to wait for individual sensor initialization (10)
     timeOut = 10;
     
