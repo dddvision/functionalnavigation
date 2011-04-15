@@ -8,19 +8,20 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
     frameDynamic = false;
     projectionDynamic = false;
     clockBase = [1980, 1, 6, 0, 0, 0];
+    defaultRate = 1/30;
     fileFormat = '%05d.png';
     vlcErrorText = 'MacBook camera depends on VLC Media Player for OS X';
     timeOutText = 'Timeout while waiting for camera initialization';
   end
   
   properties (Access = private)
-    nb
     focal
-    refTime
-    initialTime
-    zoneOffset
+    nb
     rate
     ready
+    initialTime
+    refTime
+    timeZoneOffset 
   end
   
   methods (Access = public)
@@ -30,72 +31,84 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
         fprintf('\nInitializing %s', class(this));
       end
       
-      % store time zone offset
-      calendar = java.util.GregorianCalendar;
-      zone = calendar.getTimeZone;
-      this.zoneOffset = (zone.getRawOffset+zone.getDSTSavings)/1000;
-        
       this.focal = double(this.strides)*cot(this.cameraFieldOfView/2);
       
-      if(~exist(this.localCache, 'dir'))
-        mkdir(this.localCache);
-      end
-      delete(fullfile(this.localCache, '*.png'));
-      delete(fullfile(this.localCache, '*.swp'));
-      
-      if(~exist(this.vlcPath, 'file'))
-        error(this.vlcErrorText);
-      end
-      startcmd = [sprintf('%s qtcapture:// ', this.vlcPath), ...
-        '--vout=dummy --aout=dummy --video-filter=scene --scene-format=png --scene-prefix="" ', ...
-        sprintf('--scene-width=%d --scene-height=%d ', this.strides, this.steps), ...
-        sprintf('--scene-ratio=%d --scene-path=%s ', this.cameraIncrement, this.localCache), ...
-        '2> /dev/null &'];
-      unix(startcmd);
-      
-      this.ready = false;
-      t0 = clock;
-      t1 = clock;
-      while(etime(t1, t0)<this.timeOut)
-        if(isValid(this, uint32(1)))
-          t1 = clock;
-          this.ready = true;
-          break;
+      if(this.overwrite)
+        calendar = java.util.GregorianCalendar;
+        zone = calendar.getTimeZone;
+        this.timeZoneOffset = (zone.getRawOffset+zone.getDSTSavings)/1000;
+
+        if(~exist(this.localCache, 'dir'))
+          mkdir(this.localCache);
         end
+        delete(fullfile(this.localCache, '*.png'));
+        delete(fullfile(this.localCache, '*.swp'));
+
+        if(~exist(this.vlcPath, 'file'))
+          error(this.vlcErrorText);
+        end
+        startcmd = [sprintf('%s qtcapture:// ', this.vlcPath), ...
+          '--vout=dummy --aout=dummy --video-filter=scene --scene-format=png --scene-prefix="" ', ...
+          sprintf('--scene-width=%d --scene-height=%d ', this.strides, this.steps), ...
+          sprintf('--scene-ratio=%d --scene-path=%s ', this.cameraIncrement, this.localCache), ...
+          '2> /dev/null &'];
+        unix(startcmd);
+
+        this.ready = false;
+        t0 = clock;
         t1 = clock;
-      end
-      if(~this.ready)
-        error(this.timeOutText);
-      end
-      this.ready = false;
-      t2 = clock;
-      while(etime(t2, t1)<(this.timeOut+0.2*this.cameraIncrement))
-        if(isValid(this, uint32(2)))
-          t2 = clock;
-          this.ready = true;
-          break;
+        while(etime(t1, t0)<this.timeOut)
+          if(isValid(this, uint32(1)))
+            t1 = clock;
+            this.ready = true;
+            break;
+          end
+          t1 = clock;
         end
+        if(~this.ready)
+          error(this.timeOutText);
+        end
+        this.ready = false;
         t2 = clock;
+        while(etime(t2, t1)<(this.timeOut+0.2*this.cameraIncrement))
+          if(isValid(this, uint32(2)))
+            t2 = clock;
+            this.ready = true;
+            break;
+          end
+          t2 = clock;
+        end
+        if(~this.ready)
+          error(this.timeOutText);
+        end
+        this.rate = etime(t2, t1);
+        this.initialTime = etime(t1, this.clockBase)-this.rate;
+        this.refTime = t1;
+        this.nb = uint32(2);
+      else
+        this.initialTime = initialTime;
+        this.rate = this.defaultRate;
+        this.ready = false;
+        this.nb = this.na;
+        while(this.isValid(this.nb))
+          this.nb = this.nb+uint32(1);
+          this.ready = true;
+        end
       end
-      if(~this.ready)
-        error(this.timeOutText);
-      end
-      this.rate = etime(t2, t1);
-      this.initialTime = etime(t1, this.clockBase)-this.rate;
-      this.refTime = t1;
-      this.nb = uint32(2);
     end
 
     function refresh(this, x)
       assert(isa(x, 'tom.Trajectory'));
-      kRef = this.nb;
-      while(isValid(this, this.nb+uint32(1)))
-        time = clock;
-        this.nb = this.nb+uint32(1);
-      end
-      if(this.nb>kRef)
-        numImages = double(this.nb-this.na+uint32(1)); % adds 1 to account for isValid
-        this.rate = etime(time, this.refTime)/numImages; 
+      if(this.overwrite)
+        kRef = this.nb;
+        while(isValid(this, this.nb+uint32(1)))
+          time = clock;
+          this.nb = this.nb+uint32(1);
+        end
+        if(this.nb>kRef)
+          numImages = double(this.nb-this.na+uint32(1)); % adds one to account for behavior of isValid
+          this.rate = etime(time, this.refTime)/numImages; 
+        end
       end
     end
     
@@ -114,7 +127,11 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
     function time = getTime(this, n)
       assert(n>=this.na);
       assert(n<=this.nb);
-      time = tom.WorldTime(this.initialTime-this.zoneOffset+this.rate*double(n-this.na));
+      if(this.overwrite)
+        time = tom.WorldTime(this.initialTime+this.rate*double(n-this.na)-this.timeZoneOffset);
+      else
+        time = tom.WorldTime(this.initialTime+this.rate*double(n-this.na));
+      end
     end
     
     function num = numSteps(this, varargin)
@@ -194,13 +211,15 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
     
     % Stops the image capture process
     function delete(this)
-      [base, name, ext] = fileparts(this.vlcPath);
-      unix(['killall -9 ', name, ext]);
+      if(this.overwrite)
+        [base, name, ext] = fileparts(this.vlcPath);
+        unix(['killall -9 ', name, ext]);
+      end
     end
   end
   
   methods (Access = private)
-    % the next image must exist for flag to be true
+    % checks for the next image being written to validate the current image
     function flag = isValid(this, n)
       num = this.na+this.cameraIncrement*(n+1); % adds one
       fname = fullfile(this.localCache, sprintf(this.fileFormat, num));
