@@ -12,7 +12,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     measure
     numSubCosts
     costMean
-    defaultOptions
+    options
     stepGAhandle
   end
   
@@ -34,7 +34,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     end
     
     function num = numInitialConditions(this)
-      num = this.popSize;
+      num = uint32(this.popSize);
     end
       
     function defineProblem(this, dynamicModel, measure, randomize)
@@ -45,34 +45,34 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       if(~license('test','gads_toolbox'))
         error('Requires license for GADS toolbox -- see MatlabGA configuration options');
       end
-      this.defaultOptions = gaoptimset;
-      this.defaultOptions.PopulationType = 'bitstring';
-      this.defaultOptions.PopInitRange = [0; 1];
-      this.defaultOptions.MigrationDirection = 'forward';
-      this.defaultOptions.MigrationInterval = Inf;
-      this.defaultOptions.MigrationFraction = 0;
-      this.defaultOptions.Generations = 1;
-      this.defaultOptions.TimeLimit = Inf;
-      this.defaultOptions.FitnessLimit = -Inf;
-      this.defaultOptions.StallGenLimit = Inf;
-      this.defaultOptions.StallTimeLimit = Inf;
-      this.defaultOptions.TolFun = 0;
-      this.defaultOptions.TolCon = 0;
-      this.defaultOptions.Vectorized = 'on';
-      this.defaultOptions.LinearConstr.type = 'unconstrained';
-      this.defaultOptions.EliteCount = 1+floor(this.popSize/12);
-      this.defaultOptions.PopulationSize = this.popSize;
-      this.defaultOptions.CrossoverFraction = this.CrossoverFraction;
-      this.defaultOptions.CreationFcn = this.CreationFcn;
-      this.defaultOptions.CreationFcnArgs = this.CreationFcnArgs;
-      this.defaultOptions.FitnessScalingFcn = this.FitnessScalingFcn;
-      this.defaultOptions.FitnessScalingFcnArgs = this.FitnessScalingFcnArgs;
-      this.defaultOptions.SelectionFcn = this.SelectionFcn;
-      this.defaultOptions.SelectionFcnArgs = this.SelectionFcnArgs;
-      this.defaultOptions.CrossoverFcn = this.CrossoverFcn;
-      this.defaultOptions.CrossoverFcnArgs = this.CrossoverFcnArgs;
-      this.defaultOptions.MutationFcn = this.MutationFcn;
-      this.defaultOptions.MutationFcnArgs = this.MutationFcnArgs;
+      this.options = gaoptimset;
+      this.options.PopulationType = 'bitstring';
+      this.options.PopInitRange = [0; 1];
+      this.options.MigrationDirection = 'forward';
+      this.options.MigrationInterval = Inf;
+      this.options.MigrationFraction = 0;
+      this.options.Generations = 1;
+      this.options.TimeLimit = Inf;
+      this.options.FitnessLimit = -Inf;
+      this.options.StallGenLimit = Inf;
+      this.options.StallTimeLimit = Inf;
+      this.options.TolFun = 0;
+      this.options.TolCon = 0;
+      this.options.Vectorized = 'on';
+      this.options.LinearConstr.type = 'unconstrained';
+      this.options.EliteCount = 1+floor(this.popSize/12);
+      this.options.PopulationSize = this.popSize;
+      this.options.CrossoverFraction = this.CrossoverFraction;
+      this.options.CreationFcn = this.CreationFcn;
+      this.options.CreationFcnArgs = this.CreationFcnArgs;
+      this.options.FitnessScalingFcn = this.FitnessScalingFcn;
+      this.options.FitnessScalingFcnArgs = this.FitnessScalingFcnArgs;
+      this.options.SelectionFcn = this.SelectionFcn;
+      this.options.SelectionFcnArgs = this.SelectionFcnArgs;
+      this.options.CrossoverFcn = this.CrossoverFcn;
+      this.options.CrossoverFcnArgs = this.CrossoverFcnArgs;
+      this.options.MutationFcn = this.MutationFcn;
+      this.options.MutationFcnArgs = this.MutationFcnArgs;
 
       % workaround to access stepGA from the gads toolbox
       userPath = pwd;
@@ -95,12 +95,18 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       this.iEU = uint32(1):this.nEU;
       this.iU = uint32(1):uint32(32);
       
-      % randomize initial parameters
+      % randomize parameters
       if(randomize)
         for k = 1:this.popSize
           U = randUint32(this.nIU);
           for p = this.iIU
-            this.dynamicModel(k).setInitial(p-uint32(1), U(p));
+            dynamicModel(k).setInitial(p-uint32(1), U(p));
+          end
+          for b = uint32(1):dynamicModel(k).numBlocks()
+            U = randUint32(this.nEU);
+            for p = this.iEU
+              dynamicModel(k).setInitial(b-uint32(1), p-uint32(1), U(p));
+            end
           end
         end
       end
@@ -129,10 +135,10 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
         for k = 1:K
           Fk = this.dynamicModel(k);
           extend(Fk);
-          b = Fk.numBlocks();
+          B = Fk.numBlocks();
           U = randUint32(this.nEU);
           for p = this.iEU
-            Fk.setExtension(b-uint32(1), p-uint32(1), U(p));
+            Fk.setExtension(B-uint32(1), p-uint32(1), U(p));
           end
         end
         interval = Fk.domain();
@@ -163,23 +169,18 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
         objectiveContainer('put', this);
         this.costMean(this.costMean<eps) = eps; % MATLAB GA doesn't like zero cost
         [this.costMean, bits] = feval(this.stepGAhandle, this.costMean, bits, ...
-          this.defaultOptions, nullstate, nvars, @objectiveContainer);
+          this.options, nullstate, nvars, @objectiveContainer);
         this.putBits(bits);
       end
     end
   end
   
   methods (Access = private)
-    % Each bit string is packed in the following order:
-    %   initial uint32
-    %   extension 1 uint32
-    %   extension 2 uint32
-    %   ...   
     function bits = getBits(this)
       K = numel(this.dynamicModel);
       B = this.dynamicModel(1).numBlocks();
       bits = false(K, this.nIU+B*this.nEU);
-      iB = uint32(1):uint32(B);
+      iB = uint32(1):B;
       for k = 1:K
         Fk = this.dynamicModel(k);
         base = uint32(0);
@@ -199,7 +200,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     function putBits(this, bits)
       K = numel(this.dynamicModel);
       B = this.dynamicModel(1).numBlocks();
-      iB = uint32(1):uint32(B);
+      iB = uint32(1):B;
       for k = 1:K
         Fk = this.dynamicModel(k);
         base = uint32(0);
@@ -278,8 +279,12 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       end
 
       % normalize costs by total number of blocks and edges
-      this.numSubCosts = 1+B+sum(numEdges);
+      this.numSubCosts = 1+B+sum(numEdges); % includes one initial condition
       cost = cost/this.numSubCosts;
+      
+      if(this.verbose)
+        fprintf('\ncostMean = %f', cost);
+      end
     end
   end
   
