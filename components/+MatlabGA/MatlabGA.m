@@ -42,7 +42,7 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
       assert(numel(dynamicModel)==this.popSize);
       
       % set initial options for the GADS toolbox
-      if(~license('test','gads_toolbox'))
+      if(~license('test', 'gads_toolbox'))
         error('Requires license for GADS toolbox -- see MatlabGA configuration options');
       end
       this.options = gaoptimset;

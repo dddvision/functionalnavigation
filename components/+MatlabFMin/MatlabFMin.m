@@ -2,6 +2,7 @@ classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
   
   properties (Constant = true, GetAccess = private)
     popSize = uint32(1);
+    intMax = 4294967295;
   end
     
   properties (GetAccess = private, SetAccess = private)
@@ -43,7 +44,7 @@ classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
       assert(numel(dynamicModel)==this.popSize);
       
       % set initial options for the optimization toolbox
-      if(~license('test','optimization_toolbox'))
+      if(~license('test', 'optimization_toolbox'))
         error('Requires license for MATLAB optimization toolbox -- see MatlabFMin configuration options');
       end
       this.options = optimset;
@@ -53,7 +54,7 @@ classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
       this.options.TolFun = 0;
       this.options.TolX = 0;
       this.options.TolCon = 0;
-      this.options.MaxIter = Inf;
+      this.options.MaxIter = this.intMax;
       if(~this.verbose)
         this.options.Display = 'off';
       end
@@ -80,8 +81,7 @@ classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
       
       % determine initial costs
       objectiveContainer('put', this);
-      intMax = 4294967295;
-      P = double(P)/intMax;
+      P = double(P)/this.intMax;
       this.costMean = feval(@objectiveContainer, P); % sets parameters
       this.isDefined = true;
     end
@@ -126,16 +126,15 @@ classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
     
     function step(this)
       assert(this.isDefined);
-      intMax = 4294967295;
       P = getParameters(this);
       numParameters = numel(P);
       if(numParameters>0)
         objectiveContainer('put', this);
         lb = zeros(numParameters, 1);
         ub = ones(numParameters, 1);
-        P = double(P)/intMax;
+        P = double(P)/this.intMax;
         [P, this.costMean] = fmincon(@objectiveContainer, P, [], [], [], [], lb, ub, [], this.options);
-        P = uint32(P*intMax);
+        P = uint32(round(P*this.intMax));
         this.putParameters(P);
       end
       fprintf('\nparameters = ');
@@ -257,12 +256,12 @@ function v = randUint32(N)
   v = randi([0, intMax], N, 1, 'uint32');
 end
 
+% input parameters are expected to be doubles in the range [0, 1]
 function varargout = objectiveContainer(varargin)
   persistent this
   P = varargin{1};
   if(~ischar(P))
-    intMax = 4294967295;
-    P = uint32(P*intMax);
+    P = uint32(round(P*this.intMax));
     this.putParameters(P);
     varargout{1} = this.computeCostMean(this.nSpan);
   elseif(strcmp(P, 'put'))
