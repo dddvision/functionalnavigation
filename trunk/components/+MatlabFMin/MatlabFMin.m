@@ -50,11 +50,10 @@ classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
       this.options = optimset;
       this.options.Algorithm = 'interior-point';
       this.options.LargeScale = 'on';
-      this.options.MaxFunEvals = 30;
       this.options.TolFun = 0;
       this.options.TolX = 0;
       this.options.TolCon = 0;
-      this.options.MaxIter = this.intMax;
+      this.options.MaxIter = 2;
       if(~this.verbose)
         this.options.Display = 'off';
       end
@@ -127,18 +126,21 @@ classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
     function step(this)
       assert(this.isDefined);
       P = getParameters(this);
-      numParameters = numel(P);
-      if(numParameters>0)
+      N = numel(P);
+      if(N>0)
+        this.options.MaxFunEvals = 1+floor(N*log(N));
         objectiveContainer('put', this);
-        lb = zeros(numParameters, 1);
-        ub = ones(numParameters, 1);
+        lb = zeros(N, 1);
+        ub = ones(N, 1);
         P = double(P)/this.intMax;
         [P, this.costMean] = fmincon(@objectiveContainer, P, [], [], [], [], lb, ub, [], this.options);
         P = uint32(round(P*this.intMax));
         this.putParameters(P);
       end
-      fprintf('\nparameters = ');
-      fprintf('%u ', P); 
+      if(this.verbose)
+        fprintf('\nparameters = ');
+        fprintf('%u ', P);
+      end
     end
   end
   

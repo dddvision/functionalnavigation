@@ -60,20 +60,16 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         partialResidual{i} = computeResidual(poseA, poseB, rayA, rayB);
 
         residual = cat(2, residual, partialResidual{i});
-        fprintf('\nresidual = ');
-        fprintf('%e', residual);
       end
       
-      Ppos = zeros(1, numEdges);
-      Pneg = zeros(1, numEdges);
+      theta = this.getNyquist();
+      
+      P = zeros(1, numEdges);
       for i = 1:numEdges
-        N = numel(partialResidual{i});
-        Nz = sum(partialResidual{i}==0);
-        Ppos(i) = sum(partialResidual{i}>0)/(N-Nz);
-        Pneg(i) = sum(partialResidual{i}<0)/(N-Nz);
+        P(i) = halfSpaceTest(partialResidual{i}, theta);
       end
-      deviation = sqrt(sum(([Ppos, Pneg]-0.5).^2)/(numEdges-1));
-      fprintf('\ndeviation = %e', deviation);
+      P
+      deviation = sqrt(sum((P-0.5).^2)/(numEdges-1))
     end
   end
   
@@ -129,28 +125,28 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
     end
     
     function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)
-%       edgeList = repmat(tom.GraphEdge, [0, 1]);
-%       if(this.tracker.hasData())
-%         naMin = max([naMin, this.tracker.first(), nbMin-uint32(1)]);
-%         naMax = min([naMax, this.tracker.last()-uint32(1), nbMax-uint32(1)]);
-%         a = naMin:naMax;
-%         if(naMax>=naMin)
-%           edgeList = tom.GraphEdge(a, a+uint32(1));
-%         end
-%       end
       edgeList = repmat(tom.GraphEdge, [0, 1]);
       if(this.tracker.hasData())
-        nMin = max([naMin, this.tracker.first(), nbMin-uint32(1)]);
-        nMax = min([naMax+uint32(1), this.tracker.last(), nbMax]);
-        nList = nMin:nMax;
-        [nodeA, nodeB] = ndgrid(nList, nList);
-        keep = nodeB(:)>nodeA(:);
-        nodeA = nodeA(keep);
-        nodeB = nodeB(keep);
-        if(~isempty(nodeA))
-          edgeList = tom.GraphEdge(nodeA, nodeB);
+        naMin = max([naMin, this.tracker.first(), nbMin-uint32(1)]);
+        naMax = min([naMax, this.tracker.last()-uint32(1), nbMax-uint32(1)]);
+        a = naMin:naMax;
+        if(naMax>=naMin)
+          edgeList = tom.GraphEdge(a, a+uint32(1));
         end
       end
+%       edgeList = repmat(tom.GraphEdge, [0, 1]);
+%       if(this.tracker.hasData())
+%         nMin = max([naMin, this.tracker.first(), nbMin-uint32(1)]);
+%         nMax = min([naMax+uint32(1), this.tracker.last(), nbMax]);
+%         nList = nMin:nMax;
+%         [nodeA, nodeB] = ndgrid(nList, nList);
+%         keep = nodeB(:)>nodeA(:);
+%         nodeA = nodeA(keep);
+%         nodeB = nodeB(keep);
+%         if(~isempty(nodeA))
+%           edgeList = tom.GraphEdge(nodeA, nodeB);
+%         end
+%       end
     end
     
     function cost = computeEdgeCost(this, x, graphEdge)     
@@ -158,14 +154,14 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       nodeB = graphEdge.second;
       
       % return 0 if the specified edge is not found in the graph
-%       isAdjacent = ((nodeA+uint32(1))==nodeB) && ...
-%         this.tracker.hasData() && ...
-%         (nodeA>=this.tracker.first()) && ...
-%         (nodeB<=this.tracker.last());
-      isAdjacent = (nodeA<nodeB) && ...
+      isAdjacent = ((nodeA+uint32(1))==nodeB) && ...
         this.tracker.hasData() && ...
         (nodeA>=this.tracker.first()) && ...
         (nodeB<=this.tracker.last());
+%       isAdjacent = (nodeA<nodeB) && ...
+%         this.tracker.hasData() && ...
+%         (nodeA>=this.tracker.first()) && ...
+%         (nodeB<=this.tracker.last());
       if(~isAdjacent)
         cost = 0;
         return;
@@ -183,7 +179,16 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       poseA = x.evaluate(tA);
       poseB = x.evaluate(tB);
       [rayA, rayB] = this.tracker.findMatches(nodeA, nodeB);
-      cost = computeCost(poseA, poseB, rayA, rayB, this.deviation);     
+      cost = computeCost(poseA, poseB, rayA, rayB, this.getNyquist(), this.deviation);
+    end
+    
+    function theta = getNyquist(this)
+      steps = double(this.sensor.numSteps());
+      strides = double(this.sensor.numStrides());
+      center = round([strides/2; steps/2]);
+      pix = [center+[1; 1], center-[1; 1]];
+      ray = this.sensor.inverseProjection(pix, this.sensor.first());
+      theta = acos(ray(:, 1)'*ray(:, 2));
     end
   end
 
@@ -201,12 +206,12 @@ function residual = computeResidual(poseA, poseB, rayA, rayB)
   rayB = RB*rayB;
 
   % evaluate translation component
-  translation = poseB.p-poseA.p;
-  if( norm(translation)<eps )
+  dx = poseB.p-poseA.p;
+  if( norm(dx)<eps )
     residual = acos(dot(rayA, rayB));
   else
     % calculate the normal to the epipolar plane
-    normals = bsxfun(@cross, translation, rayA);
+    normals = crossMatrix(dx)*rayA;
     magnitude = sqrt(sum(normals.*normals));
     magnitude(magnitude<eps) = eps;
     normals = bsxfun(@rdivide, normals, magnitude);
@@ -216,13 +221,25 @@ function residual = computeResidual(poseA, poseB, rayA, rayB)
   end
 end
 
-function cost = computeCost(poseA, poseB, rayA, rayB, deviation)
+function cost = computeCost(poseA, poseB, rayA, rayB, nyquist, deviation)
   residual = computeResidual(poseA, poseB, rayA, rayB);
-  N = numel(residual);
-  Nz = sum(residual==0);
-  Ppos = sum(residual>0)/(N-Nz);
-  z = (Ppos-0.5)/deviation;
+  p = halfSpaceTest(residual, nyquist);
+  z = (p-0.5)/deviation;
   cost = 0.5*z*z;
+end
+
+% Smooth positivity test function with domain [-Inf, Inf] and range [0, 1]
+function p = halfSpaceTest(r, nyquist)
+  N = numel(r);
+  if(N>0)
+    p = sum(0.5*(1+erf(r/nyquist)))/N; % faster than atan
+  else
+    p = 0.5;
+  end
+end
+
+function y = crossMatrix(x)
+  y = [0, -x(3), x(2); x(3), 0, -x(1); -x(2), x(1), 0];
 end
 
 % Converts a quaternion to a rotation matrix

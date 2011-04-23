@@ -129,7 +129,7 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
     
     function cost = computeInitialCost(this)
       z = block2deviation(this.initial);
-      cost = 0.5*dot(z, z);
+      cost = 0.5*(z*z');
     end
 
     function cost = computeExtensionCost(this, b)
