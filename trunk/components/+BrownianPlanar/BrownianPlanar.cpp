@@ -208,7 +208,6 @@ namespace BrownianPlanar
         tangentPose.s[1] = 0.0;
         tangentPose.s[2] = aRate[bBase]+ct3*fa[bBase];
       }
-      transformPose(tangentPose);
       return;
     }
 
@@ -253,7 +252,6 @@ namespace BrownianPlanar
       {
         evaluateGeneral(k, pose);
       }
-      transformPose(pose);
       return;
     }
 
@@ -314,8 +312,8 @@ namespace BrownianPlanar
       {
         k = rate*(time[n]-interval.first);
         evaluatePose(k, pose[n]);
+        transformPose(pose[n]);
       }
-      
       return;
     }
 
@@ -330,6 +328,7 @@ namespace BrownianPlanar
       {
         k = rate*(time[n]-interval.first);
         evaluateTangentPose(k, tangentPose[n]);
+        transformPose(tangentPose[n]);
       }
       return;
     }
