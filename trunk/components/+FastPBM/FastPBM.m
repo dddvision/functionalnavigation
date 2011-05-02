@@ -49,15 +49,9 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         nodeA = edgeList(i).first;
         nodeB = edgeList(i).second;
 
-        tA = this.tracker.getTime(nodeA);
-        tB = this.tracker.getTime(nodeB);
-
-        poseA = groundTraj.evaluate(tA);
-        poseB = groundTraj.evaluate(tB);
-
         [rayA, rayB] = this.tracker.findMatches(nodeA, nodeB);
         
-        partialResidual{i} = computeResidual(poseA, poseB, rayA, rayB);
+        partialResidual{i} = this.computeResidual(groundTraj, nodeA, nodeB, rayA, rayB);
 
         residual = cat(2, residual, partialResidual{i});
       end
@@ -68,8 +62,9 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       for i = 1:numEdges
         P(i) = halfSpaceTest(partialResidual{i}, theta);
       end
-      P
-      deviation = sqrt(sum((P-0.5).^2)/(numEdges-1))
+      display(P);
+      deviation = sqrt(sum((P-0.5).^2)/(numEdges-1));
+      display(deviation);
     end
   end
   
@@ -134,19 +129,6 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
           edgeList = tom.GraphEdge(a, a+uint32(1));
         end
       end
-%       edgeList = repmat(tom.GraphEdge, [0, 1]);
-%       if(this.tracker.hasData())
-%         nMin = max([naMin, this.tracker.first(), nbMin-uint32(1)]);
-%         nMax = min([naMax+uint32(1), this.tracker.last(), nbMax]);
-%         nList = nMin:nMax;
-%         [nodeA, nodeB] = ndgrid(nList, nList);
-%         keep = nodeB(:)>nodeA(:);
-%         nodeA = nodeA(keep);
-%         nodeB = nodeB(keep);
-%         if(~isempty(nodeA))
-%           edgeList = tom.GraphEdge(nodeA, nodeB);
-%         end
-%       end
     end
     
     function cost = computeEdgeCost(this, x, graphEdge)     
@@ -158,28 +140,18 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         this.tracker.hasData() && ...
         (nodeA>=this.tracker.first()) && ...
         (nodeB<=this.tracker.last());
-%       isAdjacent = (nodeA<nodeB) && ...
-%         this.tracker.hasData() && ...
-%         (nodeA>=this.tracker.first()) && ...
-%         (nodeB<=this.tracker.last());
       if(~isAdjacent)
         cost = 0;
         return;
       end
       
-      % return NaN if the graph edge extends outside of the trajectory domain
-      tA = this.tracker.getTime(nodeA);
-      tB = this.tracker.getTime(nodeB);
-      interval = x.domain();
-      if(tA<interval.first)
-        cost = NaN;
-        return;
-      end
-      
-      poseA = x.evaluate(tA);
-      poseB = x.evaluate(tB);
       [rayA, rayB] = this.tracker.findMatches(nodeA, nodeB);
-      cost = computeCost(poseA, poseB, rayA, rayB, this.getNyquist(), this.deviation);
+      
+      residual = this.computeResidual(x, nodeA, nodeB, rayA, rayB);
+      
+      pHalfSpace = halfSpaceTest(residual, this.getNyquist());
+      z = (pHalfSpace-0.5)/this.deviation;
+      cost = 0.5*z*z;
     end
     
     function theta = getNyquist(this)
@@ -190,42 +162,72 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       ray = this.sensor.inverseProjection(pix, this.sensor.first());
       theta = acos(ray(:, 1)'*ray(:, 2));
     end
-  end
-
-end
-
-% Compute the residual error for each pair of rays
-%
-% NOTES
-% The input rays are assumed to have a unit magnitude
-function residual = computeResidual(poseA, poseB, rayA, rayB)
-  % adjust for rotation
-  RA = Quat2Matrix(poseA.q);
-  RB = Quat2Matrix(poseB.q);
-  rayA = RA*rayA;
-  rayB = RB*rayB;
-
-  % evaluate translation component
-  dx = poseB.p-poseA.p;
-  if( norm(dx)<eps )
-    residual = acos(dot(rayA, rayB));
-  else
-    % calculate the normal to the epipolar plane
-    normals = crossMatrix(dx)*rayA;
-    magnitude = sqrt(sum(normals.*normals));
-    magnitude(magnitude<eps) = eps;
-    normals = bsxfun(@rdivide, normals, magnitude);
     
-    % calculate the error in radians
-    residual = asin(dot(normals, rayB));
-  end
-end
+    % Compute the residual error for each pair of rays
+    %
+    % NOTES
+    % The input rays are assumed to have a unit magnitude
+    function residual = computeResidual(this, x, nodeA, nodeB, rayA, rayB)
+      % return NaN if the graph edge extends outside of the trajectory domain
+      tA = this.tracker.getTime(nodeA);
+      tB = this.tracker.getTime(nodeB);
+      interval = x.domain();
+      if(tA<interval.first)
+        residual = NaN;
+        return;
+      end
+      
+      % get poses
+      poseA = x.evaluate(tA);
+      poseB = x.evaluate(tB);
+      
+      % adjust for rotation
+      RA = Quat2Matrix(poseA.q);
+      RB = Quat2Matrix(poseB.q);
+      rayRA = RA*rayA;
+      rayRB = RB*rayB;
 
-function cost = computeCost(poseA, poseB, rayA, rayB, nyquist, deviation)
-  residual = computeResidual(poseA, poseB, rayA, rayB);
-  p = halfSpaceTest(residual, nyquist);
-  z = (p-0.5)/deviation;
-  cost = 0.5*z*z;
+      % evaluate translation component
+      dx = poseB.p-poseA.p;
+      if( norm(dx)<eps )
+        residual = acos(dot(rayRA, rayRB));
+      else
+        % calculate the normal to the epipolar plane
+        normals = crossMatrix(dx)*rayRA;
+        magnitude = sqrt(sum(normals.*normals));
+        magnitude(magnitude<eps) = eps;
+        normals = bsxfun(@rdivide, normals, magnitude);
+
+        % calculate the error in radians
+        residual = asin(dot(normals, rayRB));
+      end
+      
+      % optionally display results
+      if(this.displayResults)
+        this.putResults(nodeA, nodeB, rayA, rayB);
+      end
+    end
+    
+    function putResults(this, nodeA, nodeB, rayA, rayB)
+      persistent figureHandle
+      if(isempty(figureHandle))
+        figureHandle = figure;
+      else
+        figure(figureHandle);
+      end
+      cla;
+      imageA = rgb2gray(this.sensor.getImage(nodeA));
+      imageB = rgb2gray(this.sensor.getImage(nodeB));
+      imshow(cat(3, zeros(size(imageA)), 0.5+(imageA-imageB)/2, 0.5+(imageB-imageA)));
+      axis('image');
+      hold('on');
+      pixA = this.sensor.projection(rayA, nodeA);
+      pixB = this.sensor.projection(rayB, nodeB);
+      line([pixA(1, :); pixB(1, :)]+1, [pixA(2, :); pixB(2, :)]+1, 'Color', 'r');
+      drawnow;
+    end
+  end
+
 end
 
 % Smooth positivity test function with domain [-Inf, Inf] and range [0, 1]

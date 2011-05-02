@@ -128,11 +128,6 @@ classdef KLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       rayA = this.camera.inverseProjection([yA; xA], nodeA);
       rayB = this.camera.inverseProjection([yB; xB], nodeA);
       data = struct('rayA', rayA, 'rayB', rayB);
-
-      % optionally display tracking results
-      if(this.displayFeatures)
-        FastPBM.displayFeatures(imageA/255, imageB/255, pixA, pixB);
-      end
     end
     
     % Prepare an image for processing

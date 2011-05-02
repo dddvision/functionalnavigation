@@ -69,15 +69,6 @@ classdef SURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       keyB = dataB.key;
       [iA, iB] = matchSURF(keyA, keyB);
       data = struct('matchA', uint32(iA-1), 'matchB', uint32(iB-1));
-
-      % optionally display tracking results
-      if(this.displayFeatures)
-        imageA = this.prepareImage(nodeA);
-        imageB = this.prepareImage(nodeB);
-        pixA = [[keyA(iA).x];[keyA(iA).y]]-1;
-        pixB = [[keyB(iB).x];[keyB(iB).y]]-1;
-        FastPBM.displayFeatures(imageA, imageB, pixA, pixB);
-      end
     end
     
     % Prepare an image for processing
