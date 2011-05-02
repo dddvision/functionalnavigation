@@ -104,15 +104,6 @@ classdef KLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       rayA = this.camera.inverseProjection([yA; xA], nodeA);
       rayB = this.camera.inverseProjection([yB; xB], nodeA);
       data = struct('rayA', rayA, 'rayB', rayB);
-
-      % optionally display tracking results
-      if(this.displayFeatures)
-        imageA = pyramidA{1}.f;
-        imageB = pyramidB{1}.f;
-        pixA = [yA; xA];
-        pixB = [yB; xB];
-        FastPBM.displayFeatures(imageA, imageB, pixA, pixB);
-      end
     end
     
     % Prepare an image for processing
