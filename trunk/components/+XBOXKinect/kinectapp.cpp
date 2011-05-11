@@ -56,87 +56,87 @@ namespace antbed
 class Mutex
 {
 public:
-	Mutex()
+  Mutex()
   {
-		pthread_mutex_init( &m_mutex, NULL );
-	}
-	void lock()
+    pthread_mutex_init( &m_mutex, NULL );
+  }
+  void lock()
   {
-		pthread_mutex_lock( &m_mutex );
-	}
-	void unlock()
+    pthread_mutex_lock( &m_mutex );
+  }
+  void unlock()
   {
-		pthread_mutex_unlock( &m_mutex );
-	}
+    pthread_mutex_unlock( &m_mutex );
+  }
 private:
-	pthread_mutex_t m_mutex;
+  pthread_mutex_t m_mutex;
 };
 
 class MyFreenectDevice : public Freenect::FreenectDevice
 {
 public:
-	MyFreenectDevice(freenect_context *_ctx, int _index) : Freenect::FreenectDevice(_ctx, _index), 
+  MyFreenectDevice(freenect_context *_ctx, int _index) : Freenect::FreenectDevice(_ctx, _index), 
     m_buffer_depth(FREENECT_DEPTH_11BIT_SIZE), 
     m_buffer_video(FREENECT_VIDEO_RGB_SIZE), 
     depth(FREENECT_DEPTH_11BIT_SIZE), 
     video(FREENECT_VIDEO_RGB_SIZE), 
     m_new_rgb_frame(false), 
     m_new_depth_frame(false)
-	{}
+  {}
   
   // Do not call directly even in child
-	void DepthCallback(void* _depth, uint32_t timestamp)
+  void DepthCallback(void* _depth, uint32_t timestamp)
   {
-		m_depth_mutex.lock();
-		uint8_t* depth = static_cast<uint8_t*>(_depth);
+    m_depth_mutex.lock();
+    uint8_t* depth = static_cast<uint8_t*>(_depth);
     std::copy(depth, depth+FREENECT_DEPTH_11BIT_SIZE, m_buffer_depth.begin());
-		m_new_depth_frame = true;
-		m_depth_mutex.unlock();
-	}
+    m_new_depth_frame = true;
+    m_depth_mutex.unlock();
+  }
   
-	// Do not call directly even in child
-	void VideoCallback(void* _rgb, uint32_t timestamp)
+  // Do not call directly even in child
+  void VideoCallback(void* _rgb, uint32_t timestamp)
   {
-		m_rgb_mutex.lock();
-		uint8_t* rgb = static_cast<uint8_t*>(_rgb);
-		std::copy(rgb, rgb+FREENECT_VIDEO_RGB_SIZE, m_buffer_video.begin());
-		m_new_rgb_frame = true;
-		m_rgb_mutex.unlock();
-	};
+    m_rgb_mutex.lock();
+    uint8_t* rgb = static_cast<uint8_t*>(_rgb);
+    std::copy(rgb, rgb+FREENECT_VIDEO_RGB_SIZE, m_buffer_video.begin());
+    m_new_rgb_frame = true;
+    m_rgb_mutex.unlock();
+  };
   
   bool getDepth(std::vector<uint8_t> &buffer)
   {
-		m_depth_mutex.lock();
-		if(m_new_depth_frame)
+    m_depth_mutex.lock();
+    if(m_new_depth_frame)
     {
-			buffer.swap(m_buffer_depth);
-			m_new_depth_frame = false;
-			m_depth_mutex.unlock();
-			return(true);
-		}
+      buffer.swap(m_buffer_depth);
+      m_new_depth_frame = false;
+      m_depth_mutex.unlock();
+      return(true);
+    }
     else
     {
-			m_depth_mutex.unlock();
-			return(false);
-		}
-	}
+      m_depth_mutex.unlock();
+      return(false);
+    }
+  }
   
-	bool getRGB(std::vector<uint8_t> &buffer)
+  bool getRGB(std::vector<uint8_t> &buffer)
   {
-		m_rgb_mutex.lock();
-		if(m_new_rgb_frame)
+    m_rgb_mutex.lock();
+    if(m_new_rgb_frame)
     {
-			buffer.swap(m_buffer_video);
-			m_new_rgb_frame = false;
-			m_rgb_mutex.unlock();
-			return(true);
-		}
+      buffer.swap(m_buffer_video);
+      m_new_rgb_frame = false;
+      m_rgb_mutex.unlock();
+      return(true);
+    }
     else
     {
-			m_rgb_mutex.unlock();
-			return(false);
-		}
-	}
+      m_rgb_mutex.unlock();
+      return(false);
+    }
+  }
   
   void recordRawData(void)
   {
@@ -172,28 +172,28 @@ public:
   }
 
 private:
- 	std::vector<uint8_t> m_buffer_depth;
-	std::vector<uint8_t> m_buffer_video;
+   std::vector<uint8_t> m_buffer_depth;
+  std::vector<uint8_t> m_buffer_video;
   std::vector<uint8_t> depth;
   std::vector<uint8_t> video;
   std::ofstream depthFile;
   std::ofstream videoFile;
   std::ofstream timeFile;
-	Mutex m_rgb_mutex;
-	Mutex m_depth_mutex;
-	bool m_new_rgb_frame;
-	bool m_new_depth_frame;
+  Mutex m_rgb_mutex;
+  Mutex m_depth_mutex;
+  bool m_new_rgb_frame;
+  bool m_new_depth_frame;
 };
 
 int main(int argc, char **argv)
 {
   Freenect::Freenect freenect;
-	MyFreenectDevice* device = &freenect.createDevice<MyFreenectDevice>(0);
+  MyFreenectDevice* device = &freenect.createDevice<MyFreenectDevice>(0);
 
   signal(SIGINT,&interrupt);
   
   device->startVideo();
-	device->startDepth();
+  device->startDepth();
   
   while(!die)
   {
@@ -202,9 +202,9 @@ int main(int argc, char **argv)
   }
   
   device->stopDepth();
-	device->stopVideo();
+  device->stopVideo();
   
   freenect.deleteDevice(0);
   
-	return(0);
+  return(0);
 }
