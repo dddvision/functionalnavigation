@@ -1,0 +1,55 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage{times} % already included?
+\usepackage{geometry} % paper size
+\usepackage{graphicx} % figures
+\usepackage{amsmath} % mathematical environments and operators
+\usepackage{amssymb} % extra math symbols
+\usepackage{amsbsy} % bold math symbols
+\usepackage{url} % hyperlinks (note: pdflatex will auto-link without this)
+\usepackage[pdftitle={Title},
+            pdfauthor={Jimmy Touma and Timothy Klausutis and David D. Diel},
+            pdfkeywords={AFRL,Eglin,data,vision,sensor,navigation,framework,inertial,GPS,dynamics,functional,estimation},
+            pdfview=FitH,
+            citebordercolor={1.0 1.0 1.0},
+            linkbordercolor={1.0 1.0 1.0},
+            urlbordercolor={1.0 1.0 1.0}]{hyperref} % hyperlinks (note: pdflatex will auto-link without this)
+
+\pagestyle{empty} % suppresses page numbering
+\geometry{body={18.2cm,23.3cm},top=2.0cm,left=1.7cm,nohead} % adjusts print area
+\interdisplaylinepenalty=2500 % allows normal line breaks with inline equations
+\renewcommand{\mathbf}[1]{\pmb{#1}} % improves bold math symbols
+\hyphenation{func-tional-navi-gation} % add custom hyphenation here
+\setlength\abovecaptionskip{3pt} % spacing above captions
+\setlength\belowcaptionskip{3pt} % spacing below captions
+
+\begin{document}
+\title{Material for IEEE/ION PLANS 2010}
+\author{
+%  Jimmy Touma\\
+%  \textit{Air Force Research Laboratory}\\
+%  Email: jimmy.touma@eglin.af.mil
+%  \and
+%  Timothy Klausutis\\
+%  \textit{Air Force Research Laboratory}\\
+%  Email: timothy.klausutis@eglin.af.mil
+%  \and
+  David D. Diel\\
+  \textit{Scientific Systems Company}\\
+  Email: ddiel@alum.mit.edu}
+\date{}
+\maketitle
+\thispagestyle{empty}
+
+
+%Put AFRL material here.
+%\clearpage % TODO: remove this line in final draft
+
+\input{ssci}
+
+\bibliographystyle{plain}
+\bibliography{bibliography}
+
+\enlargethispage{-0cm} % TODO: balance the last two columns in final draft
+
+\end{document}

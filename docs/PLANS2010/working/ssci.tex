@@ -1,0 +1,74 @@
+\section{Trajectory Optimization Framework}\label{sec:framework}
+In addition to providing standardized multi-sensor data, we have created a framework for developing and testing algorithms that aid navigation, where ``navigation'' is defined as continuous self-localization relative to a local or global frame. This framework supports our own data sets as well as user-supplied data. It serves two major purposes: i) To facilitate the development of new trajectory optimization algorithms with a focus on alternative sensors other than GPS; and ii) To assist system integrators who must test a variety of sensors and algorithms on a level playing field and combine them to achieve desired accuracy. Our approach is to define the broad structure of the navigation problem while leaving the details to be implemented differently for each application.
+
+The framework consists of four interfaces (abstract classes) that divide the navigation problem into manageable components, as illustrated in Figure \ref{fig:components}. A \texttt{\small{DynamicModel}} is an algorithm that relates a set of generic parameters to the rigid-body trajectory of a physical system such as a car or airplane. It also generates ``costs'', which are discussed later in this section. Sensor data comes into the system through a customizable hardware abstraction class labeled \texttt{\small{DataContainer}}. Each \texttt{\small{Measure}} relates sensor data to a trajectory hypothesis and generates additional costs. Finally, at the core of the framework is the \texttt{\small{Optimizer}}, which is an algorithm that minimizes a combination of costs by intelligently generating and modifying the parameters of one or more \texttt{\small{DynamicModel}} instances and passing them through zero or more \texttt{\small{Measure}} instances.
+
+\begin{figure}[!htp]
+  \begin{center}
+  \includegraphics[width=0.97\linewidth]{SimpleBlockDiagram.png}
+  \caption{\label{fig:components}Block diagram of framework components.}
+  \end{center}
+  \vspace{-15pt}
+\end{figure}
+
+A user interacts with the framework by specifying a set of components that derive from the framework classes. These components represent the physical system and define ``optimal'' for a specific application. The framework then sets up a scalar objective function to be evaluated and optimized. Further details of this approach are provided below, and framework code is available in both MATLAB and C++ online \cite{functionalnavigation}.
+
+\subsection{Dynamic Model}\label{sec:dynamics}
+Consider the following canonical state transition models for continuous and discrete nonlinear systems:
+
+\begin{equation}
+\underbrace {{\mathbf{\dot x}}_t  = {\mathbf{f}}\left( {{\mathbf{x}}_t ,{\mathbf{u}}_t ,{\mathbf{v}}_t } \right)}_{{\text{continuous}}}\quad \quad \underbrace {{\mathbf{x}}_{n + 1}  = {\mathbf{f}}\left( {{\mathbf{x}}_n ,{\mathbf{u}}_n ,{\mathbf{v}}_n } \right)}_{{\text{discrete}}}.
+\end{equation}
+
+These equations have been established to model the dynamics of numerous physical systems, from Brownian particles to holonomic ground vehicles, fighter jets, and even animals. They are typically placed in an integration loop, such that the state $\mathbf{x}$ is computed incrementally at increasing time instants $t$, given an initial condition. The symbols $\mathbf{x}$, $\mathbf{u}$, and $\mathbf{v}$ all represent vector-valued functions indexed by time. The input $\mathbf{u}$ represents data that is known, and the input $\mathbf{v}$ represents parameters whose probability distributions are known. If an interpolation method is specified, then both the continuous and discrete models can be written in \emph{functional} form as follows:
+
+\begin{equation}
+{\mathbf{x}} = {\mathbf{F}}\left( {{\mathbf{v}};{\mathbf{u}}} \right).
+\end{equation}
+
+Our \texttt{\small{DynamicModel}} class standardizes the interface to $\mathbf{F}$. It requires that $\mathbf{x}$ contain a $C^1$ continuous $6$-DOF rigid-body trajectory relative to an Earth-Centered Earth-Fixed (ECEF) frame. It accesses the data $\mathbf{u}$ implicitly, a detail that we notate using a semicolon ($;$) in the argument list. It requires that each parameter vector $\mathbf{v}_n$ consist of logical and/or integer parameters. And, it defines an indexing system that allows the domain of $\mathbf{x}$ to grow with the domain of $\mathbf{v}$ in a consistent manner as time moves forward. Finally, assuming that each parameter vector $\mathbf{v}_n$ is independently distributed, the \texttt{\small{DynamicModel}} associates a cost function $r$ with the negative log likelihood of the normalized probability density of $\mathbf{v}_n$ as follows
+
+\begin{equation}
+c_n = r\left(\mathbf{v}_n\right) = -\operatorname{ln}\left(\frac{\operatorname{pdf}\left(\mathbf{v}_n\right)}{\left\| {\operatorname{pdf}\left( { \mathbf{v}_n } \right)} \right\|_\infty}\right).
+\end{equation}
+
+\subsection{Measure}\label{sec:measures}
+Many sensors can be modeled by the canonical form
+
+\begin{equation}
+\mathbf{y}_n  = {\mathbf{g}}\left( {\mathbf{x}_n ,\mathbf{u}_n ,\mathbf{w}_n } \right)
+\label{eqn:function_measurement}
+\end{equation}
+
+\noindent where each measurement $\mathbf{y}_n$ arises from the instantaneous state $\mathbf{x}_n$, the known data $\mathbf{u}_n$, and the stochastic vector-valued function $\mathbf{w}_n$. However, some measurements of interest cannot be accurately modeled in this form, because they are not inherently instantaneous. A prime example is a feature match between two images that were acquired at different times. Regardless of whether one uses Optical Flow \cite{Lucas1981}, SIFT \cite{SIFT}, normalized cross-correlation \cite{Lewis1995}, or another technique, the computed feature displacement will depend on the position and orientation of the sensor at each time. Another sensor example is a gyroscope, which can be modeled as if it measures instantaneous rotation rates, but is most accurately modeled as measuring changes in orientation over discrete time periods.
+
+One approach to dealing with sensors of the type described above is to create a combining function $\mathbf{\psi}_{ab} = \mathbf{\gamma}\left(\mathbf{y}_a,\mathbf{y}_b\right)$, where the pair of indices labeled $ab$ indicate a measurement arising from two times, $n=a$ and $n=b$, sorted such that $a \leq b$. This implies an indexing system that has a graph structure instead of a simple linear index. Each discrete time is associated with a node (or vertex), and each node pair forms an edge. In general, not all of the nodes are connected, making it an incomplete graph. This idea can be incorporated into Equation \ref{eqn:function_measurement} by rewriting it in \emph{functional} form
+
+\begin{equation}
+\mathbf{y}_{ab}  = {\mathbf{g}}\left( {\mathbf{x},ab,\mathbf{u},\mathbf{w}} \right)
+\label{eqn:functional_measurement}
+\end{equation}
+
+\noindent where the sensor accesses its arguments as functions. The functional $\mathbf{g}$ can evaluate the body trajectory at any time in its domain, which we assume includes the span $t\in\left[t_a,t_b\right]$. Likewise, it can evaluate its other arguments within their valid domains. As a generalization of Equation \ref{eqn:function_measurement}, it can also be used to simulate measurements. However, for the purpose of trajectory optimization, simulated measurements may not be necessary, as long as there is a function that can test a hypothetical trajectory against a set of sensor data. Therefore, we define a cost \emph{functional} $s$ associated with data from each algorithm or sensor $m$ as follows:
+
+\begin{equation}
+c_{m,ab} = s_m\left(\mathbf{x},ab;\mathbf{u}\right) = -\operatorname{ln}\left(\frac{\operatorname{pdf}_m\left(\mathbf{u}|\mathbf{x},ab\right)}{\left\|{\operatorname{pdf}_m\left( \mathbf{u} |\mathbf{x},ab\right)}\right\|_\infty}\right).
+\end{equation}
+
+Our \texttt{\small{Measure}} class standardizes the interface to each $s_m$ without requiring explicit computation of $\mathbf{y}$ or $\mathbf{w}$. This not only has the potential to reduce processor burden, but it also makes it possible to wrap a wide variety of sensors and algorithms with a uniform interface. For example, suppose $s_1$ represents a ``smart camera'' running a sparse feature tracker, and $s_2$ represents a GPS unit. Since they both posess the same interface, they can be tested and their performance can be compared objectively, a property that is especially helpful to system integrators.
+
+\subsection{Optimizer}\label{sec:optimizer}
+Once cost functions have been defined, putting together the overall objective is straightforward. All costs are additive by definition, which implies the assumption of independent distributions for each parameter vector in the \texttt{\small{DynamicModel}} and for each edge contributed by each \texttt{\small{Measure}}. Therefore, the optimization problem boils down to the composition
+
+\begin{align}\label{eqn:objective}
+{\mathbf{v}}^ * &= \mathop {\operatorname{argmin} }\limits_{\mathbf{v}} \left\lbrace \sum\limits_n {c_n }  + \sum\limits_m {\sum\limits_{ab} {c_{m,ab} } } \right\rbrace \\
+ \nonumber &= \mathop { \operatorname{argmin} }\limits_{\mathbf{v}} \left\lbrace \sum\limits_n {r\left( {{\mathbf{v}}_n } \right)}  + \sum\limits_m {\sum\limits_{ab} {s_m \left( {{\mathbf{F}}\left( {{\mathbf{v}};{\mathbf{u}}} \right),ab;{\mathbf{u}}} \right)} } \right\rbrace
+\end{align}
+
+\noindent where the solution ${\mathbf{v}}^{*}$ is an optimal parameter hypothesis. To find the optimal trajectory ${\mathbf{x}}^{*}$, this needs to be inserted back through the dynamic model as follows:
+
+\begin{equation}
+{\mathbf{x}}^{*} = {\mathbf{F}}\left( {{\mathbf{v}}^{*};{\mathbf{u}}} \right).
+\end{equation}
+
+Our \texttt{\small{Optimizer}} class wraps algorithms that query $r$ and $s$ in order to search for global minima in Equation \ref{eqn:objective}. In general, neither convexity nor uniqueness of solution are guaranteed; however, specific sets of components can be designed to offer these guarantees. To facilitate efficient optimization, the costs can be computed individually before the summation takes place. This formulation suggests automated learning of the relationship between time indexed parameters and time indexed graphs of costs, a subject beyond the scope of this paper. In future work, we plan to demonstrate that our framework generalizes a wide range of trajectory optimization techniques including EKF, UKF, gradient descent, genetic algorithm, simplex, and the pose graph method \cite{OlsonGraph2006}.
