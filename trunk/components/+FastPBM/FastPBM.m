@@ -234,7 +234,7 @@ end
 function p = halfSpaceTest(r, nyquist)
   N = numel(r);
   if(N>0)
-    p = sum(0.5*(1+erf(r/nyquist)))/N; % faster than atan
+    p = sum((1+erf(r/nyquist)))/(2*N); % faster than atan
   else
     p = 0.5;
   end
