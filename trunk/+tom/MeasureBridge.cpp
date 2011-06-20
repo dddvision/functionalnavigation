@@ -1,6 +1,30 @@
 #include "mex.h"
 #include "Measure.h"
 
+enum MeasureMember
+{
+    undefined,
+    MeasureIsConnected,
+    MeasureDescription,
+    MeasureFactory,
+    refresh,
+    hasData,
+    first,
+    last,
+    findEdges,
+    computeEdgeCost,
+    copy
+};
+
+void argcheck(int& narg, int n)
+{
+  if(n>narg)
+  {
+    throw("MeasureBridge: too few input arguments");
+  }
+  return;
+}
+
 void convert(const mxArray* array, uint32_t& value)
 {
   if(mxGetClassID(array)!=mxUINT32_CLASS)
@@ -213,18 +237,6 @@ public:
     mxDestroyArray(lhs);
     return;
   }
-};
-
-enum MeasureMember
-{
-    undefined,
-    refresh,
-    hasData,
-    first,
-    last,
-    getTime,
-    findEdges,
-    computeEdgeCost
 };
 
 void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
