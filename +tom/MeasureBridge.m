@@ -1,16 +1,49 @@
 classdef MeasureBridge < tom.Measure
 
   properties (SetAccess = private, GetAccess = private)
-    m % class name
+    name
+    initialTime
+    uri
+    m % mex name without extension
     h % handle to instantiated C++ object
   end
   
   methods (Access = public, Static = true)
-    function this = MeasureBridge(name, uri)
-      this = this@tom.Measure(uri);
-      this.m = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
-      this.h = feval(this.m, name, uri);
-      error('tom.MeasureBridge has not been fully implemented')
+    function initialize(name)
+      assert(isa(name, 'char'));
+      compileOnDemand(name);
+      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];     
+      mName = [className, 'Bridge'];
+      function text = componentDescription
+        text = feval(mName, 'MeasureDescription', name);
+      end
+      function obj = componentFactory(initialTime, uri)
+        obj = tom.MeasureBridge(name, initialTime, uri);
+      end
+      if(feval(mName, 'MeasureIsConnected', name))
+        tom.Measure.connect(name, @componentDescription, @componentFactory);
+      end
+    end
+    
+    function this = MeasureBridge(name, initialTime, uri)
+      if(nargin==0)
+        initialTime = tom.WorldTime(0);
+        uri = '';
+      end
+      this = this@tom.Measure(initialTime, uri);
+      if(nargin>0)
+        assert(isa(name, 'char'));
+        assert(isa(initialTime, 'tom.WorldTime'));
+        assert(isa(uri, 'char'));
+        compileOnDemand(name);
+        className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
+        this.name = name;
+        this.initialTime = initialTime;
+        this.uri = uri;
+        this.m = [className, 'Bridge'];
+        initialTime = double(initialTime); % workaround avoids array duplication
+        this.h = feval(this.m, 'MeasureFactory', name, initialTime, uri);
+      end
     end
   end
     
@@ -47,4 +80,14 @@ classdef MeasureBridge < tom.Measure
     end
   end
   
+end
+
+function compileOnDemand(name)
+  bridge = mfilename('fullpath');
+  bridgecpp = [bridge, '.cpp'];
+  include = fileparts(bridge);
+  base = fullfile(['+', name], name);
+  basecpp = [base, '.cpp'];
+  cpp = which(basecpp);
+  mex(['-I"', include, '"'], bridgecpp, cpp, '-output', [cpp(1:(end-4)), 'Bridge']);
 end

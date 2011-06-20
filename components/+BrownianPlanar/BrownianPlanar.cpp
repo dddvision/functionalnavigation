@@ -256,8 +256,7 @@ namespace BrownianPlanar
     }
 
   public:
-    BrownianPlanar(const tom::WorldTime initialTime, const std::string uri) :
-      tom::DynamicModel(initialTime, uri)
+    BrownianPlanar(const tom::WorldTime initialTime, const std::string uri) : tom::DynamicModel(initialTime, uri)
     {
       static const unsigned reserve = 1024;
       interval.first = initialTime;

@@ -1,11 +1,17 @@
+#include <string>
+
 #include "Measure.h"
 
-namespace tom
+namespace DistanceTraveled
 {
-  class MeasureDefault : public Measure
+  class DistanceTraveled : public tom::Measure
   {
+  private:
+    static const double dt;
+    static const double deviation;
+
   public:
-    MeasureDefault(const WorldTime initialTime, const std::string uri) : Measure(initialTime, uri)
+    DistanceTraveled(const tom::WorldTime initialTime, const std::string uri) : tom::Measure(initialTime, uri)
     {
       return;
     }
@@ -49,16 +55,16 @@ namespace tom
     {
       return (0.0);
     }
-
+            
   private:
     static std::string componentDescription(void)
     {
-      return ("This is the default measure. It has no data and constructs no graph edges.");
+      return ("Creates a set of relative measures based on total distance traveled.");
     }
 
-    static Measure* componentFactory(const WorldTime initialTime, const std::string uri)
+    static tom::Measure* componentFactory(const tom::WorldTime initialTime, const std::string uri)
     {
-      return (new MeasureDefault(initialTime, uri));
+      return (new DistanceTraveled(initialTime, uri));
     }
 
   protected:
@@ -66,16 +72,17 @@ namespace tom
     {
       connect(name, componentDescription, componentFactory);
     }
-    friend class MeasureDefaultInitializer;
+    friend class Initializer;
   };
 
-  class MeasureDefaultInitializer
+  class Initializer
   {
   public:
-    MeasureDefaultInitializer(void)
+    Initializer(void)
     {
-      MeasureDefault::initialize("tom");
+      DistanceTraveled::initialize("DistanceTraveled");
     }
-  } _MeasureDefaultInitializer;
+  } _Initializer;
 }
 
+#include "DistanceTraveledConfig.cpp"
