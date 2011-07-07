@@ -58,10 +58,10 @@ function test(name)
 
     message = 'ok';
     if(numel(name)==1)
-      testComponent(name{nameIndex}, config.dynamicModel, config.measure, config.initialTime, config.uri);
+      testComponent(name{nameIndex}, config);
     else
       try
-        testComponent(name{nameIndex}, config.dynamicModel, config.measure, config.initialTime, config.uri);
+        testComponent(name{nameIndex}, config);
       catch err
         message = err.message;
       end
@@ -82,7 +82,7 @@ function test(name)
 
 end
 
-function testComponent(name, dynamicModelName, measureName, initialTime, uri)
+function testComponent(name, config)
   isDynamicModel = tom.DynamicModel.isConnected(name);
   isMeasure = tom.Measure.isConnected(name);
   isOptimizer = tom.Optimizer.isConnected(name);
@@ -100,21 +100,17 @@ function testComponent(name, dynamicModelName, measureName, initialTime, uri)
     fprintf('\nOptimizer.isConnected = %d', isOptimizer);
     fprintf('\nDataContainer.isConnected = %d', isDataContainer);
 
-    if(isDataContainer)
-      uri = ['antbed:', name];
-    end
-
     if(isDynamicModel)
-      antbed.DynamicModelTest(name, initialTime, uri);
+      antbed.DynamicModelTest(name, config.initialTime, config.uri);
     end
     if(isMeasure)
-      antbed.MeasureTest(name, initialTime, uri);
+      antbed.MeasureTest(name, config.initialTime, config.uri, config.characterize);
     end
     if(isOptimizer)
-      antbed.OptimizerTest(name, dynamicModelName, measureName, initialTime, uri);
+      antbed.OptimizerTest(name, config.dynamicModelName, config.measureNames, config.initialTime, config.uri);
     end
     if(isDataContainer)
-      antbed.DataContainerTest(name, initialTime);
+      antbed.DataContainerTest(name, config.initialTime);
     end
 
     fprintf('\n\n*** End Component Test ***');

@@ -16,7 +16,7 @@ classdef MeasureTest < handle
   end
   
   methods (Access = public, Static = true)
-    function this = MeasureTest(name, initialTime, uri)
+    function this = MeasureTest(name, initialTime, uri, characterize)
       fprintf('\n\n*** Begin Measure Test ***\n');
       
       fprintf('\nuri =');
@@ -98,13 +98,16 @@ classdef MeasureTest < handle
         end
       end
         
-      if(~measure.hasData())
+      if(~characterize)
+        % do nothing
+      elseif(~measure.hasData())
         fprintf('\nwarning: Skipping measure characterization. Measure has no data.');
       elseif(~strncmp(uri, 'antbed:', 7))
         fprintf('\nwarning: Skipping measure characterization. URI scheme not recognized');
       else
         resource = uri(8:end);
         container = antbed.DataContainer.create(resource, initialTime);
+        
         if(~container.hasReferenceTrajectory())
           fprintf('\nwarning: Skipping measure characterization. No reference trajectory is available.');
         else
@@ -151,6 +154,7 @@ classdef MeasureTest < handle
                    'Rotation dimension 1' ; ...
                    'Rotation dimension 2' ; ...
                    'Rotation dimension 3'};
+                 
             for e = 1:7  
               fprintf('* Current Dim: %s *\n',msg{e});
               zeroPose = tom.Pose;
@@ -203,8 +207,6 @@ classdef MeasureTest < handle
               end
               Bias(e) =  mean(edgeCosts);
 
-
-
               %Compute Monotonicity
               %construct sample space based off granularity
               MonotinicityAry = zeros(10, numel(edgeList));
@@ -222,24 +224,21 @@ classdef MeasureTest < handle
               end
 
               Monotinicity(e) = mean(mean(MonotinicityAry));
-
             end
+            
             for e = 1:7
               fprintf('%s',msg{e});
               fprintf('\nGranularity: %f\n', Granularity(e));
               fprintf('Bias: %f\n', Bias(e));
               fprintf('Monotinicity: %f\n\n', Monotinicity(e));
-            end
+            end     
           else
             fprintf('\nwarning: Skipping measure characterization. Measure has no edges.');
           end
-          
         end
       end
-      
       fprintf('\n\n*** End Measure Test ***');
     end
-    
   end
   
 end
