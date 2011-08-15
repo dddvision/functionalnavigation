@@ -61,7 +61,7 @@ classdef DynamicModelBridge < tom.DynamicModel
         t = double(t); % workaround avoids array duplication
         pose(1, N) = tom.Pose; % workaround creates object externally
       end
-      pose = feval(this.m, this.h, 'evaluate', pose, t);
+      pose = feval(this.m, this.h, 'evaluate', pose, t); % call even if t is empty
     end
     
     function tangentPose = tangent(this, t)
@@ -73,7 +73,7 @@ classdef DynamicModelBridge < tom.DynamicModel
         t = double(t); % workaround avoids array duplication
         tangentPose(1, N) = tom.TangentPose; % workaround creates object externally
       end
-      tangentPose = feval(this.m, this.h, 'tangent', tangentPose, t);
+      tangentPose = feval(this.m, this.h, 'tangent', tangentPose, t); % call even if t is empty
     end
     
     function num = numInitial(this)
@@ -129,11 +129,20 @@ classdef DynamicModelBridge < tom.DynamicModel
 end
 
 function compileOnDemand(name)
+  persistent tried
+  if(~isempty(tried))
+    return;
+  end
+  tried = true;
   bridge = mfilename('fullpath');
   bridgecpp = [bridge, '.cpp'];
   include = fileparts(bridge);
   base = fullfile(['+', name], name);
   basecpp = [base, '.cpp'];
   cpp = which(basecpp);
-  mex(['-I"', include, '"'], bridgecpp, cpp, '-output', [cpp(1:(end-4)), 'Bridge']);
+  output = [cpp(1:(end-4)), 'Bridge'];
+  if(exist(output, 'file'))
+    delete([output, '.', mexext]);
+  end
+  mex(['-I"', include, '"'], bridgecpp, cpp, '-output', output);
 end

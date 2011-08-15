@@ -20,19 +20,19 @@ namespace tom
       return (false);
     }
     
-    unsigned first(void)
+    uint32_t first(void)
     {
       throw("The default sensor has no data.");
       return (0);
     }
     
-    unsigned last(void)
+    uint32_t last(void)
     {
       throw("The default sensor has no data.");
       return (0);
     }
     
-    WorldTime getTime(unsigned n)
+    WorldTime getTime(uint32_t n)
     {
       throw("The default sensor has no data.");
       return (0);

@@ -1,8 +1,8 @@
 function test(name)
 
   % display info
-  fprintf('\n\nThis is the alternative navigation testbed script for components of the ');
-  fprintf('\nTrajectory Optimization Manager for Multiple Algorithms and Sensors (TOMMAS).');
+  fprintf('\n\nThis is the testbed script for components of the Trajectory Optimization Manager ');
+  fprintf('\nfor Multiple Algorithms and Sensors (TOMMAS).');
 
   % check MATLAB version
   fprintf('\n\nmatlabVersion  =');

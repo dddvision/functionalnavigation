@@ -26,7 +26,7 @@ namespace tom
      *
      * @return time domain bounds
      */
-    virtual TimeInterval domain(void) = 0;
+    virtual TimeInterval domain(void) const = 0;
 
     /**
      * Evaluate a single trajectory at multiple instants
@@ -37,8 +37,9 @@ namespace tom
      * NOTES
      * Times before the lower bound of the domain return NaN in corresponding outputs
      * Times after the upper bound of the domain return predicted poses in corresponding outputs
+     * Throws and exception if the output vector is not the same size as the input vector
      */
-    virtual void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose) = 0;
+    virtual void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose) const = 0;
 
     /**
      * Evaluate a single trajectory and its time derivatives at multiple time instants
@@ -49,8 +50,9 @@ namespace tom
      * NOTES
      * Times before the lower bound of the domain return NaN in corresponding outputs
      * Times after the upper bound of the domain return predicted tangent poses in corresponding outputs
+     * Throws and exception if the output vector is not the same size as the input vector
      */
-    virtual void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose) = 0;
+    virtual void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose) const = 0;
   };
 }
 

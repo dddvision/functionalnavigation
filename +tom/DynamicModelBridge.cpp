@@ -204,6 +204,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   static std::map<std::string, DynamicModelMember> memberMap;
   static std::vector<tom::DynamicModel*> instance;
   static bool initialized = false;
+  static std::string memberName;
 
   if(!initialized)
   {
@@ -230,10 +231,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   argcheck(nrhs, 1);
   if(mxIsChar(prhs[0])) // call static function or constructor
   {
-    static std::string functionName;
-
-    convert(prhs[0], functionName);
-    switch(memberMap[functionName])
+    convert(prhs[0], memberName);
+    switch(memberMap[memberName])
     {
       case DynamicModelIsConnected:
       {
@@ -281,17 +280,16 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   else // call non-static member funciton
   {
     uint32_t handle;
-    std::string functionName;
 
     argcheck(nrhs, 2);
     convert(prhs[0], handle);
-    convert(prhs[1], functionName);
+    convert(prhs[1], memberName);
 
     if(handle>=instance.size())
     {
       throw("DynamicModelBridge: invalid instance");
     }
-    switch(memberMap[functionName])
+    switch(memberMap[memberName])
     {
       case undefined:
         throw("DynamicModelBridge: undefined function call");

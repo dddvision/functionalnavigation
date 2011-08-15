@@ -189,14 +189,14 @@ namespace tom
      *
      * @return number of parameters
      */
-    virtual uint32_t numInitial(void) const = 0;
+    virtual uint32_t numInitial(void) = 0;
 
     /**
      * Get number of integer parameters in each extension block
      *
      * @return number of parameters
      */
-    virtual uint32_t numExtension(void) const = 0;
+    virtual uint32_t numExtension(void) = 0;
 
     /**
      * Get the number of extension blocks
