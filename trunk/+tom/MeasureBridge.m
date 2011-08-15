@@ -49,6 +49,7 @@ classdef MeasureBridge < tom.Measure
     
   methods (Access = public, Static = false)
     function refresh(this, x)
+      % implements a workaround that depends on a Trajectory named 'x'
       assert(isa(x, 'tom.Trajectory'));
       feval(this.m, this.h, 'refresh', x);
     end
@@ -67,10 +68,11 @@ classdef MeasureBridge < tom.Measure
 
     function time = getTime(this, n)
       time = feval(this.m, this.h, 'getTime', n);
+      time = tom.WorldTime(time); % easier than conversion within mex
     end
     
-    function graphEdge = findEdges(this, naMin, naMax, nbMin, nbMax)
-      graphEdge = feval(this.m, this.h, 'findEdges', naMin, naMax, nbMin, nbMax);
+    function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)
+      edgeList = feval(this.m, this.h, 'findEdges', naMin, naMax, nbMin, nbMax);
     end
 
     function cost = computeEdgeCost(this, x, graphEdge)
@@ -83,11 +85,20 @@ classdef MeasureBridge < tom.Measure
 end
 
 function compileOnDemand(name)
+  persistent tried
+  if(~isempty(tried))
+    return;
+  end
+  tried = true;
   bridge = mfilename('fullpath');
   bridgecpp = [bridge, '.cpp'];
   include = fileparts(bridge);
   base = fullfile(['+', name], name);
   basecpp = [base, '.cpp'];
   cpp = which(basecpp);
-  mex(['-I"', include, '"'], bridgecpp, cpp, '-output', [cpp(1:(end-4)), 'Bridge']);
+  output = [cpp(1:(end-4)), 'Bridge'];
+  if(exist(output, 'file'))
+    delete([output, '.', mexext]);
+  end
+  mex(['-I"', include, '"'], bridgecpp, cpp, '-output', output);
 end

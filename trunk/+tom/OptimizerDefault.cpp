@@ -10,7 +10,7 @@ namespace tom
       return;
     }
 
-    unsigned numInitialConditions(void) const
+    uint32_t numInitialConditions(void) const
     {
       return (0);
     }
@@ -25,19 +25,19 @@ namespace tom
       return;
     }
     
-    unsigned numSolutions(void)
+    uint32_t numSolutions(void)
     {
       return (0);
     }
 
-    Trajectory* getSolution(const unsigned k)
+    Trajectory* getSolution(const uint32_t k)
     {
       static Trajectory* x = NULL;
       throw("The default optimizer provides no solutions.");
       return (x);
     }
 
-    double getCost(const unsigned k)
+    double getCost(const uint32_t k)
     {
       throw("The default optimizer provides no solutions.");
       return (0.0);

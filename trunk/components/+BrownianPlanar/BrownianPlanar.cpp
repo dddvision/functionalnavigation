@@ -295,12 +295,12 @@ namespace BrownianPlanar
       return;
     }
 
-    tom::TimeInterval domain(void)
+    tom::TimeInterval domain(void) const
     {
       return (interval);
     }
 
-    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
+    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose) const
     {
       static double k;
       unsigned n;
@@ -316,7 +316,7 @@ namespace BrownianPlanar
       return;
     }
 
-    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
+    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose) const
     {
       static double k;
       unsigned n;
@@ -332,12 +332,12 @@ namespace BrownianPlanar
       return;
     }
 
-    uint32_t numInitial(void) const
+    uint32_t numInitial(void)
     {
       return (0);
     }
     
-    uint32_t numExtension(void) const
+    uint32_t numExtension(void)
     {
       return (3);
     }

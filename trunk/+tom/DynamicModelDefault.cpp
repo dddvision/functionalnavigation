@@ -15,12 +15,12 @@ namespace tom
       return;
     }
 
-    uint32_t numInitial(void) const
+    uint32_t numInitial(void)
     {
       return (0);
     }
 
-    uint32_t numExtension(void) const
+    uint32_t numExtension(void)
     {
       return (0);
     }
@@ -73,24 +73,24 @@ namespace tom
     void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose)
     {
       static const Pose nullPose;
-      unsigned k;
-      unsigned K = time.size();
-      pose.resize(K);
-      for(k = 0; k<K; ++k)
+      unsigned n;
+      unsigned N = time.size();
+      pose.resize(N);
+      for(n = 0; n<N; ++n)
       {
-        if(time[k]<interval.first)
+        if(time[n]<interval.first)
         {
-          pose[k] = nullPose;
+          pose[n] = nullPose;
         }
         else
         {
-          pose[k].p[0] = 6378137.0;
-          pose[k].p[1] = 0.0;
-          pose[k].p[2] = 0.0;
-          pose[k].q[0] = 1.0;
-          pose[k].q[1] = 0.0;
-          pose[k].q[2] = 0.0;
-          pose[k].q[3] = 0.0;
+          pose[n].p[0] = 6378137.0;
+          pose[n].p[1] = 0.0;
+          pose[n].p[2] = 0.0;
+          pose[n].q[0] = 1.0;
+          pose[n].q[1] = 0.0;
+          pose[n].q[2] = 0.0;
+          pose[n].q[3] = 0.0;
         }
       }
       return;
@@ -99,30 +99,30 @@ namespace tom
     void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose)
     {
       static const TangentPose nullTangentPose;
-      unsigned k;
-      unsigned K = time.size();
-      tangentPose.resize(K);
-      for(k = 0; k<K; ++k)
+      unsigned n;
+      unsigned N = time.size();
+      tangentPose.resize(N);
+      for(n = 0; n<N; ++n)
       {
-        if(time[k]<interval.first)
+        if(time[n]<interval.first)
         {
-          tangentPose[k] = nullTangentPose;
+          tangentPose[n] = nullTangentPose;
         }
         else
         {
-          tangentPose[k].p[0] = 6378137.0;
-          tangentPose[k].p[1] = 0.0;
-          tangentPose[k].p[2] = 0.0;
-          tangentPose[k].q[0] = 1.0;
-          tangentPose[k].q[1] = 0.0;
-          tangentPose[k].q[2] = 0.0;
-          tangentPose[k].q[3] = 0.0;
-          tangentPose[k].r[0] = 0.0;
-          tangentPose[k].r[1] = 0.0;
-          tangentPose[k].r[2] = 0.0;
-          tangentPose[k].s[0] = 0.0;
-          tangentPose[k].s[1] = 0.0;
-          tangentPose[k].s[2] = 0.0;
+          tangentPose[n].p[0] = 6378137.0;
+          tangentPose[n].p[1] = 0.0;
+          tangentPose[n].p[2] = 0.0;
+          tangentPose[n].q[0] = 1.0;
+          tangentPose[n].q[1] = 0.0;
+          tangentPose[n].q[2] = 0.0;
+          tangentPose[n].q[3] = 0.0;
+          tangentPose[n].r[0] = 0.0;
+          tangentPose[n].r[1] = 0.0;
+          tangentPose[n].r[2] = 0.0;
+          tangentPose[n].s[0] = 0.0;
+          tangentPose[n].s[1] = 0.0;
+          tangentPose[n].s[2] = 0.0;
         }
       }
       return;

@@ -63,7 +63,7 @@ namespace tom
      * NOTES
      * Throws an exception if no data is available
      */
-    virtual unsigned first(void) = 0;
+    virtual uint32_t first(void) = 0;
 
     /**
      * Return index to the last data node
@@ -73,7 +73,7 @@ namespace tom
      * NOTES
      * Throws an exception if no data is available
      */
-    virtual unsigned last(void) = 0;
+    virtual uint32_t last(void) = 0;
 
     /**
      * Get time stamp at a node
@@ -86,7 +86,7 @@ namespace tom
      * Time stamps must not decrease with increasing indices
      * Throws an exception if data at the node is invalid
      */
-    virtual WorldTime getTime(unsigned n) = 0;
+    virtual WorldTime getTime(uint32_t n) = 0;
   };
 }
 

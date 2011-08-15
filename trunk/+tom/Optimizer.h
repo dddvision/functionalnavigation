@@ -166,7 +166,7 @@ namespace tom
      *
      * @return number of initial conditions
      */
-    virtual unsigned numInitialConditions(void) const = 0;
+    virtual uint32_t numInitialConditions(void) const = 0;
 
     /**
      * Define an optimization problem and set initial conditions
@@ -207,7 +207,7 @@ namespace tom
      * Returns zero if called before the problem has been defined
      * @see defineProblem()
      */
-    virtual unsigned numSolutions(void) = 0;
+    virtual uint32_t numSolutions(void) = 0;
     
     /**
      * Get a solution in the form of a trajectory
@@ -220,7 +220,7 @@ namespace tom
      * Throws an exception if index is greater than or equal to the number of solutions
      * @see numSolutions()
      */
-    virtual Trajectory::Handle getSolution(const unsigned k) = 0;
+    virtual Trajectory::Handle getSolution(const uint32_t k) = 0;
 
     /**
      * Get a cost estimate associated with a trajectory
@@ -232,7 +232,7 @@ namespace tom
      * Throws an exception if index is greater than or equal to the number of solutions
      * @see numSolutions()
      */
-    virtual double getCost(const unsigned k) = 0;
+    virtual double getCost(const uint32_t k) = 0;
 
     /**
      * Execute one step of the optimizer to evolve dynamic model parameters toward lower cost
