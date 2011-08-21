@@ -39,7 +39,7 @@ namespace tom
      * Times after the upper bound of the domain return predicted poses in corresponding outputs
      * Throws and exception if the output vector is not the same size as the input vector
      */
-    virtual void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose) const = 0;
+    virtual void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose) = 0;
 
     /**
      * Evaluate a single trajectory and its time derivatives at multiple time instants
@@ -52,7 +52,7 @@ namespace tom
      * Times after the upper bound of the domain return predicted tangent poses in corresponding outputs
      * Throws and exception if the output vector is not the same size as the input vector
      */
-    virtual void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose) const = 0;
+    virtual void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose) = 0;
   };
 }
 

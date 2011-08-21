@@ -300,7 +300,7 @@ namespace BrownianPlanar
       return (interval);
     }
 
-    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose) const
+    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
     {
       static double k;
       unsigned n;
@@ -316,7 +316,7 @@ namespace BrownianPlanar
       return;
     }
 
-    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose) const
+    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
     {
       static double k;
       unsigned n;
