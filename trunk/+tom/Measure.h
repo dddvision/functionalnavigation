@@ -211,9 +211,10 @@ namespace tom
      * Typical costs are less than 20 because it is difficult to model events when P/Pinf < 1E-9
      * Returns 0 if the specified edge is not found in the graph
      * Returns NaN if the graph edge extends outside of the trajectory domain
+     * Input trajectory is implied constant, even though its type is not explicitly const
      * @see findEdges()
      */
-    virtual double computeEdgeCost(const Trajectory* x, const GraphEdge graphEdge) = 0;
+    virtual double computeEdgeCost(Trajectory* x, const GraphEdge graphEdge) = 0;
     
     /**
      * Virtual base class destructor

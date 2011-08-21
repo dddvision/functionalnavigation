@@ -251,7 +251,7 @@ public:
     return timeInterval;
   }
 
-  void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose) const
+  void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
   {
     static mxArray* rhs;
     static mxArray* lhs;
@@ -264,7 +264,7 @@ public:
     return;
   }
 
-  void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose) const
+  void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
   {
     static mxArray* rhs;
     static mxArray* lhs;

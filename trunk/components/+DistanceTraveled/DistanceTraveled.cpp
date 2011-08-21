@@ -20,7 +20,7 @@ namespace DistanceTraveled
       return;
     }
 
-    void refresh(const tom::Trajectory* x)
+    void refresh(tom::Trajectory* x)
     {
       tom::TimeInterval interval;
       interval = x->domain();      
@@ -67,7 +67,7 @@ namespace DistanceTraveled
       return;
     }
 
-    double computeEdgeCost(const tom::Trajectory* x, const tom::GraphEdge graphEdge)
+    double computeEdgeCost(tom::Trajectory* x, const tom::GraphEdge graphEdge)
     {
       static std::vector<tom::WorldTime> tA(1);
       static std::vector<tom::WorldTime> tB(1);

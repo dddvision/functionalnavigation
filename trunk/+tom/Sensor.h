@@ -45,8 +45,9 @@ namespace tom
      *   May be a poor estimate of the body trajectory
      *   Should have approximately no effect on functions in derived classs
      * This function updates the object state without waiting for new data to be acquired
+     * Input trajectory is implied constant, even though its type is not explicitly const
      */
-    virtual void refresh(const Trajectory* x) = 0;
+    virtual void refresh(Trajectory* x) = 0;
 
     /**
      * Check whether data is available
