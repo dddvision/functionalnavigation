@@ -259,7 +259,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static std::string uri;
         static uint32_t numInstances;
         tom::DynamicModel* obj;
-        
+
         argcheck(nrhs, 4);
         convert(prhs[1], name);
         convert(prhs[2], initialTime);
@@ -395,12 +395,12 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         instance[handle]->extend();
         break;
       }
-      
+
       case copy:
       {
         static uint32_t numInstances;
         tom::DynamicModel* obj;
-        numInstances = instance.size();      
+        numInstances = instance.size();
         obj = instance[handle]->copy();
         instance.resize(numInstances+1);
         instance[numInstances] = obj;

@@ -2,50 +2,53 @@
 
 namespace tom
 {
+  /** This is the default measure. It has no data and constructs no graph edges. */
   class MeasureDefault : public Measure
   {
   public:
-    MeasureDefault(const WorldTime initialTime, const std::string uri) : Measure(initialTime, uri)
+    /** Constructor and parent class initializer of the same form. */
+    MeasureDefault(const WorldTime initialTime, const std::string uri) :
+      Measure(initialTime, uri)
     {
       return;
     }
 
-    void refresh(const Trajectory* x)
+    void refresh(Trajectory* x)
     {
       return;
     }
-    
+
     bool hasData(void)
     {
       return (false);
     }
-    
+
     uint32_t first(void)
     {
       throw("The default sensor has no data.");
       return (0);
     }
-    
+
     uint32_t last(void)
     {
       throw("The default sensor has no data.");
       return (0);
     }
-    
+
     WorldTime getTime(uint32_t n)
     {
       throw("The default sensor has no data.");
       return (0);
     }
 
-    void findEdges(const uint32_t naMin, const uint32_t naMax, const uint32_t nbMin, 
-      const uint32_t nbMax, std::vector<GraphEdge>& edgeList)
+    void findEdges(const uint32_t naMin, const uint32_t naMax, const uint32_t nbMin, const uint32_t nbMax, std::vector<
+        GraphEdge>& edgeList)
     {
       edgeList.resize(0);
       return;
     }
 
-    double computeEdgeCost(const Trajectory* x, const GraphEdge graphEdge)
+    double computeEdgeCost(Trajectory* x, const GraphEdge graphEdge)
     {
       return (0.0);
     }
@@ -69,6 +72,7 @@ namespace tom
     friend class MeasureDefaultInitializer;
   };
 
+  /** This class initializes MeasureDefault before the execution of main(). */
   class MeasureDefaultInitializer
   {
   public:

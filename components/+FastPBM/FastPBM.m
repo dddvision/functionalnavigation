@@ -347,8 +347,7 @@ end
 % uvt = flow in pixel coordinates due to translation, double 2-by-P
 %
 % NOTES
-% Pixel coordinate interpretation:
-%   @see antbed.CameraArray.projection
+% For pixel coordinate interpretation, see antbed.CameraArray.projection()
 % Algorithm is based on:
 %   http://code.google.com/p/functionalnavigation/wiki/MotionInducedOpticalFlow
 function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix, nA)

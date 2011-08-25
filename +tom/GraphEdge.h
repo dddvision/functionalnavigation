@@ -17,7 +17,7 @@ typedef unsigned __int32 uint32_t;
 namespace tom
 {
   /**
-   * This class represents edges that determine the adjacency of nodes in a cost graph
+   * This class represents edges that determine the adjacency of nodes in a cost graph.
    *
    * @param[in,out] first  lower node index for this edge
    * @param[in,out] second upper node index for this edge

@@ -3,34 +3,34 @@
 
 #include <math.h>
 #ifndef NAN
-static const double NAN = sqrt(static_cast<double> (-1));
+static const double NAN = sqrt(static_cast<double>(-1));
 #endif
 
 namespace tom
 {
   /**
-   * This class represents the position and orientation of a body frame relative to a world frame
+   * This class represents the position and orientation of a body frame relative to a world frame.
    *
-   * NOTES
-   * Using SI units (meters, radians, seconds)
+   * @note
+   * Using SI units (meters, radians, seconds).
    * Using an Earth Centered Earth Fixed (ECEF) convention for the world frame:
-   *   World Axis 1 goes through the equator at the prime meridian
-   *   World Axis 2 completes the frame using the right-hand-rule
-   *   World Axis 3 goes through the north pole
+   *   World Axis 1 goes through the equator at the prime meridian;
+   *   World Axis 2 completes the frame using the right-hand-rule;
+   *   World Axis 3 goes through the north pole.
    * Using a Forward-Right-Down (FRD) convention for the body frame:
-   *   Body Axis 1 points forward
-   *   Body Axis 2 points right
-   *   Body Axis 3 points down relative to the body (not gravity)
-   * The initial undefined pose is represented by NaN values for all parameters
+   *   Body Axis 1 points forward;
+   *   Body Axis 2 points right;
+   *   Body Axis 3 points down relative to the body (not gravity).
+   * The initial undefined pose is represented by NaN values for all parameters.
    */
   class Pose
   {
   public:
-    double p[3]; /// position of the body frame
-    double q[4]; /// orientation of the body frame as a quaternion with a non-negative scalar first element
+    double p[3]; /**< position of the body frame */
+    double q[4]; /**< orientation of the body frame as a quaternion with a non-negative scalar first element */
 
     /**
-     * Construct a pose initialized to NaN
+     * Construct a pose initialized to NaN.
      */
     Pose(void)
     {
@@ -44,7 +44,7 @@ namespace tom
     }
 
     /**
-     * Copy a pose
+     * Copy a pose.
      */
     Pose(const Pose& pose)
     {
@@ -53,7 +53,7 @@ namespace tom
     }
 
     /**
-     * Assign a pose
+     * Assign a pose.
      */
     Pose& operator=(const Pose& pose)
     {

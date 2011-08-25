@@ -167,9 +167,6 @@ end
 % @param[in,out] yB       one-based estimated sub-pixel columns of patch centers in second frame
 % @param[in]     halfwin  half window size over which to track
 % @param[in]     thresh   matching threshold below which features will not be matched
-%
-% NOTES
-% @see BuildPyramid()
 function [xB, yB] = TrackFeaturesKLT(pyramidA, xA, yA, pyramidB, xB, yB, halfwin, thresh)
   xAref=xA-1;
   yAref=yA-1;

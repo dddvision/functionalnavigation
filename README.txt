@@ -14,3 +14,4 @@
 % 
 % Internal documentation:
 % See the .h files in the +tom directory
+% Run "doxygen DoxygenConfig"

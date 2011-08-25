@@ -12,22 +12,22 @@
 namespace tom
 {
   /**
-   * This class defines the interface to an optimization engine
+   * This class defines the interface to an optimization engine.
    *
-   * NOTES
-   * A component can connect to multiple framework classes
+   * @note
+   * A component can connect to multiple framework classes.
    */
   class Optimizer
   {
   private:
     /**
-     * Prevents deep copying
+     * Prevents deep copying.
      */
     Optimizer(const Optimizer&)
     {}
 
     /**
-     * Prevents assignment
+     * Prevents assignment.
      */
     Optimizer& operator=(const Optimizer&)
     {}
@@ -50,27 +50,30 @@ namespace tom
 
   protected:
     /**
-     * Protected method to construct a component instance
+     * Protected method to construct a component instance.
      *
-     * NOTES
-     * Each subclass constructor must initialize this base class
-     * (MATLAB) Initialize by calling this=this@tom.Optimizer();
+     * @note
+     * Each subclass constructor must initialize this base class.
+     * (MATLAB) Initialize by calling:
+     * @code
+     *   this=this@tom.Optimizer();
+     * @endcode
      */
     Optimizer(void)
     {}
 
     /**
-     * Establish connection between framework class and component
+     * Establish connection between framework class and component.
      *
      * @param[in] name component identifier
      * @param[in] cD   function pointer or handle that returns a user friendly description
      * @param[in] cF   function pointer or handle that can instantiate the subclass
      *
-     * NOTES
-     * The description may be truncated after a few hundred characters when displayed
-     * The description should not contain line feed or return characters
-     * (C++) Call this function prior to the invocation of main() using an initializer class
-     * (MATLAB) Call this function from initialize()
+     * @note
+     * The description may be truncated after a few hundred characters when displayed.
+     * The description should not contain line feed or return characters.
+     * (C++) Call this function prior to the invocation of main() using an initializer class.
+     * (MATLAB) Call this function from initialize().
      */
     static void connect(const std::string name, const OptimizerDescription cD, const OptimizerFactory cF)
     {
@@ -84,20 +87,20 @@ namespace tom
 
   public:
     /**
-     * Alias for a pointer to an optimizer that is not meant to be deleted
+     * Alias for a pointer to an optimizer that is not meant to be deleted.
      */
     typedef Optimizer* Handle;
 
     /**
-     * Check if a named subclass is connected with this base class
+     * Check if a named subclass is connected with this base class.
      *
      * @param[in] name component identifier
      * @return         true if the subclass exists and is connected to this base class
      *
-     * NOTES
-     * Do not shadow this function
-     * A package directory identifying the component must in the environment path
-     * Omit the '+' prefix when identifying package names
+     * @note
+     * Do not shadow this function.
+     * A package directory identifying the component must in the environment path.
+     * Omit the '+' prefix when identifying package names.
      */
     static bool isConnected(const std::string name)
     {
@@ -105,14 +108,14 @@ namespace tom
     }
 
     /**
-     * Get user friendly description of a component
+     * Get user friendly description of a component.
      *
      * @param[in] name component identifier
      * @return         user friendly description
      *
-     * NOTES
-     * Do not shadow this function
-     * If the component is not connected then the output is an empty string
+     * @note
+     * Do not shadow this function.
+     * If the component is not connected then the output is an empty string.
      */
     static std::string description(const std::string name)
     {
@@ -125,15 +128,15 @@ namespace tom
     }
 
     /**
-     * Public method to construct a component instance
+     * Public method to construct a component instance.
      *
      * @param[in] name component identifier
      * @return         pointer to a new instance
      *
-     * NOTES
-     * Creates a new instance that must be deleted by the caller
-     * Do not shadow this function
-     * Throws an error if the component is not connected
+     * @note
+     * Creates a new instance that must be deleted by the caller.
+     * Do not shadow this function.
+     * Throws an error if the component is not connected.
      */
     static Optimizer* create(const std::string name)
     {
@@ -150,34 +153,34 @@ namespace tom
     }
 
     /**
-     * Initializes connections between a component and one or more framework classes
+     * Initializes connections between a component and one or more framework classes.
      *
      * @param[in] name component identifier
      *
-     * NOTES
-     * (C++) Does nothing and does not require implementation
-     * (MATLAB) Implement this as a static function that calls connect()
+     * @note
+     * Reimplement this as a static function that calls connect().
      */
     static void initialize(std::string name)
     {}
-    
+
     /**
-     * Number of initial conditions required to define the problem
+     * Number of initial conditions required to define the problem.
      *
      * @return number of initial conditions
      */
     virtual uint32_t numInitialConditions(void) const = 0;
 
     /**
-     * Define an optimization problem and set initial conditions
+     * Define an optimization problem and set initial conditions.
      *
      * @param[in] dynamicModel multiple instances of a single DynamicModel subclass (MATLAB: K-by-1)
      * @param[in] measure      multiple instances of different Measure subclasses (MATLAB: cell M-by-1)
      * @param[in] randomize    setting this to true causes the optimizer to randomize the input trajectories
      *
-     * NOTES
-     * Does not refresh measures or extend trajectories
-     * The the size of the dynamicModel vector must match the number of initial conditions
+     * @note
+     * Does not refresh measures or extend trajectories.
+     * The the size of the dynamicModel vector must match the number of initial conditions.
+     *
      * @see refreshProblem()
      * @see numInitialConditions()
      */
@@ -185,71 +188,76 @@ namespace tom
       bool randomize) = 0;
 
     /**
-     * Refresh all measures and extend trajectory domains equally beyond the last measure
+     * Refresh all measures and extend trajectory domains equally beyond the last measure.
      *
-     * NOTES
+     * @note
      * Has no effect in the case when no measures have data
      * Throws an exception if the problem has not been defined
+     *
      * @see defineProblem()
      * @see tom::Measure::refresh()
      * @see tom::Measure::hasData()
      * @see tom::DynamicModel::extend()
      */
     virtual void refreshProblem(void) = 0;
-    
+
     /**
-     * Get the number of available solutions
+     * Get the number of available solutions.
      *
      * @return number of solutions
      *
-     * NOTES
-     * The number of solutions must be less than or equal to the number of initial conditions
-     * Returns zero if called before the problem has been defined
+     * @note
+     * The number of solutions must be less than or equal to the number of initial conditions.
+     * Returns zero if called before the problem has been defined.
+     *
      * @see defineProblem()
      */
     virtual uint32_t numSolutions(void) = 0;
-    
+
     /**
-     * Get a solution in the form of a trajectory
+     * Get a solution in the form of a trajectory.
      *
      * @param[in] k zero-based index of solutions
      * @return      trajectory instance associated with the index
      *
-     * NOTES
-     * The return value is a an alias for a pointer that should not be deleted
-     * Throws an exception if index is greater than or equal to the number of solutions
+     * @note
+     * The return value is a an alias for a pointer that should not be deleted.
+     * Throws an exception if index is greater than or equal to the number of solutions.
+     *
      * @see numSolutions()
      */
     virtual Trajectory::Handle getSolution(const uint32_t k) = 0;
 
     /**
-     * Get a cost estimate associated with a trajectory
+     * Get a cost estimate associated with a trajectory.
      *
      * @param[in] k zero-based index of solutions
      * @return      non-negative cost associated with the index
      *
-     * NOTES
-     * Throws an exception if index is greater than or equal to the number of solutions
+     * @note
+     * Throws an exception if index is greater than or equal to the number of solutions.
+     *
      * @see numSolutions()
      */
     virtual double getCost(const uint32_t k) = 0;
 
     /**
-     * Execute one step of the optimizer to evolve dynamic model parameters toward lower cost
+     * Execute one step of the optimizer to evolve dynamic model parameters toward lower cost.
      *
-     * NOTES
-     * Does not refresh measures or extend trajectories
-     * Monitors and responds to the growth of all cost graphs from all measures
-     * Searches for the minimum cost using as few evaluations as possible
-     * May learn about the problem over multiple calls by maintaining state
-     * Throws an exception if called before the problem has been defined
+     * @note
+     * Does not refresh measures or extend trajectories.
+     * Monitors and responds to the growth of all cost graphs from all measures.
+     * Searches for the minimum cost using as few evaluations as possible.
+     * May learn about the problem over multiple calls by maintaining state.
+     * Throws an exception if called before the problem has been defined.
+     *
      * @see defineProblem()
      * @see refreshProblem()
      */
     virtual void step(void) = 0;
-    
+
     /**
-     * Virtual base class destructor
+     * Virtual base class destructor.
      */
     virtual ~Optimizer(void)
     {}

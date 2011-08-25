@@ -80,14 +80,14 @@ namespace BrownianPlanar
       double ct0;
       double ct1;
       double halfAngle;
-            
+
       double tRemain;
       uint32_t bBase;
       uint32_t b;
 
       bBase = static_cast<uint32_t>(ceil(k))-1;
       tRemain = (k-static_cast<double>(bBase))/rate;
-      
+
       for(b = firstNewBlock; b<bBase; ++b)
       {
         x[b+1] = x[b]+tau*xRate[b]+c0*fx[b];
@@ -102,7 +102,7 @@ namespace BrownianPlanar
       ct0 = 0.5*tRemain*tRemain;
       ct1 = ct0/normalizedRotationalMass;
       ct0 /= normalizedMass;
-      
+
       halfAngle = 0.5*(a[bBase]+tRemain*aRate[bBase]+ct1*fa[bBase]);
       pose.p[0] = x[bBase]+tRemain*xRate[bBase]+ct0*fx[bBase];
       pose.p[1] = y[bBase]+tRemain*yRate[bBase]+ct0*fy[bBase];
@@ -111,29 +111,29 @@ namespace BrownianPlanar
       pose.q[1] = 0.0;
       pose.q[2] = 0.0;
       pose.q[3] = sin(halfAngle);
-      
-//       printf("\nfx.size() = %d", fx.size());
-//       printf("\ntau = %0.16f", tau);
-//       printf("\nc0 = %0.16f", c0);
-//       printf("\nc1 = %0.16f", c1);
-//       printf("\nc2 = %0.16f", c2);
-//       printf("\nc3 = %0.16f", c3);
-//       printf("\nct0 = %0.16f", ct0);
-//       printf("\nct1 = %0.16f", ct1);
-//       printf("\nbBase = %u", bBase);
-//       printf("\nhalfAngle = %0.16f", halfAngle);
-//       printf("\nk = %0.16f", k);
-//       printf("\nx[bBase] = %0.16f", x[bBase]);
-//       printf("\ntRemain = %0.16f", tRemain);
-//       printf("\nxRate[bBase] = %0.16f", xRate[bBase]);
-//       printf("\nfx[bBase] = %0.16f", fx[bBase]);
-//       printf("\npose.p[0] = %0.16f", pose.p[0]);
-//       printf("\npose.p[1] = %0.16f", pose.p[1]);
-//       printf("\npose.p[2] = %0.16f", pose.p[2]);
-//       printf("\npose.q[0] = %0.16f", pose.q[0]);
-//       printf("\npose.q[1] = %0.16f", pose.q[1]);
-//       printf("\npose.q[2] = %0.16f", pose.q[2]);
-//       printf("\npose.q[3] = %0.16f", pose.q[3]);
+
+      //       printf("\nfx.size() = %d", fx.size());
+      //       printf("\ntau = %0.16f", tau);
+      //       printf("\nc0 = %0.16f", c0);
+      //       printf("\nc1 = %0.16f", c1);
+      //       printf("\nc2 = %0.16f", c2);
+      //       printf("\nc3 = %0.16f", c3);
+      //       printf("\nct0 = %0.16f", ct0);
+      //       printf("\nct1 = %0.16f", ct1);
+      //       printf("\nbBase = %u", bBase);
+      //       printf("\nhalfAngle = %0.16f", halfAngle);
+      //       printf("\nk = %0.16f", k);
+      //       printf("\nx[bBase] = %0.16f", x[bBase]);
+      //       printf("\ntRemain = %0.16f", tRemain);
+      //       printf("\nxRate[bBase] = %0.16f", xRate[bBase]);
+      //       printf("\nfx[bBase] = %0.16f", fx[bBase]);
+      //       printf("\npose.p[0] = %0.16f", pose.p[0]);
+      //       printf("\npose.p[1] = %0.16f", pose.p[1]);
+      //       printf("\npose.p[2] = %0.16f", pose.p[2]);
+      //       printf("\npose.q[0] = %0.16f", pose.q[0]);
+      //       printf("\npose.q[1] = %0.16f", pose.q[1]);
+      //       printf("\npose.q[2] = %0.16f", pose.q[2]);
+      //       printf("\npose.q[3] = %0.16f", pose.q[3]);
 
       return;
     }
@@ -150,7 +150,7 @@ namespace BrownianPlanar
       uint32_t bBase;
 
       K = static_cast<double>(px.size());
-      
+
       if(k<0.0)
       {
         tangentPose = nullTangentPose;
@@ -175,7 +175,7 @@ namespace BrownianPlanar
       {
         evaluateTangentPose(K, tP);
         tRemain = (k-K)/rate;
-        halfAngle = atan2(tP.q[3],tP.q[0])+0.5*tRemain*tP.s[2];
+        halfAngle = atan2(tP.q[3], tP.q[0])+0.5*tRemain*tP.s[2];
         tangentPose.p[0] = tP.p[0]+tP.r[0]*tRemain;
         tangentPose.p[1] = tP.p[1]+tP.r[1]*tRemain;
         tangentPose.p[2] = tP.p[2]+tP.r[2]*tRemain;
@@ -193,10 +193,10 @@ namespace BrownianPlanar
       else
       {
         evaluateGeneral(k, tangentPose);
-        
+
         bBase = static_cast<uint32_t>(ceil(k))-1;
         tRemain = (k-static_cast<double>(bBase))/rate;
-        
+
         ct2 = tRemain;
         ct3 = ct2/normalizedRotationalMass;
         ct2 /= normalizedMass;
@@ -220,7 +220,7 @@ namespace BrownianPlanar
       tom::WorldTime dt;
 
       K = static_cast<double>(px.size());
-      
+
       if(k<0.0)
       {
         pose = nullPose;
@@ -239,7 +239,7 @@ namespace BrownianPlanar
       {
         evaluateTangentPose(K, tP);
         dt = (k-K)/rate;
-        halfAngle = atan2(tP.q[3],tP.q[0])+0.5*dt*tP.s[2];
+        halfAngle = atan2(tP.q[3], tP.q[0])+0.5*dt*tP.s[2];
         pose.p[0] = tP.p[0]+tP.r[0]*dt;
         pose.p[1] = tP.p[1]+tP.r[1]*dt;
         pose.p[2] = tP.p[2]+tP.r[2]*dt;
@@ -256,7 +256,8 @@ namespace BrownianPlanar
     }
 
   public:
-    BrownianPlanar(const tom::WorldTime initialTime, const std::string uri) : tom::DynamicModel(initialTime, uri)
+    BrownianPlanar(const tom::WorldTime initialTime, const std::string uri) :
+      tom::DynamicModel(initialTime, uri)
     {
       static const unsigned reserve = 1024;
       interval.first = initialTime;
@@ -295,7 +296,7 @@ namespace BrownianPlanar
       return;
     }
 
-    tom::TimeInterval domain(void) const
+    tom::TimeInterval domain(void)
     {
       return (interval);
     }
@@ -336,7 +337,7 @@ namespace BrownianPlanar
     {
       return (0);
     }
-    
+
     uint32_t numExtension(void)
     {
       return (3);
@@ -448,7 +449,7 @@ namespace BrownianPlanar
       tom::WorldTime initialTime = this->interval.first;
       std::string uri = "";
       BrownianPlanar* obj = new BrownianPlanar(initialTime, uri);
-            
+
       // parameters
       obj->px = this->px;
       obj->py = this->py;
@@ -471,7 +472,7 @@ namespace BrownianPlanar
 
       obj->interval = this->interval;
       obj->firstNewBlock = this->firstNewBlock;
-      
+
       return (obj);
     }
 

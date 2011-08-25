@@ -6,19 +6,19 @@
 namespace tom
 {
   /**
-   * This class represents a pose and its time derivatives
+   * This class represents a pose and its time derivatives.
    *
-   * NOTES
-   * The initial undefined tangent pose is represented by NaN values for all parameters
+   * @note
+   * The initial undefined tangent pose is represented by NaN values for all parameters.
    */
   class TangentPose : public Pose
   {
   public:
-    double r[3]; /// time derivative of body position
-    double s[3]; /// angular rate vector (2*conjugate(q)*dq/dt)
+    double r[3]; /**< time derivative of body position */
+    double s[3]; /**< angular rate vector (2*conjugate(q)*dq/dt) */
 
     /**
-     * Construct a tangent pose initialized to NaN
+     * Construct a tangent pose initialized to NaN.
      */
     TangentPose(void)
     {
@@ -31,7 +31,7 @@ namespace tom
     }
 
     /**
-     * Copy a tangent pose
+     * Copy a tangent pose.
      */
     TangentPose(const TangentPose& tangentPose)
     {
@@ -40,7 +40,7 @@ namespace tom
     }
 
     /**
-     * Assign a tangent pose
+     * Assign a tangent pose.
      */
     TangentPose& operator=(const TangentPose& tangentPose)
     {
