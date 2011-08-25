@@ -2,10 +2,13 @@
 
 namespace tom
 {
+  /** This default optimizer does nothing and provides no solutions. */
   class OptimizerDefault : public Optimizer
   {
   public:
-    OptimizerDefault(void) : Optimizer()
+    /** Constructor and parent class initializer of the same form. */
+    OptimizerDefault(void) :
+      Optimizer()
     {
       return;
     }
@@ -15,7 +18,8 @@ namespace tom
       return (0);
     }
 
-    void defineProblem(std::vector<DynamicModel*>& dynamicModel, std::vector<Measure*>& measure, bool randomize)
+    void defineProblem(std::vector<DynamicModel::Handle>& dynamicModel, std::vector<Measure::Handle>& measure,
+      bool randomize)
     {
       return;
     }
@@ -24,7 +28,7 @@ namespace tom
     {
       return;
     }
-    
+
     uint32_t numSolutions(void)
     {
       return (0);
@@ -48,7 +52,7 @@ namespace tom
       return;
     }
 
- private:
+  private:
     static std::string componentDescription(void)
     {
       return ("This default optimizer does nothing and provides no solutions.");
@@ -67,6 +71,7 @@ namespace tom
     friend class OptimizerDefaultInitializer;
   };
 
+  /** This class initializes OptimizerDefault before the execution of main(). */
   class OptimizerDefaultInitializer
   {
   public:

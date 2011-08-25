@@ -2,13 +2,16 @@
 
 namespace tom
 {
+  /** This default dynamic model represents a stationary body at the world origin with no input parameters. */
   class DynamicModelDefault : public DynamicModel
   {
   protected:
-    tom::TimeInterval interval;
+    tom::TimeInterval interval; /**< stores the Trajectory domain */
 
   public:
-    DynamicModelDefault(const WorldTime initialTime, const std::string uri) : DynamicModel(initialTime, uri)
+    /** Constructor and parent class initializer of the same form. */
+    DynamicModelDefault(const WorldTime initialTime, const std::string uri) :
+      DynamicModel(initialTime, uri)
     {
       interval.first = initialTime;
       interval.second = INFINITY;
@@ -161,6 +164,7 @@ namespace tom
     friend class DynamicModelDefaultInitializer;
   };
 
+  /** This class initializes DynamicModelDefault before the execution of main(). */
   class DynamicModelDefaultInitializer
   {
   public:

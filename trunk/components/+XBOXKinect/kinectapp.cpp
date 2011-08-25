@@ -23,11 +23,12 @@ void interrupt(int signum)
 namespace tom
 {
   /**
-   * This class represents a world time system
+   * This class represents a world time system.
    *
-   * NOTES
-   * The default reference is GPS time at the prime meridian in seconds since 1980 JAN 06 T00:00:00
-   * Choosing another time system may adversely affect interoperability between framework classes
+   * @note
+   * The default reference is GPS time at the prime meridian in seconds since 1980 JAN 06 T00:00:00.
+   * GPS time is a few seconds ahead of UTC.
+   * Choosing another time system may adversely affect interoperability between framework classes.
    */
   typedef double WorldTime;
 }
@@ -35,12 +36,9 @@ namespace tom
 namespace antbed
 {
   /**
-   * Get the current time of day from the operating system
+   * Get the current time of day from the operating system.
    *
-   * @return current system time in tom.WorldTime format
-   *
-   * NOTES
-   * @see tom::WorldTime
+   * @return current system time in tom::WorldTime format
    */
   tom::WorldTime getCurrentTime(void)
   {
@@ -172,7 +170,7 @@ public:
   }
 
 private:
-   std::vector<uint8_t> m_buffer_depth;
+  std::vector<uint8_t> m_buffer_depth;
   std::vector<uint8_t> m_buffer_video;
   std::vector<uint8_t> depth;
   std::vector<uint8_t> video;

@@ -31,7 +31,7 @@ Additional coding guidelines for all code hosted in this repository:
 
   * RULE (C++): Code must compile using "{{{g++ -Wall -Werror -pedantic}}}"
   * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
-  * RULE (C++): Use EclipseFormatter.xml to format code before submission.
+  * RULE (C++): Use EclipseCDTFormatter.xml to format code before submission.
 
   * RULE: Place a description above each function that identifies input and output parameters (using dOxygen syntax in C++) and has a NOTES section when applicable.
 {{{
@@ -41,11 +41,11 @@ Additional coding guidelines for all code hosted in this repository:
 // @param[in,out] bb description of input/output argument and units
 // @return           description of return value and units
 //
-// NOTES
-// Here is extra information
+// @section NOTES
+// Here is extra information.
 }}}
 {{{
-% Description of MATLAB function
+% Description of MATLAB function.
 %
 % INPUT
 % aa = description of input and units
@@ -55,7 +55,7 @@ Additional coding guidelines for all code hosted in this repository:
 % cc = description of output and units
 %
 % NOTES
-% Here is extra information
+% Here is extra information.
 }}}
   * RULE (C++): Use long descriptive variable names or very short ones coupled with detailed descriptions.
 {{{

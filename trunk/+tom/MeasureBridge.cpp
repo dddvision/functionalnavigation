@@ -65,22 +65,22 @@ void convert(const mxArray* array, tom::TimeInterval& value)
   static mxArray *first;
   static mxArray *second;
   static mxArray *firstDouble;
-  static mxArray *secondDouble;  
-  
+  static mxArray *secondDouble;
+
   first = mxGetProperty(array, 0, "first");
   second = mxGetProperty(array, 0, "second");
-  
+
   mexCallMATLAB(1, &firstDouble, 1, &first, "double");
   mexCallMATLAB(1, &secondDouble, 1, &second, "double");
- 
+
   value.first = (*static_cast<double*>(mxGetData(firstDouble)));
   value.second = (*static_cast<double*>(mxGetData(secondDouble)));
-  
+
   mxDestroyArray(first);
   mxDestroyArray(second);
   mxDestroyArray(firstDouble);
   mxDestroyArray(secondDouble);
-  
+
   return;
 }
 
@@ -88,10 +88,10 @@ void convert(const mxArray* array, tom::GraphEdge& value)
 {
   static mxArray *first;
   static mxArray *second;
-  
+
   first = mxGetProperty(array, 0, "first");
   second = mxGetProperty(array, 0, "second");
-  
+
   value.first = (*static_cast<uint32_t*>(mxGetData(first)));
   value.second = (*static_cast<uint32_t*>(mxGetData(second)));
   return;
@@ -210,27 +210,27 @@ void convert(const std::vector<tom::GraphEdge>& graphEdge, mxArray*& array)
 {
   static mxArray* prhs[3];
   static mxArray* first;
-  static mxArray* second;  
+  static mxArray* second;
   static uint32_t* pfirst;
   static uint32_t* psecond;
   unsigned K = graphEdge.size();
   unsigned k;
-  
+
   first = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
-  second = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);  
+  second = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
   pfirst = static_cast<uint32_t*>(mxGetData(first));
   psecond = static_cast<uint32_t*>(mxGetData(second));
-  
+
   mexCallMATLAB(1, &prhs[0], 0, NULL, "tom.GraphEdge"); // sets prhs[0]
   prhs[1] = mxCreateDoubleScalar(static_cast<double>(K));
   prhs[2] = mxCreateDoubleScalar(1.0);
 
   mexCallMATLAB(1, &array, 3, prhs, "repmat");
-  
+
   for(k = 0; k<K; ++k)
   {
     pfirst[0] = graphEdge[k].first;
-    psecond[0] = graphEdge[k].second;  
+    psecond[0] = graphEdge[k].second;
     mxSetProperty(array, k, "first", first);
     mxSetProperty(array, k, "second", second);
   }
@@ -240,12 +240,12 @@ void convert(const std::vector<tom::GraphEdge>& graphEdge, mxArray*& array)
 class TrajectoryBridge : public tom::Trajectory
 {
 public:
-  tom::TimeInterval domain(void) const
+  tom::TimeInterval domain(void)
   {
     static mxArray* lhs;
     static tom::TimeInterval timeInterval;
     mexEvalString("interval=x.domain();"); // depends on Trajectory named 'x' in MATLAB workspace
-    lhs = mexGetVariable("caller", "interval");    
+    lhs = mexGetVariable("caller", "interval");
     convert(lhs, timeInterval);
     mxDestroyArray(lhs);
     return timeInterval;
@@ -398,13 +398,13 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t nbMin;
         static uint32_t nbMax;
         static std::vector<tom::GraphEdge> edgeList;
-             
+
         argcheck(nrhs, 6);
         convert(prhs[2], naMin);
         convert(prhs[3], naMax);
         convert(prhs[4], nbMin);
-        convert(prhs[5], nbMax);                
-        instance[handle]->findEdges(naMin, naMax, nbMin, nbMax, edgeList);        
+        convert(prhs[5], nbMax);
+        instance[handle]->findEdges(naMin, naMax, nbMin, nbMax, edgeList);
         convert(edgeList, plhs[0]);
         break;
       }
@@ -418,7 +418,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         convert(instance[handle]->computeEdgeCost(&x, graphEdge), plhs[0]);
         break;
       }
-      
+
       default:
       {
         throw("MeasureBridge: invalid member function call");
