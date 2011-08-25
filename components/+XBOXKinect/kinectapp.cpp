@@ -76,10 +76,10 @@ class MyFreenectDevice : public Freenect::FreenectDevice
 {
 public:
   MyFreenectDevice(freenect_context *_ctx, int _index) : Freenect::FreenectDevice(_ctx, _index), 
-    m_buffer_depth(FREENECT_DEPTH_11BIT_SIZE), 
-    m_buffer_video(FREENECT_VIDEO_RGB_SIZE), 
-    depth(FREENECT_DEPTH_11BIT_SIZE), 
-    video(FREENECT_VIDEO_RGB_SIZE), 
+    m_buffer_depth(640*480*2), 
+    m_buffer_video(640*480*3), 
+    depth(640*480*2), 
+    video(640*480*3), 
     m_new_rgb_frame(false), 
     m_new_depth_frame(false)
   {}
@@ -89,7 +89,7 @@ public:
   {
     m_depth_mutex.lock();
     uint8_t* depth = static_cast<uint8_t*>(_depth);
-    std::copy(depth, depth+FREENECT_DEPTH_11BIT_SIZE, m_buffer_depth.begin());
+    std::copy(depth, depth+640*480*2, m_buffer_depth.begin());
     m_new_depth_frame = true;
     m_depth_mutex.unlock();
   }
@@ -99,7 +99,7 @@ public:
   {
     m_rgb_mutex.lock();
     uint8_t* rgb = static_cast<uint8_t*>(_rgb);
-    std::copy(rgb, rgb+FREENECT_VIDEO_RGB_SIZE, m_buffer_video.begin());
+    std::copy(rgb, rgb+640*480*3, m_buffer_video.begin());
     m_new_rgb_frame = true;
     m_rgb_mutex.unlock();
   };
@@ -157,12 +157,12 @@ public:
 
       sprintf(str, "depth%06u.dat", count);
       depthFile.open(str, std::ios::out | std::ios::binary);
-      depthFile.write(reinterpret_cast<char*>(&depth[0]), FREENECT_DEPTH_11BIT_SIZE);
+      depthFile.write(reinterpret_cast<char*>(&depth[0]), 640*480*2);
       depthFile.close();
 
       sprintf(str, "video%06u.dat", count);
       videoFile.open(str, std::ios::out | std::ios::binary);    
-      videoFile.write(reinterpret_cast<char*>(&video[0]), FREENECT_VIDEO_RGB_SIZE);
+      videoFile.write(reinterpret_cast<char*>(&video[0]), 640*480*3);
       videoFile.close();
 
       ++count;
