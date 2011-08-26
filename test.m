@@ -104,7 +104,7 @@ function testComponent(name, config)
       antbed.DynamicModelTest(name, config.initialTime, config.uri);
     end
     if(isMeasure)
-      antbed.MeasureTest(name, config.initialTime, config.uri, config.characterize);
+      antbed.MeasureTest(name, config.initialTime, config.uri, config.characterizeMeasures);
     end
     if(isOptimizer)
       antbed.OptimizerTest(name, config.dynamicModelName, config.measureNames, config.initialTime, config.uri);

@@ -1,27 +1,27 @@
 classdef TrajectoryPerturbation < tom.Trajectory
 
   properties (GetAccess = private, SetAccess = private)
-      deltaPoseUnit
-      baseTrajectory
+    offsetPose
+    refTrajectory
   end
     
   methods (Access = public, Static = true)
-    % base trajectory and rotation (ie ground truth) passed as a tom.pose
     function this = TrajectoryPerturbation(refTrajectory)
-      this.baseTrajectory = refTrajectory;
+      this.refTrajectory = refTrajectory;
     end
   end
     
   methods (Access = public, Static = false)
     function interval = domain(this)
-      interval = domain(this.baseTrajectory);
+      interval = domain(this.refTrajectory);
     end
+    
     function setPerturbation(this, offsetPose)
-      this.deltaPoseUnit = offsetPose;
+      this.offsetPose = offsetPose;
     end
     
     function pose = evaluate(this, t)
-      interval = this.baseTrajectory.domain();
+      interval = this.refTrajectory.domain();
       initialTime = interval.first;
             
       N = numel(t);
@@ -32,11 +32,11 @@ classdef TrajectoryPerturbation < tom.Trajectory
         pose(1, N) = tom.Pose;
         %TODO: Add interpolation for non-diecrete time values
         for k = 1:size(t)
-          translation = deltaTime(k) * this.deltaPoseUnit.p;
-          axisAngle = Quat2AxisAngle(this.deltaPoseUnit.q) * deltaTime(k);
-          basePose = this.baseTrajectory.evaluate(t(k));
-          pose(k).p = basePose.p + translation;
-          pose(k).q = Quat2Homo(AxisAngle2Quat(axisAngle)) * basePose.q;
+          translation = deltaTime(k)*this.offsetPose.p;
+          axisAngle = Quat2AxisAngle(this.offsetPose.q)*deltaTime(k);
+          basePose = this.refTrajectory.evaluate(t(k));
+          pose(k).p = basePose.p+translation;
+          pose(k).q = Quat2Homo(AxisAngle2Quat(axisAngle))*basePose.q;
         end
       end   
     end
@@ -94,27 +94,25 @@ function q = AxisAngle2Quat(v)
   q4 = s.*c;
   q = [q1; q2; q3; q4];
 end
-function v = Quat2AxisAngle(q)   
+
+function v = Quat2AxisAngle(q)
   q1 = q(1, :);
   q2 = q(2, :);
   q3 = q(3, :);
   q4 = q(4, :);
 
-  scale = 2 * acos(q1);   
-  q1Sq = q1 .* q1;
-  demon = sqrt(1-q1Sq);
-  v=zeros(3,size(q,2));
-  for i=1:size(q,2)
-    if(q1(i)==1)
-      v(:,i) = [0;0;0];
-    else    
-      a(1) = q2(i) / demon(i);
-      a(2) = q3(i) / demon(i);
-      a(3) = q4(i) / demon(i);   
-      aNorm = a / norm(a);
+  theta = 2*real(acos(q1));
+  
+  n = sqrt(q2.*q2+q3.*q3+q4.*q4);
+  n(n<eps) = eps;
+  
+  a = q2./n;
+  b = q3./n;
+  c = q4./n;
 
-      vT = aNorm * scale(i);
-      v(:,i) = vT';
-    end   
-  end
+  v1 = theta.*a;
+  v2 = theta.*b;
+  v3 = theta.*c;
+
+  v = [v1; v2; v3];
 end

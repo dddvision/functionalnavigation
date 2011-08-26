@@ -1,4 +1,4 @@
-% This subclass defines an inertial sensor characterized by:
+% This subclass defines an inertial sensor with the following features:
 %   three orthogonal axes
 %   one accelerometer and one gyroscope on each axis
 %   shared time stamps

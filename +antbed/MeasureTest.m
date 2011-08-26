@@ -16,7 +16,7 @@ classdef MeasureTest < handle
   end
   
   methods (Access = public, Static = true)
-    function this = MeasureTest(name, initialTime, uri, characterize)
+    function this = MeasureTest(name, initialTime, uri, characterizeMeasures)
       fprintf('\n\n*** Begin Measure Test ***\n');
       
       fprintf('\nuri =');
@@ -98,7 +98,7 @@ classdef MeasureTest < handle
         end
       end
         
-      if(~characterize)
+      if(~characterizeMeasures)
         % do nothing
       elseif(~measure.hasData())
         fprintf('\nwarning: Skipping measure characterization. Measure has no data.');
@@ -190,8 +190,8 @@ classdef MeasureTest < handle
                   end
                 end
                 currEps = 2 * currEps;
-                epsPose(e).p = 2 .* epsPose(e).p;
-                axisAng(:,e) = 2 .* axisAng(:,e);
+                epsPose(e).p = 2*epsPose(e).p;
+                axisAng(:,e) = 2*axisAng(:,e);
                 epsPose(e).q = AxisAngle2Quat(axisAng(:,e));
                 baseTrajectory.setPerturbation(epsPose(e));
                 fprintf('Testing with value %f, cost: %f\n', currEps, result(1));
@@ -213,12 +213,12 @@ classdef MeasureTest < handle
               for i = 1:10
                 for k = 1:numel(edgeList)
                   tmp = measure.computeEdgeCost(baseTrajectory, edgeList(k));
-                  MonotinicityAry(i,k) = 2* (tmp - edgeCosts(k)) / currEps;
+                  MonotinicityAry(i,k) = 2*(tmp-edgeCosts(k))/currEps;
                   edgeCosts(k) = tmp;
                 end
                 currEps = 2 * currEps;
-                epsPose(e).p = 2 * epsPose(e).p;
-                axisAng(:,e) = 2 .* axisAng(:,e);
+                epsPose(e).p = 2*epsPose(e).p;
+                axisAng(:,e) = 2*axisAng(:,e);
                 epsPose(e).q = AxisAngle2Quat(axisAng);
                 baseTrajectory.setPerturbation(epsPose(e));
               end
