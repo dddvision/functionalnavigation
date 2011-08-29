@@ -2,7 +2,7 @@
 % 
 % 1) Setup the environment. The following steps are for a Mac, but similar steps work on Linux and Windows.
 % 
-% 1.A) Install a compiler. (Xcode is available from the App Store)
+% 1.A) Install a C/C++ compiler. (Xcode is available from the App Store)
 % 
 % 1.B) Download and install CMake from here:
 % http://www.cmake.org/
