@@ -112,7 +112,7 @@ classdef MeasureTest < handle
           fprintf('\nwarning: Skipping measure characterization. No reference trajectory is available.');
         else
           edgeList = measure.findEdges(measure.first(), measure.last(), measure.first(), measure.last());
-          baseTrajectory = antbed.TrajectoryPerturbation(trajectory);
+          baseTrajectory = antbed.MeasureTestPerturbation(trajectory);
           
           if numel(edgeList) ~= 0
             Granularity = zeros(1,7);

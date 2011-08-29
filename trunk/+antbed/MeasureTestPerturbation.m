@@ -1,23 +1,29 @@
-classdef TrajectoryPerturbation < tom.Trajectory
+% Trajectory that can be perturbed over a time interval
+classdef MeasureTestPerturbation < tom.Trajectory
 
   properties (GetAccess = private, SetAccess = private)
     offsetPose
     refTrajectory
+    tempinterval
   end
     
   methods (Access = public, Static = true)
-    function this = TrajectoryPerturbation(refTrajectory)
+    function this = MeasureTestPerturbation(refTrajectory)
       this.refTrajectory = refTrajectory;
     end
   end
     
   methods (Access = public, Static = false)
     function interval = domain(this)
-      interval = domain(this.refTrajectory);
+      interval = this.tempInterval;
     end
     
-    function setPerturbation(this, offsetPose)
+    function setPerturbation(this, offsetPose, tempInterval)
+      refInterval = this.refTrajectory.domain();
+      assert(tempInterval.first>=refInterval.first);
+      assert(tempInterval.second<=refInterval.second);
       this.offsetPose = offsetPose;
+      this.tempInterval = tempInterval;
     end
     
     function pose = evaluate(this, t)
@@ -115,4 +121,51 @@ function v = Quat2AxisAngle(q)
   v3 = theta.*c;
 
   v = [v1; v2; v3];
+end
+
+% Interpolates x(t) on the interval [tA, tB]
+% 
+% @param[in]  pB       value of x(tB)
+% @param[in]  rB       value of (dx/dt)(tB)
+% @param[in]  interval time domain, tom.TimeInterval
+% @param[in]  t        value of t on the interval [tA, tB], tom.WorldTime
+% @param[out] pt       value of x(t)
+% @param[out] rt       value of (dx/dt)(t)
+%
+% NOTES
+% The values of x(tA) and (dx/dt)(tA) are assumed to be 0
+function [pt, rt] = perturbation(interval, pB, rB, t)
+  K = numel(t);
+
+  % process (t<=tA)
+  pt = zeros(1, K);
+  rt = zeros(1, K);
+  tA = double(interval.first);
+  tB = double(interval.second);
+  t = double(t);
+  
+  % set origin at tA
+  t = t-tA;
+  tB = tB-tA;
+  tA = 0;
+
+  % process (t>tA)&(t<=tB))
+  k = find((t>tA)&(t<=tB));
+  tB2 = tB*tB;
+  tB3 = tB*tB2;
+  t2 = t(k).*t(k);
+  t3 = t(k).*t2;
+  c = 3/tB2*pB-rB/tB;
+  d = rB/tB2-2/tB3*pB;
+  pt(k) = c*t2+d*t3;
+  rt(k) = (2*c*t(k)+3*d*t2);
+  
+  % set origin at tB
+  t = t-tB;
+  tB = 9;
+  
+  % process t>tB
+  k = find(t>tB);
+  pt(k) = pB+rB*t(k);
+  rt(k) = rB*ones(1, numel(k));
 end
