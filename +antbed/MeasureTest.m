@@ -160,12 +160,10 @@ classdef MeasureTest < handle
               zeroPose = tom.Pose;
               zeroPose.p = [0; 0; 0];
               zeroPose.q = [1; 0; 0; 0];
-              currEps = eps('double');
               baseTrajectory.setPerturbation(zeroPose);
               edgeCosts = 0:size(edgeList);
 
-              %Compute cost at ground truth, save for bias and granularity
-              %computations
+              %Compute cost at ground truth, save for bias and granularity computations
               for k = 1:numel(edgeList)
                 edgeCosts(k) = measure.computeEdgeCost(baseTrajectory, edgeList(k));
               end
@@ -175,8 +173,9 @@ classdef MeasureTest < handle
               baseTrajectory.setPerturbation(epsPose(e));
 
               %double eps utill a different cost is returned
-              step = 0;
+              currEps = eps('double');
               %step through doubleing distance everytime
+              step = 0;
               for i = 1:64
                 stop = 0;
                 step = i;

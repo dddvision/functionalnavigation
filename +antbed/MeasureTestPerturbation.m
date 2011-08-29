@@ -2,9 +2,9 @@
 classdef MeasureTestPerturbation < tom.Trajectory
 
   properties (GetAccess = private, SetAccess = private)
-    offsetPose
+    tangentPoseOffsetB
     refTrajectory
-    tempinterval
+    interval
   end
     
   methods (Access = public, Static = true)
@@ -15,51 +15,70 @@ classdef MeasureTestPerturbation < tom.Trajectory
     
   methods (Access = public, Static = false)
     function interval = domain(this)
-      interval = this.tempInterval;
+      interval = this.interval;
     end
     
-    function setPerturbation(this, offsetPose, tempInterval)
+    function setPerturbation(this, tangentPoseOffsetB, interval)
       refInterval = this.refTrajectory.domain();
-      assert(tempInterval.first>=refInterval.first);
-      assert(tempInterval.second<=refInterval.second);
-      this.offsetPose = offsetPose;
-      this.tempInterval = tempInterval;
+      assert(interval.first>=refInterval.first);
+      assert(interval.second<=refInterval.second);
+      this.tangentPoseOffsetB = tangentPoseOffsetB;
+      this.interval = interval;
     end
     
     function pose = evaluate(this, t)
-      interval = this.refTrajectory.domain();
-      initialTime = interval.first;
-            
       N = numel(t);
       if(N==0)
         pose = repmat(tom.Pose, [1, 0]);
       else
-        deltaTime = t-initialTime;                       
-        pose(1, N) = tom.Pose;
-        %TODO: Add interpolation for non-diecrete time values
-        for k = 1:size(t)
-          translation = deltaTime(k)*this.offsetPose.p;
-          axisAngle = Quat2AxisAngle(this.offsetPose.q)*deltaTime(k);
-          basePose = this.refTrajectory.evaluate(t(k));
-          pose(k).p = basePose.p+translation;
-          pose(k).q = Quat2Homo(AxisAngle2Quat(axisAngle))*basePose.q;
+        pPerturb = zeros(3, N);
+        aPerturb = zeros(3, N);
+        tA = double(this.interval.first);
+        tB = double(this.interval.second);
+        pB = this.tangentPoseOffsetB.p;
+        aB = Quat2AxisAngle(this.tangentPoseOffsetB.q);
+        rB = this.tangentPoseOffsetB.r;
+        sB = this.tangentPoseOffsetB.s;
+        for dim = 1:3
+          pPerturb(dim, :) = MTPerturb(tA, tB, pB(dim), rB(dim), t);
+          aPerturb(dim, :) = MTPerturb(tA, tB, aB(dim), sB(dim), t); % small angle approximation
+        end
+        % mix perturbation with reference trajectory
+        pose = this.refTrajectory.evaluate(t);
+        for n = 1:N
+          pose(n).p = pose(n).p+pPerturb(:, n);
+          pose(n).q = Quat2Homo(AxisAngle2Quat(aPerturb(:, n)))*pose(n).q;  % small angle approximation
         end
       end   
     end
   
-    % the method returns 0 for the change in rate of rotation, this may be
-    % implemented in the future
     function tangentPose = tangent(this, t)
       N = numel(t);
       if(N==0)
         tangentPose = repmat(tom.TangentPose, [1, 0]);
       else
-        tangentPose(1, N) = tom.TangentPose;
-        for k = find(t>=this.initialTime)
-          tangentPose(k).p = this.basePose.p + this.deltaPose.p;
-          tangentPose(k).q = Quat2Homo(this.deltaPose.q) * this.basePose.q;
-          tangentPose(k).r = [0; 0; 0];
-          tangentPose(k).s = [0; 0; 0];
+        pPerturb = zeros(3, N);
+        aPerturb = zeros(3, N);
+        rPerturb = zeros(3, N);
+        sPerturb = zeros(3, N);
+        tA = double(this.interval.first);
+        tB = double(this.interval.second);
+
+        pB = this.tangentPoseOffsetB.p;
+        aB = Quat2AxisAngle(this.tangentPoseOffsetB.q);
+        rB = this.tangentPoseOffsetB.r;
+        sB = this.tangentPoseOffsetB.s;
+        for dim = 1:3
+          [pPerturb(dim, :), rPerturb(dim, :)] = MTPerturb(tA, tB, pB(dim), rB(dim), t);
+          [aPerturb(dim, :), sPerturb(dim, :)] = MTPerturb(tA, tB, aB(dim), sB(dim), t); % small angle approximation
+        end
+        % mix perturbation with reference trajectory
+        tangentPose = this.refTrajectory.tangent(t);
+        for n = 1:N
+          tangentPose(n).p = tangentPose(n).p+pPerturb(:, n);
+          tangentPose(n).q = Quat2Homo(AxisAngle2Quat(aPerturb(:, n)))*tangentPose(n).q; % small angle approximation
+          tangentPose(n).r = tangentPose(n).r+rPerturb(:, n);
+          tangentPose(n).s = tangentPose(n).s+sPerturb(:, n); % small angle approximation
         end
       end
     end
@@ -123,34 +142,37 @@ function v = Quat2AxisAngle(q)
   v = [v1; v2; v3];
 end
 
-% Interpolates x(t) on the interval [tA, tB]
+% Evaluates the one-dimensional 3rd-order perturbation function x(t) on the interval [tA, Inf].
 % 
-% @param[in]  pB       value of x(tB)
-% @param[in]  rB       value of (dx/dt)(tB)
-% @param[in]  interval time domain, tom.TimeInterval
-% @param[in]  t        value of t on the interval [tA, tB], tom.WorldTime
-% @param[out] pt       value of x(t)
-% @param[out] rt       value of (dx/dt)(t)
+% @param[in]  tA time at node A, double scalar
+% @param[in]  tB time at node B, double scalar
+% @param[in]  pB value of x(tB), double scalar
+% @param[in]  rB value of (dx/dt)(tB), double scalar
+% @param[in]  t  value of t on the interval [tA, Inf], double 1-by-K
+% @param[out] pt value of x(t), double 1-by-K
+% @param[out] rt value of (dx/dt)(t), double 1-by-k
 %
 % NOTES
-% The values of x(tA) and (dx/dt)(tA) are assumed to be 0
-function [pt, rt] = perturbation(interval, pB, rB, t)
+% It is assumed that tB>tA.
+% The values of x(tA) and (dx/dt)(tA) are assumed to be 0.
+% The output represents steady motion after tB.
+function [pt, rt] = MTPerturb(tA, tB, pB, rB, t)
+  assert(size(t, 1)==1);
   K = numel(t);
 
   % process (t<=tA)
   pt = zeros(1, K);
-  rt = zeros(1, K);
-  tA = double(interval.first);
-  tB = double(interval.second);
-  t = double(t);
-  
+  if(nargout>1)
+    rt = zeros(1, K);
+  end
+    
   % set origin at tA
   t = t-tA;
   tB = tB-tA;
   tA = 0;
 
   % process (t>tA)&(t<=tB))
-  k = find((t>tA)&(t<=tB));
+  k = (t>tA)&(t<=tB);
   tB2 = tB*tB;
   tB3 = tB*tB2;
   t2 = t(k).*t(k);
@@ -158,14 +180,18 @@ function [pt, rt] = perturbation(interval, pB, rB, t)
   c = 3/tB2*pB-rB/tB;
   d = rB/tB2-2/tB3*pB;
   pt(k) = c*t2+d*t3;
-  rt(k) = (2*c*t(k)+3*d*t2);
-  
+  if(nargout>1)
+    rt(k) = (2*c*t(k)+3*d*t2);
+  end
+    
   % set origin at tB
   t = t-tB;
-  tB = 9;
+  tB = 0;
   
   % process t>tB
-  k = find(t>tB);
+  k = (t>tB);
   pt(k) = pB+rB*t(k);
-  rt(k) = rB*ones(1, numel(k));
+  if(nargout>1)
+    rt(k) = repmat(rB, [1, sum(k)]);
+  end
 end
