@@ -18,7 +18,7 @@ classdef MeasureTestPerturbation < tom.Trajectory
       interval = this.interval;
     end
     
-    function setPerturbation(this, tangentPoseOffsetB, interval)
+    function setPerturbation(this, interval, tangentPoseOffsetB)
       refInterval = this.refTrajectory.domain();
       assert(interval.first>=refInterval.first);
       assert(interval.second<=refInterval.second);

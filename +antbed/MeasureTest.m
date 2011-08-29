@@ -103,143 +103,165 @@ classdef MeasureTest < handle
       elseif(~measure.hasData())
         fprintf('\nwarning: Skipping measure characterization. Measure has no data.');
       elseif(~strncmp(uri, 'antbed:', 7))
-        fprintf('\nwarning: Skipping measure characterization. URI scheme not recognized');
+        fprintf('\nwarning: Skipping measure characterization. URI scheme not recognized.');
+      elseif(~container.hasReferenceTrajectory())
+        fprintf('\nwarning: Skipping measure characterization. No reference trajectory is available.');
       else
-        resource = uri(8:end);
-        container = antbed.DataContainer.create(resource, initialTime);
-        
-        if(~container.hasReferenceTrajectory())
-          fprintf('\nwarning: Skipping measure characterization. No reference trajectory is available.');
+        edgeList = measure.findEdges(measure.first(), measure.last(), measure.first(), measure.last());
+        numEdges = numel(edgeList);
+        if(numEdges>0)
+          fprintf('\nwarning: Skipping measure characterization. Measure has no edges.');
         else
-          edgeList = measure.findEdges(measure.first(), measure.last(), measure.first(), measure.last());
-          baseTrajectory = antbed.MeasureTestPerturbation(trajectory);
-          
-          if numel(edgeList) ~= 0
-            Granularity = zeros(1,7);
-            Bias = zeros(1,7);
-            Monotinicity = zeros(1,7);
-            % (1) preturb in all directions
-            % (2) preturb in 1st translation dimension
-            % (3) preturb in 2nd translation dimension
-            % (4) preturb in 3rd translation dimension
-            % (5) preturb in 1st rotation dimension
-            % (6) preturb in 2nd rotation dimension
-            % (7) preturb in 3rd rotation dimension
-            
-            % axis angle matrix
-            axisAng = [eps('double'),0,0,0,eps('double'),0,0; eps('double'),0,0,0,0,eps('double'),0; eps('double'),0,0,0,0,0,eps('double')];
-            
-            epsPose = repmat(tom.Pose, [1,7]);
-            
-            epsPose(1).p = [eps('double'); eps('double'); eps('double')];
-            epsPose(1).q = AxisAngle2Quat(axisAng(:, 1));
-            epsPose(2).p = [eps('double'); 0; 0];
-            epsPose(2).q = AxisAngle2Quat(axisAng(:, 2));
-            epsPose(3).p = [0; eps('double'); 0];
-            epsPose(3).q = AxisAngle2Quat(axisAng(:, 3));
-            epsPose(4).p = [0; 0; eps('double')];
-            epsPose(4).q = AxisAngle2Quat(axisAng(:, 4));
-            epsPose(5).p = [0; 0; 0];
-            epsPose(5).q = AxisAngle2Quat(axisAng(:, 5));
-            epsPose(6).p = [0; 0; 0];
-            epsPose(6).q = AxisAngle2Quat(axisAng(:, 6));
-            epsPose(7).p = [0; 0; 0];
-            epsPose(7).q = AxisAngle2Quat(axisAng(:, 7));
-            
-            %iterate over the 7 types of tested perturbation
-            msg = {'All translation and rotation dimensions' ; ...
-                   'Translation dimension 1' ; ...
-                   'Translation dimension 2' ; ...
-                   'Translation dimension 3' ; ...
-                   'Rotation dimension 1' ; ...
-                   'Rotation dimension 2' ; ...
-                   'Rotation dimension 3'};
-                 
-            for e = 1:7  
-              fprintf('* Current Dim: %s *\n',msg{e});
-              zeroPose = tom.Pose;
-              zeroPose.p = [0; 0; 0];
-              zeroPose.q = [1; 0; 0; 0];
-              baseTrajectory.setPerturbation(zeroPose);
-              edgeCosts = 0:size(edgeList);
-
-              %Compute cost at ground truth, save for bias and granularity computations
-              for k = 1:numel(edgeList)
-                edgeCosts(k) = measure.computeEdgeCost(baseTrajectory, edgeList(k));
-              end
-              fprintf('Ground Truth cost: %f\n', edgeCosts(1));
-
-              %Set Trajectory Perturbation to matlab machine eps
-              baseTrajectory.setPerturbation(epsPose(e));
-
-              %double eps utill a different cost is returned
-              currEps = eps('double');
-              %step through doubleing distance everytime
-              step = 0;
-              for i = 1:64
-                stop = 0;
-                step = i;
-                result = 1:k;
-                %step through each edge
-                for k = 1:numel(edgeList)
-                  result(k) = measure.computeEdgeCost(baseTrajectory, edgeList(k));
-                  if result(k) ~= edgeCosts(k)
-                    stop = 1;
-                    break;
-                  end
-                end
-                currEps = 2 * currEps;
-                epsPose(e).p = 2*epsPose(e).p;
-                axisAng(:,e) = 2*axisAng(:,e);
-                epsPose(e).q = AxisAngle2Quat(axisAng(:,e));
-                baseTrajectory.setPerturbation(epsPose(e));
-                fprintf('Testing with value %f, cost: %f\n', currEps, result(1));
-                if(stop==1)
-                  break;
-                end
-              end
-
-              %This becomes the granularity
-              Granularity(e) = currEps;
-              if(step == 64)
-                Granularity(e) = inf;
-              end
-              Bias(e) =  mean(edgeCosts);
-
-              %Compute Monotonicity
-              %construct sample space based off granularity
-              MonotinicityAry = zeros(10, numel(edgeList));
-              for i = 1:10
-                for k = 1:numel(edgeList)
-                  tmp = measure.computeEdgeCost(baseTrajectory, edgeList(k));
-                  MonotinicityAry(i,k) = 2*(tmp-edgeCosts(k))/currEps;
-                  edgeCosts(k) = tmp;
-                end
-                currEps = 2 * currEps;
-                epsPose(e).p = 2*epsPose(e).p;
-                axisAng(:,e) = 2*axisAng(:,e);
-                epsPose(e).q = AxisAngle2Quat(axisAng);
-                baseTrajectory.setPerturbation(epsPose(e));
-              end
-
-              Monotinicity(e) = mean(mean(MonotinicityAry));
-            end
-            
-            for e = 1:7
-              fprintf('%s',msg{e});
-              fprintf('\nGranularity: %f\n', Granularity(e));
-              fprintf('Bias: %f\n', Bias(e));
-              fprintf('Monotinicity: %f\n\n', Monotinicity(e));
-            end     
-          else
-            fprintf('\nwarning: Skipping measure characterization. Measure has no edges.');
+          x = antbed.MeasureTestPerturbation(trajectory);
+          for k = 1:numEdges 
+            granularity = computeGranularity(x, measure, edgeList(k));
+            disp(granularity);
           end
+          
+%             Bias = zeros(1,7);
+%             Monotinicity = zeros(1,7);
+%             
+%             % axis angle matrix
+%             axisAng = [eps('double'),0,0,0,eps('double'),0,0; eps('double'),0,0,0,0,eps('double'),0; eps('double'),0,0,0,0,0,eps('double')];
+%             
+%             epsPose = repmat(tom.Pose, [1,7]);
+%             
+%             epsPose(1).p = [eps('double'); eps('double'); eps('double')];
+%             epsPose(1).q = AxisAngle2Quat(axisAng(:, 1));
+%             epsPose(2).p = [eps('double'); 0; 0];
+%             epsPose(2).q = AxisAngle2Quat(axisAng(:, 2));
+%             epsPose(3).p = [0; eps('double'); 0];
+%             epsPose(3).q = AxisAngle2Quat(axisAng(:, 3));
+%             epsPose(4).p = [0; 0; eps('double')];
+%             epsPose(4).q = AxisAngle2Quat(axisAng(:, 4));
+%             epsPose(5).p = [0; 0; 0];
+%             epsPose(5).q = AxisAngle2Quat(axisAng(:, 5));
+%             epsPose(6).p = [0; 0; 0];
+%             epsPose(6).q = AxisAngle2Quat(axisAng(:, 6));
+%             epsPose(7).p = [0; 0; 0];
+%             epsPose(7).q = AxisAngle2Quat(axisAng(:, 7));
+%             
+%             %iterate over the 7 types of tested perturbation
+%             msg = {'All translation and rotation dimensions' ; ...
+%                    'Translation dimension 1' ; ...
+%                    'Translation dimension 2' ; ...
+%                    'Translation dimension 3' ; ...
+%                    'Rotation dimension 1' ; ...
+%                    'Rotation dimension 2' ; ...
+%                    'Rotation dimension 3'};
+%                  
+%             for e = 1:7  
+%               fprintf('* Current Dim: %s *\n',msg{e});
+%               zeroPose = tom.Pose;
+%               zeroPose.p = [0; 0; 0];
+%               zeroPose.q = [1; 0; 0; 0];
+%               x.setPerturbation(zeroPose);
+%               edgeCosts = 0:size(edgeList);
+% 
+%               %Compute cost at ground truth, save for bias and granularity computations
+%               for k = 1:numel(edgeList)
+%                 edgeCosts(k) = measure.computeEdgeCost(x, edgeList(k));
+%               end
+%               fprintf('Ground Truth cost: %f\n', edgeCosts(1));
+% 
+%               %Set Trajectory Perturbation to matlab machine eps
+%               x.setPerturbation(epsPose(e));
+% 
+%               %double eps utill a different cost is returned
+%               currEps = eps('double');
+%               %step through doubleing distance everytime
+%               step = 0;
+%               for i = 1:64
+%                 stop = 0;
+%                 step = i;
+%                 result = 1:k;
+%                 %step through each edge
+%                 for k = 1:numel(edgeList)
+%                   result(k) = measure.computeEdgeCost(x, edgeList(k));
+%                   if result(k) ~= edgeCosts(k)
+%                     stop = 1;
+%                     break;
+%                   end
+%                 end
+%                 currEps = 2 * currEps;
+%                 epsPose(e).p = 2*epsPose(e).p;
+%                 axisAng(:,e) = 2*axisAng(:,e);
+%                 epsPose(e).q = AxisAngle2Quat(axisAng(:,e));
+%                 x.setPerturbation(epsPose(e));
+%                 fprintf('Testing with value %f, cost: %f\n', currEps, result(1));
+%                 if(stop==1)
+%                   break;
+%                 end
+%               end
+% 
+%               %This becomes the granularity
+%               Granularity(e) = currEps;
+%               if(step == 64)
+%                 Granularity(e) = inf;
+%               end
+%               Bias(e) =  mean(edgeCosts);
+% 
+%               %Compute Monotonicity
+%               %construct sample space based off granularity
+%               MonotinicityAry = zeros(10, numel(edgeList));
+%               for i = 1:10
+%                 for k = 1:numel(edgeList)
+%                   tmp = measure.computeEdgeCost(x, edgeList(k));
+%                   MonotinicityAry(i,k) = 2*(tmp-edgeCosts(k))/currEps;
+%                   edgeCosts(k) = tmp;
+%                 end
+%                 currEps = 2 * currEps;
+%                 epsPose(e).p = 2*epsPose(e).p;
+%                 axisAng(:,e) = 2*axisAng(:,e);
+%                 epsPose(e).q = AxisAngle2Quat(axisAng);
+%                 x.setPerturbation(epsPose(e));
+%               end
+% 
+%               Monotinicity(e) = mean(mean(MonotinicityAry));
+%             end
+%             
+%             for e = 1:7
+%               fprintf('%s',msg{e});
+%               fprintf('\nGranularity: %f\n', Granularity(e));
+%               fprintf('Bias: %f\n', Bias(e));
+%               fprintf('Monotinicity: %f\n\n', Monotinicity(e));
+%             end
         end
       end
       fprintf('\n\n*** End Measure Test ***');
     end
   end
   
+end
+
+function granularity = computeGranularity(x, measure, edge)
+  interval = tom.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));  
+  perturb = tom.tangentPose;
+  perturb.p = [0; 0; 0];
+  perturb.q = [1; 0; 0; 0];
+  perturb.r = [0; 0; 0];
+  perturb.s = [0; 0; 0];
+  x.setPerturbation(interval, perturb);
+  refCost = measure.computeEdgeCost(x, edge);
+  granularity = 0; % TODO: compute granularity
+  
+%             Granularity = zeros(1,7);
+%             epsPose = repmat(tom.Pose, [1,7]);
+%             
+%             epsPose(1).p = [eps('double'); eps('double'); eps('double')];
+%             epsPose(1).q = AxisAngle2Quat(axisAng(:, 1));
+%             epsPose(2).p = [eps('double'); 0; 0];
+%             epsPose(2).q = AxisAngle2Quat(axisAng(:, 2));
+%             epsPose(3).p = [0; eps('double'); 0];
+%             epsPose(3).q = AxisAngle2Quat(axisAng(:, 3));
+%             epsPose(4).p = [0; 0; eps('double')];
+%             epsPose(4).q = AxisAngle2Quat(axisAng(:, 4));
+%             epsPose(5).p = [0; 0; 0];
+%             epsPose(5).q = AxisAngle2Quat(axisAng(:, 5));
+%             epsPose(6).p = [0; 0; 0];
+%             epsPose(6).q = AxisAngle2Quat(axisAng(:, 6));
+%             epsPose(7).p = [0; 0; 0];
+%             epsPose(7).q = AxisAngle2Quat(axisAng(:, 7));
 end
 
 function q = AxisAngle2Quat(v)
