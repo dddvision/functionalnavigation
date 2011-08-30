@@ -153,19 +153,28 @@ end
 % @param[out] rt value of (dx/dt)(t), double 1-by-k
 %
 % NOTES
-% It is assumed that tB>tA.
+% In the case of tA==tB the function discontinuously jumps to the perturbed value at tA.
 % The values of x(tA) and (dx/dt)(tA) are assumed to be 0.
 % The output represents steady motion after tB.
 function [pt, rt] = MTPerturb(tA, tB, pB, rB, t)
   assert(size(t, 1)==1);
   K = numel(t);
 
-  % process (t<=tA)
+  % initialize and process (t<=tA)
   pt = zeros(1, K);
   if(nargout>1)
     rt = zeros(1, K);
   end
-    
+  
+  % special exception for (tA==tB)
+  if(tA==tB)
+    k = (t==tA);
+    pt(k) = pB;
+    if(nargout>1)
+      rt(k) = rB;
+    end
+  end
+  
   % set origin at tA
   t = t-tA;
   tB = tB-tA;
@@ -188,7 +197,7 @@ function [pt, rt] = MTPerturb(tA, tB, pB, rB, t)
   t = t-tB;
   tB = 0;
   
-  % process t>tB
+  % process (t>tB)
   k = (t>tB);
   pt(k) = pB+rB*t(k);
   if(nargout>1)
