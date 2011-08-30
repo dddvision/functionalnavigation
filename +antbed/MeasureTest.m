@@ -101,54 +101,33 @@ classdef MeasureTest < handle
       if(~characterizeMeasures)
         % do nothing
       elseif(~measure.hasData())
-        fprintf('\nwarning: Skipping measure characterization. Measure has no data.');
+        fprintf('\nWarning: Skipping measure characterization. Measure has no data.');
       elseif(~strncmp(uri, 'antbed:', 7))
-        fprintf('\nwarning: Skipping measure characterization. URI scheme not recognized.');
+        fprintf('\nWarning: Skipping measure characterization. URI scheme not recognized.');
       elseif(~container.hasReferenceTrajectory())
-        fprintf('\nwarning: Skipping measure characterization. No reference trajectory is available.');
+        fprintf('\nWarning: Skipping measure characterization. No reference trajectory is available.');
       else
         edgeList = measure.findEdges(measure.first(), measure.last(), measure.first(), measure.last());
         numEdges = numel(edgeList);
-        if(numEdges>0)
-          fprintf('\nwarning: Skipping measure characterization. Measure has no edges.');
+        if(numEdges==0)
+          fprintf('\nWarning: Skipping measure characterization. Measure has no edges.');
         else
           x = antbed.MeasureTestPerturbation(trajectory);
-          for k = 1:numEdges 
-            granularity = computeGranularity(x, measure, edgeList(k));
-            disp(granularity);
+          edge = edgeList(1);
+          interval = tom.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));
+          granularity = computeGranularity(interval, x, measure, edge);
+          for k = 2:numEdges
+            edge = edgeList(k);
+            interval = tom.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));
+            granularity = min(granularity, computeGranularity(interval, x, measure, edge));
           end
+          fprintf('\ngranularity.p = [%g; %g; %g]', granularity(1), granularity(2), granularity(3));
+          fprintf('\ngranularity.q = [%g; %g; %g]', granularity(4), granularity(5), granularity(6));
+          fprintf('\ngranularity.r = [%g; %g; %g]', granularity(7), granularity(8), granularity(9));
+          fprintf('\ngranularity.s = [%g; %g; %g]', granularity(10), granularity(11), granularity(12));
           
 %             Bias = zeros(1,7);
 %             Monotinicity = zeros(1,7);
-%             
-%             % axis angle matrix
-%             axisAng = [eps('double'),0,0,0,eps('double'),0,0; eps('double'),0,0,0,0,eps('double'),0; eps('double'),0,0,0,0,0,eps('double')];
-%             
-%             epsPose = repmat(tom.Pose, [1,7]);
-%             
-%             epsPose(1).p = [eps('double'); eps('double'); eps('double')];
-%             epsPose(1).q = AxisAngle2Quat(axisAng(:, 1));
-%             epsPose(2).p = [eps('double'); 0; 0];
-%             epsPose(2).q = AxisAngle2Quat(axisAng(:, 2));
-%             epsPose(3).p = [0; eps('double'); 0];
-%             epsPose(3).q = AxisAngle2Quat(axisAng(:, 3));
-%             epsPose(4).p = [0; 0; eps('double')];
-%             epsPose(4).q = AxisAngle2Quat(axisAng(:, 4));
-%             epsPose(5).p = [0; 0; 0];
-%             epsPose(5).q = AxisAngle2Quat(axisAng(:, 5));
-%             epsPose(6).p = [0; 0; 0];
-%             epsPose(6).q = AxisAngle2Quat(axisAng(:, 6));
-%             epsPose(7).p = [0; 0; 0];
-%             epsPose(7).q = AxisAngle2Quat(axisAng(:, 7));
-%             
-%             %iterate over the 7 types of tested perturbation
-%             msg = {'All translation and rotation dimensions' ; ...
-%                    'Translation dimension 1' ; ...
-%                    'Translation dimension 2' ; ...
-%                    'Translation dimension 3' ; ...
-%                    'Rotation dimension 1' ; ...
-%                    'Rotation dimension 2' ; ...
-%                    'Rotation dimension 3'};
 %                  
 %             for e = 1:7  
 %               fprintf('* Current Dim: %s *\n',msg{e});
@@ -234,36 +213,66 @@ classdef MeasureTest < handle
   
 end
 
-function granularity = computeGranularity(x, measure, edge)
-  interval = tom.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));  
-  perturb = tom.tangentPose;
-  perturb.p = [0; 0; 0];
-  perturb.q = [1; 0; 0; 0];
-  perturb.r = [0; 0; 0];
-  perturb.s = [0; 0; 0];
+function cost = MTEval(interval, x, measure, edge, delta)
+  perturb = tom.TangentPose;
+  perturb.p = delta(1:3);
+  perturb.q = AxisAngle2Quat(delta(4:6));
+  perturb.r = delta(7:9);
+  perturb.s = delta(10:12);
   x.setPerturbation(interval, perturb);
-  refCost = measure.computeEdgeCost(x, edge);
-  granularity = 0; % TODO: compute granularity
-  
-%             Granularity = zeros(1,7);
-%             epsPose = repmat(tom.Pose, [1,7]);
-%             
-%             epsPose(1).p = [eps('double'); eps('double'); eps('double')];
-%             epsPose(1).q = AxisAngle2Quat(axisAng(:, 1));
-%             epsPose(2).p = [eps('double'); 0; 0];
-%             epsPose(2).q = AxisAngle2Quat(axisAng(:, 2));
-%             epsPose(3).p = [0; eps('double'); 0];
-%             epsPose(3).q = AxisAngle2Quat(axisAng(:, 3));
-%             epsPose(4).p = [0; 0; eps('double')];
-%             epsPose(4).q = AxisAngle2Quat(axisAng(:, 4));
-%             epsPose(5).p = [0; 0; 0];
-%             epsPose(5).q = AxisAngle2Quat(axisAng(:, 5));
-%             epsPose(6).p = [0; 0; 0];
-%             epsPose(6).q = AxisAngle2Quat(axisAng(:, 6));
-%             epsPose(7).p = [0; 0; 0];
-%             epsPose(7).q = AxisAngle2Quat(axisAng(:, 7));
+  cost = measure.computeEdgeCost(x, edge);
 end
 
+% Searches for the location of the smallest deviation from costCenter
+function granularity = computeGranularity(interval, x, measure, edge)
+  DIM = 12;
+  costCenter = MTEval(interval, x, measure, edge, zeros(12, 1));
+  granularity = zeros(DIM, 1);
+  for dim = 1:DIM
+    infinite = true;
+    delta = zeros(DIM, 1);
+    for positiveScale = (10.^(-16:16))
+      delta(dim) = positiveScale;
+      cost = MTEval(interval, x, measure, edge, delta);
+      if(unequal(cost, costCenter))
+        for upperBound = (positiveScale*(0.2:0.1:1))
+          delta(dim) = upperBound;
+          cost = MTEval(interval, x, measure, edge, delta);
+          if(unequal(cost, costCenter))
+            break;
+          end
+        end
+        infinite = false;
+        break;
+      end
+    end
+    for negativeScale = -(10.^(-16:16))
+      delta(dim) = negativeScale;
+      cost = MTEval(interval, x, measure, edge, delta);
+      if(unequal(cost, costCenter))
+        for lowerBound = (negativeScale*(0.2:0.1:1))
+          delta(dim) = lowerBound;
+          cost = MTEval(interval, x, measure, edge, delta);
+          if(unequal(cost, costCenter))
+            break;
+          end
+        end
+        infinite = false;
+        break;
+      end
+    end
+    if(infinite)
+      granularity(dim) = Inf;
+    else
+      granularity(dim) = upperBound-lowerBound;
+    end
+  end
+end
+
+function flag = unequal(a, b)
+  flag = typecast(a, 'uint64')~=typecast(b, 'uint64');
+end
+  
 function q = AxisAngle2Quat(v)
   v1 = v(1, :);
   v2 = v(2, :);

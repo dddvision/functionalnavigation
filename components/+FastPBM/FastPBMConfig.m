@@ -8,7 +8,7 @@ classdef FastPBMConfig < handle
     
     % parameters that do not affect the measure
     verbose = true; % (true) display warnings and other diagnostic information
-    displayResults = true; % (true) show tracked features and associated results
+    displayResults = false; % (false) show tracked features and associated results
     overwriteMEX = true; % (true) replace mex files if they already exist
   end
 end
