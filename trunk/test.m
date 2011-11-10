@@ -42,6 +42,7 @@ function test(name)
     breakpoints = dbstatus('-completenames');
     save('temp.mat', 'breakpoints', 'name', 'nameIndex', 'summary');
     close('all');
+    clear('all');
     clear('classes');
     load('temp.mat');
     dbstop(breakpoints);
