@@ -11,7 +11,7 @@ catch err
   error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB', err.message);
 end
 if(str2double(matlabVersion(1:4))<2009)
-  error('\nTOMMAS requires MATLAB version 2009a or greater');
+  error('\nRequires MATLAB version 2009a or greater');
 end
 
 % close figures and clear everything except breakpoints
@@ -35,7 +35,7 @@ warning('on', 'all');
 warning('off', 'MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
   
 % initialize the default pseudorandom number generator
-RandStream.getDefaultStream.reset();
+RandStream.getGlobalStream.reset();
 
 % get configuration
 config = DemoConfig;

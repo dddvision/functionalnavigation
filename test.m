@@ -52,7 +52,7 @@ function test(name)
     warning('off', 'MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
 
     % initialize the default pseudorandom number generator
-    RandStream.getDefaultStream.reset();
+    RandStream.getGlobalStream.reset();
     
     % get test configuration
     config = TestConfig;
