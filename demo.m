@@ -18,6 +18,7 @@ end
 breakpoints = dbstatus('-completenames');
 save('temp.mat', 'breakpoints');
 close('all');
+clear('all');
 clear('classes');
 load('temp.mat');
 dbstop(breakpoints);
