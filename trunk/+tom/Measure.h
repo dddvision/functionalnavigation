@@ -28,15 +28,12 @@ namespace tom
     /**
      * Prevents deep copying
      */
-    Measure(const Measure&) :
-      Sensor(static_cast<WorldTime>(0.0))
-    {}
+    Measure(const Measure&) : Sensor(static_cast<WorldTime>(0.0));
 
     /**
      * Prevents assignment
      */
-    Measure& operator=(const Measure&)
-    {}
+    Measure& operator=(const Measure&);
 
     /* Storage for component descriptions */
     typedef std::string (*MeasureDescription)(void);

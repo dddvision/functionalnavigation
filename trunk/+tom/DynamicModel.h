@@ -41,14 +41,12 @@ namespace tom
     /**
      * Prevents deep copying
      */
-    DynamicModel(const DynamicModel&)
-    {}
+    DynamicModel(const DynamicModel&);
 
     /**
      * Prevents assignment
      */
-    DynamicModel& operator=(const DynamicModel&)
-    {}
+    DynamicModel& operator=(const DynamicModel&);
 
     /* Storage for component descriptions */
     typedef std::string (*DynamicModelDescription)(void);

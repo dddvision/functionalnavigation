@@ -23,14 +23,12 @@ namespace tom
     /**
      * Prevents deep copying.
      */
-    Optimizer(const Optimizer&)
-    {}
+    Optimizer(const Optimizer&);
 
     /**
      * Prevents assignment.
      */
-    Optimizer& operator=(const Optimizer&)
-    {}
+    Optimizer& operator=(const Optimizer&);
 
     /* Storage for component descriptions */
     typedef std::string (*OptimizerDescription)(void);
