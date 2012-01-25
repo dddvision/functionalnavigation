@@ -33,7 +33,7 @@ namespace tom
     /**
      * Copy a tangent pose.
      */
-    TangentPose(const TangentPose& tangentPose)
+    TangentPose(const TangentPose& tangentPose) : Pose(tangentPose)
     {
       TangentPose::operator=(tangentPose);
       return;
