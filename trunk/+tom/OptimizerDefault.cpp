@@ -3,7 +3,7 @@
 namespace tom
 {
   /** This default optimizer does nothing and provides no solutions. */
-  class OptimizerDefault : public Optimizer
+  class OptimizerDefault : virtual public Optimizer
   {
   public:
     /** Constructor and parent class initializer of the same form. */

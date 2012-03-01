@@ -3,7 +3,7 @@
 namespace tom
 {
   /** This default dynamic model represents a stationary body at the world origin with no input parameters. */
-  class DynamicModelDefault : public DynamicModel
+  class DynamicModelDefault : virtual public DynamicModel
   {
   protected:
     tom::TimeInterval interval; /**< stores the Trajectory domain */

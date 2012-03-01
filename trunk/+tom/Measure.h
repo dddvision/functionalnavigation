@@ -22,7 +22,7 @@ namespace tom
    * Each graph edge is assumed to be independent, and this means that correlated
    *   sensor noise must be modeled and mitigated behind the measure interface.
    */
-  class Measure : public Sensor
+  class Measure : virtual public Sensor
   {
   private:
     /**
