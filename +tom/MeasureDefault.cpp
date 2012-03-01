@@ -3,7 +3,7 @@
 namespace tom
 {
   /** This is the default measure. It has no data and constructs no graph edges. */
-  class MeasureDefault : public Measure
+  class MeasureDefault : virtual public Measure
   {
   public:
     /** Constructor and parent class initializer of the same form. */

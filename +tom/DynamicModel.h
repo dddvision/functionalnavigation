@@ -35,7 +35,7 @@ namespace tom
    * Each uint32 parameter may be treated as range-bounded double via static casting.
    * The range of uint32 is [0, 4294967295].
    */
-  class DynamicModel : public Trajectory
+  class DynamicModel : virtual public Trajectory
   {
   private:
     /**

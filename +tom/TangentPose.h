@@ -11,7 +11,7 @@ namespace tom
    * @note
    * The initial undefined tangent pose is represented by NaN values for all parameters.
    */
-  class TangentPose : public Pose
+  class TangentPose : virtual public Pose
   {
   public:
     double r[3]; /**< time derivative of body position */
