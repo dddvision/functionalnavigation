@@ -89,6 +89,12 @@ namespace tom
      * Throws an exception if data at the node is invalid.
      */
     virtual WorldTime getTime(uint32_t n) = 0;
+    
+    /**
+     * Virtual base class destructor.
+     */
+    virtual ~Sensor(void)
+    {}
   };
 }
 

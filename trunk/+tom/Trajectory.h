@@ -15,6 +15,13 @@ namespace tom
    */
   class Trajectory
   {
+  protected:
+    /**
+     * Protected constructor.
+     */
+    Trajectory(void)
+    {}
+    
   public:
     /**
      * Alias for a pointer to a trajectory that is not meant to be deleted.
@@ -53,6 +60,12 @@ namespace tom
      * Throws and exception if the output vector is not the same size as the input vector.
      */
     virtual void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose) = 0;
+    
+    /**
+     * Virtual base class destructor.
+     */
+    virtual ~Trajectory(void)
+    {}
   };
 }
 
