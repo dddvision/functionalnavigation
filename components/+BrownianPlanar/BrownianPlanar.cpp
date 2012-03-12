@@ -6,7 +6,7 @@
 
 namespace BrownianPlanar
 {
-  class BrownianPlanar : public tom::DynamicModel
+  class BrownianPlanar : virtual public tom::DynamicModel
   {
   private:
     static const double rate;
