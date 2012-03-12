@@ -1,13 +1,15 @@
 #ifndef GETCURRENTTIME_H
 #define GETCURRENTTIME_H
 
+#ifdef _MSC_VER
+#include <windows.h>
+#else
+#include <sys/time.h>
+#endif
 #include <stddef.h>
 #include "WorldTime.h"
 
-#ifndef _MSC_VER
-#include <sys/time.h>
-#else
-#include <windows.h>
+#ifdef _MSC_VER
 
 struct timezone
 {
@@ -64,6 +66,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 }
 
 #endif // _MSC_VER
+
 namespace antbed
 {
   /**
@@ -83,3 +86,4 @@ namespace antbed
 }
 
 #endif // GETCURRENTTIME_H
+
