@@ -26,14 +26,14 @@ Additional coding guidelines for all code hosted in this repository:
   * RULE: Place constants in configuration files or headers whenever possible.
   * RULE: Avoid using global variables.
 
-  * RULE (MATLAB): Components must pass the {{{mlint}}} test or contain a comment at each line explaining why not.
+  * RULE (MATLAB): Code must pass the {{{mlint}}} test or contain a comment at each line explaining why not.
   * RULE (MATLAB): Use {{{fprintf()}}} instead of {{{disp()}}} or {{{warning()}}} to print diagnostic information.
 
-  * RULE (C++): Code must compile using "{{{g++ -Wall -Werror -pedantic}}}"
+  * RULE (C++): Code must compile using "{{{g++ -ansi -pedantic -Wall -Werror}}}"
   * RULE (C++): Manage memory through self-contained structures or objects that keep track of their own allocation sizes.
   * RULE (C++): Use EclipseCDTFormatter.xml to format code before submission.
 
-  * RULE: Place a description above each function that identifies input and output parameters (using dOxygen syntax in C++) and has a NOTES section when applicable.
+  * RULE: Place a description above each function that identifies input and output parameters (using dOxygen syntax in C++) and has a NOTE section when applicable.
 {{{
 // Description of C++ function
 //
@@ -54,7 +54,7 @@ Additional coding guidelines for all code hosted in this repository:
 % OUTPUT
 % cc = description of output and units
 %
-% NOTES
+% NOTE
 % Here is extra information.
 }}}
   * RULE (C++): Use long descriptive variable names or very short ones coupled with detailed descriptions.
