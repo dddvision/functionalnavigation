@@ -41,7 +41,7 @@ Additional coding guidelines for all code hosted in this repository:
 // @param[in,out] bb description of input/output argument and units
 // @return           description of return value and units
 //
-// @section NOTES
+// @note
 // Here is extra information.
 }}}
 {{{
