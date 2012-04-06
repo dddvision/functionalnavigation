@@ -2,7 +2,7 @@ classdef Sensor < handle
   
   methods (Access = protected, Static = true)
     function this = Sensor(initialTime)
-      assert(isa(initialTime, 'tom.WorldTime'));
+      assert(isa(initialTime, 'hidi.WorldTime'));
     end
   end
   

@@ -1,7 +1,7 @@
-classdef antbed
+classdef hidi
   methods (Static = true, Access = public)
     function initialize(name)
-      antbed.DataContainerDefault.initialize(name);
+      hidi.DataContainerDefault.initialize(name);
     end
   end
 end

@@ -1,4 +1,4 @@
-classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.AccelerometerArray
+classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.AccelerometerArray
   
   properties (Constant = true, GetAccess = private)
     na = uint32(0);
@@ -34,7 +34,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Acc
   
   methods (Access = public)
     function this = MacAcc(initialTime)
-      this = this@antbed.AccelerometerArray(initialTime);
+      this = this@hidi.AccelerometerArray(initialTime);
       if(this.verbose)
         fprintf('\nInitializing %s', class(this));
       end
@@ -112,7 +112,7 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Acc
     end
     
     function time = getTime(this, n)
-      time = tom.WorldTime(this.initialTime-this.zoneOffset+get(this, n, 4));
+      time = hidi.WorldTime(this.initialTime-this.zoneOffset+get(this, n, 4));
     end
     
     function specificForce = getSpecificForce(this, n, ax)

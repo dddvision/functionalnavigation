@@ -6,7 +6,7 @@ namespace tom
   class DynamicModelDefault : virtual public DynamicModel
   {
   protected:
-    tom::TimeInterval interval; /**< stores the Trajectory domain */
+    hidi::TimeInterval interval; /**< stores the Trajectory domain */
 
   public:
     /** Constructor and parent class initializer of the same form. */
@@ -138,7 +138,7 @@ namespace tom
 
     tom::DynamicModel* copy(void)
     {
-      tom::WorldTime initialTime = this->interval.first;
+      hidi::WorldTime initialTime = this->interval.first;
       std::string uri = "";
       BrownianPlanar* obj = new BrownianPlanar(initialTime, uri);
       obj->interval = this->interval;

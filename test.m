@@ -87,7 +87,7 @@ function testComponent(name, config)
   isDynamicModel = tom.DynamicModel.isConnected(name);
   isMeasure = tom.Measure.isConnected(name);
   isOptimizer = tom.Optimizer.isConnected(name);
-  isDataContainer = antbed.DataContainer.isConnected(name);
+  isDataContainer = hidi.DataContainer.isConnected(name);
 
   if(isDynamicModel||isMeasure||isOptimizer||isDataContainer)
     fprintf('\n\n*** Begin Component Test ***\n');
@@ -102,16 +102,16 @@ function testComponent(name, config)
     fprintf('\nDataContainer.isConnected = %d', isDataContainer);
 
     if(isDynamicModel)
-      antbed.DynamicModelTest(name, config.initialTime, config.uri);
+      tom.DynamicModelTest(name, config.initialTime, config.uri);
     end
     if(isMeasure)
-      antbed.MeasureTest(name, config.initialTime, config.uri, config.characterizeMeasures);
+      tom.MeasureTest(name, config.initialTime, config.uri, config.characterizeMeasures);
     end
     if(isOptimizer)
-      antbed.OptimizerTest(name, config.dynamicModelName, config.measureNames, config.initialTime, config.uri);
+      tom.OptimizerTest(name, config.dynamicModelName, config.measureNames, config.initialTime, config.uri);
     end
     if(isDataContainer)
-      antbed.DataContainerTest(name, config.initialTime);
+      hidi.DataContainerTest(name, config.initialTime);
     end
 
     fprintf('\n\n*** End Component Test ***');

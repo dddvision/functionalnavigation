@@ -32,7 +32,7 @@ function calibrate
   % initialize the default pseudorandom number generator
   RandStream.getDefaultStream.reset();
 
-  dc = antbed.DataContainer.create('XBOXKinect', antbed.getCurrentTime());
+  dc = hidi.DataContainer.create('XBOXKinect', hidi.getCurrentTime());
 
   maccam = dc.getSensor(uint32(0));
   kinect = dc.getSensor(uint32(1));

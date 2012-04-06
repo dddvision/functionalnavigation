@@ -67,14 +67,14 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 
 #endif // _MSC_VER
 
-namespace antbed
+namespace hidi
 {
   /**
    * Get the current time of day from the operating system.
    *
-   * @return current system time in tom::WorldTime format
+   * @return current system time in hidi::WorldTime format
    */
-  tom::WorldTime getCurrentTime(void)
+  hidi::WorldTime getCurrentTime(void)
   {
     timeval tv;
     long int offset = 315964800; // difference between Jan 6 1980 and Jan 1 1979
@@ -86,4 +86,3 @@ namespace antbed
 }
 
 #endif // GETCURRENTTIME_H
-

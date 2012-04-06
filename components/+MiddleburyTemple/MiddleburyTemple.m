@@ -1,4 +1,4 @@
-classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & antbed.DataContainer
+classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & hidi.DataContainer
 
   properties (Constant = true, GetAccess = private)
     earthMajorRadius = 6378137.0; % WGS84
@@ -19,11 +19,11 @@ classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & antbed.Dat
           'Agrigento, Sicily. Reference: A Comparison and Evaluation of Multi-View Stereo Reconstruction ',...
           'Algorithms, CVPR 2006, vol. 1, pages 519-526.'];
       end
-      antbed.DataContainer.connect(name, @componentDescription, @MiddleburyTemple.MiddleburyTemple);
+      hidi.DataContainer.connect(name, @componentDescription, @MiddleburyTemple.MiddleburyTemple);
     end
 
     function this = MiddleburyTemple(initialTime)
-      this = this@antbed.DataContainer(initialTime);
+      this = this@hidi.DataContainer(initialTime);
       
       % download data set
       localDir = fileparts(mfilename('fullpath'));
@@ -59,7 +59,7 @@ classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & antbed.Dat
           flag(k) = true;
         end
       end
-      list = antbed.SensorIndex(find(flag)-1);
+      list = hidi.SensorIndex(find(flag)-1);
     end
     
     function text = getSensorDescription(this, id)

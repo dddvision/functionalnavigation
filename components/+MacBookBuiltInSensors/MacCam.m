@@ -1,4 +1,4 @@
-classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Camera
+classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camera
   
   properties (Constant = true, GetAccess = private)
     na = uint32(1);
@@ -26,7 +26,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
   
   methods (Access = public)
     function this = MacCam(initialTime)
-      this = this@antbed.Camera(initialTime);
+      this = this@hidi.Camera(initialTime);
       if(this.verbose)
         fprintf('\nInitializing %s', class(this));
       end
@@ -128,9 +128,9 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.Cam
       assert(n>=this.na);
       assert(n<=this.nb);
       if(this.overwrite)
-        time = tom.WorldTime(this.initialTime+this.rate*double(n-this.na)-this.timeZoneOffset);
+        time = hidi.WorldTime(this.initialTime+this.rate*double(n-this.na)-this.timeZoneOffset);
       else
-        time = tom.WorldTime(this.initialTime+this.rate*double(n-this.na));
+        time = hidi.WorldTime(this.initialTime+this.rate*double(n-this.na));
       end
     end
     

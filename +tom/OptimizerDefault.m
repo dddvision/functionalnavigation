@@ -40,7 +40,7 @@ classdef OptimizerDefault < tom.Optimizer
     function x = getSolution(this, k)
       assert(isa(this, 'tom.Optimizer'));
       assert(isa(k, 'uint32'));
-      x = tom.DynamicModelDefault(tom.WorldTime(0) ,'');
+      x = tom.DynamicModelDefault(hidi.WorldTime(0) ,'');
       assert(isa(x, 'tom.Trajectory'));
       error('The default optimizer provides no solutions.');
     end

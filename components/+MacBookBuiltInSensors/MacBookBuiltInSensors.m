@@ -1,4 +1,4 @@
-classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & antbed.DataContainer
+classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.DataContainer
   properties (Constant=true,GetAccess=private)
     hasRef=false;
     bodyRef=[];
@@ -21,13 +21,13 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
         text=['Provides data from the built-in camera and three-axis accelerometer ',...
         'available in most MacBook and MacBook Pro laptops.'];
       end
-      antbed.DataContainer.connect(name,@componentDescription,@MacBookBuiltInSensors.MacBookBuiltInSensors);
+      hidi.DataContainer.connect(name,@componentDescription,@MacBookBuiltInSensors.MacBookBuiltInSensors);
     end
   end
   
   methods (Access=public)
     function this=MacBookBuiltInSensors(initialTime)
-      this=this@antbed.DataContainer(initialTime);
+      this=this@hidi.DataContainer(initialTime);
 
       if(~ismac)
         error(this.notMacText);
@@ -47,7 +47,7 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
           flag(k)=true;
         end
       end
-      list=antbed.SensorIndex(find(flag)-1);
+      list=hidi.SensorIndex(find(flag)-1);
     end
     
     function text=getSensorDescription(this,id)

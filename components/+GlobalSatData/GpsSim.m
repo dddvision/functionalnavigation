@@ -1,4 +1,4 @@
-classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
+classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
   
   properties
     na
@@ -17,12 +17,12 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
   
   methods (Access = public, Static = true)
     function this = GpsSim(initialTime, uri)
-      this = this@antbed.GPSReceiver(initialTime);
+      this = this@hidi.GPSReceiver(initialTime);
       
-      if(~strncmp(uri, 'antbed:', 7))
+      if(~strncmp(uri, 'hidi:', 5))
         error('URI scheme not recognized');
       end
-      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      container = hidi.DataContainer.create(uri(6:end), initialTime);
 
       if(hasReferenceTrajectory(container))
          this.refTraj = getReferenceTrajectory(container);
@@ -46,7 +46,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
   
   methods (Access = public)  
     function refresh(this, x)
-      assert(isa(this, 'antbed.GPSReceiver'));
+      assert(isa(this, 'hidi.GPSReceiver'));
       assert(isa(x, 'tom.Trajectory'));
     end
     
@@ -69,7 +69,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
       assert(n>=this.na);
       assert(n<=this.nb);
       interval = this.refTraj.domain();
-      time = tom.WorldTime(interval.first+this.noise(1, n));
+      time = hidi.WorldTime(interval.first+this.noise(1, n));
     end
 
     function [lon, lat, alt] = getGlobalPosition(this, n)

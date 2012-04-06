@@ -10,7 +10,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       function text = componentDescription
         text = ['Implements multiple visual feature trackers and trajectory measures. ', ...
           'Tracker choices include SURF, OpenCV KLT 2.0.0, and a faster version of KLT that is less accurate. ', ...
-          'This measure depends on at least one antbed Camera object.'];
+          'This measure depends on at least one hidi Camera object.'];
       end
       tom.Measure.connect(name, @componentDescription, @FastPBM.FastPBM);
     end
@@ -31,7 +31,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       RandStream.getDefaultStream.reset();
       
       this = tom.Measure.create('FastPBM', initialTime, uri);
-      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      container = hidi.DataContainer.create(uri(6:end), initialTime);
       groundTraj = container.getReferenceTrajectory();
         
       for k = 1:100
@@ -76,11 +76,11 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       end
       
       % get the first camera from the data container
-      if(~strncmp(uri, 'antbed:', 7))
+      if(~strncmp(uri, 'hidi:', 5))
         error('URI scheme not recognized');
       end
-      container = antbed.DataContainer.create(uri(8:end), initialTime);
-      list = container.listSensors('antbed.Camera');
+      container = hidi.DataContainer.create(uri(6:end), initialTime);
+      list = container.listSensors('hidi.Camera');
       if(isempty(list))
         error('At least one camera must be present in the data container');
       end
@@ -347,7 +347,7 @@ end
 % uvt = flow in pixel coordinates due to translation, double 2-by-P
 %
 % NOTES
-% For pixel coordinate interpretation, see antbed.CameraArray.projection()
+% For pixel coordinate interpretation, see hidi.CameraArray.projection()
 % Algorithm is based on:
 %   http://code.google.com/p/functionalnavigation/wiki/MotionInducedOpticalFlow
 function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix, nA)

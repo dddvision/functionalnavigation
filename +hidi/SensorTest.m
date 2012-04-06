@@ -3,7 +3,7 @@ classdef SensorTest
   methods (Access = public, Static = true)
     function this = SensorTest(sensor)
       fprintf('\n\n*** Begin Sensor Test ***\n');
-      assert(isa(sensor, 'tom.Sensor'));
+      assert(isa(sensor, 'hidi.Sensor'));
       
       fprintf('\nhasData =');
       flag = sensor.hasData();
@@ -23,12 +23,12 @@ classdef SensorTest
 
         fprintf('\ngetTime(%d) =', uint32(first));
         ta = sensor.getTime(first);
-        assert(isa(ta, 'tom.WorldTime'));
+        assert(isa(ta, 'hidi.WorldTime'));
         fprintf(' %f', double(ta));
 
         fprintf('\ngetTime(%d) =', uint32(last));
         tb = sensor.getTime(last);
-        assert(isa(tb, 'tom.WorldTime'));
+        assert(isa(tb, 'hidi.WorldTime'));
         fprintf(' %f', double(tb));
 
         if(last>first)

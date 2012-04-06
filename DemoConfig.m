@@ -2,7 +2,7 @@ classdef DemoConfig < handle
   
   properties (Constant = true, GetAccess = public)
     % trajectory optimization parameters
-    uri = 'antbed:MiddleburyTemple'; % ('antbed:MiddleburyTemple') select hardware resource or data container
+    uri = 'hidi:MiddleburyTemple'; % ('hidi:MiddleburyTemple') select hardware resource or data container
     dynamicModelName = 'InertialTDMSim'; % ('tom') name of a single DynamicModel component
     measureNames = {'FastPBM'}; % ({'tom'}) cell array of zero or more names of Measure components
     optimizerName = 'MatlabFMin'; % ('tom') name of a single Optimizer component

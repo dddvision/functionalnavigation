@@ -1,13 +1,12 @@
 % This class defines how to access data from a gyroscope
-classdef GyroscopeArray < antbed.InertialArray
-  
-  methods (Access=public)
-    function this=GyroscopeArray(initialTime)
-      this=this@antbed.InertialArray(initialTime);
+classdef GyroscopeArray < hidi.InertialArray
+  methods (Access = public)
+    function this = GyroscopeArray(initialTime)
+      this = this@hidi.InertialArray(initialTime);
     end
   end
   
-  methods (Abstract=true)
+  methods (Abstract = true)
     % Get raw gyroscope data
     %
     % INPUT
@@ -24,16 +23,15 @@ classdef GyroscopeArray < antbed.InertialArray
     %
     % NOTES
     % Throws an exception if either input index is out of range
-    angularRate=getAngularRate(this,n,ax);
+    angularRate = getAngularRate(this, n, ax);
     
     % Get sensor error model in terms of MKS units and 1-sigma deviations
-    sigma=getGyroBiasTurnOn(this); % radian/sec
-    sigma=getGyroBiasSteadyState(this); % radian/sec
-    tau=getGyroBiasDecay(this); % sec
-    sigma=getGyroScaleTurnOn(this); % unitless
-    sigma=getGyroScaleSteadyState(this); % unitless
-    tau=getGyroScaleDecay(this); % sec
-    sigma=getGyroRandomWalk(this); % radians/sqrt(sec)
+    sigma = getGyroBiasTurnOn(this); % radian/sec
+    sigma = getGyroBiasSteadyState(this); % radian/sec
+    tau = getGyroBiasDecay(this); % sec
+    sigma = getGyroScaleTurnOn(this); % unitless
+    sigma = getGyroScaleSteadyState(this); % unitless
+    tau = getGyroScaleDecay(this); % sec
+    sigma = getGyroRandomWalk(this); % radians/sqrt(sec)
   end
-  
 end

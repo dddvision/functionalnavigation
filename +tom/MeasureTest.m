@@ -1,5 +1,4 @@
 classdef MeasureTest < handle
-  
   properties (Constant=true, GetAccess=private)
     numRefresh = 20;
   end
@@ -28,7 +27,7 @@ classdef MeasureTest < handle
       assert(isa(text, 'char'));
       fprintf(' %s', text);
       
-      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      container = hidi.DataContainer.create(uri(6:end), initialTime);
       if(container.hasReferenceTrajectory())
         trajectory = container.getReferenceTrajectory();
       else
@@ -42,7 +41,7 @@ classdef MeasureTest < handle
       fprintf('\ninitialTime =');
       interval = trajectory.domain();
       initialTime = interval.first;
-      assert(isa(initialTime, 'tom.WorldTime'));
+      assert(isa(initialTime, 'hidi.WorldTime'));
       fprintf(' %f', double(initialTime));
       
       fprintf('\ntom.Measure.create =');
@@ -56,7 +55,7 @@ classdef MeasureTest < handle
           measure.refresh(trajectory);
         end
         
-        antbed.SensorTest(measure);
+        hidi.SensorTest(measure);
         fprintf('\n');
         
         if(measure.hasData())
@@ -102,7 +101,7 @@ classdef MeasureTest < handle
         % do nothing
       elseif(~measure.hasData())
         fprintf('\nWarning: Skipping measure characterization. Measure has no data.');
-      elseif(~strncmp(uri, 'antbed:', 7))
+      elseif(~strncmp(uri, 'hidi:', 5))
         fprintf('\nWarning: Skipping measure characterization. URI scheme not recognized.');
       elseif(~container.hasReferenceTrajectory())
         fprintf('\nWarning: Skipping measure characterization. No reference trajectory is available.');
@@ -112,13 +111,13 @@ classdef MeasureTest < handle
         if(numEdges==0)
           fprintf('\nWarning: Skipping measure characterization. Measure has no edges.');
         else
-          x = antbed.MeasureTestPerturbation(trajectory);
+          x = tom.MeasureTestPerturbation(trajectory);
           edge = edgeList(1);
-          interval = tom.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));
+          interval = hidi.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));
           granularity = computeGranularity(interval, x, measure, edge);
           for k = 2:numEdges
             edge = edgeList(k);
-            interval = tom.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));
+            interval = hidi.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));
             granularity = min(granularity, computeGranularity(interval, x, measure, edge));
           end
           fprintf('\ngranularity.p = [%g; %g; %g]', granularity(1), granularity(2), granularity(3));
@@ -210,7 +209,6 @@ classdef MeasureTest < handle
       fprintf('\n\n*** End Measure Test ***');
     end
   end
-  
 end
 
 function cost = MTEval(interval, x, measure, edge, delta)

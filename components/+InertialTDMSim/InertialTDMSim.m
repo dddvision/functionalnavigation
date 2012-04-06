@@ -47,10 +47,10 @@ classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
       this.vi = zeros(this.nIU, 1, 'uint32');
       this.v = zeros(this.nEU, 1, 'uint32');
       
-      if(~strncmp(uri, 'antbed:', 7))
+      if(~strncmp(uri, 'hidi:', 5))
         error('URI scheme not recognized. This simulator requires a reference trajectory.');
       end
-      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      container = hidi.DataContainer.create(uri(6:end), initialTime);
       if(hasReferenceTrajectory(container))
         this.xRef = getReferenceTrajectory(container);
       else
@@ -66,7 +66,7 @@ classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
     end
     
     function interval = domain(this)
-      interval = tom.TimeInterval(this.initialTime, this.finalTime);
+      interval = hidi.TimeInterval(this.initialTime, this.finalTime);
     end
     
    function pose = evaluate(this, t)

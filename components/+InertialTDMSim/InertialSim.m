@@ -1,7 +1,7 @@
 % TODO: include gravity
 % TODO: include bias and scale errors
 % TODO: include sensor offset
-classdef InertialSim < antbed.InertialSixDoF & InertialTDMSim.InertialTDMSimConfig
+classdef InertialSim < hidi.InertialSixDoF & InertialTDMSim.InertialTDMSimConfig
   
   properties (Constant = true)
     nFirst = uint32(1); % first data node index
@@ -20,7 +20,7 @@ classdef InertialSim < antbed.InertialSixDoF & InertialTDMSim.InertialTDMSimConf
   methods (Access = public)
     function this = InertialSim(initialTime, stats)
       persistent singleton
-      this = this@antbed.InertialSixDoF(initialTime);
+      this = this@hidi.InertialSixDoF(initialTime);
       if(isempty(singleton))
         this.initialTime = initialTime;
         this.nLast = uint32(0);
@@ -70,7 +70,7 @@ classdef InertialSim < antbed.InertialSixDoF & InertialTDMSim.InertialTDMSimConf
       assert(this.hasData());
       assert(n>=this.nFirst);
       assert(n<=this.nLast);
-      time = tom.WorldTime(this.initialTime+double(this.nLast)*this.tau);
+      time = hidi.WorldTime(this.initialTime+double(this.nLast)*this.tau);
     end
     
     function pose = getFrame(this)

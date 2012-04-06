@@ -3,9 +3,6 @@ __all__ = ["DynamicModel",
            "Measure",
            "Optimizer",
            "Pose",
-           "Sensor",
            "TangentPose",
-           "TimeInterval",
-           "Trajectory",
-           "WorldTime",
+           "Trajectory"
            ]

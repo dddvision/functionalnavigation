@@ -120,12 +120,12 @@ classdef MatlabGA < MatlabGA.MatlabGAConfig & tom.Optimizer
     
     function refreshProblem(this)
       assert(this.isDefined);
-      tb = tom.WorldTime(-Inf);
+      tb = hidi.WorldTime(-Inf);
       [cBest, iBest] = min(this.costMean(:));
       for m = 1:numel(this.measure)
         this.measure{m}.refresh(this.dynamicModel(iBest));
         if(this.measure{m}.hasData())
-          tb = tom.WorldTime(max(tb, this.measure{m}.getTime(this.measure{m}.last())));
+          tb = hidi.WorldTime(max(tb, this.measure{m}.getTime(this.measure{m}.last())));
         end
       end
       K = numel(this.dynamicModel);

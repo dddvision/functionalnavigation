@@ -6,7 +6,7 @@
 static const double INFINITY = exp(10000.0);
 #endif
 
-namespace tom
+namespace hidi
 {
   /**
    * This class represents a world time system.

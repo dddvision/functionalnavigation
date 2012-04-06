@@ -1,10 +1,9 @@
 % For each valid index in the GPS data domain, evaluate the reference
 %   trajectory and compare with the reported GPS position
 classdef GPSReceiverTest
-
   methods (Access = public, Static = true)
     function this = GPSReceiverTest(gpsHandle, trajectory)
-      assert(isa(gpsHandle, 'antbed.GPSReceiver'));
+      assert(isa(gpsHandle, 'hidi.GPSReceiver'));
       if(~gpsHandle.hasData())
         return;
       end
@@ -53,7 +52,6 @@ classdef GPSReceiverTest
       drawnow;
     end
   end
-  
 end
 
 % Converts rotation from Euler to matrix form
