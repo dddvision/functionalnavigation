@@ -17,7 +17,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
   
   methods (Access = public, Static = true)
     function this = GpsSim(initialTime, uri)
-      this = this@hidi.GPSReceiver(initialTime);
+      this = this@hidi.GPSReceiver();
       
       if(~strncmp(uri, 'hidi:', 5))
         error('URI scheme not recognized');
@@ -72,7 +72,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       time = hidi.WorldTime(interval.first+this.noise(1, n));
     end
 
-    function [lon, lat, alt] = getGlobalPosition(this, n)
+    function lon = getLongitude(this, n)
       assert(this.ready);
       assert(n>=this.na);
       assert(n<=this.nb);
@@ -83,18 +83,50 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       
       % Add error based on real Global Sat gps data
       lon = lolah(1)+this.noise(2, n);
+    end
+    
+    function lat = getLatitude(this, n)
+      assert(this.ready);
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      
+      % Evaluate the reference trajectory at the measurement time
+      pose = this.refTraj.evaluate(getTime(this, n));
+      lolah = GlobalSatData.ecef2lolah(pose.p);
+      
+      % Add error based on real Global Sat gps data
       lat = lolah(2)+this.noise(3, n);
-      alt = lolah(3)+this.noise(4, n);
+    end
+    
+    function h = getHeight(this, n)
+      assert(this.ready);
+      assert(n>=this.na);
+      assert(n<=this.nb);
+      
+      % Evaluate the reference trajectory at the measurement time
+      pose = this.refTraj.evaluate(getTime(this, n));
+      lolah = GlobalSatData.ecef2lolah(pose.p);
+      
+      % Add error based on real Global Sat gps data
+      h = lolah(3)+this.noise(4, n);
     end
     
     function flag = hasPrecision(this)
       flag = this.precisionFlag;
     end
     
-    function [hDOP, vDOP, sigmaR] = getPrecision(this, n)
+    function hDOP = getPrecisionHorizontal(this, n)
       assert(isa(n,'uint32'));
       hDOP = this.hDOP;
+    end
+    
+    function vDOP = getPrecisionVertical(this, n)
+      assert(isa(n,'uint32'));
       vDOP = this.vDOP;
+    end
+    
+    function sigmaR = getPrecisionCircular(this, n)
+      assert(isa(n,'uint32'));
       sigmaR = this.sigmaR;
     end
     

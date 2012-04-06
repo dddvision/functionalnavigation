@@ -58,13 +58,17 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.Measure
       % TODO: incorporate offset
       % offset = this.sensor.getAntennaOffset();
       if(this.sensor.hasPrecision())
-        [hDOP, vDOP, sigmaR] = this.sensor.getPrecision(n);
+%         hDOP = this.sensor.getPrecisionHorizontal(n);
+%         vDOP = this.sensor.getPrecisionVertical(n);
+        sigmaR = this.sensor.getPrecisionCircular(n);
       else
         % hDOP = 10;
         % vDOP = 10;
         sigmaR = 10;
       end
-      [lon, lat, alt] = this.sensor.getGlobalPosition(n);
+      lon = this.sensor.getLongitude(n);
+      lat = this.sensor.getLatitude(n);
+      alt = this.sensor.getHeight(n);
       time = this.sensor.getTime(n);
       pMeasured = GlobalSatData.lolah2ecef([lon; lat; alt]);
       pose = x.evaluate(time);

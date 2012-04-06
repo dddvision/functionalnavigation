@@ -36,7 +36,7 @@ namespace hidi
      * Prevents assignment.
      */
     Sensor& operator=(const Sensor&);
-    
+
   protected:
     /**
      * Protected constructor.
@@ -91,7 +91,7 @@ namespace hidi
      * Throws an exception if data at the node is invalid.
      */
     virtual WorldTime getTime(uint32_t n) = 0;
-    
+
     /**
      * Virtual base class destructor.
      */
