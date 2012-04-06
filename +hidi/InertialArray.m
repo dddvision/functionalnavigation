@@ -3,7 +3,8 @@
 classdef InertialArray < hidi.Sensor
   methods (Access = public)
     function this = InertialArray(initialTime)
-      this = this@hidi.Sensor(initialTime);
+      this = this@hidi.Sensor();
+      assert(isa(initialTime, 'hidi.WorldTime'));
     end
   end
   

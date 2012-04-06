@@ -7,7 +7,6 @@
 %   pix(1, :) = strides along the non-contiguous dimension (MATLAB column minus one)
 %   pix(2, :) = steps along the contiguous dimension (MATLAB row minus one)
 classdef CameraArray < hidi.Sensor
-  
   methods (Access = protected, Static = true)
     % Protected onstructor
     %
@@ -17,7 +16,8 @@ classdef CameraArray < hidi.Sensor
     % Each subclass constructor must initialize this base class
     % Initialize by calling this = this@tom.CameraArray(initialTime);
     function this = CameraArray(initialTime)
-      this = this@hidi.Sensor(initialTime);
+      this = this@hidi.Sensor();
+      assert(isa(initialTime, 'hidi.WorldTime'));
     end
   end
   
@@ -126,5 +126,4 @@ classdef CameraArray < hidi.Sensor
     % Throws an exception when either input index is out of range
     ray = inverseProjection(this, pix, n, view);
   end
-
 end

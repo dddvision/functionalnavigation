@@ -11,7 +11,7 @@ namespace tom
    * @note
    * The initial undefined tangent pose is represented by NaN values for all parameters.
    */
-  class TangentPose : virtual public Pose
+  class TangentPose : public virtual Pose
   {
   public:
     double r[3]; /**< time derivative of body position */
@@ -33,7 +33,8 @@ namespace tom
     /**
      * Copy a tangent pose.
      */
-    TangentPose(const TangentPose& tangentPose) : Pose(tangentPose)
+    TangentPose(const TangentPose& tangentPose) : 
+      Pose(tangentPose)
     {
       TangentPose::operator=(tangentPose);
       return;

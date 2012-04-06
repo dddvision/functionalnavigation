@@ -14,7 +14,6 @@ namespace hidi
    * @note
    * The default reference is GPS time at the prime meridian in seconds since 1980 JAN 06 T00:00:00.
    * GPS time is a few seconds ahead of UTC.
-   * Choosing another time system may adversely affect interoperability between framework classes.
    */
   typedef double WorldTime;
 }

@@ -3,7 +3,6 @@
 % NOTES
 % A component can connect to multiple framework classes
 classdef DataContainer < handle
-  
   methods (Access = private, Static = true)
     % Storage for component descriptions
     function dL = pDescriptionList(name, cD)
@@ -193,5 +192,4 @@ classdef DataContainer < handle
     % Throws an exception if trajectory is not available
     x = getReferenceTrajectory(this);
   end
-  
 end
