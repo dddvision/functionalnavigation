@@ -1,4 +1,4 @@
-classdef Measure < tom.Sensor
+classdef Measure < hidi.Sensor
 
   methods (Access = private, Static = true)
     function dL = pDescriptionList(name, cD)
@@ -28,7 +28,7 @@ classdef Measure < tom.Sensor
   
   methods (Access = protected, Static = true)
     function this = Measure(initialTime, uri)
-      this = this@tom.Sensor(initialTime);
+      this = this@hidi.Sensor(initialTime);
       assert(isa(uri, 'char'));
     end
     

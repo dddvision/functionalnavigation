@@ -35,7 +35,7 @@ namespace BrownianPlanar
     std::vector<double> yRate;
     std::vector<double> aRate;
 
-    tom::TimeInterval interval;
+    hidi::TimeInterval interval;
     uint32_t firstNewBlock;
 
     static double paramToForce(uint32_t p)
@@ -217,7 +217,7 @@ namespace BrownianPlanar
       static tom::TangentPose tP;
       double K;
       double halfAngle;
-      tom::WorldTime dt;
+      hidi::WorldTime dt;
 
       K = static_cast<double>(px.size());
 
@@ -256,7 +256,7 @@ namespace BrownianPlanar
     }
 
   public:
-    BrownianPlanar(const tom::WorldTime initialTime, const std::string uri) :
+    BrownianPlanar(const hidi::WorldTime initialTime, const std::string uri) :
       tom::DynamicModel(initialTime, uri)
     {
       static const unsigned reserve = 1024;
@@ -296,12 +296,12 @@ namespace BrownianPlanar
       return;
     }
 
-    tom::TimeInterval domain(void)
+    hidi::TimeInterval domain(void)
     {
       return (interval);
     }
 
-    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
+    void evaluate(const std::vector<hidi::WorldTime>& time, std::vector<tom::Pose>& pose)
     {
       static double k;
       unsigned n;
@@ -317,7 +317,7 @@ namespace BrownianPlanar
       return;
     }
 
-    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
+    void tangent(const std::vector<hidi::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
     {
       static double k;
       unsigned n;
@@ -446,7 +446,7 @@ namespace BrownianPlanar
 
     tom::DynamicModel* copy(void)
     {
-      tom::WorldTime initialTime = this->interval.first;
+      hidi::WorldTime initialTime = this->interval.first;
       std::string uri = "";
       BrownianPlanar* obj = new BrownianPlanar(initialTime, uri);
 
@@ -482,7 +482,7 @@ namespace BrownianPlanar
       return ("Planar motion model of a rigid body with unit inertia that undergoes Brownian forcing.");
     }
 
-    static tom::DynamicModel* componentFactory(const tom::WorldTime initialTime, const std::string uri)
+    static tom::DynamicModel* componentFactory(const hidi::WorldTime initialTime, const std::string uri)
     {
       return (new BrownianPlanar(initialTime, uri));
     }

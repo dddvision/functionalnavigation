@@ -1,10 +1,9 @@
 % This class defines a synchronously time-stamped array of inertial sensors
 %   rigidly attached to a body with different positions and orientations
-classdef InertialArray < tom.Sensor
-
-  methods (Access=public)
-    function this=InertialArray(initialTime)
-      this=this@tom.Sensor(initialTime);
+classdef InertialArray < hidi.Sensor
+  methods (Access = public)
+    function this = InertialArray(initialTime)
+      this = this@hidi.Sensor(initialTime);
     end
   end
   
@@ -13,7 +12,7 @@ classdef InertialArray < tom.Sensor
     %
     % OUTPUT
     % num = number of axes, uint32 scalar
-    num=numAxes(this);
+    num = numAxes(this);
 
     % Get axis position and orientation relative to the body frame
     %
@@ -28,7 +27,7 @@ classdef InertialArray < tom.Sensor
     % The body frame axis order is forward-right-down
     % Rotation is measured via the right-hand rule
     % Throws an exception of the input index is out of range
-    [offset,direction]=getAxis(this,ax);
+    [offset, direction] = getAxis(this, ax);
   end
   
 end

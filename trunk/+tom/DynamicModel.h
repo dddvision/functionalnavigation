@@ -57,7 +57,7 @@ namespace tom
     }
 
     /* Storage for component factories */
-    typedef DynamicModel* (*DynamicModelFactory)(const WorldTime, const std::string);
+    typedef DynamicModel* (*DynamicModelFactory)(const hidi::WorldTime, const std::string);
     static std::map<std::string, DynamicModelFactory>* pFactoryList(void)
     {
       static std::map<std::string, DynamicModelFactory> factoryList;
@@ -72,7 +72,7 @@ namespace tom
      * @param[in] uri         uniform resource identifier as described below
      *
      * @note
-     * Testing is supported by recognizing the URI format 'antbed:dataContainerName'.
+     * Testing is supported by recognizing the URI format 'hidi:dataContainerName'.
      * Hardware implementation is supported by recognizing system resources such as 'file://dev/camera0'.
      * Each subclass constructor must initialize this base class.
      * (MATLAB) Initialize by calling:
@@ -80,7 +80,7 @@ namespace tom
      *   this=this@tom.DynamicModel(initialTime,uri);
      * @endcode
      */
-    DynamicModel(const WorldTime initialTime, const std::string uri)
+    DynamicModel(const hidi::WorldTime initialTime, const std::string uri)
     {}
 
     /**
@@ -161,7 +161,7 @@ namespace tom
      * Do not shadow this function.
      * Throws an error if the component is not connected.
      */
-    static DynamicModel* create(const std::string name, const WorldTime initialTime, const std::string uri)
+    static DynamicModel* create(const std::string name, const hidi::WorldTime initialTime, const std::string uri)
     {
       DynamicModel* obj = NULL;
       if(isConnected(name))

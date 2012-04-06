@@ -1,54 +1,52 @@
-classdef DataContainerDefault < antbed.DataContainer
-  
+classdef DataContainerDefault < hidi.DataContainer
   methods (Static = true, Access = public)
     function initialize(name)
       function text = componentDescription
         text = 'This default data container no data.';
       end
-      antbed.DataContainer.connect(name, @componentDescription, @antbed.DataContainerDefault);
+      hidi.DataContainer.connect(name, @componentDescription, @hidi.DataContainerDefault);
     end
   end
   
   methods (Access = public, Static = true)
     function this = DataContainerDefault(initialTime)
-      this = this@antbed.DataContainer(initialTime);
+      this = this@hidi.DataContainer(initialTime);
     end
   end
   
   methods (Access = public)
     function list = listSensors(this, type)
-      assert(isa(this, 'antbed.DataContainer'));
+      assert(isa(this, 'hidi.DataContainer'));
       assert(isa(type, 'char'));
-      list = repmat(antbed.SensorIndex(0), [0, 1]);
+      list = repmat(hidi.SensorIndex(0), [0, 1]);
     end
     
     function text = getSensorDescription(this, id)
-      assert(isa(this, 'antbed.DataContainer'));
-      assert(isa(id, 'antbed.SensorIndex'));
+      assert(isa(this, 'hidi.DataContainer'));
+      assert(isa(id, 'hidi.SensorIndex'));
       text = '';
       assert(isa(text, 'char'));
       error('This default data container has no data.');
     end
         
     function obj = getSensor(this, id)
-      assert(isa(this, 'antbed.DataContainer'));
-      assert(isa(id, 'antbed.SensorIndex'));
-      obj = tom.Measure.create('tom', tom.WorldTime(0), '');
-      assert(isa(obj,'tom.Sensor'));
+      assert(isa(this, 'hidi.DataContainer'));
+      assert(isa(id, 'hidi.SensorIndex'));
+      obj = tom.Measure.create('tom', hidi.WorldTime(0), '');
+      assert(isa(obj,'hidi.Sensor'));
       error('This default data container has no data.');
     end
     
     function flag = hasReferenceTrajectory(this)
-      assert(isa(this, 'antbed.DataContainer'));
+      assert(isa(this, 'hidi.DataContainer'));
       flag = false;
     end
     
     function x = getReferenceTrajectory(this)
-      assert(isa(this, 'antbed.DataContainer'));
-      x = tom.DynamicModel.create('tom', tom.WorldTime(0), '');
+      assert(isa(this, 'hidi.DataContainer'));
+      x = tom.DynamicModel.create('tom', hidi.WorldTime(0), '');
       assert(isa(x, 'tom.Trajectory'));
       error('This default data container has no data.');
     end
   end
-  
 end

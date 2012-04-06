@@ -1,5 +1,4 @@
-classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
-  
+classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
   properties (Constant = true)
     steps = uint32(480);
     strides = uint32(640);
@@ -22,7 +21,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
   
   methods (Access = public)
     function this = Kinect(initialTime)
-      this = this@tom.Sensor(initialTime);
+      this = this@hidi.Sensor(initialTime);
       if(this.verbose)
         fprintf('\nInitializing %s', class(this));
       end
@@ -99,7 +98,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
     
     function time = getTime(this, n)
       assert(this.ready)
-      time = tom.WorldTime(dlmread(fullfile(this.localCache, ['time', num2str(n, this.fileFormat), '.dat'])));
+      time = hidi.WorldTime(dlmread(fullfile(this.localCache, ['time', num2str(n, this.fileFormat), '.dat'])));
     end
     
     function num = numStrides(this)
@@ -229,5 +228,4 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & tom.Sensor
       flag = exist(fullfile(this.localCache, ['time', num2str(n, this.fileFormat), '.dat']), 'file');
     end
   end
-  
 end

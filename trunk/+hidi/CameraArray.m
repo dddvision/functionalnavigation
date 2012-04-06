@@ -6,7 +6,7 @@
 % Pixel coordinate interpretation:
 %   pix(1, :) = strides along the non-contiguous dimension (MATLAB column minus one)
 %   pix(2, :) = steps along the contiguous dimension (MATLAB row minus one)
-classdef CameraArray < tom.Sensor
+classdef CameraArray < hidi.Sensor
   
   methods (Access = protected, Static = true)
     % Protected onstructor
@@ -17,7 +17,7 @@ classdef CameraArray < tom.Sensor
     % Each subclass constructor must initialize this base class
     % Initialize by calling this = this@tom.CameraArray(initialTime);
     function this = CameraArray(initialTime)
-      this = this@tom.Sensor(initialTime);
+      this = this@hidi.Sensor(initialTime);
     end
   end
   

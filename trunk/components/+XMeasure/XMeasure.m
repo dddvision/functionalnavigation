@@ -23,10 +23,10 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
   methods (Access = public)
     function this = XMeasure(initialTime, uri)
       this = this@tom.Measure(initialTime, uri);
-      if(~strncmp(uri, 'antbed:', 7))
+      if(~strncmp(uri, 'hidi:', 5))
         error('URI scheme not recognized');
       end
-      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      container = hidi.DataContainer.create(uri(6:end), initialTime);
       if(container.hasReferenceTrajectory())
         this.xRef = container.getReferenceTrajectory();
       else
@@ -48,7 +48,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
         this.nb = this.na;
         this.status = true;
       end
-      time = tom.WorldTime(this.ta+double(this.nb)*this.dt);
+      time = hidi.WorldTime(this.ta+double(this.nb)*this.dt);
       pose = this.xRef.evaluate(time);
       this.yBar = [this.yBar, pose.p(1)+this.deviation*randn];
     end
@@ -68,7 +68,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
     end
 
     function time = getTime(this, n)
-      time = tom.WorldTime(this.initTime+double(n)*this.dt);
+      time = hidi.WorldTime(this.initTime+double(n)*this.dt);
     end
     
     function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)

@@ -1,22 +1,21 @@
 classdef DataContainerTest < handle
-  
   methods (Access = public, Static = true)
     function this = DataContainerTest(name, initialTime)
       fprintf('\n\n*** Begin DataContainer Test ***\n');
       
-      fprintf('\nantbed.DataContainer.description =');
-      text = antbed.DataContainer.description(name);
+      fprintf('\nhidi.DataContainer.description =');
+      text = hidi.DataContainer.description(name);
       assert(isa(text, 'char'));
       fprintf(' %s', text);
       
-      fprintf('\nantbed.DataContainer.create =');
-      dataContainer = antbed.DataContainer.create(name, initialTime);
-      assert(isa(dataContainer, 'antbed.DataContainer'));
+      fprintf('\nhidi.DataContainer.create =');
+      dataContainer = hidi.DataContainer.create(name, initialTime);
+      assert(isa(dataContainer, 'hidi.DataContainer'));
       fprintf(' ok');
       
       fprintf('\n\nlistSensors =');
-      list = dataContainer.listSensors('tom.Sensor');
-      assert(isa(list, 'antbed.SensorIndex'));
+      list = dataContainer.listSensors('hidi.Sensor');
+      assert(isa(list, 'hidi.SensorIndex'));
       assert(size(list,2)==1);
       fprintf(' [');
       for s = 1:numel(list)
@@ -38,7 +37,7 @@ classdef DataContainerTest < handle
         assert(isa(trajectory, 'tom.Trajectory'));
         fprintf(' ok');
         
-        antbed.TrajectoryTest(trajectory);
+        tom.TrajectoryTest(trajectory);
       else
         trajectory = tom.DynamicModel.create('tom', initialTime, '');
         fprintf(' false');
@@ -51,29 +50,29 @@ classdef DataContainerTest < handle
         
         fprintf('\ngetSensor(%d) =', uint32(id));
         sensor = dataContainer.getSensor(id);
-        assert(isa(sensor, 'tom.Sensor'));
+        assert(isa(sensor, 'hidi.Sensor'));
         fprintf(' ok');
         
-        antbed.SensorTest(sensor);
+        hidi.SensorTest(sensor);
         
         fprintf('\n\nrefresh\n');
         sensor.refresh(trajectory);
         
-        antbed.SensorTest(sensor);
+        hidi.SensorTest(sensor);
         
         fprintf('\n\nrefresh\n');
         sensor.refresh(trajectory);
         
-        antbed.SensorTest(sensor);
+        hidi.SensorTest(sensor);
         
-        if(isa(sensor, 'antbed.CameraArray'))
-          antbed.CameraArrayTest(sensor);
+        if(isa(sensor, 'hidi.CameraArray'))
+          hidi.CameraArrayTest(sensor);
         end
         
         % tests that require a reference trajectory
         if(flag)
-          if(isa(sensor, 'antbed.GPSReceiver'))
-            antbed.GPSReceiverTest(sensor, trajectory);
+          if(isa(sensor, 'hidi.GPSReceiver'))
+            hidi.GPSReceiverTest(sensor, trajectory);
           end
         end
       end
@@ -81,5 +80,4 @@ classdef DataContainerTest < handle
       fprintf('\n\n*** End DataContainer Test ***');
     end
   end
-  
 end

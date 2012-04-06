@@ -1,4 +1,4 @@
-classdef CameraSim < antbed.Camera
+classdef CameraSim < hidi.Camera
   
   properties (Constant = true, GetAccess = private)
     layers = 'rgb';
@@ -20,7 +20,7 @@ classdef CameraSim < antbed.Camera
   
   methods (Access = public, Static = true)
     function this = CameraSim(initialTime, secondsPerRefresh, localCache)
-      this = this@antbed.Camera(initialTime);
+      this = this@hidi.Camera(initialTime);
       this.secondsPerRefresh = secondsPerRefresh;
       this.localCache = localCache;
       info = dir(fullfile(localCache,'/color*'));
@@ -31,7 +31,7 @@ classdef CameraSim < antbed.Camera
       S = load(fullfile(localCache, 'workspace.mat'), 'T_cam', 'CAMERA_TYPE', 'CAMERA_OFFSET');
       this.na = uint32(str2double(fnames(1, 6:11)));
       this.nb = this.na;
-      this.tn = tom.WorldTime(S.T_cam+initialTime); % same policy for all sensors
+      this.tn = hidi.WorldTime(S.T_cam+initialTime); % same policy for all sensors
       this.cameraType = S.CAMERA_TYPE;
       this.frameOffset = [S.CAMERA_OFFSET; 1; 0; 0; 0];
       imageA = imread([this.localCache, '/color', sprintf('%06d',this.na), '.png']);

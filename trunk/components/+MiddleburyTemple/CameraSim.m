@@ -1,4 +1,4 @@
-classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & antbed.Camera
+classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
   
   properties (Constant = true, GetAccess = private)
     layers = 'rgb';
@@ -23,9 +23,9 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & antbed.Camera
   
   methods (Access = public, Static = true)
     function this = CameraSim(initialTime)
-      this = this@antbed.Camera(initialTime);
+      this = this@hidi.Camera(initialTime);
       numImages = numel(this.poseList);
-      this.tn = tom.WorldTime(initialTime+double(1:numImages-1)/this.fps);
+      this.tn = hidi.WorldTime(initialTime+double(1:numImages-1)/this.fps);
       this.im = cell(numImages, 1);
       for n = 1:numImages
         this.im{n} = this.getMiddleburyTemple(n);

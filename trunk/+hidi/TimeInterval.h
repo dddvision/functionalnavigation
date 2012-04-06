@@ -3,7 +3,7 @@
 
 #include "WorldTime.h"
 
-namespace tom
+namespace hidi
 {
   /**
    * This class represents an interval of time by its upper and lower bounds

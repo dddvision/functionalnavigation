@@ -27,13 +27,13 @@ classdef MeasureBridge < tom.Measure
     
     function this = MeasureBridge(name, initialTime, uri)
       if(nargin==0)
-        initialTime = tom.WorldTime(0);
+        initialTime = hidi.WorldTime(0);
         uri = '';
       end
       this = this@tom.Measure(initialTime, uri);
       if(nargin>0)
         assert(isa(name, 'char'));
-        assert(isa(initialTime, 'tom.WorldTime'));
+        assert(isa(initialTime, 'hidi.WorldTime'));
         assert(isa(uri, 'char'));
         compileOnDemand(name);
         className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
@@ -68,7 +68,7 @@ classdef MeasureBridge < tom.Measure
 
     function time = getTime(this, n)
       time = feval(this.m, this.h, 'getTime', n);
-      time = tom.WorldTime(time); % easier than conversion within mex
+      time = hidi.WorldTime(time); % easier than conversion within mex
     end
     
     function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)
@@ -92,7 +92,8 @@ function compileOnDemand(name)
   tried = true;
   bridge = mfilename('fullpath');
   bridgecpp = [bridge, '.cpp'];
-  include = fileparts(bridge);
+  include1 = ['-I"', fileparts(bridge), '"'];
+  include2 = ['-I"', fileparts(which('hidi.WorldTime')), '"'];
   base = fullfile(['+', name], name);
   basecpp = [base, '.cpp'];
   cpp = which(basecpp);
@@ -100,5 +101,5 @@ function compileOnDemand(name)
   if(exist(output, 'file'))
     delete([output, '.', mexext]);
   end
-  mex(['-I"', include, '"'], bridgecpp, cpp, '-output', output);
+  mex(include1, include2, bridgecpp, cpp, '-output', output);
 end

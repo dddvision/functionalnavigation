@@ -21,7 +21,7 @@ classdef OptimizerTest < handle
       fprintf('}');
       
       fprintf('\ninitialTime =');
-      assert(isa(initialTime, 'tom.WorldTime')); 
+      assert(isa(initialTime, 'hidi.WorldTime')); 
       fprintf(' %f', double(initialTime));
       
       fprintf('\nuri =');

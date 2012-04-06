@@ -14,7 +14,7 @@ classdef CameraArrayTest
   
   methods (Access = public, Static = true)
     function this = CameraArrayTest(cam)
-      assert(isa(cam, 'antbed.CameraArray'));
+      assert(isa(cam, 'hidi.CameraArray'));
       
       if(~cam.hasData())
         return;
@@ -29,7 +29,7 @@ classdef CameraArrayTest
 end
     
 function testCameraArrayProjection(cam, nb)
-  figure(antbed.CameraArrayTest.figureHandle());
+  figure(hidi.CameraArrayTest.figureHandle());
 
   % test each view 
   for view = ((uint32(1):cam.numViews())-uint32(1))
@@ -87,7 +87,7 @@ function testCameraArrayProjection(cam, nb)
 end
 
 function testCameraArrayProjectionRoundTrip(cam, nb)
-  figure(antbed.CameraArrayTest.figureHandle());
+  figure(hidi.CameraArrayTest.figureHandle());
 
   % test each view
   for view = ((uint32(1):cam.numViews())-uint32(1))

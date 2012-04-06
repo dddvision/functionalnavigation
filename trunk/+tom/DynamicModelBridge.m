@@ -27,13 +27,13 @@ classdef DynamicModelBridge < tom.DynamicModel
 
     function this = DynamicModelBridge(name, initialTime, uri)
       if(nargin==0)
-        initialTime = tom.WorldTime(0);
+        initialTime = hidi.WorldTime(0);
         uri = '';
       end
       this = this@tom.DynamicModel(initialTime, uri);
       if(nargin>0)
         assert(isa(name, 'char'));
-        assert(isa(initialTime, 'tom.WorldTime'));
+        assert(isa(initialTime, 'hidi.WorldTime'));
         assert(isa(uri, 'char'));
         compileOnDemand(name);
         className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
@@ -53,7 +53,7 @@ classdef DynamicModelBridge < tom.DynamicModel
     end
    
     function pose = evaluate(this, t)
-      assert(isa(t, 'tom.WorldTime'));
+      assert(isa(t, 'hidi.WorldTime'));
       N = numel(t);
       if(N==0);
         pose = repmat(tom.Pose, [1, 0]);
@@ -65,7 +65,7 @@ classdef DynamicModelBridge < tom.DynamicModel
     end
     
     function tangentPose = tangent(this, t)
-      assert(isa(t, 'tom.WorldTime'));
+      assert(isa(t, 'hidi.WorldTime'));
       N = numel(t);
       if(N==0);
         tangentPose = repmat(tom.TangentPose, [1, 0]);
@@ -136,7 +136,8 @@ function compileOnDemand(name)
   tried = true;
   bridge = mfilename('fullpath');
   bridgecpp = [bridge, '.cpp'];
-  include = fileparts(bridge);
+  include1 = ['-I"', fileparts(bridge), '"'];
+  include2 = ['-I"', fileparts(which('hidi.WorldTime')), '"'];
   base = fullfile(['+', name], name);
   basecpp = [base, '.cpp'];
   cpp = which(basecpp);
@@ -144,5 +145,5 @@ function compileOnDemand(name)
   if(exist(output, 'file'))
     delete([output, '.', mexext]);
   end
-  mex(['-I"', include, '"'], bridgecpp, cpp, '-output', output);
+  mex(include1, include2, bridgecpp, cpp, '-output', output);
 end

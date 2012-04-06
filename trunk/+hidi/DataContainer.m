@@ -35,13 +35,13 @@ classdef DataContainer < handle
   methods (Access = protected, Static = true)
     % Protected method to construct a singleton component instance
     %
-    % @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor, tom.WorldTime
+    % @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor, hidi.WorldTime
     %
     % NOTES
     % Each subclass constructor must initialize this base class
-    % Initialize by calling this = this@antbed.DataContainer(initialTime);
+    % Initialize by calling this = this@hidi.DataContainer(initialTime);
     function this = DataContainer(initialTime)
-      assert(isa(initialTime, 'tom.WorldTime'));
+      assert(isa(initialTime, 'hidi.WorldTime'));
     end
     
     % Establish connection between framework class and component
@@ -57,8 +57,8 @@ classdef DataContainer < handle
     function connect(name, cD, cF)
       if(isa(cD, 'function_handle')&&...
          isa(cF, 'function_handle'))
-         antbed.DataContainer.pDescriptionList(name, cD);
-         antbed.DataContainer.pFactoryList(name, cF);
+         hidi.DataContainer.pDescriptionList(name, cD);
+         hidi.DataContainer.pFactoryList(name, cF);
       end
     end
   end
@@ -82,7 +82,7 @@ classdef DataContainer < handle
         catch err
           err.message;
         end  
-        if(isKey(antbed.DataContainer.pFactoryList(name), name))
+        if(isKey(hidi.DataContainer.pFactoryList(name), name))
           flag = true;
         end
       end
@@ -98,8 +98,8 @@ classdef DataContainer < handle
     % If the component is not connected then the output is an empty string
     function text = description(name)
       text = '';
-      if(antbed.DataContainer.isConnected(name))
-        dL = antbed.DataContainer.pDescriptionList(name);
+      if(hidi.DataContainer.isConnected(name))
+        dL = hidi.DataContainer.pDescriptionList(name);
         text = feval(dL(name));
       end
     end
@@ -107,20 +107,20 @@ classdef DataContainer < handle
     % Public method to construct a singleton component instance
     %
     % @param[in] name component identifier, string
-    % @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor, tom.WorldTime
-    % @return         singleton object instance that should not be deleted, antbed.DataContainer
+    % @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor, hidi.WorldTime
+    % @return         singleton object instance that should not be deleted, hidi.DataContainer
     %
     % NOTES
     % Do not shadow this function
     % Throws an error if the component is not connected
     function obj = create(name, initialTime)
       persistent identifier singleton
-      assert(isa(initialTime, 'tom.WorldTime'));
-      if(antbed.DataContainer.isConnected(name))
+      assert(isa(initialTime, 'hidi.WorldTime'));
+      if(hidi.DataContainer.isConnected(name))
         if(isempty(singleton))
-          cF = antbed.DataContainer.pFactoryList(name);
+          cF = hidi.DataContainer.pFactoryList(name);
           obj = feval(cF(name), initialTime);
-          assert(isa(obj, 'antbed.DataContainer'));
+          assert(isa(obj, 'hidi.DataContainer'));
           singleton = obj;
           identifier = name;
         else
@@ -150,7 +150,7 @@ classdef DataContainer < handle
     % List available sensors of a given class
     %
     % @param[in]  type class identifier, string
-    % @param[out] list unique sensor identifiers, antbed.SensorIndex N-by-1
+    % @param[out] list unique sensor identifiers, hidi.SensorIndex N-by-1
     %
     % NOTES
     % Sensors that inherit from the given class will also be included in the output list
@@ -159,7 +159,7 @@ classdef DataContainer < handle
     
     % Get sensor description
     %
-    % @param[in] id zero-based index, antbed.SensorIndex
+    % @param[in] id zero-based index, hidi.SensorIndex
     % @return       user friendly sensor description, string
     %
     % NOTES
@@ -171,8 +171,8 @@ classdef DataContainer < handle
     
     % Get instance of a Sensor
     %
-    % @param[in] id zero-based index, antbed.SensorIndex
-    % @return       object instance, tom.Sensor
+    % @param[in] id zero-based index, hidi.SensorIndex
+    % @return       object instance, hidi.Sensor
     %
     % NOTES
     % The specific subclass of the output depends on the given identifier

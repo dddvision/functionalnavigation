@@ -9,21 +9,26 @@ namespace DistanceTraveled
   private:
     static const double dt;
     static const double deviation;
-    tom::WorldTime tMin;
-    tom::WorldTime tMax;
+    hidi::WorldTime tMin;
+    hidi::WorldTime tMax;
 
   public:
-    DistanceTraveled(const tom::WorldTime initialTime, const std::string uri) :
+    DistanceTraveled(const hidi::WorldTime initialTime, const std::string uri) :
       tom::Measure(initialTime, uri)
     {
       tMin = initialTime;
       tMax = initialTime;
       return;
     }
+      
+    void refresh(void)
+    {
+      return;
+    }
 
     void refresh(tom::Trajectory* x)
     {
-      tom::TimeInterval interval;
+      hidi::TimeInterval interval;
       interval = x->domain();
       if(interval.second>tMax)
       {
@@ -47,7 +52,7 @@ namespace DistanceTraveled
       return (this->last()>this->first());
     }
 
-    tom::WorldTime getTime(uint32_t n)
+    hidi::WorldTime getTime(uint32_t n)
     {
       return (tMin+dt*static_cast<double>(n));
     }
@@ -70,8 +75,8 @@ namespace DistanceTraveled
 
     double computeEdgeCost(tom::Trajectory* x, const tom::GraphEdge graphEdge)
     {
-      static std::vector<tom::WorldTime> tA(1);
-      static std::vector<tom::WorldTime> tB(1);
+      static std::vector<hidi::WorldTime> tA(1);
+      static std::vector<hidi::WorldTime> tB(1);
       static std::vector<tom::Pose> poseA(1);
       static std::vector<tom::Pose> poseB(1);
       double y[3];
@@ -94,7 +99,7 @@ namespace DistanceTraveled
       return ("Creates a set of relative measures at equal time intervals based on total distance traveled.");
     }
 
-    static tom::Measure* componentFactory(const tom::WorldTime initialTime, const std::string uri)
+    static tom::Measure* componentFactory(const hidi::WorldTime initialTime, const std::string uri)
     {
       return (new DistanceTraveled(initialTime, uri));
     }

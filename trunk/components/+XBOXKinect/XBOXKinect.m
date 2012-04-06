@@ -1,4 +1,4 @@
-classdef XBOXKinect < XBOXKinect.XBOXKinectConfig & antbed.DataContainer
+classdef XBOXKinect < XBOXKinect.XBOXKinectConfig & hidi.DataContainer
   properties (Constant = true, GetAccess = private)
     hasRef = false;
     bodyRef = [];
@@ -16,13 +16,13 @@ classdef XBOXKinect < XBOXKinect.XBOXKinectConfig & antbed.DataContainer
       function text = componentDescription
         text = 'Provides data from an XBOX Kinect sensor using the libfreenect library.';
       end
-      antbed.DataContainer.connect(name, @componentDescription, @XBOXKinect.XBOXKinect);
+      hidi.DataContainer.connect(name, @componentDescription, @XBOXKinect.XBOXKinect);
     end
   end
   
   methods (Access = public)
     function this = XBOXKinect(initialTime)
-      this = this@antbed.DataContainer(initialTime);
+      this = this@hidi.DataContainer(initialTime);
       this.sensorDescription{1} = this.kinectDescription;
       this.sensor{1} = XBOXKinect.Kinect(initialTime);
     end
@@ -35,7 +35,7 @@ classdef XBOXKinect < XBOXKinect.XBOXKinectConfig & antbed.DataContainer
           flag(k) = true;
         end
       end
-      list = antbed.SensorIndex(find(flag)-1);
+      list = hidi.SensorIndex(find(flag)-1);
     end
     
     function text = getSensorDescription(this, id)

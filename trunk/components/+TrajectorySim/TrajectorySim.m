@@ -1,7 +1,7 @@
-classdef TrajectorySim < antbed.DataContainer & TrajectorySim.TrajectorySimConfig
+classdef TrajectorySim < hidi.DataContainer & TrajectorySim.TrajectorySimConfig
 
   properties (Constant = true, GetAccess = private)
-    list = antbed.SensorIndex(zeros(0, 1));
+    list = hidi.SensorIndex(zeros(0, 1));
     errorText = 'This data container has no sensors.';
     hasRef = true;
   end
@@ -15,11 +15,11 @@ classdef TrajectorySim < antbed.DataContainer & TrajectorySim.TrajectorySimConfi
       function text = componentDescription
         text = 'Simulates a reference trajectory based on control points provided in a file.';
       end
-      antbed.DataContainer.connect(name, @componentDescription, @TrajectorySim.TrajectorySim);
+      hidi.DataContainer.connect(name, @componentDescription, @TrajectorySim.TrajectorySim);
     end
 
     function this = TrajectorySim(initialTime)
-      this = this@antbed.DataContainer(initialTime);
+      this = this@hidi.DataContainer(initialTime);
       filename = fullfile(fileparts(mfilename('fullpath')), this.tangentPoseFileName);
       [t, p, q, r, s] = readTangentPoseFile(filename, initialTime);
       this.trajectory = TrajectorySim.ReferenceTrajectory(t, p, q, r, s);
@@ -33,13 +33,13 @@ classdef TrajectorySim < antbed.DataContainer & TrajectorySim.TrajectorySimConfi
     end
     
     function text = getSensorDescription(this, id)
-      assert(isa(id, 'antbed.SensorIndex'));
+      assert(isa(id, 'hidi.SensorIndex'));
       text = '';
       error(this.errorText);
     end
     
     function obj = getSensor(this, id)
-      assert(isa(id, 'antbed.SensorIndex'));
+      assert(isa(id, 'hidi.SensorIndex'));
       obj = [];
       error(this.errorText);
     end

@@ -1,4 +1,4 @@
-classdef InertialSim < antbed.InertialSixDoF
+classdef InertialSim < hidi.InertialSixDoF
   
   properties (Constant = true, GetAccess = private)
     pFrame=[0; 0; 0];
@@ -18,10 +18,10 @@ classdef InertialSim < antbed.InertialSixDoF
   
   methods (Access = public, Static = true)
     function this = InertialSim(initialTime, secondsPerRefresh, localCache)
-      this = this@antbed.InertialSixDoF(initialTime);
+      this = this@hidi.InertialSixDoF(initialTime);
       this.secondsPerRefresh = secondsPerRefresh;
       [this.tn, this.gyro, this.accel] = ReadIMUdat(localCache, 'inertia.dat');
-      this.tn = tom.WorldTime(this.tn+initialTime); % same policy for all sensors
+      this.tn = hidi.WorldTime(this.tn+initialTime); % same policy for all sensors
       this.na = uint32(1);
       this.nb = this.na;
       S = load(fullfile(localCache, 'workspace.mat'), 'IMU_TYPE');

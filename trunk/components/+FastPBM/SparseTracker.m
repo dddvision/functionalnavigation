@@ -1,11 +1,10 @@
-classdef SparseTracker < tom.Sensor
-  
+classdef SparseTracker < hidi.Sensor
   methods (Access = protected, Static =true)
     % Protected constructor
     %
     % @param[in] initialTime less than or equal to the time stamp of the first data node
     function this = SparseTracker(initialTime)
-      this = this@tom.Sensor(initialTime);
+      this = this@hidi.Sensor(initialTime);
     end
   end
   
@@ -36,5 +35,4 @@ classdef SparseTracker < tom.Sensor
     % Throws an exception if either node index is invalid
     [rayA, rayB] = findMatches(this, nodeA, nodeB);
   end
-
 end

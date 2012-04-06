@@ -1,11 +1,10 @@
 classdef DynamicModelTest
-  
   methods (Access = public)
     function this = DynamicModelTest(name, initialTime, uri)
       fprintf('\n\n*** Begin DynamicModel Test ***\n');
       
       fprintf('\ninitialTime =');
-      assert(isa(initialTime, 'tom.WorldTime')); 
+      assert(isa(initialTime, 'hidi.WorldTime')); 
       fprintf(' %f', double(initialTime));
 
       fprintf('\nuri =');
@@ -24,7 +23,7 @@ classdef DynamicModelTest
 
       fprintf('\n\ndomain =');
       interval = dynamicModel.domain();
-      assert(isa(interval, 'tom.TimeInterval'));
+      assert(isa(interval, 'hidi.TimeInterval'));
       assert(interval.first==initialTime);
       fprintf(' ok');
 
@@ -51,7 +50,7 @@ classdef DynamicModelTest
       end
       fprintf(']');
       
-      antbed.TrajectoryTest(dynamicModel);
+      tom.TrajectoryTest(dynamicModel);
       
       for b = uint32(0:2)
         fprintf('\n\nextend');
@@ -75,7 +74,7 @@ classdef DynamicModelTest
         end
         fprintf(']');
         
-        antbed.TrajectoryTest(dynamicModel);
+        tom.TrajectoryTest(dynamicModel);
       end
       
       for b = uint32(0:2)   
@@ -90,7 +89,7 @@ classdef DynamicModelTest
         end
         fprintf(']');
 
-        antbed.TrajectoryTest(dynamicModel);
+        tom.TrajectoryTest(dynamicModel);
       end
       
       fprintf('\n\ncopy = ');
@@ -114,5 +113,4 @@ classdef DynamicModelTest
       fprintf('\n\n*** End DynamicModel Test ***');
     end
   end
-
 end

@@ -52,10 +52,10 @@ classdef DemoDisplay < DemoConfig & handle
       this.qRef = [];
 
       if(nargin>0)
-        if(~strncmp(uri, 'antbed:', 7))
+        if(~strncmp(uri, 'hidi:', 5))
           error('URI scheme not recognized');
         end
-        container = antbed.DataContainer.create(uri(8:end), initialTime);
+        container = hidi.DataContainer.create(uri(6:end), initialTime);
         if(hasReferenceTrajectory(container))
           xRef = getReferenceTrajectory(container);
           this.tRef = this.generateSampleTimes(xRef);
@@ -195,10 +195,10 @@ classdef DemoDisplay < DemoConfig & handle
         tmax = min(tmax, this.tRef(end));
       end
       if(tmin==tmax)
-        t = tom.WorldTime(repmat(tmin, [1, this.bigSteps*this.subSteps+1]));
+        t = hidi.WorldTime(repmat(tmin, [1, this.bigSteps*this.subSteps+1]));
       else
         tmax(isinf(tmax)) = tmin+this.infinity; % prevent NaN
-        t = tom.WorldTime(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
+        t = hidi.WorldTime(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
       end
     end
     

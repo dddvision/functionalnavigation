@@ -1,9 +1,9 @@
 % This class defines a single receiver in a global positioning system
-classdef GPSReceiver < tom.Sensor
+classdef GPSReceiver < hidi.Sensor
     
   methods (Access = public)
     function this = GPSReceiver(initialTime)
-      this = this@tom.Sensor(initialTime);
+      this = this@hidi.Sensor(initialTime);
     end
   end
   

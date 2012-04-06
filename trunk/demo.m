@@ -41,7 +41,7 @@ RandStream.getGlobalStream.reset();
 config = DemoConfig;
 
 % get system time
-initialTime = antbed.getCurrentTime();
+initialTime = hidi.getCurrentTime();
 
 % instantiate the graphical display
 gui = DemoDisplay(initialTime, config.uri);

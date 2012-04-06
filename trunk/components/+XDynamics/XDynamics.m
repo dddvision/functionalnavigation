@@ -31,10 +31,10 @@ classdef XDynamics < XDynamics.XDynamicsConfig & tom.DynamicModel
       this.initialTime = initialTime;
       this.uri = uri;
       this.initial = zeros(1, this.initialNum, 'uint32');
-      if(~strncmp(uri, 'antbed:', 7))
+      if(~strncmp(uri, 'hidi:', 5))
         error('URI scheme not recognized');
       end
-      container = antbed.DataContainer.create(uri(8:end), initialTime);
+      container = hidi.DataContainer.create(uri(6:end), initialTime);
       if(hasReferenceTrajectory(container))
         this.xRef = getReferenceTrajectory(container);
       else
