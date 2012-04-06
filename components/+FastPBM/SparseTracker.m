@@ -1,6 +1,6 @@
 classdef SparseTracker < tom.Sensor
   
-  methods (Access=protected, Static=true)
+  methods (Access = protected, Static =true)
     % Protected constructor
     %
     % @param[in] initialTime less than or equal to the time stamp of the first data node
@@ -9,7 +9,7 @@ classdef SparseTracker < tom.Sensor
     end
   end
   
-  methods (Abstract=true, Access=public, Static=false)
+  methods (Abstract = true, Access = public)
     % Check whether the sensor frame moves relative to the body framer
     %
     % @param[out] flag true if the offset can change or false otherwise (MATLAB: bool scalar)

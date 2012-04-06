@@ -20,7 +20,7 @@ classdef DynamicModelDefault < tom.DynamicModel
     end
   end
   
-  methods (Access = public, Static = false)   
+  methods (Access = public)   
     function num = numInitial(this)
       assert(isa(this, 'tom.DynamicModel'));
       num = uint32(0);

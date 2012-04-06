@@ -23,7 +23,7 @@ classdef Pose
     end
   end
     
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function display(this)
       name = inputname(1);
       for n = 1:numel(this)

@@ -7,7 +7,7 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & antbed.DataCo
     sensorDescription
   end
   
-  methods (Access = public,Static = true)
+  methods (Access = public, Static = true)
     function initialize(name)
       function text = componentDescription
         text = ['Real and simulated visual and inertial data undergoing mixed motion. Reference: ',...
@@ -47,7 +47,7 @@ classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & antbed.DataCo
     end
   end
   
-  methods (Access = public,Static = false)
+  methods (Access = public)
     function list = listSensors(this, type)
       K = numel(this.sensors);
       flag = false(K, 1);

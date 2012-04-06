@@ -44,7 +44,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & antbed.GPSReceiver
     end
   end
   
-  methods (Access = public, Static = false)  
+  methods (Access = public)  
     function refresh(this, x)
       assert(isa(this, 'antbed.GPSReceiver'));
       assert(isa(x, 'tom.Trajectory'));

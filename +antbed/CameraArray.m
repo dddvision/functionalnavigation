@@ -21,7 +21,7 @@ classdef CameraArray < tom.Sensor
     end
   end
   
-  methods (Abstract = true, Access = public, Static = false)
+  methods (Abstract = true, Access = public)
     % Get number of cameras in the array
     %
     % OUTPUT

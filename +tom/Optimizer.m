@@ -78,7 +78,7 @@ classdef Optimizer < handle
     initialize(name);
   end
   
-  methods (Abstract = true, Access = public, Static = false)
+  methods (Abstract = true, Access = public)
     num = numInitialConditions(this);
     defineProblem(dynamicModel, measure, randomize);
     refreshProblem(this);

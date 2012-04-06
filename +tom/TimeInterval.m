@@ -38,7 +38,7 @@ classdef TimeInterval
     end
   end
   
-  methods (Access = public, Static = false)  
+  methods (Access = public)  
     function display(this)
       for n = 1:numel(this)
         fprintf('\n%s = [%f, %f]\n', inputname(1), double(this(n).first), double(this(n).second));

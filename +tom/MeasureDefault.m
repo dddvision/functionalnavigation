@@ -15,7 +15,7 @@ classdef MeasureDefault < tom.Measure
     end
   end
   
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function refresh(this, x)
       assert(isa(this, 'tom.Sensor'));
       assert(isa(x, 'tom.Trajectory'));

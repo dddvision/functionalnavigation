@@ -14,7 +14,7 @@ classdef OptimizerBridge < tom.Optimizer
     end
   end
 
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function num = numResults(this)
       num = feval(this.m, this.h, 'numResults');
     end
