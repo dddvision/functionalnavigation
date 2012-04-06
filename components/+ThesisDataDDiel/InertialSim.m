@@ -1,5 +1,4 @@
-classdef InertialSim < hidi.InertialSixDoF
-  
+classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray
   properties (Constant = true, GetAccess = private)
     pFrame=[0; 0; 0];
     qFrame=[1; 0; 0; 0];
@@ -18,7 +17,8 @@ classdef InertialSim < hidi.InertialSixDoF
   
   methods (Access = public, Static = true)
     function this = InertialSim(initialTime, secondsPerRefresh, localCache)
-      this = this@hidi.InertialSixDoF(initialTime);
+      this = this@hidi.AccelerometerArray();
+      this = this@hidi.GyroscopeArray();
       this.secondsPerRefresh = secondsPerRefresh;
       [this.tn, this.gyro, this.accel] = ReadIMUdat(localCache, 'inertia.dat');
       this.tn = hidi.WorldTime(this.tn+initialTime); % same policy for all sensors
@@ -76,34 +76,34 @@ classdef InertialSim < hidi.InertialSixDoF
       specificForce = this.accel(ax+1, n);
     end
     
-    function sigma = getAccelBiasTurnOn(this)
+    function walk = getAccelerometerVelocityRandomWalk(this)
+      walk = this.stats.Accel.RandomWalk;
+    end
+    
+    function sigma = getAccelerometerTurnOnBiasSigma(this)
       sigma = this.stats.Accel.Bias.TurnOn;
     end
     
-    function sigma = getAccelBiasSteadyState(this)
+    function sigma = getAccelerometerInRunBiasSigma(this)
       sigma = this.stats.Accel.Bias.SteadyState;
     end
     
-    function tau = getAccelBiasDecay(this)
+    function tau = getAccelerometerInRunBiasStability(this)
       tau = this.stats.Accel.Bias.Decay;
     end
     
-    function sigma = getAccelScaleTurnOn(this)
+    function sigma = getAccelerometerTurnOnScaleSigma(this)
       sigma = this.stats.Accel.Scale.TurnOn;
     end
     
-    function sigma = getAccelScaleSteadyState(this)
+    function sigma = getAccelerometerInRunScaleSigma(this)
       sigma = this.stats.Accel.Scale.SteadyState;
     end
     
-    function tau = getAccelScaleDecay(this)
+    function tau = getAccelerometerInRunScaleStability(this)
       tau = this.stats.Accel.Scale.Decay;
     end
-    
-    function sigma = getAccelRandomWalk(this)
-      sigma = this.stats.Accel.RandomWalk;
-    end
-        
+
     function angularRate = getAngularRate(this, n, ax)
       assert(this.hasData());
       assert(n>=this.na);
@@ -111,33 +111,33 @@ classdef InertialSim < hidi.InertialSixDoF
       angularRate = this.gyro(ax+1, n);
     end
     
-    function sigma = getGyroBiasTurnOn(this)
+    function walk = getGyroscopeAngleRandomWalk(this)
+      walk = this.stats.Gyro.RandomWalk;
+    end
+    
+    function sigma = getGyroscopeTurnOnBiasSigma(this)
       sigma = this.stats.Gyro.Bias.TurnOn;
     end
     
-    function sigma = getGyroBiasSteadyState(this)
+    function sigma = getGyroscopeInRunBiasSigma(this)
       sigma = this.stats.Gyro.Bias.SteadyState;
     end
     
-    function tau = getGyroBiasDecay(this)
+    function tau = getGyroscopeInRunBiasStability(this)
       tau = this.stats.Gyro.Bias.Decay;
     end
     
-    function sigma = getGyroScaleTurnOn(this)
+    function sigma = getGyroscopeTurnOnScaleSigma(this)
       sigma = this.stats.Gyro.Scale.TurnOn;
     end
     
-    function sigma = getGyroScaleSteadyState(this)
+    function sigma = getGyroscopeInRunScaleSigma(this)
       sigma = this.stats.Gyro.Scale.SteadyState;
     end
     
-    function tau = getGyroScaleDecay(this)
+    function tau = getGyroscopeInRunScaleStability(this)
       tau = this.stats.Gyro.Scale.Decay;
-    end
-    
-    function sigma = getGyroRandomWalk(this)
-      sigma = this.stats.Gyro.RandomWalk;
-    end      
+    end   
   end
 end
 
