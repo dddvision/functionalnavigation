@@ -28,7 +28,8 @@ classdef Measure < hidi.Sensor
   
   methods (Access = protected, Static = true)
     function this = Measure(initialTime, uri)
-      this = this@hidi.Sensor(initialTime);
+      this = this@hidi.Sensor();
+      assert(isa(initialTime, 'hidi.WorldTime'));
       assert(isa(uri, 'char'));
     end
     

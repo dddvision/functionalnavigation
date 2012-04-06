@@ -43,14 +43,6 @@ namespace hidi
      */
     Sensor(void)
     {}
-    
-    /**
-     * Protected constructor with initial time.
-     *
-     * @param[in] initialTime less than or equal to the time stamp of the first data node
-     */
-    Sensor(const WorldTime initialTime)
-    {}
 
   public:
     /**
