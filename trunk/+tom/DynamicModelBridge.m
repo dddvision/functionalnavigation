@@ -47,7 +47,7 @@ classdef DynamicModelBridge < tom.DynamicModel
     end
   end
     
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function interval = domain(this)
       interval = feval(this.m, this.h, 'domain');
     end

@@ -20,7 +20,7 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.Measure
     end
   end
 
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function refresh(this, x)
       this.sensor.refresh(x);
     end

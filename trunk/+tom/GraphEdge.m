@@ -38,7 +38,7 @@ classdef GraphEdge
     end
   end
     
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function display(this)
       fprintf('\n%s = [',inputname(1));
       for n = 1:numel(this)

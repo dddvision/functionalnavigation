@@ -80,7 +80,7 @@ classdef DynamicModel < tom.Trajectory
     initialize(name);
   end
   
-  methods (Abstract = true, Access = public, Static = false)
+  methods (Abstract = true, Access = public)
     num = numInitial(this);
     num = numExtension(this);
     num = numBlocks(this);

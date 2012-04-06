@@ -7,7 +7,7 @@ classdef Camera < antbed.CameraArray
     end
   end
     
-  methods (Access = public, Static = false)
+  methods (Access = public)
     % Limits the camera array to providing exactly one view
     function num = numViews(this)
       assert(isa(this, 'antbed.Camera'));
@@ -15,7 +15,7 @@ classdef Camera < antbed.CameraArray
     end
   end
     
-  methods (Abstract = true, Access = public, Static = false)
+  methods (Abstract = true, Access = public)
     % These redefined methods do not require the 'view' argument
     num = numSteps(this, varargin);
     num = numStrides(this, varargin);

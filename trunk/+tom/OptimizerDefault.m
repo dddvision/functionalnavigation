@@ -15,7 +15,7 @@ classdef OptimizerDefault < tom.Optimizer
     end
   end
   
-  methods (Access = public, Static = false)  
+  methods (Access = public)  
     function num = numInitialConditions(this)
       assert(isa(this, 'tom.Optimizer'));
       num = uint32(0);

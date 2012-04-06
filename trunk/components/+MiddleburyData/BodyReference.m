@@ -15,7 +15,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
     end
   end
     
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function interval = domain(this)
       interval = this.interval;
     end

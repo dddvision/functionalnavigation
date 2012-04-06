@@ -47,7 +47,7 @@ classdef MeasureBridge < tom.Measure
     end
   end
     
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function refresh(this, x)
       % implements a workaround that depends on a Trajectory named 'x'
       assert(isa(x, 'tom.Trajectory'));

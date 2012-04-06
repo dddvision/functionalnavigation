@@ -15,7 +15,7 @@ classdef DataContainerDefault < antbed.DataContainer
     end
   end
   
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function list = listSensors(this, type)
       assert(isa(this, 'antbed.DataContainer'));
       assert(isa(type, 'char'));

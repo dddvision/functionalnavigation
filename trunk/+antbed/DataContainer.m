@@ -146,7 +146,7 @@ classdef DataContainer < handle
     initialize(name);
   end
   
-  methods (Abstract = true, Access = public, Static = false)
+  methods (Abstract = true, Access = public)
     % List available sensors of a given class
     %
     % @param[in]  type class identifier, string

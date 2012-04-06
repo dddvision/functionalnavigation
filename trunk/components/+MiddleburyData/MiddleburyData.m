@@ -27,7 +27,7 @@ classdef MiddleburyData < MiddleburyData.MiddleburyDataConfig & antbed.DataConta
     end
   end
   
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function list = listSensors(this, type)
       K = numel(this.sensor);
       flag = false(K, 1);

@@ -72,7 +72,7 @@ classdef KLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     end
   end
   
-  methods (Abstract = false, Access = public, Static = false)
+  methods (Abstract = false, Access = public)
    function refresh(this, x)
       this.camera.refresh(x);
     end

@@ -40,7 +40,7 @@ classdef CameraSim < antbed.Camera
     end
   end
     
-  methods (Access = public, Static = false)
+  methods (Access = public)
     function refresh(this,x)
       assert(isa(x,'tom.Trajectory'));
       tMax = this.tn(1)+double(this.refreshCount)*this.secondsPerRefresh;

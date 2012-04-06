@@ -67,7 +67,7 @@ classdef DemoDisplay < DemoConfig & handle
     end
   end
   
-  methods (Access = public, Static = false)
+  methods (Access = public)
     % Visualize a set of trajectories with optional transparency
     %
     % INPUT
