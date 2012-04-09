@@ -52,6 +52,7 @@ namespace hidi
      *
      * @note
      * @see getMagneticField()
+     * The calibrated axis interpretation is 0=Forward, 1=Right, 2=Down
      */
     virtual double getMagneticFieldCalibrated(uint32_t n, uint32_t ax) = 0;
     

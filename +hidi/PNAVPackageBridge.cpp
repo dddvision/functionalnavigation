@@ -17,10 +17,11 @@ namespace PNAVPackageBridge
     getAltimeter,
     getGPSReceiver,
     refresh,
-    hasData,
-    first,
-    last,
-    getTime,
+    accelerometerArrayRefresh,
+    accelerometerArrayHasData,
+    accelerometerArrayFirst,
+    accelerometerArrayLast,
+    accelerometerArrayGetTime,
     getSpecificForce,
     getSpecificForceCalibrated,
     getAccelerometerVelocityRandomWalk,
@@ -30,6 +31,11 @@ namespace PNAVPackageBridge
     getAccelerometerTurnOnScaleSigma,
     getAccelerometerInRunScaleSigma,
     getAccelerometerInRunScaleStability,
+    gyroscopeArrayRefresh,
+    gyroscopeArrayHasData,
+    gyroscopeArrayFirst,
+    gyroscopeArrayLast,
+    gyroscopeArrayGetTime,
     getAngularRate,
     getAngularRateCalibrated,
     getGyroscopeAngleRandomWalk,
@@ -39,9 +45,24 @@ namespace PNAVPackageBridge
     getGyroscopeTurnOnScaleSigma,
     getGyroscopeInRunScaleSigma,
     getGyroscopeInRunScaleStability,
+    magnetometerArrayRefresh,
+    magnetometerArrayHasData,
+    magnetometerArrayFirst,
+    magnetometerArrayLast,
+    magnetometerArrayGetTime,
     getMagneticField,
     getMagneticFieldCalibrated,
+    altimeterRefresh,
+    altimeterHasData,
+    altimeterFirst,
+    altimeterLast,
+    altimeterGetTime,
     getAltitude,
+    gpsReceiverRefresh,
+    gpsReceiverHasData,
+    gpsReceiverFirst,
+    gpsReceiverLast,
+    gpsReceiverGetTime,
     getLongitude,
     getLatitude,
     getHeight,
@@ -157,10 +178,11 @@ namespace PNAVPackageBridge
       memberMap["getAltimeter"] = getAltimeter;
       memberMap["getGPSReceiver"] = getGPSReceiver;
       memberMap["refresh"] = refresh;
-      memberMap["hasData"] = hasData;
-      memberMap["first"] = first;
-      memberMap["last"] = last;
-      memberMap["getTime"] = getTime;
+      memberMap["accelerometerArrayRefresh"] = accelerometerArrayRefresh;
+      memberMap["accelerometerArrayHasData"] = accelerometerArrayHasData;
+      memberMap["accelerometerArrayFirst"] = accelerometerArrayFirst;
+      memberMap["accelerometerArrayLast"] = accelerometerArrayLast;
+      memberMap["accelerometerArrayGetTime"] = accelerometerArrayGetTime;
       memberMap["getSpecificForce"] = getSpecificForce;
       memberMap["getSpecificForceCalibrated"] = getSpecificForceCalibrated;
       memberMap["getAccelerometerVelocityRandomWalk"] = getAccelerometerVelocityRandomWalk;
@@ -170,6 +192,11 @@ namespace PNAVPackageBridge
       memberMap["getAccelerometerTurnOnScaleSigma"] = getAccelerometerTurnOnScaleSigma;
       memberMap["getAccelerometerInRunScaleSigma"] = getAccelerometerInRunScaleSigma;
       memberMap["getAccelerometerInRunScaleStability"] = getAccelerometerInRunScaleStability;
+      memberMap["gyroscopeArrayRefresh"] = gyroscopeArrayRefresh;
+      memberMap["gyroscopeArrayHasData"] = gyroscopeArrayHasData;
+      memberMap["gyroscopeArrayFirst"] = gyroscopeArrayFirst;
+      memberMap["gyroscopeArrayLast"] = gyroscopeArrayLast;
+      memberMap["gyroscopeArrayGetTime"] = gyroscopeArrayGetTime;
       memberMap["getAngularRate"] = getAngularRate;
       memberMap["getAngularRateCalibrated"] = getAngularRateCalibrated;
       memberMap["getGyroscopeAngleRandomWalk"] = getGyroscopeAngleRandomWalk;
@@ -179,9 +206,24 @@ namespace PNAVPackageBridge
       memberMap["getGyroscopeTurnOnScaleSigma"] = getGyroscopeTurnOnScaleSigma;
       memberMap["getGyroscopeInRunScaleSigma"] = getGyroscopeInRunScaleSigma;
       memberMap["getGyroscopeInRunScaleStability"] = getGyroscopeInRunScaleStability;
+      memberMap["magnetometerArrayRefresh"] = magnetometerArrayRefresh;
+      memberMap["magnetometerArrayHasData"] = magnetometerArrayHasData;
+      memberMap["magnetometerArrayFirst"] = magnetometerArrayFirst;
+      memberMap["magnetometerArrayLast"] = magnetometerArrayLast;
+      memberMap["magnetometerArrayGetTime"] = magnetometerArrayGetTime;
       memberMap["getMagneticField"] = getMagneticField;
       memberMap["getMagneticFieldCalibrated"] = getMagneticFieldCalibrated;
+      memberMap["altimeterRefresh"] = altimeterRefresh;
+      memberMap["altimeterHasData"] = altimeterHasData;
+      memberMap["altimeterFirst"] = altimeterFirst;
+      memberMap["altimeterLast"] = altimeterLast;
+      memberMap["altimeterGetTime"] = altimeterGetTime;
       memberMap["getAltitude"] = getAltitude;
+      memberMap["gpsReceiverRefresh"] = gpsReceiverRefresh;
+      memberMap["gpsReceiverHasData"] = gpsReceiverHasData;
+      memberMap["gpsReceiverFirst"] = gpsReceiverFirst;
+      memberMap["gpsReceiverLast"] = gpsReceiverLast;
+      memberMap["gpsReceiverGetTime"] = gpsReceiverGetTime;
       memberMap["getLongitude"] = getLongitude;
       memberMap["getLatitude"] = getLatitude;
       memberMap["getHeight"] = getHeight;
@@ -266,28 +308,35 @@ namespace PNAVPackageBridge
         break;
       }
 
-      case hasData:
+      case accelerometerArrayRefresh:
+      {
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        sensor->refresh();
+        break;
+      }
+      
+      case accelerometerArrayHasData:
       {
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
         convert(sensor->hasData(), plhs[0]);
         break;
       }
 
-      case first:
+      case accelerometerArrayFirst:
       {
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
         convert(sensor->first(), plhs[0]);
         break;
       }
 
-      case last:
+      case accelerometerArrayLast:
       {
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
         convert(sensor->last(), plhs[0]);
         break;
       }
 
-      case getTime:
+      case accelerometerArrayGetTime:
       {
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
         static uint32_t n;
@@ -398,6 +447,44 @@ namespace PNAVPackageBridge
         break;
       }
 
+      case gyroscopeArrayRefresh:
+      {
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        sensor->refresh();
+        break;
+      }
+      
+      case gyroscopeArrayHasData:
+      {
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        convert(sensor->hasData(), plhs[0]);
+        break;
+      }
+
+      case gyroscopeArrayFirst:
+      {
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        convert(sensor->first(), plhs[0]);
+        break;
+      }
+
+      case gyroscopeArrayLast:
+      {
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        convert(sensor->last(), plhs[0]);
+        break;
+      }
+
+      case gyroscopeArrayGetTime:
+      {
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        static uint32_t n;
+        argcheck(nrhs, 2);
+        convert(prhs[1], n);
+        convert(sensor->getTime(n), plhs[0]);
+        break;
+      }
+      
       case getAngularRate:
       {
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
@@ -499,6 +586,44 @@ namespace PNAVPackageBridge
         break;
       }
 
+      case magnetometerArrayRefresh:
+      {
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        sensor->refresh();
+        break;
+      }
+      
+      case magnetometerArrayHasData:
+      {
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        convert(sensor->hasData(), plhs[0]);
+        break;
+      }
+
+      case magnetometerArrayFirst:
+      {
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        convert(sensor->first(), plhs[0]);
+        break;
+      }
+
+      case magnetometerArrayLast:
+      {
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        convert(sensor->last(), plhs[0]);
+        break;
+      }
+
+      case magnetometerArrayGetTime:
+      {
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        static uint32_t n;
+        argcheck(nrhs, 2);
+        convert(prhs[1], n);
+        convert(sensor->getTime(n), plhs[0]);
+        break;
+      }
+      
       case getMagneticField:
       {
         hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
@@ -550,6 +675,44 @@ namespace PNAVPackageBridge
         }
         break;
       }
+      
+      case altimeterRefresh:
+      {
+        hidi::Altimeter* sensor = package->getAltimeter();
+        sensor->refresh();
+        break;
+      }
+      
+      case altimeterHasData:
+      {
+        hidi::Altimeter* sensor = package->getAltimeter();
+        convert(sensor->hasData(), plhs[0]);
+        break;
+      }
+
+      case altimeterFirst:
+      {
+        hidi::Altimeter* sensor = package->getAltimeter();
+        convert(sensor->first(), plhs[0]);
+        break;
+      }
+
+      case altimeterLast:
+      {
+        hidi::Altimeter* sensor = package->getAltimeter();
+        convert(sensor->last(), plhs[0]);
+        break;
+      }
+
+      case altimeterGetTime:
+      {
+        hidi::Altimeter* sensor = package->getAltimeter();
+        static uint32_t n;
+        argcheck(nrhs, 2);
+        convert(prhs[1], n);
+        convert(sensor->getTime(n), plhs[0]);
+        break;
+      }
 
       case getAltitude:
       {
@@ -561,6 +724,44 @@ namespace PNAVPackageBridge
         break;
       }
 
+      case gpsReceiverRefresh:
+      {
+        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        sensor->refresh();
+        break;
+      }
+      
+      case gpsReceiverHasData:
+      {
+        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        convert(sensor->hasData(), plhs[0]);
+        break;
+      }
+
+      case gpsReceiverFirst:
+      {
+        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        convert(sensor->first(), plhs[0]);
+        break;
+      }
+
+      case gpsReceiverLast:
+      {
+        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        convert(sensor->last(), plhs[0]);
+        break;
+      }
+
+      case gpsReceiverGetTime:
+      {
+        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        static uint32_t n;
+        argcheck(nrhs, 2);
+        convert(prhs[1], n);
+        convert(sensor->getTime(n), plhs[0]);
+        break;
+      }
+      
       case getLongitude:
       {
         hidi::GPSReceiver* sensor = package->getGPSReceiver();
