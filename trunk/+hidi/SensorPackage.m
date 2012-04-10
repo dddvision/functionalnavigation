@@ -1,5 +1,4 @@
-classdef PNAVPackage < handle
-  
+classdef SensorPackage < handle
   methods (Access = private, Static = true)
     function dL = pDescriptionList(name, cD)
       persistent descriptionList
@@ -27,7 +26,7 @@ classdef PNAVPackage < handle
   end
   
   methods (Access = protected, Static = true)
-    function this = PNAVPackage(uri)
+    function this = SensorPackage(uri)
       if(nargin==0)
         uri = '';
       end
@@ -37,8 +36,8 @@ classdef PNAVPackage < handle
     function connect(name, cD, cF)
       if(isa(cD, 'function_handle')&&...
          isa(cF, 'function_handle'))
-         hidi.PNAVPackage.pDescriptionList(name, cD);
-         hidi.PNAVPackage.pFactoryList(name, cF);
+         hidi.SensorPackage.pDescriptionList(name, cD);
+         hidi.SensorPackage.pFactoryList(name, cF);
       end
     end
   end
@@ -53,7 +52,7 @@ classdef PNAVPackage < handle
         catch err
           fprintf('ERROR: %s', err.message);
         end
-        if(isKey(hidi.PNAVPackage.pFactoryList(name), name))
+        if(isKey(hidi.SensorPackage.pFactoryList(name), name))
           flag = true;
         end
       end
@@ -61,17 +60,17 @@ classdef PNAVPackage < handle
     
     function text = description(name)
       text = '';
-      if(hidi.PNAVPackage.isConnected(name))
-        dL = hidi.PNAVPackage.pDescriptionList(name);
+      if(hidi.SensorPackage.isConnected(name))
+        dL = hidi.SensorPackage.pDescriptionList(name);
         text = feval(dL(name));
       end
     end
     
     function obj = create(name, uri)
-      if(hidi.PNAVPackage.isConnected(name))
-        cF = hidi.PNAVPackage.pFactoryList(name);
+      if(hidi.SensorPackage.isConnected(name))
+        cF = hidi.SensorPackage.pFactoryList(name);
         obj = feval(cF(name), uri);
-        assert(isa(obj, 'hidi.PNAVPackage'));
+        assert(isa(obj, 'hidi.SensorPackage'));
       else
         error('"%s" is not connected. Its static initializer must call connect.', name);
       end
@@ -90,5 +89,4 @@ classdef PNAVPackage < handle
     getAltimeter(this);
     getGPSReceiver(this);
   end
-  
 end

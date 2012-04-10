@@ -1,4 +1,4 @@
-classdef PNAVPackageBridge < hidi.PNAVPackage
+classdef SensorPackageBridge < hidi.SensorPackage
   properties (SetAccess = private, GetAccess = private)
     m % mex name without extension
     accelerometerArray
@@ -15,60 +15,75 @@ classdef PNAVPackageBridge < hidi.PNAVPackage
       className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];     
       mName = [className, 'Bridge'];
       function text = componentDescription
-        text = feval(mName, 'PNAVPackageDescription', name);
+        text = feval(mName, uint32(0), 'SensorPackageDescription', name);
       end
       function obj = componentFactory(uri)
-        obj = hidi.PNAVPackageBridge(name, uri);
+        obj = hidi.SensorPackageBridge(name, uri);
       end
-      if(feval(mName, 'PNAVPackageIsConnected', name))
-        hidi.PNAVPackage.connect(name, @componentDescription, @componentFactory);
+      if(feval(mName, uint32(0), 'SensorPackageIsConnected', name))
+        hidi.SensorPackage.connect(name, @componentDescription, @componentFactory);
       end
     end
 
-    function this = PNAVPackageBridge(name, uri)
+    function this = SensorPackageBridge(name, uri)
       if(nargin==0)
         uri = '';
       end
-      this = this@hidi.PNAVPackage(uri);
+      this = this@hidi.SensorPackage(uri);
       if(nargin>0)
         assert(isa(name, 'char'));
         assert(isa(uri, 'char'));
         compileOnDemand(name);
         className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
         this.m = [className, 'Bridge'];
-        feval(this.m, 'PNAVPackageCreate', name, uri);
-        this.accelerometerArray = hidi.AccelerometerArrayBridge(this.m);
-        this.gyroscopeArray = hidi.GyroscopeArrayBridge(this.m);
-        this.magnetometerArray = hidi.MagnetometerArrayBridge(this.m);
-        this.altimeter = hidi.AltimeterBridge(this.m);
-        this.gpsReceiver = hidi.GPSReceiverBridge(this.m);
+        feval(this.m, uint32(0), 'SensorPackageCreate', name, uri);
       end
     end
   end
     
   methods (Access = public)    
     function sensor = getAccelerometerArray(this)
-      sensor = this.accelerometerArray;
+      h = feval(this.m, uint32(0), 'getAccelerometerArray');
+      sensor = repmat(hidi.AccelerometerArrayBridge, numel(h), 1);
+      for s = 1:numel(h)
+        sensor(s) = hidi.AccelerometerArrayBridge(this.m, h(s));
+      end
     end
     
     function sensor = getGyroscopeArray(this)
-      sensor = this.gyroscopeArray;
+      h = feval(this.m, uint32(0), 'getGyroscopeArray');
+      sensor = repmat(hidi.GyroscopeArrayBridge, numel(h), 1);
+      for s = 1:numel(h)
+        sensor(s) = hidi.GyroscopeArrayBridge(this.m, h(s));
+      end
     end
     
     function sensor = getMagnetometerArray(this)
-      sensor = this.magnetometerArray;
+      h = feval(this.m, uint32(0), 'getMagnetometerArray');
+      sensor = repmat(hidi.MagnetometerArrayBridge, numel(h), 1);
+      for s = 1:numel(h)
+        sensor(s) = hidi.MagnetometerArrayBridge(this.m, h(s));
+      end
     end
     
     function sensor = getAltimeter(this)
-      sensor = this.altimeter;
+      h = feval(this.m, uint32(0), 'getAltimeter');
+      sensor = repmat(hidi.AltimeterBridge, numel(h), 1);
+      for s = 1:numel(h)
+        sensor(s) = hidi.AltimeterBridge(this.m, h(s));
+      end
     end
     
     function sensor = getGPSReceiver(this)
-      sensor = this.gpsReceiver;
+      h = feval(this.m, uint32(0), 'getGPSReceiver');
+      sensor = repmat(hidi.GPSReceiverBridge, numel(h), 1);
+      for s = 1:numel(h)
+        sensor(s) = hidi.GPSReceiverBridge(this.m, h(s));
+      end
     end
     
     function refresh(this)
-      feval(this.m, 'refresh');
+      feval(this.m, uint32(0), 'refresh');
     end
   end
 end

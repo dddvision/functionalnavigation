@@ -1,16 +1,16 @@
 #include <map>
 #include <vector>
 #include "mex.h"
-#include "PNAVPackage.h"
+#include "SensorPackage.h"
 
-namespace PNAVPackageBridge
+namespace SensorPackageBridge
 {
-  enum PNAVPackageMember
+  enum SensorPackageMember
   {
     undefined,
-    PNAVPackageIsConnected,
-    PNAVPackageDescription,
-    PNAVPackageCreate,
+    SensorPackageIsConnected,
+    SensorPackageDescription,
+    SensorPackageCreate,
     getAccelerometerArray,
     getGyroscopeArray,
     getMagnetometerArray,
@@ -148,10 +148,24 @@ namespace PNAVPackageBridge
     array = mxCreateString(str.c_str());
     return;
   }
+  
+  template<class T>
+  void convert(std::vector<T> sensor, mxArray*& array)
+  {
+    uint32_t* data;
+    uint32_t index;
+    array = mxCreateNumericMatrix(sensor.size(), 1, mxUINT32_CLASS, mxREAL);
+    data = static_cast<uint32_t*>(mxGetData(array));
+    for(index = 0; index<sensor.size(); ++index)
+    {
+      data[index] = index;
+    }
+    return;
+  }
+  
+  static hidi::SensorPackage* package = NULL;
 
-  static hidi::PNAVPackage* package = NULL;
-
-  void deletePackage(void)
+  void deleteSensorPackage(void)
   {
     if(package)
     {
@@ -162,16 +176,17 @@ namespace PNAVPackageBridge
   
   void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
   {
+    static uint32_t index;
     static std::string memberName;
-    static std::map<std::string, PNAVPackageMember> memberMap;
+    static std::map<std::string, SensorPackageMember> memberMap;
     static bool initialized = false;
 
     if(!initialized)
     {
-      mexAtExit(deletePackage);
-      memberMap["PNAVPackageIsConnected"] = PNAVPackageIsConnected;
-      memberMap["PNAVPackageDescription"] = PNAVPackageDescription;
-      memberMap["PNAVPackageCreate"] = PNAVPackageCreate;
+      mexAtExit(deleteSensorPackage);
+      memberMap["SensorPackageIsConnected"] = SensorPackageIsConnected;
+      memberMap["SensorPackageDescription"] = SensorPackageDescription;
+      memberMap["SensorPackageCreate"] = SensorPackageCreate;
       memberMap["getAccelerometerArray"] = getAccelerometerArray;
       memberMap["getGyroscopeArray"] = getGyroscopeArray;
       memberMap["getMagnetometerArray"] = getMagnetometerArray;
@@ -234,8 +249,9 @@ namespace PNAVPackageBridge
       initialized = true;
     }
 
-    argcheck(nrhs, 1);
-    convert(prhs[0], memberName);
+    argcheck(nrhs, 2);
+    convert(prhs[0], index);
+    convert(prhs[1], memberName);
     switch(memberMap[memberName])
     {
       case undefined:
@@ -244,61 +260,63 @@ namespace PNAVPackageBridge
         break;
       }
       
-      case PNAVPackageIsConnected:
+      case SensorPackageIsConnected:
       {
+        argcheck(nrhs, 3);
         static std::string name;
-
-        argcheck(nrhs, 2);
-        convert(prhs[1], name);
-        convert(hidi::PNAVPackage::isConnected(name), plhs[0]);
+        convert(prhs[2], name);
+        convert(hidi::SensorPackage::isConnected(name), plhs[0]);
         break;
       }
       
-      case PNAVPackageDescription:
+      case SensorPackageDescription:
       {
+        argcheck(nrhs, 3);
         static std::string name;
-
-        argcheck(nrhs, 2);
-        convert(prhs[1], name);
-        convert(hidi::PNAVPackage::description(name), plhs[0]);
+        convert(prhs[2], name);
+        convert(hidi::SensorPackage::description(name), plhs[0]);
         break;
       }
       
-      case PNAVPackageCreate:
+      case SensorPackageCreate:
       {
+        argcheck(nrhs, 4);
         static std::string name;
         static std::string uri;
-
-        argcheck(nrhs, 3);
-        convert(prhs[1], name);
-        convert(prhs[2], uri);
-        deletePackage();
-        package = hidi::PNAVPackage::create(name, uri);
+        convert(prhs[2], name);
+        convert(prhs[3], uri);
+        deleteSensorPackage();
+        package = hidi::SensorPackage::create(name, uri);
         break;
       }
 
       case getAccelerometerArray:
       {
+        convert(package->getAccelerometerArray(), plhs[0]); 
         break;
       }
 
       case getGyroscopeArray:
       {
+        convert(package->getGyroscopeArray(), plhs[0]); 
         break;
       }
 
       case getMagnetometerArray:
       {
+        convert(package->getMagnetometerArray(), plhs[0]); 
         break;
       }
 
       case getAltimeter:
       {
+        convert(package->getAltimeter(), plhs[0]); 
         break;
       }
 
       case getGPSReceiver:
       {
+        convert(package->getGPSReceiver(), plhs[0]); 
         break;
       }
 
@@ -310,54 +328,54 @@ namespace PNAVPackageBridge
 
       case accelerometerArrayRefresh:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         sensor->refresh();
         break;
       }
       
       case accelerometerArrayHasData:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->hasData(), plhs[0]);
         break;
       }
 
       case accelerometerArrayFirst:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->first(), plhs[0]);
         break;
       }
 
       case accelerometerArrayLast:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->last(), plhs[0]);
         break;
       }
 
       case accelerometerArrayGetTime:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        argcheck(nrhs, 3);
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getTime(n), plhs[0]);
         break;
       }
 
       case getSpecificForce:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        argcheck(nrhs, 4);
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         static std::vector<uint32_t> n;
         static std::vector<uint32_t> ax;
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        argcheck(nrhs, 3);
-        convert(prhs[1], n);
-        convert(prhs[2], ax);
+        convert(prhs[2], n);
+        convert(prhs[3], ax);
         plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
@@ -374,16 +392,16 @@ namespace PNAVPackageBridge
 
       case getSpecificForceCalibrated:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        argcheck(nrhs, 4);
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         static std::vector<uint32_t> n;
         static std::vector<uint32_t> ax;
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        argcheck(nrhs, 3);
-        convert(prhs[1], n);
-        convert(prhs[2], ax);
+        convert(prhs[2], n);
+        convert(prhs[3], ax);
         plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
@@ -400,103 +418,103 @@ namespace PNAVPackageBridge
 
       case getAccelerometerVelocityRandomWalk:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->getAccelerometerVelocityRandomWalk(), plhs[0]);
         break;
       }
 
       case getAccelerometerTurnOnBiasSigma:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->getAccelerometerTurnOnBiasSigma(), plhs[0]);
         break;
       }
 
       case getAccelerometerInRunBiasSigma:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->getAccelerometerInRunBiasSigma(), plhs[0]);
         break;
       }
 
       case getAccelerometerInRunBiasStability:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->getAccelerometerInRunBiasStability(), plhs[0]);
         break;
       }
 
       case getAccelerometerTurnOnScaleSigma:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->getAccelerometerTurnOnScaleSigma(), plhs[0]);
         break;
       }
 
       case getAccelerometerInRunScaleSigma:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->getAccelerometerInRunScaleSigma(), plhs[0]);
         break;
       }
 
       case getAccelerometerInRunScaleStability:
       {
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray();
+        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         convert(sensor->getAccelerometerInRunScaleStability(), plhs[0]);
         break;
       }
 
       case gyroscopeArrayRefresh:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         sensor->refresh();
         break;
       }
       
       case gyroscopeArrayHasData:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->hasData(), plhs[0]);
         break;
       }
 
       case gyroscopeArrayFirst:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->first(), plhs[0]);
         break;
       }
 
       case gyroscopeArrayLast:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->last(), plhs[0]);
         break;
       }
 
       case gyroscopeArrayGetTime:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        argcheck(nrhs, 3);
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getTime(n), plhs[0]);
         break;
       }
       
       case getAngularRate:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        argcheck(nrhs, 4);
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         static std::vector<uint32_t> n;
         static std::vector<uint32_t> ax;
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        argcheck(nrhs, 3);
-        convert(prhs[1], n);
-        convert(prhs[2], ax);
+        convert(prhs[2], n);
+        convert(prhs[3], ax);
         plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
@@ -513,16 +531,16 @@ namespace PNAVPackageBridge
 
       case getAngularRateCalibrated:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        argcheck(nrhs, 4);
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         static std::vector<uint32_t> n;
         static std::vector<uint32_t> ax;
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        argcheck(nrhs, 3);
-        convert(prhs[1], n);
-        convert(prhs[2], ax);
+        convert(prhs[2], n);
+        convert(prhs[3], ax);
         plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
@@ -539,103 +557,103 @@ namespace PNAVPackageBridge
 
       case getGyroscopeAngleRandomWalk:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->getGyroscopeAngleRandomWalk(), plhs[0]);
         break;
       }
 
       case getGyroscopeTurnOnBiasSigma:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->getGyroscopeTurnOnBiasSigma(), plhs[0]);
         break;
       }
 
       case getGyroscopeInRunBiasSigma:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->getGyroscopeInRunBiasSigma(), plhs[0]);
         break;
       }
 
       case getGyroscopeInRunBiasStability:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->getGyroscopeInRunBiasStability(), plhs[0]);
         break;
       }
 
       case getGyroscopeTurnOnScaleSigma:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->getGyroscopeTurnOnScaleSigma(), plhs[0]);
         break;
       }
 
       case getGyroscopeInRunScaleSigma:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->getGyroscopeInRunScaleSigma(), plhs[0]);
         break;
       }
 
       case getGyroscopeInRunScaleStability:
       {
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray();
+        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         convert(sensor->getGyroscopeInRunScaleStability(), plhs[0]);
         break;
       }
 
       case magnetometerArrayRefresh:
       {
-        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
         sensor->refresh();
         break;
       }
       
       case magnetometerArrayHasData:
       {
-        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
         convert(sensor->hasData(), plhs[0]);
         break;
       }
 
       case magnetometerArrayFirst:
       {
-        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
         convert(sensor->first(), plhs[0]);
         break;
       }
 
       case magnetometerArrayLast:
       {
-        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
         convert(sensor->last(), plhs[0]);
         break;
       }
 
       case magnetometerArrayGetTime:
       {
-        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        argcheck(nrhs, 3);
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getTime(n), plhs[0]);
         break;
       }
       
       case getMagneticField:
       {
-        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        argcheck(nrhs, 4);
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
         static std::vector<uint32_t> n;
         static std::vector<uint32_t> ax;
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        argcheck(nrhs, 3);
-        convert(prhs[1], n);
-        convert(prhs[2], ax);
+        convert(prhs[2], n);
+        convert(prhs[3], ax);
         plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
@@ -652,16 +670,16 @@ namespace PNAVPackageBridge
 
       case getMagneticFieldCalibrated:
       {
-        hidi::MagnetometerArray* sensor = package->getMagnetometerArray();
+        argcheck(nrhs, 4);
+        hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
         static std::vector<uint32_t> n;
         static std::vector<uint32_t> ax;
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        argcheck(nrhs, 3);
-        convert(prhs[1], n);
-        convert(prhs[2], ax);
+        convert(prhs[2], n);
+        convert(prhs[3], ax);
         plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
@@ -678,153 +696,154 @@ namespace PNAVPackageBridge
       
       case altimeterRefresh:
       {
-        hidi::Altimeter* sensor = package->getAltimeter();
+        hidi::Altimeter* sensor = package->getAltimeter()[index];
         sensor->refresh();
         break;
       }
       
       case altimeterHasData:
       {
-        hidi::Altimeter* sensor = package->getAltimeter();
+        hidi::Altimeter* sensor = package->getAltimeter()[index];
         convert(sensor->hasData(), plhs[0]);
         break;
       }
 
       case altimeterFirst:
       {
-        hidi::Altimeter* sensor = package->getAltimeter();
+        hidi::Altimeter* sensor = package->getAltimeter()[index];
         convert(sensor->first(), plhs[0]);
         break;
       }
 
       case altimeterLast:
       {
-        hidi::Altimeter* sensor = package->getAltimeter();
+        hidi::Altimeter* sensor = package->getAltimeter()[index];
         convert(sensor->last(), plhs[0]);
         break;
       }
 
       case altimeterGetTime:
       {
-        hidi::Altimeter* sensor = package->getAltimeter();
+        argcheck(nrhs, 3);
+        hidi::Altimeter* sensor = package->getAltimeter()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getTime(n), plhs[0]);
         break;
       }
 
       case getAltitude:
       {
-        hidi::Altimeter* sensor = package->getAltimeter();
+        argcheck(nrhs, 3);
+        uint32_t index = (*static_cast<uint32_t*>(mxGetData(prhs[1])));
+        hidi::Altimeter* sensor = package->getAltimeter()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getAltitude(n), plhs[0]);
         break;
       }
 
       case gpsReceiverRefresh:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         sensor->refresh();
         break;
       }
       
       case gpsReceiverHasData:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         convert(sensor->hasData(), plhs[0]);
         break;
       }
 
       case gpsReceiverFirst:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         convert(sensor->first(), plhs[0]);
         break;
       }
 
       case gpsReceiverLast:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         convert(sensor->last(), plhs[0]);
         break;
       }
 
       case gpsReceiverGetTime:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        argcheck(nrhs, 3);
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getTime(n), plhs[0]);
         break;
       }
       
       case getLongitude:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        argcheck(nrhs, 3);
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getLongitude(n), plhs[0]);
         break;
       }
 
       case getLatitude:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        argcheck(nrhs, 3);
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getLatitude(n), plhs[0]);
         break;
       }
 
       case getHeight:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        argcheck(nrhs, 3);
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getLongitude(n), plhs[0]);
         break;
       }
 
       case hasPrecision:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         convert(sensor->hasPrecision(), plhs[0]);
         break;
       }
 
       case getPrecisionHorizontal:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        argcheck(nrhs, 3);
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getPrecisionHorizontal(n), plhs[0]);
         break;
       }
 
       case getPrecisionVertical:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        argcheck(nrhs, 3);
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getPrecisionVertical(n), plhs[0]);
         break;
       }
 
       case getPrecisionCircular:
       {
-        hidi::GPSReceiver* sensor = package->getGPSReceiver();
+        argcheck(nrhs, 3);
+        hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
         static uint32_t n;
-        argcheck(nrhs, 2);
-        convert(prhs[1], n);
+        convert(prhs[2], n);
         convert(sensor->getPrecisionCircular(n), plhs[0]);
         break;
       }
@@ -840,10 +859,10 @@ namespace PNAVPackageBridge
   
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
-  std::string prefix("PNAVPackageBridge: ");
+  std::string prefix("SensorPackageBridge: ");
   try
   {
-    PNAVPackageBridge::safeMexFunction(nlhs, plhs, nrhs, prhs);
+    SensorPackageBridge::safeMexFunction(nlhs, plhs, nrhs, prhs);
   }
   catch(std::exception& e)
   {
