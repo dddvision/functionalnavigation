@@ -1,59 +1,63 @@
 classdef GPSReceiverBridge < hidi.GPSReceiver
   properties (SetAccess = private, GetAccess = private)
     m % mex name without extension
+    h % handle to C++ object
   end
   
   methods (Access = public)
-    function this = GPSReceiverBridge(m)
-      this.m = m;
+    function this = GPSReceiverBridge(m, h)
+      if(nargin>0)
+        this.m = m;
+        this.h = h;
+      end
     end
     
     function refresh(this)
-      feval(this.m, 'gpsReceiverRefresh');
+      feval(this.m, this.h, 'gpsReceiverRefresh');
     end
     
     function flag = hasData(this)
-      flag = feval(this.m, 'gpsReceiverHasData');
+      flag = feval(this.m, this.h, 'gpsReceiverHasData');
     end
     
     function n = first(this)
-      n = feval(this.m, 'gpsReceiverFirst');
+      n = feval(this.m, this.h, 'gpsReceiverFirst');
     end
     
     function n = last(this)
-      n = feval(this.m, 'gpsReceiverLast');
+      n = feval(this.m, this.h, 'gpsReceiverLast');
     end
     
     function time = getTime(this, n)
-      time = feval(this.m, 'gpsReceiverGetTime', n);
+      time = feval(this.m, this.h, 'gpsReceiverGetTime', n);
     end
     
     function longitude = getLongitude(this, n)
-      longitude = feval(this.m, 'getLongitude', n);
+      longitude = feval(this.m, this.h, 'getLongitude', n);
     end
 
     function latitude = getLatitude(this, n)
-      latitude = feval(this.m, 'getLatitude', n);
+      latitude = feval(this.m, this.h, 'getLatitude', n);
     end
     
     function height = getHeight(this, n)
-      height = feval(this.m, 'getHeight', n);
+      height = feval(this.m, this.h, 'getHeight', n);
     end
     
     function flag = hasPrecision(this)
-      flag = feval(this.m, 'hasPrecision');
+      flag = feval(this.m, this.h, 'hasPrecision');
     end
     
     function horizontal = getPrecisionHorizontal(this, n)
-      horizontal = feval(this.m, 'getPrecisionHorizontal', n);
+      horizontal = feval(this.m, this.h, 'getPrecisionHorizontal', n);
     end
     
     function vertical = getPrecisionVertical(this, n)
-      vertical = feval(this.m, 'getPrecisionVertical', n);
+      vertical = feval(this.m, this.h, 'getPrecisionVertical', n);
     end
     
     function circular = getPrecisionCircular(this, n)
-      circular = feval(this.m, 'getPrecisionCircular', n);
+      circular = feval(this.m, this.h, 'getPrecisionCircular', n);
     end
   end
 end
