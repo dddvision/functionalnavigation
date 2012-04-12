@@ -81,12 +81,34 @@ classdef SensorPackage < handle
     initialize(name);
   end
     
-  methods (Abstract = true, Access = public)
-    refresh(this);
-    getAccelerometerArray(this);
-    getGyroscopeArray(this);
-    getMagnetometerArray(this);
-    getAltimeter(this);
-    getGPSReceiver(this);
+  methods (Access = public)
+    function refresh(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+    end
+    
+    function sensor = getAccelerometerArray(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = repmat(hidi.AccelerometerArray, 0, 1);
+    end
+      
+    function sensor = getGyroscopeArray(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = repmat(hidi.GyroscopeArray, 0, 1);
+    end
+    
+    function sensor = getMagnetometerArray(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = repmat(hidi.MagnetometerArray, 0, 1);
+    end
+    
+    function sensor = getAltimeter(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = repmat(hidi.Altimeter, 0, 1);
+    end
+    
+    function sensor = getGPSReceiver(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = repmat(hidi.GPSReceiver, 0, 1);
+    end
   end
 end
