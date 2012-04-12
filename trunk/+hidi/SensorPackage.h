@@ -152,42 +152,65 @@ namespace hidi
      * @note
      * This function updates the object state without waiting for new data to be acquired.
      */
-    virtual void refresh(void) = 0;
+    void refresh(void)
+    {
+      return;
+    }
 
     /**
      * Get accelerometer array.
      *
      * @return vector of pointers to shared resources (do not delete)
      */
-    virtual std::vector<AccelerometerArray*> getAccelerometerArray(void) = 0;
+    std::vector<AccelerometerArray*> getAccelerometerArray(void)
+    {
+      std::vector<AccelerometerArray*> sensor(0);
+      return (sensor);
+    }
 
     /**
      * Get gyroscope array.
      *
      * @return vector of pointers to shared resources (do not delete)
      */
-    virtual std::vector<GyroscopeArray*> getGyroscopeArray(void) = 0;
-
+    std::vector<GyroscopeArray*> getGyroscopeArray(void)
+    {
+      std::vector<GyroscopeArray*> sensor(0);
+      return (sensor);
+    }
+    
     /**
      * Get magnetometer array.
      *
      * @return vector of pointers to shared resources (do not delete)
      */
-    virtual std::vector<MagnetometerArray*> getMagnetometerArray(void) = 0;
+    std::vector<MagnetometerArray*> getMagnetometerArray(void)
+    {
+      std::vector<MagnetometerArray*> sensor(0);
+      return (sensor);
+    }
 
     /**
      * Get altimeter.
      *
      * @return vector of pointers to shared resources (do not delete)
      */
-    virtual std::vector<Altimeter*> getAltimeter(void) = 0;
+    std::vector<Altimeter*> getAltimeter(void)
+    {
+      std::vector<Altimeter*> sensor(0);
+      return (sensor);
+    }
 
     /**
      * Get GPS receiver.
      *
      * @return vector of pointers to shared resources (do not delete)
      */
-    virtual std::vector<GPSReceiver*> getGPSReceiver(void) = 0;
+    std::vector<GPSReceiver*> getGPSReceiver(void)
+    {
+      std::vector<GPSReceiver*> sensor(0);
+      return (sensor);
+    }
 
     /**
      * Virtual base class destructor.
