@@ -33,7 +33,7 @@ namespace hidi
      * Get accelerometer data.
      *
      * @param[in]  n  data index
-     * @param[in]  ax one-based axis index
+     * @param[in]  ax axis index
      * @return        average specific force during the preceding integration period (meter/second^2)
      *
      * @note
@@ -49,7 +49,7 @@ namespace hidi
      * Get accelerometer data calibrated for nominal rotation, bias, and scale.
      *
      * @param[in]  n  data index
-     * @param[in]  ax one-based axis index
+     * @param[in]  ax axis index
      * @return        average specific force during the preceding integration period (meter/second^2)
      *
      * @note
