@@ -359,15 +359,18 @@ namespace SensorPackageBridge
         argcheck(nrhs, 3);
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
         static std::vector<uint32_t> n;
+        mxArray* time;
         double* data;
         size_t k;
         convert(prhs[2], n);
-        plhs[0] = mxCreateDoubleMatrix(1, n.size(), mxREAL);
-        data = mxGetPr(plhs[0]);
+        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
+        data = mxGetPr(time);
         for(k = 0; k<n.size(); ++k)
         {
           data[k] = sensor->getTime(n[k]);
         }
+        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mxDestroyArray(time); 
         break;
       }
 
@@ -505,15 +508,18 @@ namespace SensorPackageBridge
         argcheck(nrhs, 3);
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
         static std::vector<uint32_t> n;
+        mxArray* time;
         double* data;
         size_t k;
         convert(prhs[2], n);
-        plhs[0] = mxCreateDoubleMatrix(1, n.size(), mxREAL);
-        data = mxGetPr(plhs[0]);
+        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
+        data = mxGetPr(time);
         for(k = 0; k<n.size(); ++k)
         {
           data[k] = sensor->getTime(n[k]);
         }
+        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mxDestroyArray(time);
         break;
       }
       
@@ -651,15 +657,18 @@ namespace SensorPackageBridge
         argcheck(nrhs, 3);
         hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
         static std::vector<uint32_t> n;
+        mxArray* time;
         double* data;
         size_t k;
         convert(prhs[2], n);
-        plhs[0] = mxCreateDoubleMatrix(1, n.size(), mxREAL);
-        data = mxGetPr(plhs[0]);
+        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
+        data = mxGetPr(time);
         for(k = 0; k<n.size(); ++k)
         {
           data[k] = sensor->getTime(n[k]);
         }
+        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mxDestroyArray(time);
         break;
       }
       
@@ -747,9 +756,19 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::Altimeter* sensor = package->getAltimeter()[index];
-        static uint32_t n;
+        static std::vector<uint32_t> n;
+        mxArray* time;
+        double* data;
+        size_t k;
         convert(prhs[2], n);
-        convert(sensor->getTime(n), plhs[0]);
+        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
+        data = mxGetPr(time);
+        for(k = 0; k<n.size(); ++k)
+        {
+          data[k] = sensor->getTime(n[k]);
+        }
+        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mxDestroyArray(time);
         break;
       }
 
@@ -796,9 +815,19 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
-        static uint32_t n;
+        static std::vector<uint32_t> n;
+        mxArray* time;
+        double* data;
+        size_t k;
         convert(prhs[2], n);
-        convert(sensor->getTime(n), plhs[0]);
+        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
+        data = mxGetPr(time);
+        for(k = 0; k<n.size(); ++k)
+        {
+          data[k] = sensor->getTime(n[k]);
+        }
+        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mxDestroyArray(time);
         break;
       }
       
