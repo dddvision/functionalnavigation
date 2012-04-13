@@ -369,7 +369,7 @@ namespace SensorPackageBridge
         {
           data[k] = sensor->getTime(n[k]);
         }
-        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
         mxDestroyArray(time); 
         break;
       }
@@ -518,7 +518,7 @@ namespace SensorPackageBridge
         {
           data[k] = sensor->getTime(n[k]);
         }
-        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
         mxDestroyArray(time);
         break;
       }
@@ -667,7 +667,7 @@ namespace SensorPackageBridge
         {
           data[k] = sensor->getTime(n[k]);
         }
-        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
         mxDestroyArray(time);
         break;
       }
@@ -767,7 +767,7 @@ namespace SensorPackageBridge
         {
           data[k] = sensor->getTime(n[k]);
         }
-        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
         mxDestroyArray(time);
         break;
       }
@@ -826,7 +826,7 @@ namespace SensorPackageBridge
         {
           data[k] = sensor->getTime(n[k]);
         }
-        mexCallMATLAB(1, plhs[0], 1, &time, "hidi.WorldTime");
+        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
         mxDestroyArray(time);
         break;
       }
