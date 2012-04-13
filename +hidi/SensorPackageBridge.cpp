@@ -358,9 +358,16 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
-        static uint32_t n;
+        static std::vector<uint32_t> n;
+        double* data;
+        size_t k;
         convert(prhs[2], n);
-        convert(sensor->getTime(n), plhs[0]);
+        plhs[0] = mxCreateDoubleMatrix(1, n.size(), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<n.size(); ++k)
+        {
+          data[k] = sensor->getTime(n[k]);
+        }
         break;
       }
 
@@ -497,9 +504,16 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-        static uint32_t n;
+        static std::vector<uint32_t> n;
+        double* data;
+        size_t k;
         convert(prhs[2], n);
-        convert(sensor->getTime(n), plhs[0]);
+        plhs[0] = mxCreateDoubleMatrix(1, n.size(), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<n.size(); ++k)
+        {
+          data[k] = sensor->getTime(n[k]);
+        }
         break;
       }
       
@@ -636,9 +650,16 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-        static uint32_t n;
+        static std::vector<uint32_t> n;
+        double* data;
+        size_t k;
         convert(prhs[2], n);
-        convert(sensor->getTime(n), plhs[0]);
+        plhs[0] = mxCreateDoubleMatrix(1, n.size(), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<n.size(); ++k)
+        {
+          data[k] = sensor->getTime(n[k]);
+        }
         break;
       }
       
