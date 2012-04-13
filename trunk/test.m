@@ -19,7 +19,7 @@ function test(name)
         
   % initialize the default pseudorandom number generator
   if(matlabVersion<2010)
-    RandStream.getDefaultStream.reset();
+    RandStream.getDefaultStream.reset(); %#ok supports legacy versions
   else
     RandStream.getGlobalStream.reset();
   end
