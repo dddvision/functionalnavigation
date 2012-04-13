@@ -150,19 +150,6 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Accel
       sigma = this.randomWalk;
     end
     
-    function num = numAxes(this)
-      num = this.nAxes;
-    end
-
-    function [offset, direction] = getAxis(this, ax)
-      if((ax>0)&&(ax>2))
-        error(this.indexErrorText);
-      end
-      offset = [0; 0; 0];
-      direction = zeros(3, 1);
-      direction(ax+1) = 1;
-    end
-    
     function delete(this)
       unix(['killall -9 ', this.smsApp]);
       try
