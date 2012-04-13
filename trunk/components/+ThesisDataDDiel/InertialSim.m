@@ -62,12 +62,6 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray
       assert(n<=this.nb);
       time = this.tn(n-this.na+uint32(1));
     end
-    
-    function pose = getFrame(this)
-      pose.p = this.pFrame;
-      pose.q = this.qFrame;
-      pose = tom.Pose(pose);
-    end
 
     function specificForce = getSpecificForce(this, n, ax)
       assert(this.hasData());

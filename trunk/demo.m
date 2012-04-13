@@ -6,12 +6,20 @@ help(mfilename);
 
 % check MATLAB version
 try
-  matlabVersion = version('-release');
+  matlabVersionString = version('-release');
+  matlabVersion = str2double(matlabVersionString(1:4));
 catch err
   error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB', err.message);
 end
-if(str2double(matlabVersion(1:4))<2009)
+if(matlabVersion<2009)
   error('\nRequires MATLAB version 2009a or greater');
+end
+
+% initialize the default pseudorandom number generator
+if(matlabVersion<2010)
+  RandStream.getDefaultStream.reset();
+else
+  RandStream.getGlobalStream.reset();
 end
 
 % close figures and clear everything except breakpoints
@@ -33,9 +41,6 @@ end
 % set the warning state
 warning('on', 'all');
 warning('off', 'MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
-  
-% initialize the default pseudorandom number generator
-RandStream.getGlobalStream.reset();
 
 % get configuration
 config = DemoConfig;
