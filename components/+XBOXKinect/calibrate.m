@@ -20,7 +20,7 @@ function calibrate
 
   % add component repository to the path
   componentPath = fullfile(fileparts(mfilename('fullpath')), 'components');
-  if(isempty(findstr(componentPath, path)))
+  if(isempty(strfind(path, componentPath)))
     addpath(componentPath);
     fprintf('\naddpath = %s', componentPath);
   end
@@ -30,11 +30,11 @@ function calibrate
   warning('off', 'MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
 
   % initialize the default pseudorandom number generator
-  RandStream.getDefaultStream.reset();
+  RandStream.getGlobalStream.reset();
 
   dc = hidi.DataContainer.create('XBOXKinect', hidi.getCurrentTime());
 
-  maccam = dc.getSensor(uint32(0));
+%  maccam = dc.getSensor(uint32(0));
   kinect = dc.getSensor(uint32(1));
 
   for n = uint32(799)
@@ -42,7 +42,7 @@ function calibrate
     
     % rotate and translate those points
     [R2, T2] = ndgrid(-0.04:0.001:0.04, -0.08:0.002:0.08);
-    [I, J] = size(R2);
+%     [I, J] = size(R2);
 %     penalty = zeros(I, J);
 %     for i = 1:I
 %       for j = 1:J

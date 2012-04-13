@@ -20,35 +20,24 @@ void interrupt(int signum)
   return;
 }
 
-namespace tom
+/**
+ * Get the current time of day from the operating system.
+ *
+ * @return current system time as a double
+ *
+ * @note
+ * The default reference is GPS time at the prime meridian in seconds since 1980 JAN 06 T00:00:00.
+ * GPS time is a few seconds ahead of UTC.
+ * Choosing another time system may adversely affect interoperability between framework classes.
+ */
+double getCurrentTime(void)
 {
-  /**
-   * This class represents a world time system.
-   *
-   * @note
-   * The default reference is GPS time at the prime meridian in seconds since 1980 JAN 06 T00:00:00.
-   * GPS time is a few seconds ahead of UTC.
-   * Choosing another time system may adversely affect interoperability between framework classes.
-   */
-  typedef double WorldTime;
-}
-
-namespace hidi
-{
-  /**
-   * Get the current time of day from the operating system.
-   *
-   * @return current system time in hidi::WorldTime format
-   */
-  hidi::WorldTime getCurrentTime(void)
-  {
-    timeval tv;
-    long int offset = 315964800; // difference between Jan 6 1980 and Jan 1 1979
-    double time;
-    gettimeofday(&tv, NULL);
-    time = static_cast<double> (tv.tv_sec-offset)+static_cast<double> (tv.tv_usec)/1000000.0;
-    return (time);
-  }
+  timeval tv;
+  long int offset = 315964800; // difference between Jan 6 1980 and Jan 1 1979
+  double time;
+  gettimeofday(&tv, NULL);
+  time = static_cast<double> (tv.tv_sec-offset)+static_cast<double> (tv.tv_usec)/1000000.0;
+  return (time);
 }
 
 class Mutex
@@ -149,7 +138,7 @@ public:
 
       sprintf(str, "time%06u.dat", count);
       timeFile.open(str, std::ios::out | std::ios::binary);
-      sprintf(str, "%016.6lf", hidi::getCurrentTime());
+      sprintf(str, "%016.6lf", getCurrentTime());
       timeFile << str << std::endl;
       timeFile.close();
 
