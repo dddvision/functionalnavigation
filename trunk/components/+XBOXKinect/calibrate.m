@@ -1,13 +1,20 @@
 function calibrate
-
   % check MATLAB version
   try
-    matlabVersion = version('-release');
+    matlabVersionString = version('-release');
+    matlabVersion = str2double(matlabVersionString(1:4));
   catch err
     error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB', err.message);
   end
-  if(str2double(matlabVersion(1:4))<2009)
-    error('\nTOMMAS requires MATLAB version 2009a or greater');
+  if(matlabVersion<2009)
+    error('\nRequires MATLAB version 2009a or greater');
+  end
+
+  % initialize the default pseudorandom number generator
+  if(matlabVersion<2010)
+    RandStream.getDefaultStream.reset(); %#ok supports legacy versions
+  else
+    RandStream.getGlobalStream.reset();
   end
 
   % close figures and clear everything except breakpoints
@@ -28,9 +35,6 @@ function calibrate
   % set the warning state
   warning('on', 'all');
   warning('off', 'MATLAB:intMathOverflow'); % see performance remark in "doc intwarning"
-
-  % initialize the default pseudorandom number generator
-  RandStream.getGlobalStream.reset();
 
   dc = hidi.DataContainer.create('XBOXKinect', hidi.getCurrentTime());
 
