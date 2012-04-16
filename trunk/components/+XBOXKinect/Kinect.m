@@ -99,7 +99,10 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
     
     function time = getTime(this, n)
       assert(this.ready)
-      time = hidi.WorldTime(dlmread(fullfile(this.localCache, ['time', num2str(n, this.fileFormat), '.dat'])));
+      time = hidi.WorldTime(zeros(size(n)));
+      for k = 1:numel(n)
+        time(k) = hidi.WorldTime(dlmread(fullfile(this.localCache, ['time', num2str(n(k), this.fileFormat), '.dat'])));
+      end
     end
     
     function num = numStrides(this)

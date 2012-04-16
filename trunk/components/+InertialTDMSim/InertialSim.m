@@ -69,16 +69,20 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray & InertialT
     
     function time = getTime(this, n)
       assert(this.hasData());
-      assert(n>=this.nFirst);
-      assert(n<=this.nLast);
-      time = hidi.WorldTime(this.initialTime+double(this.nLast)*this.tau);
+      assert(all(n>=this.nFirst));
+      assert(all(n<=this.nLast));
+      time = hidi.WorldTime(this.initialTime+double(n-this.nFirst)*this.tau);
     end
 
-    function specificForce = getSpecificForce(this, n, ax)
+    function force = getSpecificForce(this, n, ax)
       assert(this.hasData());
-      assert(n>=this.nFirst);
-      assert(n<=this.nLast);
-      specificForce = this.aData(ax+1, n);
+      assert(all(n>=this.nFirst));
+      assert(all(n<=this.nLast));
+      force = this.aData(ax+1, n)';
+    end
+    
+    function force = getSpecificForceCalibrated(this, n, ax)
+      force = this.getSpecificForce(this, n, ax);
     end
     
     function walk = getAccelerometerVelocityRandomWalk(this)
@@ -109,11 +113,15 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray & InertialT
       tau = this.stats.Accel.Scale.Decay;
     end
         
-    function angularRate = getAngularRate(this, n, ax)
+    function rate = getAngularRate(this, n, ax)
       assert(this.hasData());
-      assert(n>=this.nFirst);
-      assert(n<=this.nLast);
-      angularRate = this.gData(ax+1, n);
+      assert(all(n>=this.nFirst));
+      assert(all(n<=this.nLast));
+      rate = this.gData(ax+1, n)';
+    end
+    
+    function rate = getAngularRateCalibrated(this, n, ax)
+      rate = getAngularRate(this, n, ax);
     end
     
     function walk = getGyroscopeAngleRandomWalk(this)

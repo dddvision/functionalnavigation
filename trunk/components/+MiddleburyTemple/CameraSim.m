@@ -78,9 +78,10 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
     
     function time = getTime(this, n)
       assert(this.hasData());
-      assert(n>=this.na);
-      assert(n<=this.nb);
-      time = this.tn(n-this.na+uint32(1));
+      assert(all(n>=this.na));
+      assert(all(n<=this.nb));
+      time = hidi.WorldTime(zeros(size(n)));
+      time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     
     function num = numSteps(this, varargin)
