@@ -81,12 +81,18 @@ namespace SensorPackageBridge
     return;
   }
 
-  void convert(const mxArray*& array, uint32_t& value)
+  void uint32check(const mxArray*& array)
   {
-    if(mxGetClassID(array)!=mxUINT32_CLASS)
+    if((mxGetClassID(array)!=mxUINT32_CLASS))
     {
       throw("Array must be uint32.");
     }
+    return;
+  }
+  
+  void convert(const mxArray*& array, uint32_t& value)
+  {
+    uint32check(array);
     value = (*static_cast<uint32_t*>(mxGetData(array)));
     return;
   }
@@ -96,10 +102,7 @@ namespace SensorPackageBridge
     uint32_t* data;
     size_t n;
     size_t N;
-    if(mxGetClassID(array)!=mxUINT32_CLASS)
-    {
-      throw("Array must be uint32.");
-    }
+    uint32check(array);
     N = mxGetNumberOfElements(array);
     data = (uint32_t*)mxGetData(array);
     value.resize(N, 0);
@@ -150,7 +153,7 @@ namespace SensorPackageBridge
   }
   
   template<class T>
-  void convert(std::vector<T> sensor, mxArray*& array)
+  void getSensor(std::vector<T> sensor, mxArray*& array)
   {
     uint32_t* data;
     uint32_t index;
@@ -160,6 +163,24 @@ namespace SensorPackageBridge
     {
       data[index] = index;
     }
+    return;
+  }
+
+  void getTime(hidi::Sensor* sensor, const mxArray*& n, mxArray*& array)
+  {
+    uint32check(n);
+    mxArray* time = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+    double* data = mxGetPr(time);
+    uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+    size_t K = mxGetNumberOfElements(n);
+    size_t k = 0;
+    while(k<K)
+    {
+      data[k] = sensor->getTime(node[k]);
+      ++k;
+    }
+    mexCallMATLAB(1, &array, 1, &time, "hidi.WorldTime");
+    mxDestroyArray(time);
     return;
   }
   
@@ -292,31 +313,31 @@ namespace SensorPackageBridge
 
       case getAccelerometerArray:
       {
-        convert(package->getAccelerometerArray(), plhs[0]); 
+        getSensor(package->getAccelerometerArray(), plhs[0]); 
         break;
       }
 
       case getGyroscopeArray:
       {
-        convert(package->getGyroscopeArray(), plhs[0]); 
+        getSensor(package->getGyroscopeArray(), plhs[0]); 
         break;
       }
 
       case getMagnetometerArray:
       {
-        convert(package->getMagnetometerArray(), plhs[0]); 
+        getSensor(package->getMagnetometerArray(), plhs[0]); 
         break;
       }
 
       case getAltimeter:
       {
-        convert(package->getAltimeter(), plhs[0]); 
+        getSensor(package->getAltimeter(), plhs[0]); 
         break;
       }
 
       case getGPSReceiver:
       {
-        convert(package->getGPSReceiver(), plhs[0]); 
+        getSensor(package->getGPSReceiver(), plhs[0]); 
         break;
       }
 
@@ -358,19 +379,7 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
-        static std::vector<uint32_t> n;
-        mxArray* time;
-        double* data;
-        size_t k;
-        convert(prhs[2], n);
-        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
-        data = mxGetPr(time);
-        for(k = 0; k<n.size(); ++k)
-        {
-          data[k] = sensor->getTime(n[k]);
-        }
-        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
-        mxDestroyArray(time); 
+        getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
         break;
       }
 
@@ -378,22 +387,26 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 4);
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
-        static std::vector<uint32_t> n;
-        static std::vector<uint32_t> ax;
+        const mxArray* n = prhs[2];
+        const mxArray* ax = prhs[3];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
+        size_t N = mxGetNumberOfElements(n);
+        size_t A = mxGetNumberOfElements(ax);
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        convert(prhs[2], n);
-        convert(prhs[3], ax);
-        plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
+        uint32check(n);
+        uint32check(ax);
+        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
-        for(j = 0; j<n.size(); ++j)
+        for(j = 0; j<A; ++j)
         {
-          for(i = 0; i<ax.size(); ++i)
+          for(i = 0; i<N; ++i)
           {
-            data[k] = sensor->getSpecificForce(n[j], ax[i]);
+            data[k] = sensor->getSpecificForce(node[i], axis[j]);
             ++k;
           }
         }
@@ -404,22 +417,26 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 4);
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
-        static std::vector<uint32_t> n;
-        static std::vector<uint32_t> ax;
+        const mxArray* n = prhs[2];
+        const mxArray* ax = prhs[3];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
+        size_t N = mxGetNumberOfElements(n);
+        size_t A = mxGetNumberOfElements(ax);
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        convert(prhs[2], n);
-        convert(prhs[3], ax);
-        plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
+        uint32check(n);
+        uint32check(ax);
+        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
-        for(j = 0; j<n.size(); ++j)
+        for(j = 0; j<A; ++j)
         {
-          for(i = 0; i<ax.size(); ++i)
+          for(i = 0; i<N; ++i)
           {
-            data[k] = sensor->getSpecificForceCalibrated(n[j], ax[i]);
+            data[k] = sensor->getSpecificForceCalibrated(node[i], axis[j]);
             ++k;
           }
         }
@@ -507,19 +524,7 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-        static std::vector<uint32_t> n;
-        mxArray* time;
-        double* data;
-        size_t k;
-        convert(prhs[2], n);
-        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
-        data = mxGetPr(time);
-        for(k = 0; k<n.size(); ++k)
-        {
-          data[k] = sensor->getTime(n[k]);
-        }
-        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
-        mxDestroyArray(time);
+        getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
         break;
       }
       
@@ -527,22 +532,26 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 4);
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-        static std::vector<uint32_t> n;
-        static std::vector<uint32_t> ax;
+        const mxArray* n = prhs[2];
+        const mxArray* ax = prhs[3];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
+        size_t N = mxGetNumberOfElements(n);
+        size_t A = mxGetNumberOfElements(ax);
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        convert(prhs[2], n);
-        convert(prhs[3], ax);
-        plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
+        uint32check(n);
+        uint32check(ax);
+        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
-        for(j = 0; j<n.size(); ++j)
+        for(j = 0; j<A; ++j)
         {
-          for(i = 0; i<ax.size(); ++i)
+          for(i = 0; i<N; ++i)
           {
-            data[k] = sensor->getAngularRate(n[j], ax[i]);
+            data[k] = sensor->getAngularRate(node[i], axis[j]);
             ++k;
           }
         }
@@ -553,22 +562,26 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 4);
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-        static std::vector<uint32_t> n;
-        static std::vector<uint32_t> ax;
+        const mxArray* n = prhs[2];
+        const mxArray* ax = prhs[3];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
+        size_t N = mxGetNumberOfElements(n);
+        size_t A = mxGetNumberOfElements(ax);
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        convert(prhs[2], n);
-        convert(prhs[3], ax);
-        plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
+        uint32check(n);
+        uint32check(ax);
+        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
-        for(j = 0; j<n.size(); ++j)
+        for(j = 0; j<A; ++j)
         {
-          for(i = 0; i<ax.size(); ++i)
+          for(i = 0; i<N; ++i)
           {
-            data[k] = sensor->getAngularRateCalibrated(n[j], ax[i]);
+            data[k] = sensor->getAngularRateCalibrated(node[i], axis[j]);
             ++k;
           }
         }
@@ -656,19 +669,7 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-        static std::vector<uint32_t> n;
-        mxArray* time;
-        double* data;
-        size_t k;
-        convert(prhs[2], n);
-        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
-        data = mxGetPr(time);
-        for(k = 0; k<n.size(); ++k)
-        {
-          data[k] = sensor->getTime(n[k]);
-        }
-        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
-        mxDestroyArray(time);
+        getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
         break;
       }
       
@@ -676,22 +677,26 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 4);
         hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-        static std::vector<uint32_t> n;
-        static std::vector<uint32_t> ax;
+        const mxArray* n = prhs[2];
+        const mxArray* ax = prhs[3];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
+        size_t N = mxGetNumberOfElements(n);
+        size_t A = mxGetNumberOfElements(ax);
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        convert(prhs[2], n);
-        convert(prhs[3], ax);
-        plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
+        uint32check(n);
+        uint32check(ax);
+        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
-        for(j = 0; j<n.size(); ++j)
+        for(j = 0; j<A; ++j)
         {
-          for(i = 0; i<ax.size(); ++i)
+          for(i = 0; i<N; ++i)
           {
-            data[k] = sensor->getMagneticField(n[j], ax[i]);
+            data[k] = sensor->getMagneticField(node[i], axis[j]);
             ++k;
           }
         }
@@ -702,22 +707,26 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 4);
         hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-        static std::vector<uint32_t> n;
-        static std::vector<uint32_t> ax;
+        const mxArray* n = prhs[2];
+        const mxArray* ax = prhs[3];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
+        size_t N = mxGetNumberOfElements(n);
+        size_t A = mxGetNumberOfElements(ax);
         double* data;
         size_t i;
         size_t j;
         size_t k;
-        convert(prhs[2], n);
-        convert(prhs[3], ax);
-        plhs[0] = mxCreateDoubleMatrix(ax.size(), n.size(), mxREAL);
+        uint32check(n);
+        uint32check(ax);
+        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
         data = mxGetPr(plhs[0]);
         k = 0;
-        for(j = 0; j<n.size(); ++j)
+        for(j = 0; j<A; ++j)
         {
-          for(i = 0; i<ax.size(); ++i)
+          for(i = 0; i<N; ++i)
           {
-            data[k] = sensor->getMagneticFieldCalibrated(n[j], ax[i]);
+            data[k] = sensor->getMagneticFieldCalibrated(node[i], axis[j]);
             ++k;
           }
         }
@@ -756,30 +765,26 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::Altimeter* sensor = package->getAltimeter()[index];
-        static std::vector<uint32_t> n;
-        mxArray* time;
-        double* data;
-        size_t k;
-        convert(prhs[2], n);
-        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
-        data = mxGetPr(time);
-        for(k = 0; k<n.size(); ++k)
-        {
-          data[k] = sensor->getTime(n[k]);
-        }
-        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
-        mxDestroyArray(time);
+        getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
         break;
       }
 
       case getAltitude:
       {
         argcheck(nrhs, 3);
-        uint32_t index = (*static_cast<uint32_t*>(mxGetData(prhs[1])));
         hidi::Altimeter* sensor = package->getAltimeter()[index];
-        static uint32_t n;
-        convert(prhs[2], n);
-        convert(sensor->getAltitude(n), plhs[0]);
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getAltitude(node[k]);
+        }
         break;
       }
 
@@ -815,19 +820,7 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
-        static std::vector<uint32_t> n;
-        mxArray* time;
-        double* data;
-        size_t k;
-        convert(prhs[2], n);
-        time = mxCreateDoubleMatrix(1, n.size(), mxREAL);
-        data = mxGetPr(time);
-        for(k = 0; k<n.size(); ++k)
-        {
-          data[k] = sensor->getTime(n[k]);
-        }
-        mexCallMATLAB(1, &plhs[0], 1, &time, "hidi.WorldTime");
-        mxDestroyArray(time);
+        getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
         break;
       }
       
@@ -835,9 +828,18 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
-        static uint32_t n;
-        convert(prhs[2], n);
-        convert(sensor->getLongitude(n), plhs[0]);
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getLongitude(node[k]);
+        }
         break;
       }
 
@@ -845,9 +847,18 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
-        static uint32_t n;
-        convert(prhs[2], n);
-        convert(sensor->getLatitude(n), plhs[0]);
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getLatitude(node[k]);
+        }
         break;
       }
 
@@ -855,9 +866,18 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
-        static uint32_t n;
-        convert(prhs[2], n);
-        convert(sensor->getLongitude(n), plhs[0]);
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getHeight(node[k]);
+        }
         break;
       }
 
@@ -872,9 +892,18 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
-        static uint32_t n;
-        convert(prhs[2], n);
-        convert(sensor->getPrecisionHorizontal(n), plhs[0]);
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getPrecisionHorizontal(node[k]);
+        }
         break;
       }
 
@@ -882,9 +911,18 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
-        static uint32_t n;
-        convert(prhs[2], n);
-        convert(sensor->getPrecisionVertical(n), plhs[0]);
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getPrecisionVertical(node[k]);
+        }
         break;
       }
 
@@ -892,9 +930,18 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
-        static uint32_t n;
-        convert(prhs[2], n);
-        convert(sensor->getPrecisionCircular(n), plhs[0]);
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getPrecisionCircular(node[k]);
+        }
         break;
       }
 
