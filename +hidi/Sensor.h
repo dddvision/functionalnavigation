@@ -83,8 +83,8 @@ namespace hidi
     /**
      * Get time stamp at a node.
      *
-     * @param[in] n index of a node
-     * @return      time stamp at the node
+     * @param[in] n index of a node (MATLAB: M-by-N)
+     * @return      time stamp at the node (MATLAB: M-by-N)
      *
      * @note
      * Time stamps must not decrease with increasing indices.

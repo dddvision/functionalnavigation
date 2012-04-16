@@ -32,9 +32,9 @@ namespace hidi
     /**
      * Get gyroscope data.
      *
-     * @param[in]  n  data index
-     * @param[in]  ax axis index
-     * @return        average angular rate during the preceding integration period (radian/second)
+     * @param[in]  n  data index (MATLAB: N-by-1)
+     * @param[in]  ax axis index (MATLAB: 1-by-A)
+     * @return        average angular rate during the preceding integration period (radian/second) (MATLAB: N-by-A)
      *
      * @note
      * Average angular rate is a raw measurement from a typical integrating gyroscope
@@ -45,15 +45,16 @@ namespace hidi
     virtual double getAngularRate(uint32_t n, uint32_t ax) = 0;
 
     /**
-     * Get gyroscope data calibrated for nominal rotation, bias, and scale.
+     * Get calibrated gyroscope data.
      *
-     * @param[in]  n  data index
-     * @param[in]  ax axis index
-     * @return        average angular rate during the preceding integration period (radian/second)
+     * @param[in]  n  data index (MATLAB: N-by-1)
+     * @param[in]  ax axis index (MATLAB: 1-by-A)
+     * @return        average angular rate during the preceding integration period (radian/second) (MATLAB: N-by-A)
      *
      * @note
      * @see getAngularRate()
-     * The calibrated axis interpretation is 0=Forward, 1=Right, 2=Down
+     * Calibration may correct bias, scale, and/or orientation, depending on the specific implementation
+     * The calibrated axis interpretation is typically 0=Forward, 1=Right, 2=Down
      */
     virtual double getAngularRateCalibrated(uint32_t n, uint32_t ax) = 0;
     

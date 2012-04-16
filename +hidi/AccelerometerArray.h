@@ -32,9 +32,9 @@ namespace hidi
     /**
      * Get accelerometer data.
      *
-     * @param[in]  n  data index
-     * @param[in]  ax axis index
-     * @return        average specific force during the preceding integration period (meter/second^2)
+     * @param[in]  n  data index (MATLAB: N-by-1)
+     * @param[in]  ax axis index (MATLAB: 1-by-A)
+     * @return        average specific force during the preceding integration period (meter/second^2) (MATLAB: N-by-A)
      *
      * @note
      * Specific force is a raw measurement from a typical integrating accelerometer
@@ -46,15 +46,16 @@ namespace hidi
     virtual double getSpecificForce(uint32_t n, uint32_t ax) = 0;
     
     /**
-     * Get accelerometer data calibrated for nominal rotation, bias, and scale.
+     * Get calibrated accelerometer data.
      *
-     * @param[in]  n  data index
-     * @param[in]  ax axis index
-     * @return        average specific force during the preceding integration period (meter/second^2)
+     * @param[in]  n  data index (MATLAB: N-by-1)
+     * @param[in]  ax axis index (MATLAB: 1-by-A)
+     * @return        average specific force during the preceding integration period (meter/second^2) (MATLAB: N-by-A)
      *
      * @note
      * @see getSpecificForce()
-     * The calibrated axis interpretation is 0=Forward, 1=Right, 2=Down
+     * Calibration may correct bias, scale, and/or orientation, depending on the specific implementation
+     * The calibrated axis interpretation is typically 0=Forward, 1=Right, 2=Down
      */
     virtual double getSpecificForceCalibrated(uint32_t n, uint32_t ax) = 0;
 
