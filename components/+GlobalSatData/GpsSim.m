@@ -66,49 +66,70 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
     
     function time = getTime(this, n)
       assert(this.ready);
-      assert(n>=this.na);
-      assert(n<=this.nb);
+      assert(all(n>=this.na));
+      assert(all(n<=this.nb));
       interval = this.refTraj.domain();
-      time = hidi.WorldTime(interval.first+this.noise(1, n));
+      time = hidi.WorldTime(zeros(size(n)));
+      for k = 1:numel(n)
+        time(k) = hidi.WorldTime(interval.first+this.noise(1, n(k)));
+      end
     end
 
     function lon = getLongitude(this, n)
       assert(this.ready);
-      assert(n>=this.na);
-      assert(n<=this.nb);
+      assert(all(n>=this.na));
+      assert(all(n<=this.nb));
+      
+      lon = zeros(size(n));
       
       % Evaluate the reference trajectory at the measurement time
       pose = this.refTraj.evaluate(getTime(this, n));
-      lolah = GlobalSatData.ecef2lolah(pose.p);
       
-      % Add error based on real Global Sat gps data
-      lon = lolah(1)+this.noise(2, n);
+      for k = 1:numel(n)
+        % convert to lolah
+        lolah = GlobalSatData.ecef2lolah(pose(k).p);
+      
+        % Add error based on real Global Sat gps data
+        lon(k) = lolah(1)+this.noise(2, n(k));
+      end
     end
     
     function lat = getLatitude(this, n)
       assert(this.ready);
-      assert(n>=this.na);
-      assert(n<=this.nb);
+      assert(all(n>=this.na));
+      assert(all(n<=this.nb));
+      
+      lat = zeros(size(n));
       
       % Evaluate the reference trajectory at the measurement time
       pose = this.refTraj.evaluate(getTime(this, n));
-      lolah = GlobalSatData.ecef2lolah(pose.p);
       
-      % Add error based on real Global Sat gps data
-      lat = lolah(2)+this.noise(3, n);
+      for k = 1:numel(n)
+        % convert to lolah
+        lolah = GlobalSatData.ecef2lolah(pose(k).p);
+      
+        % Add error based on real Global Sat gps data
+        lat(k) = lolah(2)+this.noise(3, n(k));
+      end
     end
     
     function h = getHeight(this, n)
       assert(this.ready);
-      assert(n>=this.na);
-      assert(n<=this.nb);
+      assert(all(n>=this.na));
+      assert(all(n<=this.nb));
+      
+      h = zeros(size(n));
       
       % Evaluate the reference trajectory at the measurement time
       pose = this.refTraj.evaluate(getTime(this, n));
-      lolah = GlobalSatData.ecef2lolah(pose.p);
       
-      % Add error based on real Global Sat gps data
-      h = lolah(3)+this.noise(4, n);
+      for k = 1:numel(n)
+        % convert to lolah
+        lolah = GlobalSatData.ecef2lolah(pose(k).p);
+      
+        % Add error based on real Global Sat gps data
+        h(k) = lolah(3)+this.noise(4, n(k));
+      end
     end
     
     function flag = hasPrecision(this)

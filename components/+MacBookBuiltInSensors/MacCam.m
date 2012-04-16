@@ -125,8 +125,8 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
     end
     
     function time = getTime(this, n)
-      assert(n>=this.na);
-      assert(n<=this.nb);
+      assert(all(n>=this.na));
+      assert(all(n<=this.nb));
       if(this.overwrite)
         time = hidi.WorldTime(this.initialTime+this.rate*double(n-this.na)-this.timeZoneOffset);
       else

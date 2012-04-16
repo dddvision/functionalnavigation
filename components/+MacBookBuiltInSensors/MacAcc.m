@@ -112,14 +112,32 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Accel
     end
     
     function time = getTime(this, n)
-      time = hidi.WorldTime(this.initialTime-this.zoneOffset+get(this, n, 4));
+      assert(all(isa(n, 'uint32')));
+      assert(all(n>=this.na));
+      assert(all(n<=this.nb));
+      time = hidi.WorldTime(zeros(size(n)));
+      for k = 1:numel(n)
+        time(k) = hidi.WorldTime(this.initialTime-this.zoneOffset+this.get(n(k), 4));
+      end
     end
     
-    function specificForce = getSpecificForce(this, n, ax)
-      if((ax>0)&&(ax>2))
-        error(this.indexErrorText);
+    function force = getSpecificForce(this, n, ax)
+      assert(all(isa(n, 'uint32')));
+      assert(all(isa(ax, 'uint32')));
+      assert(all(ax<=2));
+      assert(all(n>=this.na));
+      assert(all(n<=this.nb));
+      force = zeros(numel(n), numel(ax));
+      k = 1;
+      for j = uint32(0:(numel(ax)-1))
+        for i = uint32(0:(numel(n)-1))
+          force(k) = this.get(n(i), ax(j));
+        end
       end
-      specificForce = this.get(n, ax);
+    end
+    
+    function force = getSpecificForceCalibrated(this, n, ax)
+      force = getSpecificForce(this, n, ax);
     end
     
     function sigma = getAccelBiasTurnOn(this)
