@@ -32,8 +32,8 @@ namespace hidi
     /**
      * Get longitude.
      *
-     * @param[in] n data index
-     * @return      longitude (radians)
+     * @param[in] n data index (MATLAB: M-by-N)
+     * @return      longitude (radians) (MATLAB: M-by-N)
      *
      * @note
      * Throws an exception if the data index is out of range
@@ -43,8 +43,8 @@ namespace hidi
     /**
      * Get geodetic latitude.
      *
-     * @param[in] n data index
-     * @return      geodetic latitude (radians)
+     * @param[in] n data index (MATLAB: M-by-N)
+     * @return      geodetic latitude (radians) (MATLAB: M-by-N)
      *
      * @note
      * Throws an exception if the data index is out of range
@@ -54,8 +54,8 @@ namespace hidi
     /**
      * Get height above WGS84.
      *
-     * @param[in] n data index
-     * @return      height (meters)
+     * @param[in] n data index (MATLAB: M-by-N)
+     * @return      height (meters) (MATLAB: M-by-N)
      *
      * @note
      * Throws an exception if the data index is out of range
@@ -72,8 +72,8 @@ namespace hidi
     /**
      * Get horizontal dilution of precision.
      *
-     * @param[in] n data index
-     * @return      horizontal dilution of precision (unitless)
+     * @param[in] n data index (MATLAB: M-by-N)
+     * @return      horizontal dilution of precision (unitless) (MATLAB: M-by-N)
      *
      * @note
      * Throws an exception if information is not available
@@ -84,8 +84,8 @@ namespace hidi
     /**
      * Get vertical dilution of precision.
      *
-     * @param[in] n data index
-     * @return      vertical dilution of precision (unitless)
+     * @param[in] n data index (MATLAB: M-by-N)
+     * @return      vertical dilution of precision (unitless) (MATLAB: M-by-N)
      *
      * @note
      * Throws an exception if information is not available
@@ -96,8 +96,8 @@ namespace hidi
     /**
      * Get standard deviation of equivalent circular error.
      *
-     * @param[in] n data index
-     * @return      standard deviation (meters)
+     * @param[in] n data index (MATLAB: M-by-N)
+     * @return      standard deviation (meters) (MATLAB: M-by-N)
      *
      * @note
      * Throws an exception if information is not available

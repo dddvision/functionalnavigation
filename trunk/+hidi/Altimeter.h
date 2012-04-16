@@ -32,8 +32,8 @@ namespace hidi
     /**
      * Get altimeter data.
      * 
-     * @param[in] n data index
-     * @return      altitude above the WGS84 ellipsoid (meters)
+     * @param[in] n data index (MATLAB: M-by-N)
+     * @return      altitude above the WGS84 ellipsoid (meters) (MATLAB: M-by-N)
      */
     virtual double getAltitude(uint32_t n) = 0;
 

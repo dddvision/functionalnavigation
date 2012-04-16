@@ -32,9 +32,9 @@ namespace hidi
     /**
      * Get magnetometer data.
      * 
-     * @param[in]  n  data index
-     * @param[in]  ax axis index
-     * @return        average magnetic B-field during the preceding integration period (tesla)
+     * @param[in]  n  data index (MATLAB: N-by-1)
+     * @param[in]  ax axis index (MATLAB: 1-by-A)
+     * @return        average magnetic field during the preceding integration period (tesla) (MATLAB: N-by-A)
      *
      * @note
      * This measurement is taken by integrating about the instantaneous axis as it moves 
@@ -44,15 +44,16 @@ namespace hidi
     virtual double getMagneticField(uint32_t n, uint32_t ax) = 0;
 
     /**
-     * Get magnetometer data calibrated for rotation, bias, and scale.
-     * 
-     * @param[in]  n  data index
-     * @param[in]  ax axis index
-     * @return        average magnetic B-field during the preceding integration period (tesla)
+     * Get calibrated magnetometer data.
+     *
+     * @param[in]  n  data index (MATLAB: N-by-1)
+     * @param[in]  ax axis index (MATLAB: 1-by-A)
+     * @return        average magnetic field during the preceding integration period (tesla) (MATLAB: N-by-A)
      *
      * @note
      * @see getMagneticField()
-     * The calibrated axis interpretation is 0=Forward, 1=Right, 2=Down
+     * Calibration may correct bias, scale, and/or orientation, depending on the specific implementation
+     * The calibrated axis interpretation is typically 0=Forward, 1=Right, 2=Down
      */
     virtual double getMagneticFieldCalibrated(uint32_t n, uint32_t ax) = 0;
     
