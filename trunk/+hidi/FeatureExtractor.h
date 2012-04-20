@@ -1,6 +1,8 @@
 #ifndef FEATUREEXTRACTOR_H
 #define FEATUREEXTRACTOR_H
 
+#include <vector>
+
 namespace hidi
 {
   class FeatureExtractor
