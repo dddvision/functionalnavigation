@@ -1,6 +1,10 @@
 classdef FeatureExtractor < handle
 
   methods (Static = true, Access = public)
+    function this = FeatureExtractor(samplingFrequency)
+      assert(numel(samplingFrequency)==1);
+    end
+    
     % Extract and concatenate all features.
     %
     % @param[in] package       sensor package
