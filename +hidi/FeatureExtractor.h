@@ -1,3 +1,6 @@
+#ifndef FEATUREEXTRACTOR_H
+#define FEATUREEXTRACTOR_H
+
 namespace hidi
 {
   class FeatureExtractor
@@ -13,3 +16,5 @@ namespace hidi
     virtual void extract(const std::vector<double>& data, std::vector<double>& features) = 0;
   };
 }
+
+#endif
