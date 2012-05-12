@@ -2,6 +2,7 @@
 #define FEATUREEXTRACTOR_H
 
 #include <string>
+#include <utility>
 #include <vector>
 #include "SensorPackage.h"
 
@@ -54,7 +55,7 @@ public:
 class FeatureExtractorComposite : public FeatureExtractor
 {
 public:
-  FeatureExtractorComposite(hidi::SensorPackage* package) : FeatureExtractor(package)
+  FeatureExtractorComposite(void) : FeatureExtractor(NULL)
   {}
   
   virtual ~FeatureExtractorComposite(void)
@@ -90,10 +91,6 @@ public:
     featureIndex = (*FeatureExtractor::pLookup())[index].second;
     return ((*FeatureExtractor::pExtractors())[extractorIndex]->extract(featureIndex));
   }
-  
-private:
-  FeatureExtractorComposite(void) : FeatureExtractor(NULL)
-  {}
 };
 
 #endif
