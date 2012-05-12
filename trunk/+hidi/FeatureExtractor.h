@@ -8,30 +8,29 @@
 
 class FeatureExtractor
 {
-private:
-  FeatureExtractor(void)
-  {}
+public:  
+  /**
+   * Get number of features available from the extract function.
+   *
+   * @return number of features
+   */ 
+  virtual uint32_t numFeatures(void) = 0; 
 
-protected:
-  typedef std::pair<size_t, uint32_t> ExtractorFeaturePair;
-  static std::vector<ExtractorFeaturePair>* pLookup(void)
-  {
-    static std::vector<ExtractorFeaturePair> lookup;
-    return (&lookup);
-  }
+  /**
+   * Get the name of a feature.
+   *
+   * @param[in] index feature index
+   * return           feature name
+   */
+  virtual std::string getName(uint32_t index) = 0;
   
-  static std::vector<FeatureExtractor*>* pExtractors(void)
-  {
-    static std::vector<FeatureExtractor*> extractors;
-    return (&extractors);
-  }
-  
-public:
-  FeatureExtractor(hidi::SensorPackage* package)
-  {}
-
-  virtual ~FeatureExtractor(void)
-  {}
+  /**
+   * Extract a feature.
+   *
+   * @param[in] index feature index
+   * @return          feature value
+   */
+  virtual double extract(uint32_t index) = 0;
   
   static void connect(FeatureExtractor* featureExtractor)
   {
@@ -46,21 +45,25 @@ public:
     pExtractors()->push_back(featureExtractor);
     return;
   }
+
+protected:
+  typedef std::pair<size_t, uint32_t> ExtractorFeaturePair;
+  static std::vector<ExtractorFeaturePair>* pLookup(void)
+  {
+    static std::vector<ExtractorFeaturePair> lookup;
+    return (&lookup);
+  }
   
-  virtual uint32_t numFeatures(void) = 0; 
-  virtual std::string getName(uint32_t index) = 0;
-  virtual double extract(uint32_t index) = 0;
+  static std::vector<FeatureExtractor*>* pExtractors(void)
+  {
+    static std::vector<FeatureExtractor*> extractors;
+    return (&extractors);
+  }
 };
 
 class FeatureExtractorComposite : public FeatureExtractor
 {
-public:
-  FeatureExtractorComposite(void) : FeatureExtractor(NULL)
-  {}
-  
-  virtual ~FeatureExtractorComposite(void)
-  {}
-  
+public:  
   uint32_t numFeatures(void)
   {
     return (FeatureExtractor::pLookup()->size());

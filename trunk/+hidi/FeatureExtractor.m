@@ -27,15 +27,15 @@ classdef FeatureExtractor < handle
   end
   
   methods (Abstract = true, Access = public)
-    % Get number of elements that will be returned by the extract function.
+    % Get number of features available from the extract function.
     %
-    % @return number of elements 
+    % @return number of features
     num = numElements(this);
     
-    % Get the name for each element.
+    % Get the name of a feature.
     %
-    % @param[in] index element index
-    % return element name
+    % @param[in] index feature index
+    % return           feature name
     name = getName(this, index);
     
     % Extract features from sensor data.
