@@ -41,7 +41,7 @@ namespace hidi
       return ((*pExtractors())[extractorIndex]->getValue(featureIndex));
     }
 
-    static void connect(FeatureExtractor* featureExtractor)
+    static void append(FeatureExtractor* featureExtractor)
     {
       std::pair<size_t, size_t> item(pExtractors()->size(), 0);
       size_t N = featureExtractor->numFeatures();
