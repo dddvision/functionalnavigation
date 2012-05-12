@@ -13,7 +13,7 @@ namespace hidi
      *
      * @return number of features
      */ 
-    virtual size_t size(void) = 0; 
+    virtual size_t numFeatures(void) = 0; 
 
     /**
      * Get the name of a feature.
