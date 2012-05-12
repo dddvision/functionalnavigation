@@ -10,7 +10,7 @@ namespace hidi
   class FeatureExtractorComposite : FeatureExtractor
   {
   public:  
-    size_t size(void)
+    size_t numFeatures(void)
     {
       return (pLookup()->size());
     }
@@ -19,7 +19,7 @@ namespace hidi
     {
       size_t extractorIndex;
       size_t featureIndex;
-      if(index>=size())
+      if(index>=numFeatures())
       {
         throw("Feature index is out of range.");
       }
@@ -32,7 +32,7 @@ namespace hidi
     {
       size_t extractorIndex;
       size_t featureIndex;
-      if(index>=size())
+      if(index>=numFeatures())
       {
         throw("Feature index is out of range.");
       }
@@ -44,7 +44,7 @@ namespace hidi
     static void connect(FeatureExtractor* featureExtractor)
     {
       std::pair<size_t, size_t> item(pExtractors()->size(), 0);
-      size_t N = featureExtractor->size();
+      size_t N = featureExtractor->numFeatures();
       size_t n;
       for(n = 0; n<N; ++n)
       {
