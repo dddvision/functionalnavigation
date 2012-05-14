@@ -14,13 +14,13 @@ classdef FeatureExtractor < handle
       numExtractors = numel(extractorList);
       numFeatures = zeros(numExtractors, 1);
       for index = 1:numExtractors
-        numFeatures(index) = extractorList{index}.numElements();
+        numFeatures(index) = extractorList{index}.numFeatures();
       end
       features = zeros(sum(numFeatures), 1);
       offset = 0;
       for index = 1:numExtractors
         N = numFeatures(index);
-        features(offset+(1:N)) = extractorList{index}.extract(package, partition);
+        features(offset+(1:N)) = extractorList{index}.getValue(package, partition);
         offset = offset+N;
       end
     end
@@ -30,7 +30,7 @@ classdef FeatureExtractor < handle
     % Get number of features available from the extract function.
     %
     % @return number of features
-    num = numElements(this);
+    num = numFeaturesthis(this);
     
     % Get the name of a feature.
     %
@@ -43,6 +43,6 @@ classdef FeatureExtractor < handle
     % @param[in] sensor    multi-sensor object
     % @param[in] partition list of heel strike indices in ascending order
     % @return              computed feature vector
-    feature = extract(this, sensor, partition);
+    feature = getValue(this, sensor, partition);
   end
 end
