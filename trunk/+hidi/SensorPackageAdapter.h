@@ -19,7 +19,7 @@ namespace hidi
     virtual void refresh(void)
     {
       source->refresh();
-      return
+      return;
     }
 
     virtual std::vector<AccelerometerArray*> getAccelerometerArray(void)
