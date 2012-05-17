@@ -132,7 +132,6 @@ namespace hidi
      */
     static SensorPackage* create(const std::string name, const std::string uri)
     {
-
       SensorPackage* obj = NULL;
       if(isConnected(name))
       {
@@ -144,6 +143,33 @@ namespace hidi
         throw(message.c_str());
       }
       return (obj);
+    }
+    
+    /**
+     * Split compound URI into parts.
+     *
+     * @param[in]  uri         URI of the format: hidi:packageName?uri=packageURI
+     * @param[out] packageName substring corresponding to packageName
+     * @param[out] packageURI  substring corresponding to packageURI
+     */
+    static void splitCompoundURI(const std::string uri, std::string& packageName, std::string& packageURI)
+    {
+      static const char* uriError = "Expected URI format: hidi:packageName?uri=packageURI";
+      size_t delimeter;
+      packageURI = uri;
+      if(packageURI.compare(0, 5, "hidi:"))
+      {
+        throw(uriError);
+      }
+      packageURI = packageURI.substr(5);
+      delimeter = packageURI.find("?uri=");
+      if(delimeter==std::string::npos)
+      {
+        throw(uriError);
+      }
+      packageName = packageURI.substr(0, delimeter);
+      packageURI = packageURI.substr(delimeter+5);
+      return;
     }
 
     /**
