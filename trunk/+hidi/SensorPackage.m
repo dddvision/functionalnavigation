@@ -75,6 +75,25 @@ classdef SensorPackage < handle
         error('"%s" is not connected. Its static initializer must call connect.', name);
       end
     end
+    
+    function [packageName, packageURI] = splitCompoundURI(uri)
+      uriError = 'Expected URI format: hidi:packageName?uri=packageURI';
+      packageURI = uri;
+      if(~strncmp(uri, 'hidi:', 5))
+        error(uriError);
+      end
+      packageURI = packageURI(6:end);
+      delimeter = find(packageURI=='?');
+      if(isempty(delimeter))
+        error(uriError);
+      end
+      packageName = packageURI(1:(delimeter-1));
+      delimeter = strfind(packageURI, 'uri=');
+      if(isempty(delimeter))
+        error(uriError);
+      end
+      packageURI = packageURI((delimeter+4):end);
+    end
   end
   
   methods (Abstract = true, Access = public, Static = true)
