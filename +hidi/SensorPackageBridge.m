@@ -97,7 +97,7 @@ function compileOnDemand(name)
   bridge = mfilename('fullpath');
   bridgecpp = [bridge, '.cpp'];
   include1 = ['-I"', fileparts(bridge), '"'];
-  include2 = ['-I"', fileparts(which('hidi.WorldTime')), '"'];
+  include2 = ['-I"', fileparts(fileparts(bridge)), '"'];
   base = fullfile(['+', name], name);
   basecpp = [base, '.cpp'];
   cpp = which(basecpp);

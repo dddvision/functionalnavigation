@@ -162,13 +162,18 @@ namespace hidi
         throw(uriError);
       }
       packageURI = packageURI.substr(5);
-      delimeter = packageURI.find("?uri=");
+      delimeter = packageURI.find('?');
       if(delimeter==std::string::npos)
       {
         throw(uriError);
       }
       packageName = packageURI.substr(0, delimeter);
-      packageURI = packageURI.substr(delimeter+5);
+      delimeter = packageURI.find("uri=");
+      if(delimeter==std::string::npos)
+      {
+        throw(uriError);
+      }
+      packageURI = packageURI.substr(delimeter+4);
       return;
     }
 
