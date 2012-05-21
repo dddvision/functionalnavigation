@@ -1,13 +1,18 @@
 #ifndef GETCURRENTTIME_H
 #define GETCURRENTTIME_H
 
-#ifdef _MSC_VER
-#include <windows.h>
-#else
-#include <sys/time.h>
-#endif
 #include <stddef.h>
 #include "WorldTime.h"
+
+// define relevant types
+#ifndef _MSC_VER
+#include <sys/time.h>
+#else
+#include <windows.h>
+#ifndef uint64_t
+typedef unsigned __int64 uint64_t;
+#endif
+#endif
 
 #ifdef _MSC_VER
 
@@ -32,13 +37,13 @@ struct timezone
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
   // Define the offset since Unix Epoch Jan 1 1970
-  static const unsigned __int64 DELTA_EPOCH_IN_MICROSECS = 11644473600000000Ui64;
+  static const uint64_t DELTA_EPOCH_IN_MICROSECS = 11644473600000000Ui64;
 
   // Define a structure to receive the current Windows filetime
   FILETIME ft;
 
   // Initialize the present time to 0 and the timezone to UTC
-  unsigned __int64 tmpres = 0;
+  uint64_t tmpres = 0;
   static int tzflag = 0;
 
   if(tv!=NULL)

@@ -115,7 +115,7 @@ namespace SensorPackageBridge
 
   void convert(const mxArray*& array, std::string& cppString)
   {
-    unsigned N = mxGetNumberOfElements(array)+1; // add one for terminating character
+    size_t N = mxGetNumberOfElements(array)+1; // add one for terminating character
     char *cString = new char[N];
     if(mxGetClassID(array)!=mxCHAR_CLASS)
     {
