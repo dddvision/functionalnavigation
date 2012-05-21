@@ -1,16 +1,12 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
-// define uint32_t if necessary
-#ifndef uint32_t
-#ifdef _MSC_VER
-#if (_MSC_VER < 1300)
-typedef unsigned int uint32_t;
-#else
-typedef unsigned __int32 uint32_t;
-#endif
-#else
+// define integer types
+#ifndef _MSC_VER
 #include <stdint.h>
+#else
+#ifndef uint32_t
+typedef unsigned __int32 uint32_t;
 #endif
 #endif
 
