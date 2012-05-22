@@ -23,21 +23,8 @@ classdef FeatureExtractor < handle
   end
   
   methods (Abstract = true, Access = public)
-    % Get number of features available from the extract function.
-    %
-    % @return number of features
     num = numFeatures(this);
-    
-    % Get the name of a feature.
-    %
-    % @param[in] index feature index
-    % return           feature name
     name = getName(this, index);
-    
-    % Extract features from sensor data.
-    %
-    % @param[in] index feature index
-    % return           feature value
     feature = getValue(this, index);
   end
 end
