@@ -9,10 +9,10 @@ namespace hidi
 {
   class FeatureExtractorComposite : FeatureExtractor
   {
-  public:  
+  public:
     size_t numFeatures(void)
     {
-      return (pLookup()->size());
+      return (lookup.size());
     }
 
     std::string getName(size_t index)
@@ -23,9 +23,9 @@ namespace hidi
       {
         throw("Feature index is out of range.");
       }
-      extractorIndex = (*pLookup())[index].first;
-      featureIndex = (*pLookup())[index].second;
-      return ((*pExtractors())[extractorIndex]->getName(featureIndex));
+      extractorIndex = lookup[index].first;
+      featureIndex = lookup[index].second;
+      return (extractors[extractorIndex]->getName(featureIndex));
     }
 
     double getValue(size_t index)
@@ -36,38 +36,29 @@ namespace hidi
       {
         throw("Feature index is out of range.");
       }
-      extractorIndex = (*pLookup())[index].first;
-      featureIndex = (*pLookup())[index].second;
-      return ((*pExtractors())[extractorIndex]->getValue(featureIndex));
+      extractorIndex = lookup[index].first;
+      featureIndex = lookup[index].second;
+      return (extractors[extractorIndex]->getValue(featureIndex));
     }
 
-    static void append(FeatureExtractor* featureExtractor)
+    void append(FeatureExtractor* featureExtractor)
     {
-      std::pair<size_t, size_t> item(pExtractors()->size(), 0);
+      std::pair<size_t, size_t> item(extractors.size(), 0);
       size_t N = featureExtractor->numFeatures();
       size_t n;
       for(n = 0; n<N; ++n)
       {
         item.second = n;
-        pLookup()->push_back(item);
+        lookup.push_back(item);
       }
-      pExtractors()->push_back(featureExtractor);
+      extractors.push_back(featureExtractor);
       return;
     }
 
-  protected:
+  private:
     typedef std::pair<size_t, size_t> ExtractorFeaturePair;
-    static std::vector<ExtractorFeaturePair>* pLookup(void)
-    {
-      static std::vector<ExtractorFeaturePair> lookup;
-      return (&lookup);
-    }
-
-    static std::vector<FeatureExtractor*>* pExtractors(void)
-    {
-      static std::vector<FeatureExtractor*> extractors;
-      return (&extractors);
-    }
+    std::vector<ExtractorFeaturePair> lookup;
+    std::vector<FeatureExtractor*> extractors;
   };
 }
 
