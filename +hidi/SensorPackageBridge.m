@@ -1,11 +1,6 @@
 classdef SensorPackageBridge < hidi.SensorPackage
   properties (SetAccess = private, GetAccess = private)
     m % mex name without extension
-    accelerometerArray
-    gyroscopeArray
-    magnetometerArray
-    altimeter
-    gpsReceiver
   end
   
   methods (Access = public, Static = true)
