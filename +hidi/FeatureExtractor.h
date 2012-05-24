@@ -18,7 +18,7 @@ namespace hidi
     /**
      * Get the name of a feature.
      *
-     * @param[in] index feature index
+     * @param[in] index zero-based feature index
      * return           feature name
      */
     virtual std::string getName(size_t index) = 0;
@@ -26,7 +26,7 @@ namespace hidi
     /**
      * Get the value of a feature.
      *
-     * @param[in] index feature index
+     * @param[in] index zero-based feature index
      * @return          feature value
      */
     virtual double getValue(size_t index) = 0;
