@@ -12,26 +12,26 @@ classdef SensorPackageBridge < hidi.SensorPackage
       function text = componentDescription
         text = feval(mName, uint32(0), 'SensorPackageDescription', name);
       end
-      function obj = componentFactory(uri)
-        obj = hidi.SensorPackageBridge(name, uri);
+      function obj = componentFactory(parameters)
+        obj = hidi.SensorPackageBridge(name, parameters);
       end
       if(feval(mName, uint32(0), 'SensorPackageIsConnected', name))
         hidi.SensorPackage.connect(name, @componentDescription, @componentFactory);
       end
     end
 
-    function this = SensorPackageBridge(name, uri)
+    function this = SensorPackageBridge(name, parameters)
       if(nargin==0)
-        uri = '';
+        parameters = '';
       end
-      this = this@hidi.SensorPackage(uri);
+      this = this@hidi.SensorPackage(parameters);
       if(nargin>0)
         assert(isa(name, 'char'));
-        assert(isa(uri, 'char'));
+        assert(isa(parameters, 'char'));
         compileOnDemand(name);
         className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
         this.m = [className, 'Bridge'];
-        feval(this.m, uint32(0), 'SensorPackageCreate', name, uri);
+        feval(this.m, uint32(0), 'SensorPackageCreate', name, parameters);
       end
     end
   end

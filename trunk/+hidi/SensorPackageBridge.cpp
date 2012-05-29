@@ -303,11 +303,11 @@ namespace SensorPackageBridge
       {
         argcheck(nrhs, 4);
         static std::string name;
-        static std::string uri;
+        static std::string parameters;
         convert(prhs[2], name);
-        convert(prhs[3], uri);
+        convert(prhs[3], parameters);
         deleteSensorPackage();
-        package = hidi::SensorPackage::create(name, uri);
+        package = hidi::SensorPackage::create(name, parameters);
         break;
       }
 

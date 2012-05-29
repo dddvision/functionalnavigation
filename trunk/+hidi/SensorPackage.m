@@ -26,11 +26,11 @@ classdef SensorPackage < handle
   end
   
   methods (Access = protected, Static = true)
-    function this = SensorPackage(uri)
+    function this = SensorPackage(parameters)
       if(nargin==0)
-        uri = '';
+        parameters = '';
       end
-      assert(isa(uri, 'char'));
+      assert(isa(parameters, 'char'));
     end
     
     function connect(name, cD, cF)
@@ -66,33 +66,47 @@ classdef SensorPackage < handle
       end
     end
     
-    function obj = create(name, uri)
+    function obj = create(name, parameters)
       if(hidi.SensorPackage.isConnected(name))
         cF = hidi.SensorPackage.pFactoryList(name);
-        obj = feval(cF(name), uri);
+        obj = feval(cF(name), parameters);
         assert(isa(obj, 'hidi.SensorPackage'));
       else
         error('"%s" is not connected. Its static initializer must call connect.', name);
       end
     end
     
-    function [packageName, packageURI] = splitCompoundURI(uri)
-      uriError = 'Expected URI format: hidi:packageName?uri=packageURI';
-      packageURI = uri;
-      if(~strncmp(uri, 'hidi:', 5))
-        error(uriError);
+    function [packageName, parameters] = splitCompoundURI(uri)
+      packageName = uri;
+      parameters = '';
+      if(~strncmp(packageName, 'hidi:', 5))
+        error('Expected URI format: hidi:<packageName>[?<key0>=<value0>[;<key1>=<value1>]]');
       end
-      packageURI = packageURI(6:end);
-      delimeter = find(packageURI=='?');
+      packageName = packageName(6:end);
+      delimeter = strfind(packageName, '?');
       if(isempty(delimeter))
-        error(uriError);
+        return;
       end
-      packageName = packageURI(1:(delimeter-1));
-      delimeter = strfind(packageURI, 'uri=');
+      parameters = packageName((delimeter+1):end);
+      packageName = packageName(1:(delimeter-1));
+    end
+    
+    function value = getParameter(parameters, key)
+      value = '';
+      if(isempty(key))
+        return;
+      end
+      delimeter = strfind(parameters, [key, '=']);
       if(isempty(delimeter))
-        error(uriError);
+        return;
       end
-      packageURI = packageURI((delimeter+4):end);
+      value = parameters((delimeter+numel(key)+1):end);
+      if(~strcmp(key, 'uri'))
+        delimeter = strfind(value, ';');
+        if(~isempty(delimeter))
+          value = value(1:(delimeter-1));
+        end
+      end
     end
   end
   
