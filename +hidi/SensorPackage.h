@@ -25,7 +25,7 @@ namespace hidi
      */
     SensorPackage& operator=(const SensorPackage&);
 
-    /* Storage for component descriptions */
+    /* Storage for package descriptions */
     typedef std::string (*SensorPackageDescription)(void);
     static std::map<std::string, SensorPackageDescription>* pDescriptionList(void)
     {
@@ -33,7 +33,7 @@ namespace hidi
       return &descriptionList;
     }
 
-    /* Storage for component factories */
+    /* Storage for package factories */
     typedef SensorPackage* (*SensorPackageFactory)(const std::string);
     static std::map<std::string, SensorPackageFactory>* pFactoryList(void)
     {
@@ -43,25 +43,24 @@ namespace hidi
 
   protected:
     /**
-     * Protected method to construct a component instance.
+     * Protected method to construct a package instance.
      *
-     * @param[in] uri uniform resource identifier as described below
+     * @param[in] parameters see SensorPackage::create()
      *
      * @note
-     * Hardware implementation is supported by recognizing system resources such as 'file://dev/ttyS0'.
      * Each subclass constructor must initialize this base class.
      * (MATLAB) Initialize by calling:
      * @code
-     *   this=this@hidi.SensorPackage(uri);
+     *   this=this@hidi.SensorPackage(parameters);
      * @endcode
      */
-    SensorPackage(const std::string uri)
+    SensorPackage(const std::string parameters)
     {}
 
     /**
-     * Establish connection between base class and specific component.
+     * Establish connection between base class and specific package.
      *
-     * @param[in] name component identifier
+     * @param[in] name package identifier
      * @param[in] cD   function pointer or handle that returns a user friendly description
      * @param[in] cF   function pointer or handle that can instantiate the subclass
      *
@@ -85,12 +84,12 @@ namespace hidi
     /**
      * Check if a named subclass is connected with this base class.
      *
-     * @param[in] name component identifier
+     * @param[in] name package identifier
      * @return         true if the subclass exists and is connected to this base class
      *
      * @note
      * Do not shadow this function.
-     * A package directory identifying the component must in the environment path.
+     * A package directory identifying the package must in the environment path.
      * Omit the '+' prefix when identifying package names.
      */
     static bool isConnected(const std::string name)
@@ -99,14 +98,14 @@ namespace hidi
     }
 
     /**
-     * Get user friendly description of a component.
+     * Get user friendly description of a package.
      *
-     * @param[in] name component identifier
+     * @param[in] name package identifier
      * @return         user friendly description
      *
      * @note
      * Do not shadow this function.
-     * If the component is not connected then the output is an empty string.
+     * If the package is not connected then the output is an empty string.
      */
     static std::string description(const std::string name)
     {
@@ -119,23 +118,24 @@ namespace hidi
     }
 
     /**
-     * Public method to construct a component instance.
+     * Public method to construct a package instance.
      *
-     * @param[in] name component identifier
-     * @param[in] uri  see SensorPackage constructor
-     * @return         pointer to a new instance
+     * @para[in]  name       package name
+     * @param[in] parameters semicolon separated pairs of the format [<key0>=<value0>[;<key1>=<value1>]]
+     * @return               pointer to a new instance
      *
      * @note
+     * Hardware implementation is supported by recognizing system resources such as 'uri=file://dev/ttyS0'.
      * Creates a new instance that must be deleted by the caller.
      * Do not shadow this function.
-     * Throws an error if the component is not connected.
+     * Throws an error if the package is not connected.
      */
-    static SensorPackage* create(const std::string name, const std::string uri)
+    static SensorPackage* create(const std::string name, const std::string parameters)
     {
       SensorPackage* obj = NULL;
       if(isConnected(name))
       {
-        obj = (*pFactoryList())[name](uri);
+        obj = (*pFactoryList())[name](parameters);
       }
       else
       {
@@ -148,33 +148,63 @@ namespace hidi
     /**
      * Split compound URI into parts.
      *
-     * @param[in]  uri         URI of the format: hidi:packageName?uri=packageURI
-     * @param[out] packageName substring corresponding to packageName
-     * @param[out] packageURI  substring corresponding to packageURI
+     * @param[in]  uri         URI of the format: hidi:<packageName>[?<parameters>]
+     * @param[out] packageName substring containing packageName
+     * @param[out] parameters  substring containing parameters
      */
-    static void splitCompoundURI(const std::string uri, std::string& packageName, std::string& packageURI)
+    static void splitCompoundURI(const std::string uri, std::string& packageName, std::string& parameters)
     {
-      static const char* uriError = "Expected URI format: hidi:packageName?uri=packageURI";
       size_t delimeter;
-      packageURI = uri;
-      if(packageURI.compare(0, 5, "hidi:"))
+      packageName = uri;
+      parameters = "";
+      if(packageName.compare(0, 5, "hidi:"))
       {
-        throw(uriError);
+        throw("Expected URI format: hidi:<packageName>[?<key0>=<value0>[;<key1>=<value1>]]");
       }
-      packageURI = packageURI.substr(5);
-      delimeter = packageURI.find('?');
+      packageName = packageName.substr(5);
+      delimeter = packageName.find('?');
       if(delimeter==std::string::npos)
       {
-        throw(uriError);
+        return;
       }
-      packageName = packageURI.substr(0, delimeter);
-      delimeter = packageURI.find("uri=");
-      if(delimeter==std::string::npos)
-      {
-        throw(uriError);
-      }
-      packageURI = packageURI.substr(delimeter+4);
+      parameters = packageName.substr(delimeter+1);
+      packageName = packageName.substr(0, delimeter);
       return;
+    }
+    
+    /**
+     * Get parameter from string.
+     *
+     * @param[in] parameters see SensorPackage::create()
+     * @param[in] key        see SensorPackage::create()
+     * @return               value of the selected parameter
+     *
+     * @note
+     * The special key 'uri' causes the remainder of the string to be returned ignoring semicolons.
+     */
+    static std::string getParameter(const std::string parameters, const std::string key)
+    {
+      size_t delimeter;
+      std::string value = "";
+      if(key.size()==0)
+      {
+        return (value);
+      }
+      delimeter = parameters.find(key+'=');
+      if(delimeter==std::string::npos)
+      {
+        return (value);
+      }
+      value = parameters.substr(delimeter+key.size()+1);
+      if(key.compare("uri"))
+      {
+        delimeter = value.find(';');
+        if(delimeter!=std::string::npos)
+        {
+          value = value.substr(0, delimeter);
+        }
+      }
+      return (value);
     }
 
     /**

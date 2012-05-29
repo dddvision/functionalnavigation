@@ -79,7 +79,7 @@ namespace hidi
    *
    * @return current system time in hidi::WorldTime format
    */
-  hidi::WorldTime getCurrentTime(void)
+  WorldTime getCurrentTime(void)
   {
     timeval tv;
     long int offset = 315964800; // difference between Jan 6 1980 and Jan 1 1979
