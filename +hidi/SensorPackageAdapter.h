@@ -9,13 +9,13 @@ namespace hidi
   {
   private:
     hidi::SensorPackage* source;
-  
+
   public:
     SensorPackageAdapter(hidi::SensorPackage source)
     {
       this->source = source;
     }
-  
+
     virtual void refresh(void)
     {
       source->refresh();
@@ -26,7 +26,7 @@ namespace hidi
     {
       return (source->getAccelerometerArray());
     }
-    
+
     virtual std::vector<GyroscopeArray*> getGyroscopeArray(void)
     {
       return (source->getGyroscopeArray());

@@ -15,7 +15,7 @@ namespace hidi
     {
       this->source = source;
     }
-    
+
     virtual void refresh(void)
     {
       source->refresh();

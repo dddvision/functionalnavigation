@@ -144,7 +144,7 @@ namespace hidi
       }
       return (obj);
     }
-    
+
     /**
      * Split compound URI into parts.
      *
@@ -171,7 +171,7 @@ namespace hidi
       packageName = packageName.substr(0, delimeter);
       return;
     }
-    
+
     /**
      * Get parameter from string.
      *
@@ -228,7 +228,7 @@ namespace hidi
       std::vector<AccelerometerArray*> sensor(0);
       return (sensor);
     }
-    
+
     /**
      * Get gyroscope array.
      *

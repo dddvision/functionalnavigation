@@ -89,7 +89,7 @@ namespace SensorPackageBridge
     }
     return;
   }
-  
+
   void convert(const mxArray*& array, uint32_t& value)
   {
     uint32check(array);
@@ -151,7 +151,7 @@ namespace SensorPackageBridge
     array = mxCreateString(str.c_str());
     return;
   }
-  
+
   template<class T>
   void getSensor(std::vector<T> sensor, mxArray*& array)
   {
@@ -183,7 +183,7 @@ namespace SensorPackageBridge
     mxDestroyArray(time);
     return;
   }
-  
+
   static hidi::SensorPackage* package = NULL;
 
   void deleteSensorPackage(void)
@@ -194,7 +194,7 @@ namespace SensorPackageBridge
       package = NULL;
     }
   }
-  
+
   void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
   {
     static uint32_t index;
@@ -280,7 +280,7 @@ namespace SensorPackageBridge
         throw("Undefined function call.");
         break;
       }
-      
+
       case SensorPackageIsConnected:
       {
         argcheck(nrhs, 3);
@@ -289,7 +289,7 @@ namespace SensorPackageBridge
         convert(hidi::SensorPackage::isConnected(name), plhs[0]);
         break;
       }
-      
+
       case SensorPackageDescription:
       {
         argcheck(nrhs, 3);
@@ -298,7 +298,7 @@ namespace SensorPackageBridge
         convert(hidi::SensorPackage::description(name), plhs[0]);
         break;
       }
-      
+
       case SensorPackageCreate:
       {
         argcheck(nrhs, 4);
@@ -313,31 +313,31 @@ namespace SensorPackageBridge
 
       case getAccelerometerArray:
       {
-        getSensor(package->getAccelerometerArray(), plhs[0]); 
+        getSensor(package->getAccelerometerArray(), plhs[0]);
         break;
       }
 
       case getGyroscopeArray:
       {
-        getSensor(package->getGyroscopeArray(), plhs[0]); 
+        getSensor(package->getGyroscopeArray(), plhs[0]);
         break;
       }
 
       case getMagnetometerArray:
       {
-        getSensor(package->getMagnetometerArray(), plhs[0]); 
+        getSensor(package->getMagnetometerArray(), plhs[0]);
         break;
       }
 
       case getAltimeter:
       {
-        getSensor(package->getAltimeter(), plhs[0]); 
+        getSensor(package->getAltimeter(), plhs[0]);
         break;
       }
 
       case getGPSReceiver:
       {
-        getSensor(package->getGPSReceiver(), plhs[0]); 
+        getSensor(package->getGPSReceiver(), plhs[0]);
         break;
       }
 
@@ -353,7 +353,7 @@ namespace SensorPackageBridge
         sensor->refresh();
         break;
       }
-      
+
       case accelerometerArrayHasData:
       {
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
@@ -498,7 +498,7 @@ namespace SensorPackageBridge
         sensor->refresh();
         break;
       }
-      
+
       case gyroscopeArrayHasData:
       {
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
@@ -527,7 +527,7 @@ namespace SensorPackageBridge
         getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
         break;
       }
-      
+
       case getAngularRate:
       {
         argcheck(nrhs, 4);
@@ -643,7 +643,7 @@ namespace SensorPackageBridge
         sensor->refresh();
         break;
       }
-      
+
       case magnetometerArrayHasData:
       {
         hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
@@ -672,7 +672,7 @@ namespace SensorPackageBridge
         getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
         break;
       }
-      
+
       case getMagneticField:
       {
         argcheck(nrhs, 4);
@@ -732,14 +732,14 @@ namespace SensorPackageBridge
         }
         break;
       }
-      
+
       case altimeterRefresh:
       {
         hidi::Altimeter* sensor = package->getAltimeter()[index];
         sensor->refresh();
         break;
       }
-      
+
       case altimeterHasData:
       {
         hidi::Altimeter* sensor = package->getAltimeter()[index];
@@ -794,7 +794,7 @@ namespace SensorPackageBridge
         sensor->refresh();
         break;
       }
-      
+
       case gpsReceiverHasData:
       {
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
@@ -823,7 +823,7 @@ namespace SensorPackageBridge
         getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
         break;
       }
-      
+
       case getLongitude:
       {
         argcheck(nrhs, 3);
@@ -953,7 +953,7 @@ namespace SensorPackageBridge
     return;
   }
 }
-  
+
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
   std::string prefix("SensorPackageBridge: ");

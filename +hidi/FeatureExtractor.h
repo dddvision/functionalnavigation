@@ -7,13 +7,13 @@ namespace hidi
 {
   class FeatureExtractor
   {
-  public:  
+  public:
     /**
      * Get the number of features available.
      *
      * @return number of features
-     */ 
-    virtual size_t numFeatures(void) = 0; 
+     */
+    virtual size_t numFeatures(void) = 0;
 
     /**
      * Get the name of a feature.

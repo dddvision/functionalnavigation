@@ -12,7 +12,8 @@ namespace hidi
     hidi::GyroscopeArray* source;
 
   public:
-    GyroscopeArrayAdapter(hidi::GyroscopeArray* source) : SensorAdapter(source)
+    GyroscopeArrayAdapter(hidi::GyroscopeArray* source) :
+      SensorAdapter(source)
     {
       this->source = source;
     }
@@ -63,5 +64,5 @@ namespace hidi
     }
   };
 }
-  
+
 #endif

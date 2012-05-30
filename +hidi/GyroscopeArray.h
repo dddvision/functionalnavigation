@@ -57,7 +57,7 @@ namespace hidi
      * The calibrated axis interpretation is typically 0=Forward, 1=Right, 2=Down
      */
     virtual double getAngularRateCalibrated(uint32_t n, uint32_t ax) = 0;
-    
+
     /**
      * Get angle random walk standard deviation.
      *

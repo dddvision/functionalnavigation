@@ -44,7 +44,7 @@ namespace hidi
      * Throws an exception if either input index is out of range
      */
     virtual double getSpecificForce(uint32_t n, uint32_t ax) = 0;
-    
+
     /**
      * Get calibrated accelerometer data.
      *

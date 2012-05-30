@@ -12,7 +12,8 @@ namespace hidi
     hidi::Altimeter* source;
 
   public:
-    AltimeterAdapter(hidi::Altimeter* source) : SensorAdapter(source)
+    AltimeterAdapter(hidi::Altimeter* source) :
+      SensorAdapter(source)
     {
       this->source = source;
     }
@@ -23,5 +24,5 @@ namespace hidi
     }
   };
 }
-  
+
 #endif
