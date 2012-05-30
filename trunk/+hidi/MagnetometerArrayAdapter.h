@@ -27,6 +27,9 @@ namespace hidi
     {
       return (source->getMagneticFieldCalibrated(n, ax));
     }
+    
+    virtual ~MagnetometerArrayAdapter(void)
+    {}
   };
 }
 

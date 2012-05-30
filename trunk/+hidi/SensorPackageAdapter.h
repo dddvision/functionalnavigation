@@ -46,6 +46,9 @@ namespace hidi
     {
       return (source->getGPSReceiver);
     }
+    
+    virtual ~SensorPackageAdapter(void)
+    {}
   };
 }
 

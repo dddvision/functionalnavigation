@@ -62,6 +62,9 @@ namespace hidi
     {
       return (source->getGyroscopeInRunScaleStability());
     }
+    
+    virtual ~GyroscopeArrayAdapter(void)
+    {}
   };
 }
 

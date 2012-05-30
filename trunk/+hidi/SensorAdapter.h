@@ -41,6 +41,9 @@ namespace hidi
     {
       return (source->getTime(n));
     }
+    
+    virtual ~SensorAdapter(void)
+    {}
   };
 }
 

@@ -22,6 +22,9 @@ namespace hidi
     {
       return (source->getAltitude(n));
     }
+    
+    virtual ~AltimeterAdapter(void)
+    {}
   };
 }
 
