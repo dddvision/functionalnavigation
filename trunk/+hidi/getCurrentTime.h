@@ -71,7 +71,6 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 }
 
 #endif // _MSC_VER
-
 namespace hidi
 {
   /**

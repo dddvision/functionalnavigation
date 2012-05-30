@@ -12,7 +12,8 @@ namespace hidi
     hidi::GPSReceiver* source;
 
   public:
-    GPSReceiverAdapter(hidi::GPSReceiver* source) : SensorAdapter(source)
+    GPSReceiverAdapter(hidi::GPSReceiver* source) :
+      SensorAdapter(source)
     {
       this->source = source;
     }
@@ -21,22 +22,22 @@ namespace hidi
     {
       return (source->getLongitude(n));
     }
-    
+
     virtual double getLatitude(uint32_t n)
     {
       return (source->getLatitude(n));
     }
-    
+
     virtual double getHeight(uint32_t n)
     {
       return (source->getHeight(n));
     }
-    
+
     virtual bool hasPrecision(void)
     {
       return (source->hasPrecision());
     }
-    
+
     virtual double getPrecisionHorizontal(uint32_t n)
     {
       return (source->getPrecisionHorizontal(n));
@@ -46,12 +47,12 @@ namespace hidi
     {
       return (source->getPrecisionVertical(n));
     }
-    
+
     virtual double getPrecisionCircular(uint32_t n)
     {
       return (source->getPrecisionCircular(n));
     }
   };
 }
-  
+
 #endif

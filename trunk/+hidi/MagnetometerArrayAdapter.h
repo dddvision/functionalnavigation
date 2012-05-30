@@ -12,7 +12,8 @@ namespace hidi
     hidi::MagnetometerArray* source;
 
   public:
-    MagnetometerArrayAdapter(hidi::MagnetometerArray* source) : SensorAdapter(source)
+    MagnetometerArrayAdapter(hidi::MagnetometerArray* source) :
+      SensorAdapter(source)
     {
       this->source = source;
     }
@@ -28,5 +29,5 @@ namespace hidi
     }
   };
 }
-  
+
 #endif
