@@ -61,6 +61,9 @@ namespace hidi
     {
       return (source->getAccelerometerInRunScaleStability());
     }
+    
+    virtual ~AccelerometerArrayAdapter(void)
+    {}
   };
 }
   

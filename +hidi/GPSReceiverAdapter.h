@@ -52,6 +52,9 @@ namespace hidi
     {
       return (source->getPrecisionCircular(n));
     }
+    
+    virtual ~GPSReceiverAdapter(void)
+    {}
   };
 }
 
