@@ -21,10 +21,6 @@ classdef SensorPackageBridge < hidi.SensorPackage
     end
 
     function this = SensorPackageBridge(name, parameters)
-      if(nargin==0)
-        parameters = '';
-      end
-      this = this@hidi.SensorPackage(parameters);
       if(nargin>0)
         assert(isa(name, 'char'));
         assert(isa(parameters, 'char'));
