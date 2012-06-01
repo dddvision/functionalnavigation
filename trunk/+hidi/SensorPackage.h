@@ -43,18 +43,9 @@ namespace hidi
 
   protected:
     /**
-     * Protected method to construct a package instance.
-     *
-     * @param[in] parameters see SensorPackage::create()
-     *
-     * @note
-     * Each subclass constructor must initialize this base class.
-     * (MATLAB) Initialize by calling:
-     * @code
-     *   this=this@hidi.SensorPackage(parameters);
-     * @endcode
+     * Protected constructor.
      */
-    SensorPackage(const std::string parameters)
+    SensorPackage(void)
     {}
 
     /**
@@ -190,7 +181,7 @@ namespace hidi
       {
         return (value);
       }
-      delimeter = parameters.find(key+'=');
+      delimeter = parameters.find(key+"=");
       if(delimeter==std::string::npos)
       {
         return (value);

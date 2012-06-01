@@ -11,7 +11,7 @@ namespace hidi
     hidi::SensorPackage* source;
 
   public:
-    SensorPackageAdapter(hidi::SensorPackage source)
+    SensorPackageAdapter(hidi::SensorPackage* source)
     {
       this->source = source;
     }
@@ -44,7 +44,7 @@ namespace hidi
 
     virtual std::vector<GPSReceiver*> getGPSReceiver(void)
     {
-      return (source->getGPSReceiver);
+      return (source->getGPSReceiver());
     }
     
     virtual ~SensorPackageAdapter(void)

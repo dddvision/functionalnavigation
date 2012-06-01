@@ -26,11 +26,7 @@ classdef SensorPackage < handle
   end
   
   methods (Access = protected, Static = true)
-    function this = SensorPackage(parameters)
-      if(nargin==0)
-        parameters = '';
-      end
-      assert(isa(parameters, 'char'));
+    function this = SensorPackage()
     end
     
     function connect(name, cD, cF)
@@ -114,34 +110,12 @@ classdef SensorPackage < handle
     initialize(name);
   end
     
-  methods (Access = public)
-    function refresh(this)
-      assert(isa(this, 'hidi.SensorPackage'));
-    end
-    
-    function sensor = getAccelerometerArray(this)
-      assert(isa(this, 'hidi.SensorPackage'));
-      sensor = zeros(0, 1);
-    end
-      
-    function sensor = getGyroscopeArray(this)
-      assert(isa(this, 'hidi.SensorPackage'));
-      sensor = zeros(0, 1);
-    end
-    
-    function sensor = getMagnetometerArray(this)
-      assert(isa(this, 'hidi.SensorPackage'));
-      sensor = zeros(0, 1);
-    end
-    
-    function sensor = getAltimeter(this)
-      assert(isa(this, 'hidi.SensorPackage'));
-      sensor = zeros(0, 1);
-    end
-    
-    function sensor = getGPSReceiver(this)
-      assert(isa(this, 'hidi.SensorPackage'));
-      sensor = zeros(0, 1);
-    end
+  methods (Access = public, Access = public)
+    refresh(this);
+    sensor = getAccelerometerArray(this);
+    sensor = getGyroscopeArray(this);
+    sensor = getMagnetometerArray(this);
+    sensor = getAltimeter(this);
+    sensor = getGPSReceiver(this);
   end
 end
