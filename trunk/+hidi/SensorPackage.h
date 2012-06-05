@@ -34,7 +34,7 @@ namespace hidi
     }
 
     /* Storage for package factories */
-    typedef SensorPackage* (*SensorPackageFactory)(const std::string);
+    typedef SensorPackage* (*SensorPackageFactory)(const std::string&);
     static std::map<std::string, SensorPackageFactory>* pFactoryList(void)
     {
       static std::map<std::string, SensorPackageFactory> factoryList;
@@ -61,7 +61,7 @@ namespace hidi
      * (C++) Call this function prior to the invocation of main() using an initializer class.
      * (MATLAB) Call this function from initialize().
      */
-    static void connect(const std::string name, const SensorPackageDescription cD, const SensorPackageFactory cF)
+    static void connect(const std::string& name, const SensorPackageDescription& cD, const SensorPackageFactory& cF)
     {
       if(!((cD==NULL)|(cF==NULL)))
       {
@@ -83,7 +83,7 @@ namespace hidi
      * A package directory identifying the package must in the environment path.
      * Omit the '+' prefix when identifying package names.
      */
-    static bool isConnected(const std::string name)
+    static bool isConnected(const std::string& name)
     {
       return (pFactoryList()->find(name)!=pFactoryList()->end());
     }
@@ -98,7 +98,7 @@ namespace hidi
      * Do not shadow this function.
      * If the package is not connected then the output is an empty string.
      */
-    static std::string description(const std::string name)
+    static std::string description(const std::string& name)
     {
       std::string str = "";
       if(isConnected(name))
@@ -121,7 +121,7 @@ namespace hidi
      * Do not shadow this function.
      * Throws an error if the package is not connected.
      */
-    static SensorPackage* create(const std::string name, const std::string parameters)
+    static SensorPackage* create(const std::string& name, const std::string& parameters)
     {
       SensorPackage* obj = NULL;
       if(isConnected(name))
@@ -143,7 +143,7 @@ namespace hidi
      * @param[out] packageName substring containing packageName
      * @param[out] parameters  substring containing parameters
      */
-    static void splitCompoundURI(const std::string uri, std::string& packageName, std::string& parameters)
+    static void splitCompoundURI(const std::string& uri, std::string& packageName, std::string& parameters)
     {
       size_t delimeter;
       packageName = uri;
@@ -173,7 +173,7 @@ namespace hidi
      * @note
      * The special key 'uri' causes the remainder of the string to be returned ignoring semicolons.
      */
-    static std::string getParameter(const std::string parameters, const std::string key)
+    static std::string getParameter(const std::string& parameters, const std::string& key)
     {
       size_t delimeter;
       std::string value = "";

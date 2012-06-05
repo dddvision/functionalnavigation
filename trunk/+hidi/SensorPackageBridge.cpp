@@ -965,7 +965,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   {
     mexErrMsgTxt((prefix+e.what()).c_str());
   }
-  catch(const char* str)
+  catch(const char*& str)
   {
     mexErrMsgTxt((prefix+str).c_str());
   }
