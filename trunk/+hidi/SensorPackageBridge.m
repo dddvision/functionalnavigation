@@ -96,5 +96,5 @@ function compileOnDemand(name)
   if(exist(output, 'file'))
     delete([output, '.', mexext]);
   end
-  mex(include1, include2, bridgecpp, cpp, '-output', output);
+  mex(include1, include2, bridgecpp, '-output', output);
 end
