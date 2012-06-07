@@ -2,6 +2,11 @@
 #define SENSORPACKAGEADAPTER_H
 
 #include "SensorPackage.h"
+#include "AccelerometerArrayAdapter.h"
+#include "GyroscopeArrayAdapter.h"
+#include "MagnetometerArrayAdapter.h"
+#include "AltimeterAdapter.h"
+#include "GPSReceiverAdapter.h"
 
 namespace hidi
 {
@@ -46,7 +51,7 @@ namespace hidi
     {
       return (source->getGPSReceiver());
     }
-    
+
     virtual ~SensorPackageAdapter(void)
     {}
   };

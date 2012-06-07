@@ -2,6 +2,7 @@
 #include <vector>
 #include "mex.h"
 #include "SensorPackage.h"
+#include "packages.h"
 
 namespace SensorPackageBridge
 {
