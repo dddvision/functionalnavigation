@@ -111,7 +111,6 @@ classdef SensorPackage < handle
   end
     
   methods (Access = public, Access = public)
-    refresh(this);
     sensor = getAccelerometerArray(this);
     sensor = getGyroscopeArray(this);
     sensor = getMagnetometerArray(this);

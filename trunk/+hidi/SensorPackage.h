@@ -199,17 +199,6 @@ namespace hidi
     }
 
     /**
-     * Incorporate new data and allow old data to expire for all sensors in the package.
-     *
-     * @note
-     * This function updates the object state without waiting for new data to be acquired.
-     */
-    virtual void refresh(void)
-    {
-      return;
-    }
-
-    /**
      * Get accelerometer array.
      *
      * @return vector of pointers to shared resources (do not delete)

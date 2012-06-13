@@ -72,10 +72,6 @@ classdef SensorPackageBridge < hidi.SensorPackage
         sensor(s) = hidi.GPSReceiverBridge(this.m, h(s));
       end
     end
-    
-    function refresh(this)
-      feval(this.m, uint32(0), 'refresh');
-    end
   end
 end
 
