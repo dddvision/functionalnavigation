@@ -123,6 +123,7 @@ namespace hidi
      */
     static SensorPackage* create(const std::string& name, const std::string& parameters)
     {
+      static std::string message;
       SensorPackage* obj = NULL;
       if(isConnected(name))
       {
@@ -130,7 +131,9 @@ namespace hidi
       }
       else
       {
-        std::string message = "\""+name+"\" is not connected. Its static initializer must call connect.";
+        message = "SensorPackage: \"";
+        message = message+name;
+        message = message+"\" is not connected. Its static initializer must call connect.";
         throw(message.c_str());
       }
       return (obj);
@@ -150,7 +153,7 @@ namespace hidi
       parameters = "";
       if(packageName.compare(0, 5, "hidi:"))
       {
-        throw("Expected URI format: hidi:<packageName>[?<key0>=<value0>[;<key1>=<value1>]]");
+        throw("SensorPackage: Expected URI format: hidi:<packageName>[?<key0>=<value0>[;<key1>=<value1>]]");
       }
       packageName = packageName.substr(5);
       delimeter = packageName.find('?');
