@@ -17,7 +17,6 @@ namespace SensorPackageBridge
     getMagnetometerArray,
     getAltimeter,
     getGPSReceiver,
-    refresh,
     accelerometerArrayRefresh,
     accelerometerArrayHasData,
     accelerometerArrayFirst,
@@ -214,7 +213,6 @@ namespace SensorPackageBridge
       memberMap["getMagnetometerArray"] = getMagnetometerArray;
       memberMap["getAltimeter"] = getAltimeter;
       memberMap["getGPSReceiver"] = getGPSReceiver;
-      memberMap["refresh"] = refresh;
       memberMap["accelerometerArrayRefresh"] = accelerometerArrayRefresh;
       memberMap["accelerometerArrayHasData"] = accelerometerArrayHasData;
       memberMap["accelerometerArrayFirst"] = accelerometerArrayFirst;
@@ -339,12 +337,6 @@ namespace SensorPackageBridge
       case getGPSReceiver:
       {
         getSensor(package->getGPSReceiver(), plhs[0]);
-        break;
-      }
-
-      case refresh:
-      {
-        package->refresh();
         break;
       }
 
