@@ -15,7 +15,7 @@ namespace hidi
       return (lookup.size());
     }
 
-    std::string getName(size_t index)
+    std::string getName(const size_t& index)
     {
       size_t extractorIndex;
       size_t featureIndex;
@@ -28,7 +28,7 @@ namespace hidi
       return (extractors[extractorIndex]->getName(featureIndex));
     }
 
-    double getValue(size_t index)
+    double getValue(const size_t& index)
     {
       size_t extractorIndex;
       size_t featureIndex;
