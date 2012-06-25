@@ -200,6 +200,40 @@ namespace hidi
       }
       return (value);
     }
+    
+    /**
+     * Refresh all sensors in the package.
+     */
+    void refresh(void)
+    {
+      static std::vector<AccelerometerArray*> accelerometerArray = getAccelerometerArray();
+      static std::vector<GyroscopeArray*> gyroscopeArray = getGyroscopeArray();
+      static std::vector<MagnetometerArray*> magnetometerArray = getMagnetometerArray();
+      static std::vector<Altimeter*> altimeter = getAltimeter();
+      static std::vector<GPSReceiver*> gpsReceiver = getGPSReceiver();
+      size_t n;
+      for(n = 0; n<accelerometerArray.size(); ++n)
+      {
+        accelerometerArray[n]->refresh();
+      }
+      for(n = 0; n<gyroscopeArray.size(); ++n)
+      {
+        gyroscopeArray[n]->refresh();
+      }
+      for(n = 0; n<magnetometerArray.size(); ++n)
+      {
+        magnetometerArray[n]->refresh();
+      }
+      for(n = 0; n<altimeter.size(); ++n)
+      {
+        altimeter[n]->refresh();
+      }
+      for(n = 0; n<gpsReceiver.size(); ++n)
+      {
+        gpsReceiver[n]->refresh();
+      }
+      return;
+    }
 
     /**
      * Get accelerometer array.
