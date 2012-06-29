@@ -96,14 +96,22 @@ namespace hidi
      *
      * @note
      * Do not shadow this function.
-     * If the package is not connected then the output is an empty string.
+     * Throws an error if the package is not connected.
      */
     static std::string description(const std::string& name)
     {
+      static std::string message;
       std::string str = "";
       if(isConnected(name))
       {
         str = (*pDescriptionList())[name]();
+      }
+	  else
+      {
+        message = "SensorPackage: '";
+        message = message+name;
+        message = message+"' is not connected. Its static initializer must call connect.";
+        throw(message.c_str());
       }
       return (str);
     }
@@ -131,9 +139,9 @@ namespace hidi
       }
       else
       {
-        message = "SensorPackage: \"";
+        message = "SensorPackage: '";
         message = message+name;
-        message = message+"\" is not connected. Its static initializer must call connect.";
+        message = message+"' is not connected. Its static initializer must call connect.";
         throw(message.c_str());
       }
       return (obj);
