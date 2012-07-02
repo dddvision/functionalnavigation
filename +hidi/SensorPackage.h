@@ -214,11 +214,11 @@ namespace hidi
      */
     void refresh(void)
     {
-      static std::vector<AccelerometerArray*> accelerometerArray = getAccelerometerArray();
-      static std::vector<GyroscopeArray*> gyroscopeArray = getGyroscopeArray();
-      static std::vector<MagnetometerArray*> magnetometerArray = getMagnetometerArray();
-      static std::vector<Altimeter*> altimeter = getAltimeter();
-      static std::vector<GPSReceiver*> gpsReceiver = getGPSReceiver();
+      std::vector<AccelerometerArray*> accelerometerArray = getAccelerometerArray();
+      std::vector<GyroscopeArray*> gyroscopeArray = getGyroscopeArray();
+      std::vector<MagnetometerArray*> magnetometerArray = getMagnetometerArray();
+      std::vector<Altimeter*> altimeter = getAltimeter();
+      std::vector<GPSReceiver*> gpsReceiver = getGPSReceiver();
       size_t n;
       for(n = 0; n<accelerometerArray.size(); ++n)
       {
