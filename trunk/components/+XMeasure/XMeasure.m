@@ -48,7 +48,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
         this.nb = this.na;
         this.status = true;
       end
-      time = hidi.WorldTime(this.ta+double(this.nb)*this.dt);
+      time = this.ta+double(this.nb)*this.dt;
       pose = this.xRef.evaluate(time);
       this.yBar = [this.yBar, pose.p(1)+this.deviation*randn];
     end
@@ -68,7 +68,7 @@ classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
     end
 
     function time = getTime(this, n)
-      time = hidi.WorldTime(this.initTime+double(n)*this.dt);
+      time = this.initTime+double(n)*this.dt;
     end
     
     function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)

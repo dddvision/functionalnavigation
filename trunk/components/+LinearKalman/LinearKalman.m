@@ -80,12 +80,12 @@ classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
     
     function refreshProblem(this)
       assert(this.isDefined);
-      currentTime = hidi.WorldTime(-Inf);
+      currentTime = -Inf;
       [cBest, iBest] = min(this.cost);
       for m = 1:numel(this.measure)
         this.measure{m}.refresh(this.dynamicModel(iBest));
         if(this.measure{m}.hasData())
-          currentTime = hidi.WorldTime(max(currentTime, this.measure{m}.getTime(this.measure{m}.last())));
+          currentTime = max(currentTime, this.measure{m}.getTime(this.measure{m}.last()));
         end
       end
       interval = this.dynamicModel(1).domain();

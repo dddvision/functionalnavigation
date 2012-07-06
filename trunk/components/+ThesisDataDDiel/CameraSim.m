@@ -31,7 +31,7 @@ classdef CameraSim < hidi.Camera
       S = load(fullfile(localCache, 'workspace.mat'), 'T_cam', 'CAMERA_TYPE', 'CAMERA_OFFSET');
       this.na = uint32(str2double(fnames(1, 6:11)));
       this.nb = this.na;
-      this.tn = hidi.WorldTime(S.T_cam+initialTime); % same policy for all sensors
+      this.tn = S.T_cam+initialTime; % same policy for all sensors
       this.cameraType = S.CAMERA_TYPE;
       this.frameOffset = [S.CAMERA_OFFSET; 1; 0; 0; 0];
       imageA = imread([this.localCache, '/color', sprintf('%06d',this.na), '.png']);
@@ -70,7 +70,7 @@ classdef CameraSim < hidi.Camera
       assert(this.hasData());
       assert(all(n>=this.na));
       assert(all(n<=this.nb));
-      time = hidi.WorldTime(zeros(size(n)));
+      time = zeros(size(n));
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     

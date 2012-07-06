@@ -71,7 +71,7 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray & InertialT
       assert(this.hasData());
       assert(all(n>=this.nFirst));
       assert(all(n<=this.nLast));
-      time = hidi.WorldTime(this.initialTime+double(n-this.nFirst)*this.tau);
+      time = this.initialTime+double(n-this.nFirst)*this.tau;
     end
 
     function force = getSpecificForce(this, n, ax)

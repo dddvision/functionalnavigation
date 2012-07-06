@@ -195,10 +195,10 @@ classdef DemoDisplay < DemoConfig & handle
         tmax = min(tmax, this.tRef(end));
       end
       if(tmin==tmax)
-        t = hidi.WorldTime(repmat(tmin, [1, this.bigSteps*this.subSteps+1]));
+        t = repmat(tmin, [1, this.bigSteps*this.subSteps+1]);
       else
         tmax(isinf(tmax)) = tmin+this.infinity; % prevent NaN
-        t = hidi.WorldTime(tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax);
+        t = tmin:((tmax-tmin)/this.bigSteps/this.subSteps):tmax;
       end
     end
     

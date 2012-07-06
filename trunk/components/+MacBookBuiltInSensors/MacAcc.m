@@ -115,9 +115,9 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Accel
       assert(all(isa(n, 'uint32')));
       assert(all(n>=this.na));
       assert(all(n<=this.nb));
-      time = hidi.WorldTime(zeros(size(n)));
+      time = zeros(size(n));
       for k = 1:numel(n)
-        time(k) = hidi.WorldTime(this.initialTime-this.zoneOffset+this.get(n(k), 4));
+        time(k) = this.initialTime-this.zoneOffset+this.get(n(k), 4);
       end
     end
     

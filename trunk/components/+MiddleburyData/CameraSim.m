@@ -21,7 +21,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
   methods (Access = public, Static = true)
     function this = CameraSim(initialTime)
       this = this@hidi.Camera(initialTime);
-      this.tn = hidi.WorldTime(initialTime+double(1:this.numImages-1)/this.fps);
+      this.tn = initialTime+double(1:this.numImages-1)/this.fps;
       this.im = cell(this.numImages, 1);
       for n = 1:this.numImages
         this.im{n} = this.getMiddleburyArt(n-1);
@@ -64,7 +64,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
       assert(this.hasData());
       assert(all(n>=this.na));
       assert(all(n<=this.nb));
-      time = hidi.WorldTime(zeros(size(n)));
+      time = zeros(size(n));
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     

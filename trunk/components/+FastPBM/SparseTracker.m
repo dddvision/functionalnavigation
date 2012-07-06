@@ -5,7 +5,7 @@ classdef SparseTracker < hidi.Sensor
     % @param[in] initialTime less than or equal to the time stamp of the first data node
     function this = SparseTracker(initialTime)
       this = this@hidi.Sensor();
-      assert(isa(initialTime, 'hidi.WorldTime'));
+      assert(isa(initialTime, 'hidi.double'));
     end
   end
   

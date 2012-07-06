@@ -364,7 +364,7 @@ namespace ShipDynamics
       static tom::TangentPose tP;
       double K;
       double halfAngle;
-      tom::WorldTime dt;
+      double dt;
 
       K = static_cast<double>(pL.size());
 
@@ -403,7 +403,7 @@ namespace ShipDynamics
     }
 
   public:
-    ShipDynamics(const tom::WorldTime initialTime, const std::string uri) :
+    ShipDynamics(const double initialTime, const std::string uri) :
       tom::DynamicModel(initialTime, uri)
     {
       static const double DTOR = PI/180.0;
@@ -482,7 +482,7 @@ namespace ShipDynamics
       return (interval);
     }
 
-    void evaluate(const std::vector<tom::WorldTime>& time, std::vector<tom::Pose>& pose)
+    void evaluate(const std::vector<double>& time, std::vector<tom::Pose>& pose)
     {
       static double k;
       size_t n;
@@ -498,7 +498,7 @@ namespace ShipDynamics
       return;
     }
 
-    void tangent(const std::vector<tom::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
+    void tangent(const std::vector<double>& time, std::vector<tom::TangentPose>& tangentPose)
     {
       static double k;
       size_t n;
@@ -621,7 +621,7 @@ namespace ShipDynamics
 
     tom::DynamicModel* copy(void)
     {
-      tom::WorldTime initialTime = this->interval.first;
+      double initialTime = this->interval.first;
       std::string uri = "";
       ShipDynamics* obj = new ShipDynamics(initialTime, uri);
 
@@ -658,7 +658,7 @@ namespace ShipDynamics
       return ("Motion model of a rigid body constrained to zero altitude with unit inertia that undergoes forcing.");
     }
 
-    static tom::DynamicModel* componentFactory(const tom::WorldTime initialTime, const std::string uri)
+    static tom::DynamicModel* componentFactory(const double initialTime, const std::string uri)
     {
       return (new ShipDynamics(initialTime, uri));
     }
