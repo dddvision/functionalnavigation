@@ -44,7 +44,7 @@ namespace tom
     }
 
     /* Storage for component factories */
-    typedef Measure* (*MeasureFactory)(const hidi::WorldTime, const std::string);
+    typedef Measure* (*MeasureFactory)(const double, const std::string);
     static std::map<std::string, MeasureFactory>* pFactoryList(void)
     {
       static std::map<std::string, MeasureFactory> factoryList;
@@ -67,7 +67,7 @@ namespace tom
      *   this=this@tom.Measure(initialTime,uri);
      * @endcode
      */
-    Measure(const hidi::WorldTime initialTime, const std::string uri)
+    Measure(const double initialTime, const std::string uri)
     {}
 
     /**
@@ -148,7 +148,7 @@ namespace tom
      * Do not shadow this function.
      * Throws an error if the component is not connected.
      */
-    static Measure* create(const std::string name, const hidi::WorldTime initialTime, const std::string uri)
+    static Measure* create(const std::string name, const double initialTime, const std::string uri)
     {
       Measure* obj = NULL;
       if(isConnected(name))

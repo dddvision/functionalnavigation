@@ -16,7 +16,7 @@ classdef DynamicModelDefault < tom.DynamicModel
   methods (Access = public, Static = true)
     function this = DynamicModelDefault(initialTime, uri)
       this = this@tom.DynamicModel(initialTime, uri);
-      this.interval = hidi.TimeInterval(initialTime, hidi.WorldTime(Inf));
+      this.interval = hidi.TimeInterval(initialTime, Inf);
     end
   end
   
@@ -113,7 +113,7 @@ classdef DynamicModelDefault < tom.DynamicModel
     end
     
     function obj = copy(this)
-      obj = tom.DynamicModelDefault(hidi.WorldTime(0),'');
+      obj = tom.DynamicModelDefault(0.0, '');
       obj.interval = this.interval;
     end
   end

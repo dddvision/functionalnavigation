@@ -41,7 +41,7 @@ classdef MeasureTest < handle
       fprintf('\ninitialTime =');
       interval = trajectory.domain();
       initialTime = interval.first;
-      assert(isa(initialTime, 'hidi.WorldTime'));
+      assert(isa(initialTime, 'double'));
       fprintf(' %f', double(initialTime));
       
       fprintf('\ntom.Measure.create =');

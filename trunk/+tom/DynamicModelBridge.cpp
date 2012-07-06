@@ -66,7 +66,7 @@ void convert(const mxArray*& array, std::string& cppString)
   return;
 }
 
-void convert(const mxArray*& array, std::vector<hidi::WorldTime>& cppTime)
+void convert(const mxArray*& array, std::vector<double>& cppTime)
 {
   double* mTime;
   unsigned n;
@@ -109,21 +109,15 @@ void convert(const hidi::TimeInterval& timeInterval, mxArray*& array)
 {
   mxArray* first;
   mxArray* second;
-  mxArray* firstWT;
-  mxArray* secondWT;
   mxArray* interval[2];
 
   first = mxCreateDoubleScalar(timeInterval.first);
   second = mxCreateDoubleScalar(timeInterval.second);
-  mexCallMATLAB(1, &firstWT, 1, &first, "hidi.WorldTime");
-  mexCallMATLAB(1, &secondWT, 1, &second, "hidi.WorldTime");
-  interval[0] = firstWT;
-  interval[1] = secondWT;
+  interval[0] = first;
+  interval[1] = second;
   mexCallMATLAB(1, &array, 2, interval, "hidi.TimeInterval");
   mxDestroyArray(first);
   mxDestroyArray(second);
-  mxDestroyArray(firstWT);
-  mxDestroyArray(secondWT);
   return;
 }
 
@@ -255,7 +249,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       case DynamicModelFactory:
       {
         static std::string name;
-        static hidi::WorldTime initialTime;
+        static double initialTime;
         static std::string uri;
         static uint32_t numInstances;
         tom::DynamicModel* obj;
@@ -301,7 +295,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case evaluate:
       {
-        static std::vector<hidi::WorldTime> time;
+        static std::vector<double> time;
         static std::vector<tom::Pose> pose;
         argcheck(nrhs, 4);
         convert(prhs[3], time);
@@ -312,7 +306,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case tangent:
       {
-        static std::vector<hidi::WorldTime> time;
+        static std::vector<double> time;
         static std::vector<tom::TangentPose> tangentPose;
         argcheck(nrhs, 4);
         convert(prhs[3], time);

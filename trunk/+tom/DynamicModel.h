@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "WorldTime.h"
 #include "TimeInterval.h"
 #include "Trajectory.h"
 
@@ -57,7 +56,7 @@ namespace tom
     }
 
     /* Storage for component factories */
-    typedef DynamicModel* (*DynamicModelFactory)(const hidi::WorldTime, const std::string);
+    typedef DynamicModel* (*DynamicModelFactory)(const double, const std::string);
     static std::map<std::string, DynamicModelFactory>* pFactoryList(void)
     {
       static std::map<std::string, DynamicModelFactory> factoryList;
@@ -80,7 +79,7 @@ namespace tom
      *   this=this@tom.DynamicModel(initialTime,uri);
      * @endcode
      */
-    DynamicModel(const hidi::WorldTime initialTime, const std::string uri)
+    DynamicModel(const double initialTime, const std::string uri)
     {}
 
     /**
@@ -161,7 +160,7 @@ namespace tom
      * Do not shadow this function.
      * Throws an error if the component is not connected.
      */
-    static DynamicModel* create(const std::string name, const hidi::WorldTime initialTime, const std::string uri)
+    static DynamicModel* create(const std::string name, const double initialTime, const std::string uri)
     {
       DynamicModel* obj = NULL;
       if(isConnected(name))

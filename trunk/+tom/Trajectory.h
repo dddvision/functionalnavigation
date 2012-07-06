@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "WorldTime.h"
 #include "TimeInterval.h"
 #include "Pose.h"
 #include "TangentPose.h"
@@ -46,7 +45,7 @@ namespace tom
      * Times after the upper bound of the domain return predicted poses in corresponding outputs.
      * Throws and exception if the output vector is not the same size as the input vector.
      */
-    virtual void evaluate(const std::vector<hidi::WorldTime>& time, std::vector<Pose>& pose) = 0;
+    virtual void evaluate(const std::vector<double>& time, std::vector<Pose>& pose) = 0;
 
     /**
      * Evaluate a single trajectory and its time derivatives at multiple time instants.
@@ -59,7 +58,7 @@ namespace tom
      * Times after the upper bound of the domain return predicted tangent poses in corresponding outputs.
      * Throws and exception if the output vector is not the same size as the input vector.
      */
-    virtual void tangent(const std::vector<hidi::WorldTime>& time, std::vector<TangentPose>& tangentPose) = 0;
+    virtual void tangent(const std::vector<double>& time, std::vector<TangentPose>& tangentPose) = 0;
     
     /**
      * Virtual base class destructor.

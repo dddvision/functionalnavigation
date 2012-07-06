@@ -25,13 +25,12 @@ classdef TrajectoryTest
       interval = trajectory.domain();
       interval.display();
       
-      time = hidi.WorldTime(interval.first+this.tau*(min(interval.second, interval.first+this.infinity)-interval.first));
+      time = interval.first+this.tau*(min(interval.second, interval.first+this.infinity)-interval.first);
       
       if((interval.second-interval.first)>(this.taup(end)-1))
-        timep = hidi.WorldTime(interval.first+this.taup*(min(interval.second, ...
-          interval.first+this.infinity)-interval.first));
+        timep = interval.first+this.taup*(min(interval.second, interval.first+this.infinity)-interval.first);
       else
-        timep = hidi.WorldTime(interval.first+this.taup-1);
+        timep = interval.first+this.taup-1.0;
       end
         
       fprintf('\ntime = %f', double(time(1)));

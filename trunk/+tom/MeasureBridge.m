@@ -27,13 +27,13 @@ classdef MeasureBridge < tom.Measure
     
     function this = MeasureBridge(name, initialTime, uri)
       if(nargin==0)
-        initialTime = hidi.WorldTime(0);
+        initialTime = 0.0;
         uri = '';
       end
       this = this@tom.Measure(initialTime, uri);
       if(nargin>0)
         assert(isa(name, 'char'));
-        assert(isa(initialTime, 'hidi.WorldTime'));
+        assert(isa(initialTime, 'double'));
         assert(isa(uri, 'char'));
         compileOnDemand(name);
         className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
@@ -68,7 +68,6 @@ classdef MeasureBridge < tom.Measure
 
     function time = getTime(this, n)
       time = feval(this.m, this.h, 'getTime', n);
-      time = hidi.WorldTime(time); % easier than conversion within mex
     end
     
     function edgeList = findEdges(this, naMin, naMax, nbMin, nbMax)
@@ -93,7 +92,7 @@ function compileOnDemand(name)
   bridge = mfilename('fullpath');
   bridgecpp = [bridge, '.cpp'];
   include1 = ['-I"', fileparts(bridge), '"'];
-  include2 = ['-I"', fileparts(which('hidi.WorldTime')), '"'];
+  include2 = ['-I"', fileparts(which('hidi.SensorPackage')), '"'];
   base = fullfile(['+', name], name);
   basecpp = [base, '.cpp'];
   cpp = which(basecpp);
