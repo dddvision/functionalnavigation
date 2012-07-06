@@ -201,7 +201,7 @@ void convert(const std::vector<double>& time, mxArray*& array)
   pTime = mxGetPr(array);
   for(n = 0; n<N; ++n)
   {
-    pTime[n] = static_cast<double>(time[n]);
+    pTime[n] = time[n];
   }
   return;
 }
