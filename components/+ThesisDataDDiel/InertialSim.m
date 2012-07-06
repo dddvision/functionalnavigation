@@ -21,7 +21,7 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray
       this = this@hidi.GyroscopeArray();
       this.secondsPerRefresh = secondsPerRefresh;
       [this.tn, this.gyro, this.accel] = ReadIMUdat(localCache, 'inertia.dat');
-      this.tn = hidi.WorldTime(this.tn+initialTime); % same policy for all sensors
+      this.tn = this.tn+initialTime; % same policy for all sensors
       this.na = uint32(1);
       this.nb = this.na;
       S = load(fullfile(localCache, 'workspace.mat'), 'IMU_TYPE');
@@ -60,7 +60,7 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray
       assert(this.hasData());
       assert(all(n>=this.na));
       assert(all(n<=this.nb));
-      time = hidi.WorldTime(zeros(size(n)));
+      time = zeros(size(n));
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
 

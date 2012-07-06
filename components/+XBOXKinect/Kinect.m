@@ -22,7 +22,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
   methods (Access = public)
     function this = Kinect(initialTime)
       this = this@hidi.Sensor();
-      assert(isa(initialTime, 'hidi.WorldTime'));
+      assert(isa(initialTime, 'hidi.double'));
       if(this.verbose)
         fprintf('\nInitializing %s', class(this));
       end
@@ -99,9 +99,9 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
     
     function time = getTime(this, n)
       assert(this.ready)
-      time = hidi.WorldTime(zeros(size(n)));
+      time = zeros(size(n));
       for k = 1:numel(n)
-        time(k) = hidi.WorldTime(dlmread(fullfile(this.localCache, ['time', num2str(n(k), this.fileFormat), '.dat'])));
+        time(k) = dlmread(fullfile(this.localCache, ['time', num2str(n(k), this.fileFormat), '.dat']));
       end
     end
     

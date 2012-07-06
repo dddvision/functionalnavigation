@@ -46,7 +46,7 @@ classdef ReferenceTrajectory < tom.Trajectory
     end
     
     function interval = domain(this)
-      interval = hidi.TimeInterval(hidi.WorldTime(this.tRef(1)), hidi.WorldTime(this.tRef(end)));
+      interval = hidi.TimeInterval(this.tRef(1), this.tRef(end));
     end
     
     function pose = evaluate(this, t)

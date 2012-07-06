@@ -11,7 +11,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
 
   methods (Access = public, Static = true)
     function this = BodyReference(initialTime)
-      this.interval = hidi.TimeInterval(initialTime, hidi.WorldTime(initialTime+(double(this.numImages)-1)/this.fps));
+      this.interval = hidi.TimeInterval(initialTime, initialTime+(double(this.numImages)-1)/this.fps);
     end
   end
     

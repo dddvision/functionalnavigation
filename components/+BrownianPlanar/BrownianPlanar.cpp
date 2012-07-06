@@ -217,7 +217,7 @@ namespace BrownianPlanar
       static tom::TangentPose tP;
       double K;
       double halfAngle;
-      hidi::WorldTime dt;
+      double dt;
 
       K = static_cast<double>(px.size());
 
@@ -256,7 +256,7 @@ namespace BrownianPlanar
     }
 
   public:
-    BrownianPlanar(const hidi::WorldTime initialTime, const std::string uri) :
+    BrownianPlanar(const double initialTime, const std::string uri) :
       tom::DynamicModel(initialTime, uri)
     {
       static const unsigned reserve = 1024;
@@ -301,7 +301,7 @@ namespace BrownianPlanar
       return (interval);
     }
 
-    void evaluate(const std::vector<hidi::WorldTime>& time, std::vector<tom::Pose>& pose)
+    void evaluate(const std::vector<double>& time, std::vector<tom::Pose>& pose)
     {
       static double k;
       unsigned n;
@@ -317,7 +317,7 @@ namespace BrownianPlanar
       return;
     }
 
-    void tangent(const std::vector<hidi::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
+    void tangent(const std::vector<double>& time, std::vector<tom::TangentPose>& tangentPose)
     {
       static double k;
       unsigned n;
@@ -446,7 +446,7 @@ namespace BrownianPlanar
 
     tom::DynamicModel* copy(void)
     {
-      hidi::WorldTime initialTime = this->interval.first;
+      double initialTime = this->interval.first;
       std::string uri = "";
       BrownianPlanar* obj = new BrownianPlanar(initialTime, uri);
 
@@ -482,7 +482,7 @@ namespace BrownianPlanar
       return ("Planar motion model of a rigid body with unit inertia that undergoes Brownian forcing.");
     }
 
-    static tom::DynamicModel* componentFactory(const hidi::WorldTime initialTime, const std::string uri)
+    static tom::DynamicModel* componentFactory(const double initialTime, const std::string uri)
     {
       return (new BrownianPlanar(initialTime, uri));
     }

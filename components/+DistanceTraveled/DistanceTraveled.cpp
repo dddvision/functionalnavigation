@@ -9,11 +9,11 @@ namespace DistanceTraveled
   private:
     static const double dt;
     static const double deviation;
-    hidi::WorldTime tMin;
-    hidi::WorldTime tMax;
+    double tMin;
+    double tMax;
 
   public:
-    DistanceTraveled(const hidi::WorldTime initialTime, const std::string uri) :
+    DistanceTraveled(const double initialTime, const std::string uri) :
       tom::Measure(initialTime, uri)
     {
       tMin = initialTime;
@@ -52,7 +52,7 @@ namespace DistanceTraveled
       return (this->last()>this->first());
     }
 
-    hidi::WorldTime getTime(uint32_t n)
+    double getTime(uint32_t n)
     {
       return (tMin+dt*static_cast<double>(n));
     }
@@ -75,8 +75,8 @@ namespace DistanceTraveled
 
     double computeEdgeCost(tom::Trajectory* x, const tom::GraphEdge graphEdge)
     {
-      static std::vector<hidi::WorldTime> tA(1);
-      static std::vector<hidi::WorldTime> tB(1);
+      static std::vector<double> tA(1);
+      static std::vector<double> tB(1);
       static std::vector<tom::Pose> poseA(1);
       static std::vector<tom::Pose> poseB(1);
       double y[3];
@@ -99,7 +99,7 @@ namespace DistanceTraveled
       return ("Creates a set of relative measures at equal time intervals based on total distance traveled.");
     }
 
-    static tom::Measure* componentFactory(const hidi::WorldTime initialTime, const std::string uri)
+    static tom::Measure* componentFactory(const double initialTime, const std::string uri)
     {
       return (new DistanceTraveled(initialTime, uri));
     }

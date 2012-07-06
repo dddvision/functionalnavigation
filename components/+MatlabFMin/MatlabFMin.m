@@ -87,11 +87,11 @@ classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
     
     function refreshProblem(this)
       assert(this.isDefined);
-      tb = hidi.WorldTime(-Inf);
+      tb = -Inf;
       for m = 1:numel(this.measure)
         this.measure{m}.refresh(this.dynamicModel);
         if(this.measure{m}.hasData())
-          tb = hidi.WorldTime(max(tb, this.measure{m}.getTime(this.measure{m}.last())));
+          tb = max(tb, this.measure{m}.getTime(this.measure{m}.last()));
         end
       end
       interval = this.dynamicModel.domain();

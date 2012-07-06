@@ -25,7 +25,7 @@ classdef BodyReference < tom.Trajectory
       refLongitude = DTOR*-71.0927417;
       
       % add initial time to recorded time (same policy for all sensors)
-      this.T_imu = hidi.WorldTime(this.T_imu+initialTime);
+      this.T_imu = this.T_imu+initialTime;
       
       % convert from tangent plane to ECEF
       Raxes = [[0, 0, -1]
@@ -42,7 +42,7 @@ classdef BodyReference < tom.Trajectory
     end
 
     function interval = domain(this)
-      interval = hidi.TimeInterval(hidi.WorldTime(this.T_imu(1)), hidi.WorldTime(this.T_imu(end)));
+      interval = hidi.TimeInterval(this.T_imu(1), this.T_imu(end));
     end
 
     function pose = evaluate(this, t)

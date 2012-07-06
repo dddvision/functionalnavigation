@@ -69,9 +69,9 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       assert(all(n>=this.na));
       assert(all(n<=this.nb));
       interval = this.refTraj.domain();
-      time = hidi.WorldTime(zeros(size(n)));
+      time = zeros(size(n));
       for k = 1:numel(n)
-        time(k) = hidi.WorldTime(interval.first+this.noise(1, n(k)));
+        time(k) = interval.first+this.noise(1, n(k));
       end
     end
 
