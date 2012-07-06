@@ -61,8 +61,8 @@ classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
       this.xi = [xt.p; xt.q; xt.r; xt.s];
       
       this.imu = InertialTDMSim.InertialSim(initialTime, InertialTDMSim.IMUModel(this.model));
-      this.aSigma = this.imu.getAccelerometerVelocityRandomWalk();
-      this.gSigma = this.imu.getGyroscopeAngleRandomWalk();      
+      this.aSigma = this.imu.getAccelerometerRandomWalk();
+      this.gSigma = this.imu.getGyroscopeRandomWalk();      
     end
     
     function interval = domain(this)

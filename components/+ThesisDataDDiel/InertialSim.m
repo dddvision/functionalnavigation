@@ -71,7 +71,7 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray
       force = this.accel(ax+1, n)';
     end
     
-    function walk = getAccelerometerVelocityRandomWalk(this)
+    function walk = getAccelerometerRandomWalk(this)
       walk = this.stats.Accel.RandomWalk;
     end
     
@@ -106,7 +106,7 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray
       angularRate = this.gyro(ax+1, n)';
     end
     
-    function walk = getGyroscopeAngleRandomWalk(this)
+    function walk = getGyroscopeRandomWalk(this)
       walk = this.stats.Gyro.RandomWalk;
     end
     

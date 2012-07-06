@@ -49,8 +49,8 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray & InertialT
       tPA = xRef.tangent(tA);
       tPB = xRef.tangent(tB);
       Minv = Quat2Matrix(QuatConj(tPA.q));
-      this.aData(:, this.nLast) = Minv*((tPB.r-tPA.r)/this.tau+this.getAccelerometerVelocityRandomWalk()*randn(3, 1));
-      this.gData(:, this.nLast) = Quat2AxisAngle(Quat2Homo(QuatConj(tPA.q))*tPB.q)/this.tau+this.getGyroscopeAngleRandomWalk()*randn(3, 1);
+      this.aData(:, this.nLast) = Minv*((tPB.r-tPA.r)/this.tau+this.getAccelerometerRandomWalk()*randn(3, 1));
+      this.gData(:, this.nLast) = Quat2AxisAngle(Quat2Homo(QuatConj(tPA.q))*tPB.q)/this.tau+this.getGyroscopeRandomWalk()*randn(3, 1);
     end
     
     function flag = hasData(this)      
@@ -85,7 +85,7 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray & InertialT
       force = this.getSpecificForce(this, n, ax);
     end
     
-    function walk = getAccelerometerVelocityRandomWalk(this)
+    function walk = getAccelerometerRandomWalk(this)
       walk = this.stats.Accel.RandomWalk;
     end
     
@@ -124,7 +124,7 @@ classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray & InertialT
       rate = getAngularRate(this, n, ax);
     end
     
-    function walk = getGyroscopeAngleRandomWalk(this)
+    function walk = getGyroscopeRandomWalk(this)
       walk = this.stats.Gyro.RandomWalk;
     end
     
