@@ -24,7 +24,7 @@ namespace SensorPackageBridge
     accelerometerArrayGetTime,
     getSpecificForce,
     getSpecificForceCalibrated,
-    getAccelerometerVelocityRandomWalk,
+    getAccelerometerRandomWalk,
     getAccelerometerTurnOnBiasSigma,
     getAccelerometerInRunBiasSigma,
     getAccelerometerInRunBiasStability,
@@ -38,7 +38,7 @@ namespace SensorPackageBridge
     gyroscopeArrayGetTime,
     getAngularRate,
     getAngularRateCalibrated,
-    getGyroscopeAngleRandomWalk,
+    getGyroscopeRandomWalk,
     getGyroscopeTurnOnBiasSigma,
     getGyroscopeInRunBiasSigma,
     getGyroscopeInRunBiasStability,
@@ -218,7 +218,7 @@ namespace SensorPackageBridge
       memberMap["accelerometerArrayGetTime"] = accelerometerArrayGetTime;
       memberMap["getSpecificForce"] = getSpecificForce;
       memberMap["getSpecificForceCalibrated"] = getSpecificForceCalibrated;
-      memberMap["getAccelerometerVelocityRandomWalk"] = getAccelerometerVelocityRandomWalk;
+      memberMap["getAccelerometerRandomWalk"] = getAccelerometerRandomWalk;
       memberMap["getAccelerometerTurnOnBiasSigma"] = getAccelerometerTurnOnBiasSigma;
       memberMap["getAccelerometerInRunBiasSigma"] = getAccelerometerInRunBiasSigma;
       memberMap["getAccelerometerInRunBiasStability"] = getAccelerometerInRunBiasStability;
@@ -232,7 +232,7 @@ namespace SensorPackageBridge
       memberMap["gyroscopeArrayGetTime"] = gyroscopeArrayGetTime;
       memberMap["getAngularRate"] = getAngularRate;
       memberMap["getAngularRateCalibrated"] = getAngularRateCalibrated;
-      memberMap["getGyroscopeAngleRandomWalk"] = getGyroscopeAngleRandomWalk;
+      memberMap["getGyroscopeRandomWalk"] = getGyroscopeRandomWalk;
       memberMap["getGyroscopeTurnOnBiasSigma"] = getGyroscopeTurnOnBiasSigma;
       memberMap["getGyroscopeInRunBiasSigma"] = getGyroscopeInRunBiasSigma;
       memberMap["getGyroscopeInRunBiasStability"] = getGyroscopeInRunBiasStability;
@@ -434,10 +434,10 @@ namespace SensorPackageBridge
         break;
       }
 
-      case getAccelerometerVelocityRandomWalk:
+      case getAccelerometerRandomWalk:
       {
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
-        convert(sensor->getAccelerometerVelocityRandomWalk(), plhs[0]);
+        convert(sensor->getAccelerometerRandomWalk(), plhs[0]);
         break;
       }
 
@@ -579,10 +579,10 @@ namespace SensorPackageBridge
         break;
       }
 
-      case getGyroscopeAngleRandomWalk:
+      case getGyroscopeRandomWalk:
       {
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-        convert(sensor->getGyroscopeAngleRandomWalk(), plhs[0]);
+        convert(sensor->getGyroscopeRandomWalk(), plhs[0]);
         break;
       }
 

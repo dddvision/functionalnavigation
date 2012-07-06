@@ -63,7 +63,7 @@ namespace hidi
      *
      * @return standard deviation of angle random walk applied to angular rate (radian/rt-second)
      */
-    virtual double getGyroscopeAngleRandomWalk(void) = 0;
+    virtual double getGyroscopeRandomWalk(void) = 0;
 
     /**
      * Get turn-on bias standard deviation.

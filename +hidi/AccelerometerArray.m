@@ -6,7 +6,7 @@ classdef AccelerometerArray < hidi.Sensor
     
   methods (Abstract = true, Access = public)
     force = getSpecificForce(this, n, ax);
-    walk = getAccelerometerVelocityRandomWalk(this);
+    walk = getAccelerometerRandomWalk(this);
     sigma = getAccelerometerTurnOnBiasSigma(this);
     sigma = getAccelerometerInRunBiasSigma(this);
     tau = getAccelerometerInRunBiasStability(this);

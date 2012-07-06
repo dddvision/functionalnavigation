@@ -28,9 +28,9 @@ namespace hidi
       return (source->getAngularRateCalibrated(n, ax));
     }
 
-    virtual double getGyroscopeAngleRandomWalk(void)
+    virtual double getGyroscopeRandomWalk(void)
     {
-      return (source->getGyroscopeAngleRandomWalk());
+      return (source->getGyroscopeRandomWalk());
     }
 
     virtual double getGyroscopeTurnOnBiasSigma(void)

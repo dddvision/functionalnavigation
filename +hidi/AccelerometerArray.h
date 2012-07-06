@@ -64,7 +64,7 @@ namespace hidi
      *
      * @return standard deviation of velocity random walk applied to specific force (meter/second/rt-second)
      */
-    virtual double getAccelerometerVelocityRandomWalk(void) = 0;
+    virtual double getAccelerometerRandomWalk(void) = 0;
 
     /**
      * Get turn-on bias standard deviation.
