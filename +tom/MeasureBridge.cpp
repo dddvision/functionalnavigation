@@ -26,13 +26,13 @@ void argcheck(int& narg, int n)
   return;
 }
 
-void convert(const mxArray*& array, hidi::WorldTime& value)
+void convert(const mxArray*& array, double& value)
 {
   if(mxGetClassID(array)!=mxDOUBLE_CLASS)
   {
-    throw("MeasureBridge: input array must be hidi.WorldTime");
+    throw("MeasureBridge: input array must be double.");
   }
-  value = (*static_cast<hidi::WorldTime*>(mxGetData(array)));
+  value = (*static_cast<double*>(mxGetData(array)));
   return;
 }
 
@@ -192,7 +192,7 @@ void convert(std::string str, mxArray*& array)
   return;
 }
 
-void convert(const std::vector<hidi::WorldTime>& time, mxArray*& array)
+void convert(const std::vector<double>& time, mxArray*& array)
 {
   double* pTime;
   unsigned n;
@@ -201,7 +201,7 @@ void convert(const std::vector<hidi::WorldTime>& time, mxArray*& array)
   pTime = mxGetPr(array);
   for(n = 0; n<N; ++n)
   {
-    pTime[n] = static_cast<hidi::WorldTime>(time[n]);
+    pTime[n] = static_cast<double>(time[n]);
   }
   return;
 }
@@ -251,7 +251,7 @@ public:
     return timeInterval;
   }
 
-  void evaluate(const std::vector<hidi::WorldTime>& time, std::vector<tom::Pose>& pose)
+  void evaluate(const std::vector<double>& time, std::vector<tom::Pose>& pose)
   {
     static mxArray* rhs;
     static mxArray* lhs;
@@ -264,7 +264,7 @@ public:
     return;
   }
 
-  void tangent(const std::vector<hidi::WorldTime>& time, std::vector<tom::TangentPose>& tangentPose)
+  void tangent(const std::vector<double>& time, std::vector<tom::TangentPose>& tangentPose)
   {
     static mxArray* rhs;
     static mxArray* lhs;
@@ -327,7 +327,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       case MeasureFactory:
       {
         static std::string name;
-        static hidi::WorldTime initialTime;
+        static double initialTime;
         static std::string uri;
         static uint32_t numInstances;
         tom::Measure* obj;

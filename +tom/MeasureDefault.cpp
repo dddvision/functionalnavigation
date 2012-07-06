@@ -7,7 +7,7 @@ namespace tom
   {
   public:
     /** Constructor and parent class initializer of the same form. */
-    MeasureDefault(const WorldTime initialTime, const std::string uri) :
+    MeasureDefault(const double initialTime, const std::string uri) :
       Measure(initialTime, uri)
     {
       return;
@@ -35,7 +35,7 @@ namespace tom
       return (0);
     }
 
-    WorldTime getTime(uint32_t n)
+    double getTime(uint32_t n)
     {
       throw("The default sensor has no data.");
       return (0);
@@ -59,7 +59,7 @@ namespace tom
       return ("This is the default measure. It has no data and constructs no graph edges.");
     }
 
-    static Measure* componentFactory(const WorldTime initialTime, const std::string uri)
+    static Measure* componentFactory(const double initialTime, const std::string uri)
     {
       return (new MeasureDefault(initialTime, uri));
     }

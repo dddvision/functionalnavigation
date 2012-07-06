@@ -10,7 +10,7 @@ namespace tom
 
   public:
     /** Constructor and parent class initializer of the same form. */
-    DynamicModelDefault(const WorldTime initialTime, const std::string uri) :
+    DynamicModelDefault(const double initialTime, const std::string uri) :
       DynamicModel(initialTime, uri)
     {
       interval.first = initialTime;
@@ -73,7 +73,7 @@ namespace tom
       return (interval);
     }
 
-    void evaluate(const std::vector<WorldTime>& time, std::vector<Pose>& pose)
+    void evaluate(const std::vector<double>& time, std::vector<Pose>& pose)
     {
       static const Pose nullPose;
       unsigned n;
@@ -99,7 +99,7 @@ namespace tom
       return;
     }
 
-    void tangent(const std::vector<WorldTime>& time, std::vector<TangentPose>& tangentPose)
+    void tangent(const std::vector<double>& time, std::vector<TangentPose>& tangentPose)
     {
       static const TangentPose nullTangentPose;
       unsigned n;
@@ -138,7 +138,7 @@ namespace tom
 
     tom::DynamicModel* copy(void)
     {
-      hidi::WorldTime initialTime = this->interval.first;
+      double initialTime = this->interval.first;
       std::string uri = "";
       BrownianPlanar* obj = new BrownianPlanar(initialTime, uri);
       obj->interval = this->interval;
@@ -151,7 +151,7 @@ namespace tom
       return ("This default dynamic model represents a stationary body at the world origin with no input parameters.");
     }
 
-    static DynamicModel* componentFactory(const WorldTime initialTime, const std::string uri)
+    static DynamicModel* componentFactory(const double initialTime, const std::string uri)
     {
       return (new DynamicModelDefault(initialTime, uri));
     }

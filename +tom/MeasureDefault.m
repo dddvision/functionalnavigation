@@ -43,8 +43,8 @@ classdef MeasureDefault < tom.Measure
     function time = getTime(this, n)
       assert(isa(this, 'hidi.Sensor'));
       assert(isa(n, 'uint32'));
-      time = hidi.WorldTime(0);
-      assert(isa(time, 'hidi.WorldTime'));
+      time = 0.0;
+      assert(isa(time, 'double'));
       error('The default sensor has no data.');
     end
     

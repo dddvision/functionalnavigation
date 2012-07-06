@@ -4,7 +4,7 @@ classdef DynamicModelTest
       fprintf('\n\n*** Begin DynamicModel Test ***\n');
       
       fprintf('\ninitialTime =');
-      assert(isa(initialTime, 'hidi.WorldTime')); 
+      assert(isa(initialTime, 'double')); 
       fprintf(' %f', double(initialTime));
 
       fprintf('\nuri =');
