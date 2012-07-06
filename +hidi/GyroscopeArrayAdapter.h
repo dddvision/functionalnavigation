@@ -18,12 +18,12 @@ namespace hidi
       this->source = source;
     }
 
-    virtual double getAngularRate(uint32_t n, uint32_t ax)
+    virtual double getAngularRate(const uint32_t& n, const uint32_t& ax)
     {
       return (source->getAngularRate(n, ax));
     }
 
-    virtual double getAngularRateCalibrated(uint32_t n, uint32_t ax)
+    virtual double getAngularRateCalibrated(const uint32_t& n, const uint32_t& ax)
     {
       return (source->getAngularRateCalibrated(n, ax));
     }

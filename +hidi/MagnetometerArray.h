@@ -55,7 +55,7 @@ namespace hidi
      * Calibration may correct bias, scale, and/or orientation, depending on the specific implementation
      * The calibrated axis interpretation is typically 0=Forward, 1=Right, 2=Down
      */
-    virtual double getMagneticFieldCalibrated(uint32_t n, uint32_t ax) = 0;
+    virtual double getMagneticFieldCalibrated(const uint32_t& n, const uint32_t& ax) = 0;
 
     /**
      * Virtual base class destructor.

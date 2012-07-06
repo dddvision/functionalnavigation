@@ -43,7 +43,7 @@ namespace hidi
      *   during the preceding time period and dividing by the time period
      * Throws an exception if either input index is out of range
      */
-    virtual double getSpecificForce(uint32_t n, uint32_t ax) = 0;
+    virtual double getSpecificForce(const uint32_t& n, const uint32_t& ax) = 0;
 
     /**
      * Get calibrated accelerometer data.
@@ -57,7 +57,7 @@ namespace hidi
      * Calibration may correct bias, scale, and/or orientation, depending on the specific implementation
      * The calibrated axis interpretation is typically 0=Forward, 1=Right, 2=Down
      */
-    virtual double getSpecificForceCalibrated(uint32_t n, uint32_t ax) = 0;
+    virtual double getSpecificForceCalibrated(const uint32_t& n, const uint32_t& ax) = 0;
 
     /**
      * Get velocity random walk standard deviation.

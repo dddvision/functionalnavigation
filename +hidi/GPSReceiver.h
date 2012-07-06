@@ -38,7 +38,7 @@ namespace hidi
      * @note
      * Throws an exception if the data index is out of range
      */
-    virtual double getLongitude(uint32_t n) = 0;
+    virtual double getLongitude(const uint32_t& n) = 0;
 
     /**
      * Get geodetic latitude.
@@ -49,7 +49,7 @@ namespace hidi
      * @note
      * Throws an exception if the data index is out of range
      */
-    virtual double getLatitude(uint32_t n) = 0;
+    virtual double getLatitude(const uint32_t& n) = 0;
 
     /**
      * Get height above WGS84.
@@ -60,7 +60,7 @@ namespace hidi
      * @note
      * Throws an exception if the data index is out of range
      */
-    virtual double getHeight(uint32_t n) = 0;
+    virtual double getHeight(const uint32_t& n) = 0;
 
     /**
      * Check whether precision information is available.
@@ -79,7 +79,7 @@ namespace hidi
      * Throws an exception if information is not available
      * Throws an exception if the data index is out of range
      */
-    virtual double getPrecisionHorizontal(uint32_t n) = 0;
+    virtual double getPrecisionHorizontal(const uint32_t& n) = 0;
 
     /**
      * Get vertical dilution of precision.
@@ -91,7 +91,7 @@ namespace hidi
      * Throws an exception if information is not available
      * Throws an exception if the data index is out of range
      */
-    virtual double getPrecisionVertical(uint32_t n) = 0;
+    virtual double getPrecisionVertical(const uint32_t& n) = 0;
 
     /**
      * Get standard deviation of equivalent circular error.
@@ -103,7 +103,7 @@ namespace hidi
      * Throws an exception if information is not available
      * Throws an exception if the data index is out of range
      */
-    virtual double getPrecisionCircular(uint32_t n) = 0;
+    virtual double getPrecisionCircular(const uint32_t& n) = 0;
 
     /**
      * Virtual base class destructor.

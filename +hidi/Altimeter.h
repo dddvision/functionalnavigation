@@ -35,7 +35,7 @@ namespace hidi
      * @param[in] n data index (MATLAB: M-by-N)
      * @return      altitude above the WGS84 ellipsoid (meters) (MATLAB: M-by-N)
      */
-    virtual double getAltitude(uint32_t n) = 0;
+    virtual double getAltitude(const uint32_t& n) = 0;
 
     /**
      * Virtual base class destructor.

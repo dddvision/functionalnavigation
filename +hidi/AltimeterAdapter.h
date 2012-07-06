@@ -18,7 +18,7 @@ namespace hidi
       this->source = source;
     }
 
-    virtual double getAltitude(uint32_t n)
+    virtual double getAltitude(const uint32_t& n)
     {
       return (source->getAltitude(n));
     }
