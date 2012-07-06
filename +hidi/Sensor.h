@@ -84,7 +84,7 @@ namespace hidi
      * Time stamps must not decrease with increasing indices.
      * Throws an exception if data at the node is invalid.
      */
-    virtual double getTime(uint32_t n) = 0;
+    virtual double getTime(const uint32_t& n) = 0;
 
     /**
      * Virtual base class destructor.

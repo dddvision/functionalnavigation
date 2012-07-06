@@ -37,7 +37,7 @@ namespace hidi
       return (source->last());
     }
 
-    virtual double getTime(uint32_t n)
+    virtual double getTime(const uint32_t& n)
     {
       return (source->getTime(n));
     }
