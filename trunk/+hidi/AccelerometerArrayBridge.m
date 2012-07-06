@@ -40,8 +40,8 @@ classdef AccelerometerArrayBridge < hidi.AccelerometerArray
       force = feval(this.m, this.h, 'getSpecificForceCalibrated', n, ax);
     end
     
-    function walk = getAccelerometerVelocityRandomWalk(this)
-      walk = feval(this.m, this.h, 'getAccelerometerVelocityRandomWalk');
+    function walk = getAccelerometerRandomWalk(this)
+      walk = feval(this.m, this.h, 'getAccelerometerRandomWalk');
     end
     
     function sigma = getAccelerometerTurnOnBiasSigma(this)

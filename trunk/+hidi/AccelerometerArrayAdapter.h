@@ -27,9 +27,9 @@ namespace hidi
       return (source->getSpecificForceCalibrated(n, ax));
     }
 
-    virtual double getAccelerometerVelocityRandomWalk(void)
+    virtual double getAccelerometerRandomWalk(void)
     {
-      return (source->getAccelerometerVelocityRandomWalk());
+      return (source->getAccelerometerRandomWalk());
     }
 
     virtual double getAccelerometerTurnOnBiasSigma(void)
