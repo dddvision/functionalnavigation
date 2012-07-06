@@ -18,7 +18,7 @@ namespace hidi
       this->source = source;
     }
 
-    virtual double getMagneticField(uint32_t n, uint32_t ax)
+    virtual double getMagneticField(const uint32_t& n, const uint32_t& ax)
     {
       return (source->getMagneticField(n, ax));
     }
