@@ -17,12 +17,12 @@ namespace hidi
       this->source = source;
     }
 
-    virtual double getSpecificForce(uint32_t n, uint32_t ax)
+    virtual double getSpecificForce(const uint32_t& n, const uint32_t& ax)
     {
       return (source->getSpecificForce(n, ax));
     }
 
-    virtual double getSpecificForceCalibrated(uint32_t n, uint32_t ax)
+    virtual double getSpecificForceCalibrated(const uint32_t& n, const uint32_t& ax)
     {
       return (source->getSpecificForceCalibrated(n, ax));
     }

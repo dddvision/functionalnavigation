@@ -18,17 +18,17 @@ namespace hidi
       this->source = source;
     }
 
-    virtual double getLongitude(uint32_t n)
+    virtual double getLongitude(const uint32_t& n)
     {
       return (source->getLongitude(n));
     }
 
-    virtual double getLatitude(uint32_t n)
+    virtual double getLatitude(const uint32_t& n)
     {
       return (source->getLatitude(n));
     }
 
-    virtual double getHeight(uint32_t n)
+    virtual double getHeight(const uint32_t& n)
     {
       return (source->getHeight(n));
     }
@@ -38,17 +38,17 @@ namespace hidi
       return (source->hasPrecision());
     }
 
-    virtual double getPrecisionHorizontal(uint32_t n)
+    virtual double getPrecisionHorizontal(const uint32_t& n)
     {
       return (source->getPrecisionHorizontal(n));
     }
 
-    virtual double getPrecisionVertical(uint32_t n)
+    virtual double getPrecisionVertical(const uint32_t& n)
     {
       return (source->getPrecisionVertical(n));
     }
 
-    virtual double getPrecisionCircular(uint32_t n)
+    virtual double getPrecisionCircular(const uint32_t& n)
     {
       return (source->getPrecisionCircular(n));
     }
