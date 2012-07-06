@@ -35,7 +35,7 @@ namespace tom
       return (0);
     }
 
-    double getTime(uint32_t n)
+    double getTime(const uint32_t& n)
     {
       throw("The default sensor has no data.");
       return (0);

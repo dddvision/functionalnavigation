@@ -52,7 +52,7 @@ namespace DistanceTraveled
       return (this->last()>this->first());
     }
 
-    double getTime(uint32_t n)
+    double getTime(const uint32_t& n)
     {
       return (tMin+dt*static_cast<double>(n));
     }
