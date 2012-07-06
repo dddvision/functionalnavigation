@@ -23,12 +23,12 @@ classdef SensorTest
 
         fprintf('\ngetTime(%d) =', uint32(first));
         ta = sensor.getTime(first);
-        assert(isa(ta, 'hidi.WorldTime'));
+        assert(isa(ta, 'double'));
         fprintf(' %f', double(ta));
 
         fprintf('\ngetTime(%d) =', uint32(last));
         tb = sensor.getTime(last);
-        assert(isa(tb, 'hidi.WorldTime'));
+        assert(isa(tb, 'double'));
         fprintf(' %f', double(tb));
 
         if(last>first)

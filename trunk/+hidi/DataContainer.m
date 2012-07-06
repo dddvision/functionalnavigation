@@ -34,13 +34,13 @@ classdef DataContainer < handle
   methods (Access = protected, Static = true)
     % Protected method to construct a singleton component instance
     %
-    % @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor, hidi.WorldTime
+    % @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor
     %
     % NOTES
     % Each subclass constructor must initialize this base class
     % Initialize by calling this = this@hidi.DataContainer(initialTime);
     function this = DataContainer(initialTime)
-      assert(isa(initialTime, 'hidi.WorldTime'));
+      assert(isa(initialTime, 'double'));
     end
     
     % Establish connection between framework class and component
@@ -106,7 +106,7 @@ classdef DataContainer < handle
     % Public method to construct a singleton component instance
     %
     % @param[in] name component identifier, string
-    % @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor, hidi.WorldTime
+    % @param[in] initialTime less than or equal to the time stamp of the first data node of any sensor
     % @return         singleton object instance that should not be deleted, hidi.DataContainer
     %
     % NOTES
@@ -114,7 +114,7 @@ classdef DataContainer < handle
     % Throws an error if the component is not connected
     function obj = create(name, initialTime)
       persistent identifier singleton
-      assert(isa(initialTime, 'hidi.WorldTime'));
+      assert(isa(initialTime, 'double'));
       if(hidi.DataContainer.isConnected(name))
         if(isempty(singleton))
           cF = hidi.DataContainer.pFactoryList(name);
