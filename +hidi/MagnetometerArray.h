@@ -41,7 +41,7 @@ namespace hidi
      *   during the preceding time period and dividing by the time period
      * Throws an exception if either input index is out of range
      */
-    virtual double getMagneticField(uint32_t n, uint32_t ax) = 0;
+    virtual double getMagneticField(const uint32_t& n, const uint32_t& ax) = 0;
 
     /**
      * Get calibrated magnetometer data.
