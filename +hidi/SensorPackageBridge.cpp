@@ -169,8 +169,8 @@ namespace SensorPackageBridge
   void getTime(hidi::Sensor* sensor, const mxArray*& n, mxArray*& array)
   {
     uint32check(n);
-    mxArray* time = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
-    double* data = mxGetPr(time);
+    array = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+		double* data = mxGetPr(array);
     uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
     size_t K = mxGetNumberOfElements(n);
     size_t k = 0;
@@ -179,8 +179,6 @@ namespace SensorPackageBridge
       data[k] = sensor->getTime(node[k]);
       ++k;
     }
-    mexCallMATLAB(1, &array, 1, &time, "hidi.WorldTime");
-    mxDestroyArray(time);
     return;
   }
 

@@ -1,4 +1,0 @@
-
-class WorldTime(float):
-    pass
-

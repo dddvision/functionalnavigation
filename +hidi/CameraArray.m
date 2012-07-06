@@ -17,7 +17,7 @@ classdef CameraArray < hidi.Sensor
     % Initialize by calling this = this@tom.CameraArray(initialTime);
     function this = CameraArray(initialTime)
       this = this@hidi.Sensor();
-      assert(isa(initialTime, 'hidi.WorldTime'));
+      assert(isa(initialTime, 'double'));
     end
   end
   

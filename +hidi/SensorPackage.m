@@ -111,6 +111,33 @@ classdef SensorPackage < handle
   end
     
   methods (Access = public, Access = public)
+    function refresh(this)
+      persistent init accelerometerArray gyroscopeArray magnetometerArray altimeter gpsReceiver
+      if(isempty(init))
+        accelerometerArray = this.getAccelerometerArray();
+        gyroscopeArray = this.getGyroscopeArray();
+        magnetometerArray = this.getMagnetometerArray();
+        altimeter = this.getAltimeter();
+        gpsReceiver = this.getGPSReceiver();
+        init = true;
+      end
+      for n = 1:numel(accelerometerArray)
+        accelerometerArray(n).refresh();
+      end
+      for n = 1:numel(gyroscopeArray)
+        gyroscopeArray(n).refresh();
+      end
+      for n = 1:numel(magnetometerArray)
+        magnetometerArray(n).refresh();
+      end
+      for n = 1:numel(altimeter)
+        altimeter(n).refresh();
+      end
+      for n = 1:numel(gpsReceiver)
+        gpsReceiver(n).refresh();
+      end
+    end
+    
     sensor = getAccelerometerArray(this);
     sensor = getGyroscopeArray(this);
     sensor = getMagnetometerArray(this);

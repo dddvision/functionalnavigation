@@ -1,14 +1,14 @@
 classdef TimeInterval
   
   properties (SetAccess = public, GetAccess = public)
-    first = hidi.WorldTime(0);
-    second = hidi.WorldTime(0);
+    first = 0.0;
+    second = 0.0;
   end
   
   methods (Access = public, Static = true)
     function this = TimeInterval(A, B)
       if(nargin==1)
-        assert(isa(A(1).first, 'hidi.WorldTime'));
+        assert(isa(A(1).first, 'double'));
         N = numel(A);
         if(N==1)
           this.first = A.first;
@@ -21,8 +21,8 @@ classdef TimeInterval
           end
         end
       elseif(nargin==2)
-        assert(isa(A, 'hidi.WorldTime'));
-        assert(isa(B, 'hidi.WorldTime'));
+        assert(isa(A, 'double'));
+        assert(isa(B, 'double'));
         N = numel(A);
         if(N==1)
           this.first = A;

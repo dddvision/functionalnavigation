@@ -32,7 +32,7 @@ classdef SensorPackageBridge < hidi.SensorPackage
     end
   end
     
-  methods (Access = public)    
+  methods (Access = public) 
     function sensor = getAccelerometerArray(this)
       h = feval(this.m, uint32(0), 'getAccelerometerArray');
       sensor = repmat(hidi.AccelerometerArrayBridge, numel(h), 1);

@@ -2,7 +2,6 @@
 #define GETCURRENTTIME_H
 
 #include <stddef.h>
-#include "WorldTime.h"
 
 // define relevant types
 #ifndef _MSC_VER
@@ -76,9 +75,9 @@ namespace hidi
   /**
    * Get the current time of day from the operating system.
    *
-   * @return current system time in hidi::WorldTime format
+   * @return current system time
    */
-  WorldTime getCurrentTime(void)
+  double getCurrentTime(void)
   {
     timeval tv;
     long int offset = 315964800; // difference between Jan 6 1980 and Jan 1 1979

@@ -10,8 +10,6 @@ typedef unsigned __int32 uint32_t;
 #endif
 #endif
 
-#include "WorldTime.h"
-
 namespace hidi
 {
   /**
@@ -86,7 +84,7 @@ namespace hidi
      * Time stamps must not decrease with increasing indices.
      * Throws an exception if data at the node is invalid.
      */
-    virtual WorldTime getTime(uint32_t n) = 0;
+    virtual double getTime(uint32_t n) = 0;
 
     /**
      * Virtual base class destructor.
