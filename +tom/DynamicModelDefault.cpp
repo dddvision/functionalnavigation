@@ -1,3 +1,4 @@
+#include <limits>
 #include "DynamicModel.h"
 
 namespace tom
@@ -14,7 +15,7 @@ namespace tom
       DynamicModel(initialTime, uri)
     {
       interval.first = initialTime;
-      interval.second = INFINITY;
+      interval.second = std::numeric_limits<double>::infinity();
       return;
     }
 
