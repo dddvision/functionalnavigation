@@ -5,18 +5,17 @@ function test(name)
   fprintf('\nfor Multiple Algorithms and Sensors (TOMMAS).');
 
   % check MATLAB version
-  fprintf('\n\nmatlabVersion  =');
   try
     matlabVersionString = version('-release');
     matlabVersion = str2double(matlabVersionString(1:4));
+    fprintf('\n\nmatlabVersion  = %d', matlabVersion);
   catch err
     error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB', err.message);
   end
   if(matlabVersion<2009)
     error('\nTOMMAS requires MATLAB version 2009a or greater');
   end
-  fprintf(' %s', matlabVersion);
-        
+
   % initialize the default pseudorandom number generator
   if(matlabVersion<2010)
     RandStream.getDefaultStream.reset(); %#ok supports legacy versions
