@@ -49,7 +49,7 @@ namespace ShipDynamics
     std::vector<double> yRate;
     std::vector<double> aRate;
 
-    tom::TimeInterval interval;
+    hidi::TimeInterval interval;
     uint32_t firstNewBlock;
     
     void lolah2ecef(const double lon, const double lat, const double alt, std::vector<double> &ecef)
@@ -477,7 +477,7 @@ namespace ShipDynamics
       //printf("\ninitialQuaternion=[%0.16f,%0.16f,%0.16f,%0.16f]", initialQuaternion[0], initialQuaternion[1], initialQuaternion[2], initialQuaternion[3]);
     }
 
-    tom::TimeInterval domain(void)
+    hidi::TimeInterval domain(void)
     {
       return (interval);
     }
