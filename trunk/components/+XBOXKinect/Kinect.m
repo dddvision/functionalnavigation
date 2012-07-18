@@ -22,7 +22,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
   methods (Access = public)
     function this = Kinect(initialTime)
       this = this@hidi.Sensor();
-      assert(isa(initialTime, 'hidi.double'));
+      assert(isa(initialTime, 'double'));
       if(this.verbose)
         fprintf('\nInitializing %s', class(this));
       end
