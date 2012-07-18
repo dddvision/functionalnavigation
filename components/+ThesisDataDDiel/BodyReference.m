@@ -32,7 +32,8 @@ classdef BodyReference < tom.Trajectory
                [0, 1,  0]
                [1, 0,  0]];
       refR = Euler2Matrix([0; -refLatitude; refLongitude])*Raxes;
-      refT = lolah2ecef([refLongitude; refLatitude; 0]);
+      [refTX, refTY, refTZ] = tom.WGS84.lolah2ecef(refLongitude, refLatitude, 0);
+      refT = [refTX; refTY; refTZ];
       refH = Quat2Homo(Euler2Quat(Matrix2Euler(refR)));
       this.x_imu(1:4, :) = refH*this.x_imu(1:4, :);
       this.x_imu(5:7, :) = refR*this.x_imu(5:7, :)+repmat(refT, [1, N]);
@@ -229,32 +230,6 @@ function M = Euler2Matrix(Y)
   M(3, 1) = -s2;
   M(3, 2) = c2.*s1;
   M(3, 3) = c2.*c1;
-end
-
-% Convert from Longitude Latitude Height to Earth Centered Earth Fixed coordinates
-%
-% @param[in]  lolah position in longitude, latitude and height, radians and meters, (MATLAB: 3-by-N)
-% @param[out] ecef  position in Earth Centered Earth Fixed coordinates, meters, (MATLAB: 3-by-N)
-%
-% NOTES
-% http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
-%   Retrieved 11/30/2009
-function ecef = lolah2ecef(lolah)
-  lon = lolah(1, :);
-  lat = lolah(2, :);
-  alt = lolah(3, :);
-  a = 6378137;
-  finv = 298.257223563;
-  b = a-a/finv;
-  a2 = a.*a;
-  b2 = b.*b;
-  e = sqrt((a2-b2)./a2);
-  slat = sin(lat);
-  clat = cos(lat);
-  N = a./sqrt(1-(e*e)*(slat.*slat));
-  ecef = [(alt+N).*clat.*cos(lon);
-          (alt+N).*clat.*sin(lon);
-          ((b2./a2)*N+alt).*slat];
 end
 
 function pose = predictPose(tP, dt)

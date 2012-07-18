@@ -86,11 +86,11 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       pose = this.refTraj.evaluate(getTime(this, n));
       
       for k = 1:numel(n)
-        % convert to lolah
-        lolah = GlobalSatData.ecef2lolah(pose(k).p);
+        % Convert pose to longitude
+        lo = tom.WGS84.ecef2lolah(pose(k).p(1), pose(k).p(2), pose(k).p(3));
       
         % Add error based on real Global Sat gps data
-        lon(k) = lolah(1)+this.noise(2, n(k));
+        lon(k) = lo+this.noise(2, n(k));
       end
     end
     
@@ -105,11 +105,11 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       pose = this.refTraj.evaluate(getTime(this, n));
       
       for k = 1:numel(n)
-        % convert to lolah
-        lolah = GlobalSatData.ecef2lolah(pose(k).p);
+        % Convert pose to longitude
+        [lo, la] = tom.WGS84.ecef2lolah(pose(k).p(1), pose(k).p(2), pose(k).p(3)); %#ok unused output
       
         % Add error based on real Global Sat gps data
-        lat(k) = lolah(2)+this.noise(3, n(k));
+        lat(k) = la+this.noise(3, n(k));
       end
     end
     
@@ -124,11 +124,11 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       pose = this.refTraj.evaluate(getTime(this, n));
       
       for k = 1:numel(n)
-        % convert to lolah
-        lolah = GlobalSatData.ecef2lolah(pose(k).p);
+        % Convert pose to longitude
+        [lo, la, height] = tom.WGS84.ecef2lolah(pose(k).p(1), pose(k).p(2), pose(k).p(3)); %#ok unused output
       
         % Add error based on real Global Sat gps data
-        h(k) = lolah(3)+this.noise(4, n(k));
+        h(k) = height+this.noise(4, n(k));
       end
     end
     
