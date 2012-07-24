@@ -22,6 +22,12 @@ classdef TrajectorySim < hidi.DataContainer & TrajectorySim.TrajectorySimConfig
       this = this@hidi.DataContainer(initialTime);
       filename = fullfile(fileparts(mfilename('fullpath')), this.tangentPoseFileName);
       [t, p, q, r, s] = readTangentPoseFile(filename, initialTime);
+      t0 = t(1);
+      p0 = repmat(p(:, 1), [1, size(p, 2)]);
+      r0 = repmat(r(:, 1), [1, size(r, 2)]);
+      t = t0+this.timeScale*(t-t0);
+      p = p0+this.translationScale*(p-p0);
+      r = r0+this.translationScale*(r-r0);
       this.trajectory = TrajectorySim.ReferenceTrajectory(t, p, q, r, s);
     end
   end

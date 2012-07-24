@@ -10,7 +10,7 @@ function test(name)
     fprintf('\n\nmatlabVersion  = %s', matlabVersionString);
     matlabVersion = str2double(matlabVersionString(1:4));
   catch err
-    error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB', err.message);
+    error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart.', err.message);
   end
   if(matlabVersion<2009)
     error('\nTOMMAS requires MATLAB version 2009a or greater');
