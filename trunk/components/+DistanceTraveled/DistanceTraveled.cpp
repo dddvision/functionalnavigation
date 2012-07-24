@@ -75,20 +75,20 @@ namespace DistanceTraveled
 
     double computeEdgeCost(tom::Trajectory* x, const tom::GraphEdge graphEdge)
     {
-      static std::vector<double> tA(1);
-      static std::vector<double> tB(1);
-      static std::vector<tom::Pose> poseA(1);
-      static std::vector<tom::Pose> poseB(1);
+      static double tA;
+      static double tB;
+      static tom::Pose poseA;
+      static tom::Pose poseB;
       double y[3];
 
-      tA[0] = this->getTime(graphEdge.first);
-      tB[0] = this->getTime(graphEdge.second);
+      tA = this->getTime(graphEdge.first);
+      tB = this->getTime(graphEdge.second);
       x->evaluate(tA, poseA);
       x->evaluate(tB, poseB);
 
-      y[0] = poseB[0].p[0]-poseA[0].p[0];
-      y[1] = poseB[0].p[1]-poseA[0].p[1];
-      y[2] = poseB[0].p[2]-poseA[0].p[2];
+      y[0] = poseB.p[0]-poseA.p[0];
+      y[1] = poseB.p[1]-poseA.p[1];
+      y[2] = poseB.p[2]-poseA.p[2];
 
       return (0.5*(y[0]*y[0]+y[1]*y[1]+y[2]*y[2])/(deviation*deviation));
     }

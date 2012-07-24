@@ -1,8 +1,6 @@
 #ifndef TRAJECTORY_H
 #define TRAJECTORY_H
 
-#include <vector>
-
 #include "TimeInterval.h"
 #include "Pose.h"
 #include "TangentPose.h"
@@ -35,30 +33,28 @@ namespace tom
     virtual hidi::TimeInterval domain(void) = 0;
 
     /**
-     * Evaluate a single trajectory at multiple instants.
+     * Evaluate a trajectory at a given time instant.
      *
-     * @param[in]  time vector of time stamps (MATLAB: 1-by-N)
-     * @param[out] pose vector of poses at each time (MATLAB: 1-by-N)
+     * @param[in]  time time stamp (MATLAB: 1-by-N)
+     * @param[out] pose pose at the given time (MATLAB: 1-by-N)
      *
      * @note
-     * Times before the lower bound of the domain return NaN in corresponding outputs.
-     * Times after the upper bound of the domain return predicted poses in corresponding outputs.
-     * Throws and exception if the output vector is not the same size as the input vector.
+     * Times before the lower bound of the domain return NaN.
+     * Times after the upper bound of the domain return predicted poses.
      */
-    virtual void evaluate(const std::vector<double>& time, std::vector<Pose>& pose) = 0;
+    virtual void evaluate(const double& time, Pose& pose) = 0;
 
     /**
-     * Evaluate a single trajectory and its time derivatives at multiple time instants.
+     * Evaluate a trajectory and its derivatives at a given time instant.
      *
-     * @param[in]  time        vector of time stamps (MATLAB: 1-by-N)
-     * @param[out] tangentPose vector of tangent poses at each time (MATLAB: 1-by-N)
+     * @param[in]  time        time stamp (MATLAB: 1-by-N)
+     * @param[out] tangentPose tangent pose at given time (MATLAB: 1-by-N)
      *
      * @note
-     * Times before the lower bound of the domain return NaN in corresponding outputs.
-     * Times after the upper bound of the domain return predicted tangent poses in corresponding outputs.
-     * Throws and exception if the output vector is not the same size as the input vector.
+     * Times before the lower bound of the domain return NaN.
+     * Times after the upper bound of the domain return predicted tangent poses.
      */
-    virtual void tangent(const std::vector<double>& time, std::vector<TangentPose>& tangentPose) = 0;
+    virtual void tangent(const double& time, TangentPose& tangentPose) = 0;
     
     /**
      * Virtual base class destructor.

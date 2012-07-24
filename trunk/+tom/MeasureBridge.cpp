@@ -97,6 +97,26 @@ void convert(const mxArray* array, tom::GraphEdge& value)
   return;
 }
 
+void convert(const mxArray* array, tom::Pose& pose)
+{
+  mxArray* p;
+  mxArray* q;
+  double* pp;
+  double* pq;
+  p = mxGetProperty(array, 0, "p");
+  q = mxGetProperty(array, 0, "q");
+  pp = mxGetPr(p);
+  pq = mxGetPr(q);
+  pose.p[0] = pp[0];
+  pose.p[1] = pp[1];
+  pose.p[2] = pp[2];
+  pose.q[0] = pq[0];
+  pose.q[1] = pq[1];
+  pose.q[2] = pq[2];
+  pose.q[3] = pq[3];
+  return;
+}
+
 void convert(const mxArray* array, std::vector<tom::Pose>& pose)
 {
   mxArray* p;
@@ -122,6 +142,40 @@ void convert(const mxArray* array, std::vector<tom::Pose>& pose)
     pPose->q[2] = pq[2];
     pPose->q[3] = pq[3];
   }
+  return;
+}
+
+void convert(const mxArray* array, tom::TangentPose& tangentPose)
+{
+  mxArray* p;
+  mxArray* q;
+  mxArray* r;
+  mxArray* s;
+  double* pp;
+  double* pq;
+  double* pr;
+  double* ps;
+  p = mxGetProperty(array, 0, "p");
+  q = mxGetProperty(array, 0, "q");
+  r = mxGetProperty(array, 0, "r");
+  s = mxGetProperty(array, 0, "s");
+  pp = mxGetPr(p);
+  pq = mxGetPr(q);
+  pr = mxGetPr(r);
+  ps = mxGetPr(s);
+  tangentPose.p[0] = pp[0];
+  tangentPose.p[1] = pp[1];
+  tangentPose.p[2] = pp[2];
+  tangentPose.q[0] = pq[0];
+  tangentPose.q[1] = pq[1];
+  tangentPose.q[2] = pq[2];
+  tangentPose.q[3] = pq[3];
+  tangentPose.r[0] = pr[0];
+  tangentPose.r[1] = pr[1];
+  tangentPose.r[2] = pr[2];
+  tangentPose.s[0] = ps[0];
+  tangentPose.s[1] = ps[1];
+  tangentPose.s[2] = ps[2];
   return;
 }
 
@@ -173,6 +227,20 @@ void convert(const double value, mxArray*& array)
   return;
 }
 
+void convert(const std::vector<double>& value, mxArray*& array)
+{
+  double* pValue;
+  unsigned n;
+  unsigned N = value.size();
+  array = mxCreateDoubleMatrix(1, N, mxREAL);
+  pValue = mxGetPr(array);
+  for(n = 0; n<N; ++n)
+  {
+    pValue[n] = value[n];
+  }
+  return;
+}
+
 void convert(const uint32_t value, mxArray*& array)
 {
   array = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
@@ -189,20 +257,6 @@ void convert(const bool value, mxArray*& array)
 void convert(std::string str, mxArray*& array)
 {
   array = mxCreateString(str.c_str());
-  return;
-}
-
-void convert(const std::vector<double>& time, mxArray*& array)
-{
-  double* pTime;
-  unsigned n;
-  unsigned N = time.size();
-  array = mxCreateDoubleMatrix(1, N, mxREAL);
-  pTime = mxGetPr(array);
-  for(n = 0; n<N; ++n)
-  {
-    pTime[n] = time[n];
-  }
   return;
 }
 
@@ -251,7 +305,7 @@ public:
     return timeInterval;
   }
 
-  void evaluate(const std::vector<double>& time, std::vector<tom::Pose>& pose)
+  void evaluate(const double& time, tom::Pose& pose)
   {
     static mxArray* rhs;
     static mxArray* lhs;
@@ -264,7 +318,7 @@ public:
     return;
   }
 
-  void tangent(const std::vector<double>& time, std::vector<tom::TangentPose>& tangentPose)
+  void tangent(const double& time, tom::TangentPose& tangentPose)
   {
     static mxArray* rhs;
     static mxArray* lhs;

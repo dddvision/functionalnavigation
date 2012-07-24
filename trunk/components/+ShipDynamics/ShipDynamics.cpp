@@ -482,35 +482,21 @@ namespace ShipDynamics
       return (interval);
     }
 
-    void evaluate(const std::vector<double>& time, std::vector<tom::Pose>& pose)
+    void evaluate(const double& time, tom::Pose& pose)
     {
       static double k;
-      size_t n;
-      size_t N;
-      N = time.size();
-      pose.resize(N);
-      for(n = 0; n<N; ++n)
-      {
-        k = rate*(time[n]-interval.first);
-        evaluatePose(k, pose[n]);
-        transformPose(pose[n]);
-      }
+      k = rate*(time-interval.first);
+      evaluatePose(k, pose);
+      transformPose(pose);
       return;
     }
 
-    void tangent(const std::vector<double>& time, std::vector<tom::TangentPose>& tangentPose)
+    void tangent(const double& time, tom::TangentPose& tangentPose)
     {
       static double k;
-      size_t n;
-      size_t N;
-      N = time.size();
-      tangentPose.resize(N);
-      for(n = 0; n<N; ++n)
-      {
-        k = rate*(time[n]-interval.first);
-        evaluateTangentPose(k, tangentPose[n]);
-        transformTangentPose(tangentPose[n]);
-      }
+      k = rate*(time-interval.first);
+      evaluateTangentPose(k, tangentPose);
+      transformTangentPose(tangentPose);
       return;
     }
 
