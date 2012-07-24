@@ -21,7 +21,7 @@ classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
     v % extension parameterr [accelerometer; gyroscope]
     imu % singleton IMU sensor instance
     aSigma % accelerometer sigma
-    gSigma % gyroscop sigma
+    gSigma % gyroscope sigma
     xRef % reference trajectory representing ground truth
   end
   
