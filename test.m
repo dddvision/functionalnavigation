@@ -7,8 +7,8 @@ function test(name)
   % check MATLAB version
   try
     matlabVersionString = version('-release');
+    fprintf('\n\nmatlabVersion  = %s', matlabVersionString);
     matlabVersion = str2double(matlabVersionString(1:4));
-    fprintf('\n\nmatlabVersion  = %d', matlabVersion);
   catch err
     error('%s. Implement MATLAB Solution ID 1-5JUPSQ and restart MATLAB', err.message);
   end
