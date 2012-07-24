@@ -297,9 +297,16 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static std::vector<double> time;
         static std::vector<tom::Pose> pose;
+        size_t n;
+        size_t N;
         argcheck(nrhs, 4);
         convert(prhs[3], time);
-        instance[handle]->evaluate(time, pose);
+        N = time.size();
+        pose.resize(N);
+        for(n = 0; n<N; ++n)
+        {
+          instance[handle]->evaluate(time[n], pose[n]);
+        }
         convert(pose, prhs[2], plhs[0]);
         break;
       }
@@ -308,9 +315,16 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static std::vector<double> time;
         static std::vector<tom::TangentPose> tangentPose;
+        size_t n;
+        size_t N;
         argcheck(nrhs, 4);
         convert(prhs[3], time);
-        instance[handle]->tangent(time, tangentPose);
+        N = time.size();
+        tangentPose.resize(N);
+        for(n = 0; n<N; ++n)
+        {
+          instance[handle]->tangent(time[n], tangentPose[n]);
+        }
         convert(tangentPose, prhs[2], plhs[0]);
         break;
       }

@@ -74,60 +74,48 @@ namespace tom
       return (interval);
     }
 
-    void evaluate(const std::vector<double>& time, std::vector<Pose>& pose)
+    void evaluate(const double& time, Pose& pose)
     {
       static const Pose nullPose;
-      unsigned n;
-      unsigned N = time.size();
-      pose.resize(N);
-      for(n = 0; n<N; ++n)
+      if(time<interval.first)
       {
-        if(time[n]<interval.first)
-        {
-          pose[n] = nullPose;
-        }
-        else
-        {
-          pose[n].p[0] = 6378137.0;
-          pose[n].p[1] = 0.0;
-          pose[n].p[2] = 0.0;
-          pose[n].q[0] = 1.0;
-          pose[n].q[1] = 0.0;
-          pose[n].q[2] = 0.0;
-          pose[n].q[3] = 0.0;
-        }
+        pose = nullPose;
+      }
+      else
+      {
+        pose.p[0] = 6378137.0;
+        pose.p[1] = 0.0;
+        pose.p[2] = 0.0;
+        pose.q[0] = 1.0;
+        pose.q[1] = 0.0;
+        pose.q[2] = 0.0;
+        pose.q[3] = 0.0;
       }
       return;
     }
 
-    void tangent(const std::vector<double>& time, std::vector<TangentPose>& tangentPose)
+    void tangent(const double& time, TangentPose& tangentPose)
     {
       static const TangentPose nullTangentPose;
-      unsigned n;
-      unsigned N = time.size();
-      tangentPose.resize(N);
-      for(n = 0; n<N; ++n)
+      if(time<interval.first)
       {
-        if(time[n]<interval.first)
-        {
-          tangentPose[n] = nullTangentPose;
-        }
-        else
-        {
-          tangentPose[n].p[0] = 6378137.0;
-          tangentPose[n].p[1] = 0.0;
-          tangentPose[n].p[2] = 0.0;
-          tangentPose[n].q[0] = 1.0;
-          tangentPose[n].q[1] = 0.0;
-          tangentPose[n].q[2] = 0.0;
-          tangentPose[n].q[3] = 0.0;
-          tangentPose[n].r[0] = 0.0;
-          tangentPose[n].r[1] = 0.0;
-          tangentPose[n].r[2] = 0.0;
-          tangentPose[n].s[0] = 0.0;
-          tangentPose[n].s[1] = 0.0;
-          tangentPose[n].s[2] = 0.0;
-        }
+        tangentPose = nullTangentPose;
+      }
+      else
+      {
+        tangentPose.p[0] = 6378137.0;
+        tangentPose.p[1] = 0.0;
+        tangentPose.p[2] = 0.0;
+        tangentPose.q[0] = 1.0;
+        tangentPose.q[1] = 0.0;
+        tangentPose.q[2] = 0.0;
+        tangentPose.q[3] = 0.0;
+        tangentPose.r[0] = 0.0;
+        tangentPose.r[1] = 0.0;
+        tangentPose.r[2] = 0.0;
+        tangentPose.s[0] = 0.0;
+        tangentPose.s[1] = 0.0;
+        tangentPose.s[2] = 0.0;
       }
       return;
     }
