@@ -112,13 +112,14 @@ classdef SensorPackage < handle
     
   methods (Access = public, Access = public)
     function refresh(this)
-      persistent init accelerometerArray gyroscopeArray magnetometerArray altimeter gpsReceiver
+      persistent init accelerometerArray gyroscopeArray magnetometerArray altimeter gpsReceiver pedometer
       if(isempty(init))
         accelerometerArray = this.getAccelerometerArray();
         gyroscopeArray = this.getGyroscopeArray();
         magnetometerArray = this.getMagnetometerArray();
         altimeter = this.getAltimeter();
         gpsReceiver = this.getGPSReceiver();
+        pedometer = this.getPedometer();
         init = true;
       end
       for n = 1:numel(accelerometerArray)
@@ -136,6 +137,9 @@ classdef SensorPackage < handle
       for n = 1:numel(gpsReceiver)
         gpsReceiver(n).refresh();
       end
+      for n = 1:numel(pedometer)
+        pedometer(n).refresh();
+      end
     end
     
     sensor = getAccelerometerArray(this);
@@ -143,5 +147,6 @@ classdef SensorPackage < handle
     sensor = getMagnetometerArray(this);
     sensor = getAltimeter(this);
     sensor = getGPSReceiver(this);
+    sensor = getPedometer(this);
   end
 end

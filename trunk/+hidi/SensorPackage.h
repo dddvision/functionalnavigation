@@ -9,6 +9,7 @@
 #include "MagnetometerArray.h"
 #include "Altimeter.h"
 #include "GPSReceiver.h"
+#include "Pedometer.h"
 
 namespace hidi
 {
@@ -295,6 +296,17 @@ namespace hidi
     virtual std::vector<GPSReceiver*> getGPSReceiver(void)
     {
       std::vector<GPSReceiver*> sensor(0);
+      return (sensor);
+    }
+    
+    /**
+     * Get Pedometer.
+     *
+     * @return vector of pointers to shared resources (do not delete)
+     */
+    virtual std::vector<Pedometer*> getPedometer(void)
+    {
+      std::vector<Pedometer*> sensor(0);
       return (sensor);
     }
 

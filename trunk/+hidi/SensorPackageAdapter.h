@@ -7,6 +7,7 @@
 #include "MagnetometerArrayAdapter.h"
 #include "AltimeterAdapter.h"
 #include "GPSReceiverAdapter.h"
+#include "PedometerAdapter.h"
 
 namespace hidi
 {
@@ -44,6 +45,11 @@ namespace hidi
     virtual std::vector<GPSReceiver*> getGPSReceiver(void)
     {
       return (source->getGPSReceiver());
+    }
+    
+    virtual std::vector<Pedometer*> getPedometer(void)
+    {
+      return (source->getPedometer());
     }
 
     virtual ~SensorPackageAdapter(void)
