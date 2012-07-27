@@ -72,6 +72,14 @@ classdef SensorPackageBridge < hidi.SensorPackage
         sensor(s) = hidi.GPSReceiverBridge(this.m, h(s));
       end
     end
+    
+    function sensor = getPedometer(this)
+      h = feval(this.m, uint32(0), 'getPedometer');
+      sensor = repmat(hidi.PedometerBridge, numel(h), 1);
+      for s = 1:numel(h)
+        sensor(s) = hidi.PedometerBridge(this.m, h(s));
+      end
+    end
   end
 end
 
