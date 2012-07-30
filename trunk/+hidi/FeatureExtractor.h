@@ -16,15 +16,15 @@ namespace hidi
     virtual size_t numFeatures(void) = 0;
 
     /**
-     * Get the name of a feature.
+     * Get a feature label.
      *
      * @param[in] index zero-based feature index
      * return           feature name
      */
-    virtual std::string getName(const size_t& index) = 0;
+    virtual std::string getLabel(const size_t& index) = 0;
 
     /**
-     * Get the value of a feature.
+     * Get a feature value.
      *
      * @param[in] index zero-based feature index
      * @return          feature value
