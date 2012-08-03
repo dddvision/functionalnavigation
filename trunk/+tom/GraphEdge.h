@@ -1,5 +1,5 @@
-#ifndef GRAPHEDGE_H
-#define GRAPHEDGE_H
+#ifndef TOMGRAPHEDGE_H
+#define TOMGRAPHEDGE_H
 
 // define uint32_t if necessary
 #ifndef uint32_t

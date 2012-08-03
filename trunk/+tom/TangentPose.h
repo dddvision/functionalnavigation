@@ -1,5 +1,5 @@
-#ifndef TANGENTPOSE_H
-#define TANGENTPOSE_H
+#ifndef TOMTANGENTPOSE_H
+#define TOMTANGENTPOSE_H
 
 #include "Pose.h"
 

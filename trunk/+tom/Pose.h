@@ -1,5 +1,5 @@
-#ifndef POSE_H
-#define POSE_H
+#ifndef TOMPOSE_H
+#define TOMPOSE_H
 
 #include <math.h>
 #ifndef NAN

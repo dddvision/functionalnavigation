@@ -1,5 +1,5 @@
-#ifndef DYNAMICMODEL_H
-#define DYNAMICMODEL_H
+#ifndef TOMDYNAMICMODEL_H
+#define TOMDYNAMICMODEL_H
 
 #include <map>
 #include <string>
