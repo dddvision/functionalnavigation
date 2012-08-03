@@ -1,5 +1,5 @@
-#ifndef MAKEDIRECTORY_H
-#define MAKEDIRECTORY_H
+#ifndef HIDIMAKEDIRECTORY_H
+#define HIDIMAKEDIRECTORY_H
 
 #include <algorithm>
 #include <string>

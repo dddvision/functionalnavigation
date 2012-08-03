@@ -1,5 +1,5 @@
-#ifndef SENSORPACKAGEADAPTER_H
-#define SENSORPACKAGEADAPTER_H
+#ifndef HIDISENSORPACKAGEADAPTER_H
+#define HIDISENSORPACKAGEADAPTER_H
 
 #include "SensorPackage.h"
 #include "AccelerometerArrayAdapter.h"

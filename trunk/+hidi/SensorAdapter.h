@@ -1,5 +1,5 @@
-#ifndef SENSORADAPTER_H
-#define SENSORADAPTER_H
+#ifndef HIDISENSORADAPTER_H
+#define HIDISENSORADAPTER_H
 
 #include "Sensor.h"
 

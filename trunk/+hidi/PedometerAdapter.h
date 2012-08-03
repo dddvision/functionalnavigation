@@ -1,5 +1,5 @@
-#ifndef PEDOMETERADAPTER_H
-#define PEDOMETERADAPTER_H
+#ifndef HIDIPEDOMETERADAPTER_H
+#define HIDIPEDOMETERADAPTER_H
 
 #include "Pedometer.h"
 #include "SensorAdapter.h"
@@ -33,9 +33,9 @@ namespace hidi
       return (source->getDeviation(node));
     }
     
-    virtual StepLabel getLabel(const uint32_t& node)
+    virtual uint32_t getStepID(const uint32_t& node)
     {
-      return (source->getLabel(node));
+      return (source->getStepID(node));
     }
     
     virtual ~PedometerAdapter(void)

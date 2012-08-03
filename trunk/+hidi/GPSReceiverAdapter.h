@@ -1,5 +1,5 @@
-#ifndef GPSRECEIVERADAPTER_H
-#define GPSRECEIVERADAPTER_H
+#ifndef HIDIGPSRECEIVERADAPTER_H
+#define HIDIGPSRECEIVERADAPTER_H
 
 #include "GPSReceiver.h"
 #include "SensorAdapter.h"

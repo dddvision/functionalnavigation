@@ -1,5 +1,5 @@
-#ifndef FEATUREEXTRACTORCOMPOSITE_H
-#define FEATUREEXTRACTORCOMPOSITE_H
+#ifndef HIDIFEATUREEXTRACTORCOMPOSITE_H
+#define HIDIFEATUREEXTRACTORCOMPOSITE_H
 
 #include <utility>
 #include <vector>
@@ -15,7 +15,7 @@ namespace hidi
       return (lookup.size());
     }
 
-    std::string getLabel(const size_t& index)
+    std::string getFeatureLabel(const size_t& index)
     {
       size_t extractorIndex;
       size_t featureIndex;
@@ -25,10 +25,10 @@ namespace hidi
       }
       extractorIndex = lookup[index].first;
       featureIndex = lookup[index].second;
-      return (extractors[extractorIndex]->getLabel(featureIndex));
+      return (extractors[extractorIndex]->getFeatureLabel(featureIndex));
     }
 
-    double getValue(const size_t& index)
+    double getFeatureValue(const size_t& index)
     {
       size_t extractorIndex;
       size_t featureIndex;
@@ -38,7 +38,7 @@ namespace hidi
       }
       extractorIndex = lookup[index].first;
       featureIndex = lookup[index].second;
-      return (extractors[extractorIndex]->getValue(featureIndex));
+      return (extractors[extractorIndex]->getFeatureValue(featureIndex));
     }
 
     void append(FeatureExtractor* featureExtractor)

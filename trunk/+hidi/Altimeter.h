@@ -1,5 +1,5 @@
-#ifndef ALTIMETER_H
-#define ALTIMETER_H
+#ifndef HIDIALTIMETER_H
+#define HIDIALTIMETER_H
 
 #include "Sensor.h"
 

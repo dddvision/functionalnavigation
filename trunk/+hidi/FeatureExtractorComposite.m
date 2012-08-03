@@ -9,7 +9,7 @@ classdef FeatureExtractorComposite < hidi.FeatureExtractor
       n = uint32(numel(this.lookup));
     end
 
-    function name = getLabel(this, index)
+    function name = getFeatureLabel(this, index)
       if(~isa(index, 'uint32'))
         error('Input must be uint32.');
       end
@@ -18,10 +18,10 @@ classdef FeatureExtractorComposite < hidi.FeatureExtractor
       end
       extractorIndex = this.lookup(index+1).first;
       featureIndex = this.lookup(index+1).second;
-      name = this.extractors{extractorIndex+1}.getLabel(featureIndex);
+      name = this.extractors{extractorIndex+1}.getFeatureLabel(featureIndex);
     end
 
-    function value = getValue(this, index)
+    function value = getFeatureValue(this, index)
       if(~isa(index, 'uint32'))
         error('Input must be uint32.');
       end
@@ -30,7 +30,7 @@ classdef FeatureExtractorComposite < hidi.FeatureExtractor
       end
       extractorIndex = this.lookup(index+1).first;
       featureIndex = this.lookup(index+1).second;
-      value = this.extractors{extractorIndex+1}.getValue(featureIndex);
+      value = this.extractors{extractorIndex+1}.getFeatureValue(featureIndex);
     end
 
     function append(this, featureExtractor)
