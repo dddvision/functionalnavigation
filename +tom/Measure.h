@@ -1,5 +1,5 @@
-#ifndef MEASURE_H
-#define MEASURE_H
+#ifndef TOMMEASURE_H
+#define TOMMEASURE_H
 
 #include <map>
 #include <string>

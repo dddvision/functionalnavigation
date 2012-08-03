@@ -1,5 +1,5 @@
-#ifndef TRAJECTORY_H
-#define TRAJECTORY_H
+#ifndef TOMTRAJECTORY_H
+#define TOMTRAJECTORY_H
 
 #include "TimeInterval.h"
 #include "Pose.h"

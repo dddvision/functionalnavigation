@@ -1,5 +1,5 @@
-#ifndef OPTIMIZER_H
-#define OPTIMIZER_H
+#ifndef TOMOPTIMIZER_H
+#define TOMOPTIMIZER_H
 
 #include <map>
 #include <string>
