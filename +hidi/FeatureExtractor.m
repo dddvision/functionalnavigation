@@ -6,7 +6,7 @@ classdef FeatureExtractor < handle
   
   methods (Abstract = true, Access = public)
     num = numFeatures(this);
-    name = getLabel(this, index);
-    feature = getValue(this, index);
+    name = getFeatureLabel(this, index);
+    feature = getFeatureValue(this, index);
   end
 end

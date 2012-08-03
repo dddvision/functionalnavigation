@@ -8,6 +8,6 @@ classdef Pedometer < hidi.Sensor
     flag = isComplete(this, node);
     magnitude = getMagnitude(this, node);
     sigma = getDeviation(this, node);
-    stepLabel = getLabel(this, node);
+    stepID = getStepID(this, node);
   end
 end

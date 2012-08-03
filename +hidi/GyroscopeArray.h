@@ -1,5 +1,5 @@
-#ifndef GYROSCOPEARRAY_H
-#define GYROSCOPEARRAY_H
+#ifndef HIDIGYROSCOPEARRAY_H
+#define HIDIGYROSCOPEARRAY_H
 
 #include "Sensor.h"
 

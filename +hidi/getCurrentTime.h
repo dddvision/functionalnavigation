@@ -1,5 +1,5 @@
-#ifndef GETCURRENTTIME_H
-#define GETCURRENTTIME_H
+#ifndef HIDIGETCURRENTTIME_H
+#define HIDIGETCURRENTTIME_H
 
 #include <stddef.h>
 

@@ -1,5 +1,5 @@
-#ifndef SENSOR_H
-#define SENSOR_H
+#ifndef HIDISENSOR_H
+#define HIDISENSOR_H
 
 // define integer types
 #ifndef _MSC_VER

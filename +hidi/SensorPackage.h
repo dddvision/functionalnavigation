@@ -1,5 +1,5 @@
-#ifndef SENSORPACKAGE_H
-#define SENSORPACKAGE_H
+#ifndef HIDISENSORPACKAGE_H
+#define HIDISENSORPACKAGE_H
 
 #include <map>
 #include <string>

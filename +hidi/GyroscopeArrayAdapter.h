@@ -1,5 +1,5 @@
-#ifndef GYROSCOPEARRAYADAPTER_H
-#define GYROSCOPEARRAYADAPTER_H
+#ifndef HIDIGYROSCOPEARRAYADAPTER_H
+#define HIDIGYROSCOPEARRAYADAPTER_H
 
 #include "GyroscopeArray.h"
 #include "SensorAdapter.h"

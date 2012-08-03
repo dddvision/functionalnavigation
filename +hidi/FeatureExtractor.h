@@ -1,5 +1,5 @@
-#ifndef FEATUREEXTRACTOR_H
-#define FEATUREEXTRACTOR_H
+#ifndef HIDIFEATUREEXTRACTOR_H
+#define HIDIFEATUREEXTRACTOR_H
 
 #include <string>
 
@@ -21,7 +21,7 @@ namespace hidi
      * @param[in] index zero-based feature index
      * return           feature name
      */
-    virtual std::string getLabel(const size_t& index) = 0;
+    virtual std::string getFeatureLabel(const size_t& index) = 0;
 
     /**
      * Get a feature value.
@@ -29,7 +29,7 @@ namespace hidi
      * @param[in] index zero-based feature index
      * @return          feature value
      */
-    virtual double getValue(const size_t& index) = 0;
+    virtual double getFeatureValue(const size_t& index) = 0;
   };
 }
 

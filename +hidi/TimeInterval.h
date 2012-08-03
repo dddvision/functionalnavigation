@@ -1,5 +1,5 @@
-#ifndef TIMEINTERVAL_H
-#define TIMEINTERVAL_H
+#ifndef HIDITIMEINTERVAL_H
+#define HIDITIMEINTERVAL_H
 
 namespace hidi
 {
