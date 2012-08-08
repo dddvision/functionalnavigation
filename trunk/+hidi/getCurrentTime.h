@@ -2,15 +2,13 @@
 #define HIDIGETCURRENTTIME_H
 
 #include <stddef.h>
+#include "hidi.h"
 
 // define relevant types
 #ifndef _MSC_VER
 #include <sys/time.h>
 #else
 #include <windows.h>
-#ifndef uint64_t
-typedef unsigned __int64 uint64_t;
-#endif
 #endif
 
 #ifdef _MSC_VER

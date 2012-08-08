@@ -18,24 +18,24 @@ namespace hidi
       this->source = source;
     }
 
-    virtual bool isComplete(const uint32_t& node)
+    virtual bool isStepComplete(const uint32_t& n)
     {
-      return (source->isComplete(node));
+      return (source->isStepComplete(n));
     }
     
-    virtual double getMagnitude(const uint32_t& node)
+    virtual double getStepMagnitude(const uint32_t& n)
     {
-      return (source->getMagnitude(node));
+      return (source->getStepMagnitude(n));
     }
     
-    virtual double getDeviation(const uint32_t& node)
+    virtual double getStepDeviation(const uint32_t& n)
     {
-      return (source->getDeviation(node));
+      return (source->getStepDeviation(n));
     }
     
-    virtual uint32_t getStepID(const uint32_t& node)
+    virtual uint32_t getStepID(const uint32_t& n)
     {
-      return (source->getStepID(node));
+      return (source->getStepID(n));
     }
     
     virtual ~PedometerAdapter(void)

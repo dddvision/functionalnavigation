@@ -1,12 +1,7 @@
 #include "mex.h"
-#include <math.h>
-
-#ifndef NAN
-static const double NAN = sqrt(static_cast<double>(-1.0));
-#endif
+#include "hidi.h"
 
 static const double MAX_ITERATIONS = 10;
-static const double EPSILON = 0.000000001;
 static const double DELTA_THRESH = 0.01;
 
 /**
@@ -212,7 +207,7 @@ public:
       det = xx*yy-xy*xy;
 
       /* deal with small determinants or NAN */
-      if((fabs(det)<EPSILON)||mxIsNaN(det))
+      if((fabs(det)<EPS)||mxIsNaN(det))
       {
         (*xb) = NAN;
         (*yb) = NAN;

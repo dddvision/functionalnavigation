@@ -21,7 +21,7 @@ classdef CameraArray < hidi.Sensor
     end
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     % Get number of cameras in the array
     %
     % OUTPUT

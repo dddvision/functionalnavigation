@@ -8,19 +8,6 @@
 #include "TimeInterval.h"
 #include "Trajectory.h"
 
-// define uint32_t if necessary
-#ifndef uint32_t
-#ifdef _MSC_VER
-#if (_MSC_VER < 1300)
-typedef unsigned int uint32_t;
-#else
-typedef unsigned __int32 uint32_t;
-#endif
-#else
-#include <stdint.h>
-#endif
-#endif
-
 namespace tom
 {
   /**
@@ -34,7 +21,7 @@ namespace tom
    * Each uint32 parameter may be treated as range-bounded double via static casting.
    * The range of uint32 is [0, 4294967295].
    */
-  class DynamicModel : virtual public Trajectory
+  class DynamicModel : public virtual Trajectory
   {
   private:
     /**

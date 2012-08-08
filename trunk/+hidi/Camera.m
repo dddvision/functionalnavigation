@@ -15,7 +15,7 @@ classdef Camera < hidi.CameraArray
     end
   end
     
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     % These redefined methods do not require the 'view' argument
     num = numSteps(this, varargin);
     num = numStrides(this, varargin);

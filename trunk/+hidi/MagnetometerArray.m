@@ -1,10 +1,10 @@
 classdef MagnetometerArray < hidi.Sensor
-  methods (Static = true, Access = protected)
+  methods (Access = protected, Static = true)
     function this = MagnetometerArray()
     end
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     field = getMagneticField(this, n, ax);
   end
 end

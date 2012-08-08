@@ -1,10 +1,10 @@
 classdef GyroscopeArray < hidi.Sensor
-  methods (Static = true, Access = protected)
+  methods (Access = protected, Static = true)
     function this = GyroscopeArray()
     end
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     rate = getAngularRate(this, n, ax);
     walk = getGyroscopeRandomWalk(this);
     sigma = getGyroscopeTurnOnBiasSigma(this);

@@ -1,6 +1,6 @@
 classdef Trajectory < handle
    
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     interval = domain(this);
     pose = evaluate(this, t);
     tangentPose = tangent(this, t);

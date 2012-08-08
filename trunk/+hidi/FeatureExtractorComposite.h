@@ -21,7 +21,7 @@ namespace hidi
       size_t featureIndex;
       if(index>=numFeatures())
       {
-        throw("Feature index is out of range.");
+        throw("FeatureExtractorComposite: Feature index is out of range.");
       }
       extractorIndex = lookup[index].first;
       featureIndex = lookup[index].second;
@@ -34,7 +34,7 @@ namespace hidi
       size_t featureIndex;
       if(index>=numFeatures())
       {
-        throw("Feature index is out of range.");
+        throw("FeatureExtractorComposite: Feature index is out of range.");
       }
       extractorIndex = lookup[index].first;
       featureIndex = lookup[index].second;

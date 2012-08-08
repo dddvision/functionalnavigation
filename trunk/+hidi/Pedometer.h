@@ -33,7 +33,7 @@ namespace hidi
      * @param[in] stepID step identifier
      * @return           step label
      */
-    std::string getStepLabel(const uint32_t& stepID)
+    static std::string getStepLabel(const uint32_t& stepID)
     {
       std::string stepLabel;
       switch(stepID)
@@ -138,7 +138,7 @@ namespace hidi
      * A false flag indicates either the initial time or the end of an unsuccessful measurement period.
      * Throws an error if the index is out of range.
      */
-    virtual bool isComplete(const uint32_t& node) = 0;
+    virtual bool isStepComplete(const uint32_t& n) = 0;
 
     /**
      * Get the mean statistic of magnitude of distance traveled during the measurement period.
@@ -150,7 +150,7 @@ namespace hidi
      * Throws an error if the measurement is not complete.
      * Throws an error if the index is out of range.
      */
-    virtual double getMagnitude(const uint32_t& node) = 0;
+    virtual double getStepMagnitude(const uint32_t& n) = 0;
 
     /**
      * Get the standard deviation statistic of magnitude of distance traveled during the measurement period.
@@ -163,7 +163,7 @@ namespace hidi
      * Throws an error if the measurement is not complete.
      * Throws an error if the index is out of range.
      */
-    virtual double getDeviation(const uint32_t& node) = 0;
+    virtual double getStepDeviation(const uint32_t& n) = 0;
     
     /**
      * Get step identifier.
@@ -175,7 +175,7 @@ namespace hidi
      * Throws an error if the index is out of range.
      * Throws an error if the measurement is not complete.
      */
-    virtual uint32_t getStepID(const uint32_t& node) = 0;
+    virtual uint32_t getStepID(const uint32_t& n) = 0;
     
     /**
      * Virtual base class destructor.

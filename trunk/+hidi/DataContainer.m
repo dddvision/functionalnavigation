@@ -135,7 +135,7 @@ classdef DataContainer < handle
     end
   end
   
-  methods (Abstract = true, Access = public, Static = true)
+  methods (Access = public, Abstract = true, Static = true)
     % Initializes connections between a component and one or more framework classes
     %
     % @param[in] name component identifier, string
@@ -145,7 +145,7 @@ classdef DataContainer < handle
     initialize(name);
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     % List available sensors of a given class
     %
     % @param[in]  type class identifier, string

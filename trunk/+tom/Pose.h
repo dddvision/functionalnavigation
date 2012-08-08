@@ -1,10 +1,7 @@
 #ifndef TOMPOSE_H
 #define TOMPOSE_H
 
-#include <math.h>
-#ifndef NAN
-static const double NAN = sqrt(static_cast<double>(-1));
-#endif
+#include "hidi.h"
 
 namespace tom
 {

@@ -77,11 +77,11 @@ classdef Measure < hidi.Sensor
     end
   end
   
-  methods (Abstract = true, Access = public, Static = true)
+  methods (Access = public, Abstract = true, Static = true)
     initialize(name);
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     edgeList = findEdges(this, naMin, naMax, nbMin, nbMax);
     cost = computeEdgeCost(this, x, graphEdge);
   end
