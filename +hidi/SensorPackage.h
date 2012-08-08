@@ -220,6 +220,7 @@ namespace hidi
       std::vector<MagnetometerArray*> magnetometerArray = getMagnetometerArray();
       std::vector<Altimeter*> altimeter = getAltimeter();
       std::vector<GPSReceiver*> gpsReceiver = getGPSReceiver();
+      std::vector<Pedometer*> pedometer = getPedometer();
       size_t n;
       for(n = 0; n<accelerometerArray.size(); ++n)
       {
@@ -240,6 +241,10 @@ namespace hidi
       for(n = 0; n<gpsReceiver.size(); ++n)
       {
         gpsReceiver[n]->refresh();
+      }
+      for(n = 0; n<pedometer.size(); ++n)
+      {
+        pedometer[n]->refresh();
       }
       return;
     }

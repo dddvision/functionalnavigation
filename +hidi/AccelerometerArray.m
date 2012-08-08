@@ -1,10 +1,10 @@
 classdef AccelerometerArray < hidi.Sensor
-  methods (Static = true, Access = protected)
+  methods (Access = protected, Static = true)
     function this = AccelerometerArray()
     end
   end
     
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     force = getSpecificForce(this, n, ax);
     walk = getAccelerometerRandomWalk(this);
     sigma = getAccelerometerTurnOnBiasSigma(this);

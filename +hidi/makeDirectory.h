@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <string>
+#include "hidi.h"
 
 #ifdef _MSC_VER
 #include <direct.h>

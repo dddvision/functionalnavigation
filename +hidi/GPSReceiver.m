@@ -1,10 +1,10 @@
 classdef GPSReceiver < hidi.Sensor
-  methods (Static = true, Access = protected)
+  methods (Access = protected, Static = true)
     function this = GPSReceiver()
     end
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     longitude = getLongitude(this, n);
     latitude = getLatitude(this, n);
     height = getHeight(this, n);

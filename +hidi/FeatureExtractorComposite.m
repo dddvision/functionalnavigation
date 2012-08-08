@@ -11,10 +11,10 @@ classdef FeatureExtractorComposite < hidi.FeatureExtractor
 
     function name = getFeatureLabel(this, index)
       if(~isa(index, 'uint32'))
-        error('Input must be uint32.');
+        error('FeatureExtractorComposite: Input must be uint32.');
       end
       if(index>=this.numFeatures())
-        error('Feature index is out of range.');
+        error('FeatureExtractorComposite: Feature index is out of range.');
       end
       extractorIndex = this.lookup(index+1).first;
       featureIndex = this.lookup(index+1).second;
@@ -23,10 +23,10 @@ classdef FeatureExtractorComposite < hidi.FeatureExtractor
 
     function value = getFeatureValue(this, index)
       if(~isa(index, 'uint32'))
-        error('Input must be uint32.');
+        error('FeatureExtractorComposite: Input must be uint32.');
       end
       if(index>=this.numFeatures())
-        error('Feature index is out of range.');
+        error('FeatureExtractorComposite: Feature index is out of range.');
       end
       extractorIndex = this.lookup(index+1).first;
       featureIndex = this.lookup(index+1).second;

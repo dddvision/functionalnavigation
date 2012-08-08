@@ -106,11 +106,11 @@ classdef SensorPackage < handle
     end
   end
   
-  methods (Abstract = true, Access = public, Static = true)
+  methods (Access = public, Abstract = true, Static = true)
     initialize(name);
   end
     
-  methods (Access = public, Access = public)
+  methods (Access = public)
     function refresh(this)
       persistent init accelerometerArray gyroscopeArray magnetometerArray altimeter gpsReceiver pedometer
       if(isempty(init))
@@ -141,7 +141,9 @@ classdef SensorPackage < handle
         pedometer(n).refresh();
       end
     end
-    
+  end
+  
+  methods (Access = public, Abstract = true)
     sensor = getAccelerometerArray(this);
     sensor = getGyroscopeArray(this);
     sensor = getMagnetometerArray(this);

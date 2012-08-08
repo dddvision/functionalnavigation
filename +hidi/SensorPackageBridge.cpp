@@ -8,7 +8,7 @@ namespace SensorPackageBridge
 {
   enum SensorPackageMember
   {
-    undefined,
+    SensorPackageUndefined,
     SensorPackageIsConnected,
     SensorPackageDescription,
     SensorPackageCreate,
@@ -17,6 +17,7 @@ namespace SensorPackageBridge
     getMagnetometerArray,
     getAltimeter,
     getGPSReceiver,
+    getPedometer,
     accelerometerArrayRefresh,
     accelerometerArrayHasData,
     accelerometerArrayFirst,
@@ -69,7 +70,16 @@ namespace SensorPackageBridge
     hasPrecision,
     getPrecisionHorizontal,
     getPrecisionVertical,
-    getPrecisionCircular
+    getPrecisionCircular,
+    pedometerRefresh,
+    pedometerHasData,
+    pedometerFirst,
+    pedometerLast,
+    pedometerGetTime,
+    isStepComplete,
+    getStepMagnitude,
+    getStepDeviation,
+    getStepID
   };
 
   void argcheck(int& narg, int n)
@@ -191,6 +201,7 @@ namespace SensorPackageBridge
       delete package;
       package = NULL;
     }
+    return;
   }
 
   void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
@@ -211,6 +222,7 @@ namespace SensorPackageBridge
       memberMap["getMagnetometerArray"] = getMagnetometerArray;
       memberMap["getAltimeter"] = getAltimeter;
       memberMap["getGPSReceiver"] = getGPSReceiver;
+      memberMap["getPedometer"] = getPedometer;
       memberMap["accelerometerArrayRefresh"] = accelerometerArrayRefresh;
       memberMap["accelerometerArrayHasData"] = accelerometerArrayHasData;
       memberMap["accelerometerArrayFirst"] = accelerometerArrayFirst;
@@ -264,6 +276,15 @@ namespace SensorPackageBridge
       memberMap["getPrecisionHorizontal"] = getPrecisionHorizontal;
       memberMap["getPrecisionVertical"] = getPrecisionVertical;
       memberMap["getPrecisionCircular"] = getPrecisionCircular;
+      memberMap["pedometerRefresh"] = pedometerRefresh;
+      memberMap["pedometerHasData"] = pedometerHasData;
+      memberMap["pedometerFirst"] = pedometerFirst;
+      memberMap["pedometerLast"] = pedometerLast;
+      memberMap["pedometerGetTime"] = pedometerGetTime;
+      memberMap["isStepComplete"] = isStepComplete;
+      memberMap["getStepMagnitude"] = getStepMagnitude;
+      memberMap["getStepDeviation"] = getStepDeviation;
+      memberMap["getStepID"] = getStepID;
       initialized = true;
     }
 
@@ -272,7 +293,7 @@ namespace SensorPackageBridge
     convert(prhs[1], memberName);
     switch(memberMap[memberName])
     {
-      case undefined:
+      case SensorPackageUndefined:
       {
         throw("Undefined function call.");
         break;
@@ -335,6 +356,12 @@ namespace SensorPackageBridge
       case getGPSReceiver:
       {
         getSensor(package->getGPSReceiver(), plhs[0]);
+        break;
+      }
+      
+      case getPedometer:
+      {
+        getSensor(package->getPedometer(), plhs[0]);
         break;
       }
 
@@ -935,6 +962,118 @@ namespace SensorPackageBridge
         }
         break;
       }
+      
+      case pedometerRefresh:
+      {
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        sensor->refresh();
+        break;
+      }
+
+      case pedometerHasData:
+      {
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        convert(sensor->hasData(), plhs[0]);
+        break;
+      }
+
+      case pedometerFirst:
+      {
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        convert(sensor->first(), plhs[0]);
+        break;
+      }
+
+      case pedometerLast:
+      {
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        convert(sensor->last(), plhs[0]);
+        break;
+      }
+
+      case pedometerGetTime:
+      {
+        argcheck(nrhs, 3);
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
+        break;
+      }
+      
+      case isStepComplete:
+      {
+        argcheck(nrhs, 3);
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        bool* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateLogicalMatrix(mxGetM(n), mxGetN(n));
+        data = static_cast<bool*>(mxGetData(plhs[0]));
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->isStepComplete(node[k]);
+        }
+        break;
+      }
+      
+      case getStepMagnitude:
+      {
+        argcheck(nrhs, 3);
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getStepMagnitude(node[k]);
+        }
+        break;
+      }
+      
+      case getStepDeviation:
+      {
+        argcheck(nrhs, 3);
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        double* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateDoubleMatrix(mxGetM(n), mxGetN(n), mxREAL);
+        data = mxGetPr(plhs[0]);
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getStepDeviation(node[k]);
+        }
+        break;
+      }
+      
+      case getStepID:
+      {
+        argcheck(nrhs, 3);
+        hidi::Pedometer* sensor = package->getPedometer()[index];
+        const mxArray* n = prhs[2];
+        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+        size_t N = mxGetNumberOfElements(n);
+        uint32_t* data;
+        size_t k;
+        uint32check(n);
+        plhs[0] = mxCreateNumericMatrix(mxGetM(n), mxGetN(n), mxUINT32_CLASS, mxREAL);
+        data = static_cast<uint32_t*>(mxGetData(plhs[0]));
+        for(k = 0; k<N; ++k)
+        {
+          data[k] = sensor->getStepID(node[k]);
+        }
+        break;
+      }
 
       default:
       {
@@ -947,22 +1086,29 @@ namespace SensorPackageBridge
 
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
-  std::string prefix("SensorPackageBridge: ");
+  std::string message;
   try
   {
     SensorPackageBridge::safeMexFunction(nlhs, plhs, nrhs, prhs);
   }
   catch(std::exception& e)
   {
-    mexErrMsgTxt((prefix+e.what()).c_str());
+    message = "SensorPackageBridge: ";
+    message = message+e.what();
+    mexErrMsgTxt(message.c_str());
   }
   catch(const char* str)
   {
-    mexErrMsgTxt((prefix+str).c_str());
+    message = "SensorPackageBridge: ";
+    message = message+str;
+    mexErrMsgTxt(message.c_str());
   }
   catch(...)
   {
-    mexErrMsgTxt((prefix+"Unhandled exception.").c_str());
+    message = "SensorPackageBridge: ";
+    message = message+"Unhandled exception.";
+    mexErrMsgTxt(message.c_str());
   }
   return;
 }
+

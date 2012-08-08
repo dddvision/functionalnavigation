@@ -1,10 +1,10 @@
 classdef FeatureExtractor < handle
-  methods (Static = true, Access = protected)
+  methods (Access = protected, Static = true)
     function this = FeatureExtractor()
     end
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     num = numFeatures(this);
     name = getFeatureLabel(this, index);
     feature = getFeatureValue(this, index);

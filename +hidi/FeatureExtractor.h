@@ -2,6 +2,7 @@
 #define HIDIFEATUREEXTRACTOR_H
 
 #include <string>
+#include "hidi.h"
 
 namespace hidi
 {
@@ -20,6 +21,9 @@ namespace hidi
      *
      * @param[in] index zero-based feature index
      * return           feature name
+     *
+     * @note
+     * Throws an error if the feature index is out of range.
      */
     virtual std::string getFeatureLabel(const size_t& index) = 0;
 
@@ -27,7 +31,10 @@ namespace hidi
      * Get a feature value.
      *
      * @param[in] index zero-based feature index
-     * @return          feature value
+     * @return          value of the feature or NAN if the feature cannot be computed
+     *
+     * @note
+     * Throws an error if the feature index is out of range.
      */
     virtual double getFeatureValue(const size_t& index) = 0;
   };

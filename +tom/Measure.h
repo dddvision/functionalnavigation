@@ -22,7 +22,7 @@ namespace tom
    * Each graph edge is assumed to be independent, and this means that correlated
    *   sensor noise must be modeled and mitigated behind the measure interface.
    */
-  class Measure : virtual public hidi::Sensor
+  class Measure : public virtual hidi::Sensor
   {
   private:
     /**

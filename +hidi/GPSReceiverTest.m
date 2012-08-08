@@ -22,8 +22,7 @@ classdef GPSReceiverTest
         trueECEF(:, indx) = cat(2, pose.p);
         [gpsLonLatAlt(1, indx), gpsLonLatAlt(2, indx), gpsLonLatAlt(3, indx)] = gpsHandle.getGlobalPosition(na+indx-1);
       end
-      [trueLon, trueLat, trueAlt] = tom.WGS84.ecef2lolah(trueECEF(1, :), trueECEF(2, :), trueECEF(3, :));
-      trueLonLatAlt = [trueLon; trueLat; trueAlt];
+      trueLonLatAlt = ecef2lolah(trueECEF);
       errLonLatAlt = gpsLonLatAlt-trueLonLatAlt;
 
       figure;
@@ -39,8 +38,7 @@ classdef GPSReceiverTest
       title('GPS error (altitude)');
 
       figure;
-      [gpsX, gpsY, gpsZ] = tom.WGS84.lolah2ecef(gpsLonLatAlt(1, :), gpsLonLatAlt(2, :), gpsLonLatAlt(3, :));
-      gpsECEF = [gpsX; gpsY; gpsZ];
+      gpsECEF = lolah2ecef(gpsLonLatAlt);
       errECEF = gpsECEF-trueECEF;
       Raxes = [0, 0, -1;0, 1, 0;1, 0, 0];
       R = Euler2Matrix([0;-trueLonLatAlt(2, 1);trueLonLatAlt(1, 1)])*Raxes;
@@ -77,4 +75,75 @@ function M = Euler2Matrix(Y)
   M(3, 1) = -s2;
   M(3, 2) = c2.*s1;
   M(3, 3) = c2.*c1;
+end
+
+% Convert from Longitude Latitude Height to Earth Centered Earth Fixed coordinates
+%
+% @param[in]  lolah position in longitude, latitude and height, radians and meters, (MATLAB: 3-by-N)
+% @param[out] ecef  position in Earth Centered Earth Fixed coordinates, meters, (MATLAB: 3-by-N)
+%
+% NOTES
+% http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf
+%   Retrieved 11/30/2009
+function ecef = lolah2ecef(lolah)
+  lon = lolah(1, :);
+  lat = lolah(2, :);
+  alt = lolah(3, :);
+  a = 6378137;
+  finv = 298.257223563;
+  b = a-a/finv;
+  a2 = a.*a;
+  b2 = b.*b;
+  e = sqrt((a2-b2)./a2);
+  slat = sin(lat);
+  clat = cos(lat);
+  N = a./sqrt(1-(e*e)*(slat.*slat));
+  ecef = [(alt+N).*clat.*cos(lon);
+          (alt+N).*clat.*sin(lon);
+          ((b2./a2)*N+alt).*slat];
+end
+
+% Converts Earth Centered Earth Fixed coordinates to Longitude Latitude Height
+%
+% INPUT
+% ecef = points in ECEF coordinates, 3-by-N
+%
+% OUTPUT
+% lolah = converted points, 3-by-N
+%   lolah(1, :) = longitude in radians
+%   lolah(2, :) = geodetic (not geocentric) latitude in radians
+%   lolah(3, :) = height above the WGS84 Earth ellipsoid in meters
+%
+% NOTES
+% Using an Earth Centered Earth Fixed (ECEF) frame convention:
+%   Axis 1 goes through the equator at the prime meridian
+%   Axis 2 completes the frame using the right-hand-rule
+%   Axis 3 goes through the north pole
+% J. Zhu, "Conversion of Earth-centered Earth-fixed coordinates to geodetic
+%   coordinates," Aerospace and Electronic Systems, vol. 30, pp. 957-961, 1994.
+function lolah = ecef2lolah(ecef)
+  X = ecef(1, :);
+  Y = ecef(2, :);
+  Z = ecef(3, :);
+  a = 6378137.0;
+  finv = 298.257223563;
+  f = 1/finv;
+  b = a-a/finv;
+  e2 = 2*f-f^2;
+  ep2 = f*(2-f)/((1-f)^2);
+  r2 = X.^2+Y.^2;
+  r = sqrt(r2);
+  E2 = a^2-b^2;
+  F = 54*b^2*Z.^2;
+  G = r2+(1-e2)*Z.^2-e2*E2;
+  c = (e2*e2*F.*r2)./(G.*G.*G);
+  s = ( 1+c+sqrt(c.*c+2*c) ).^(1/3);
+  P = F./(3*(s+1./s+1).^2.*G.*G);
+  Q = sqrt(1+2*e2*e2*P);
+  ro = -(e2*P.*r)./(1+Q)+sqrt((a*a/2)*(1+1./Q)-((1-e2)*P.*Z.^2)./(Q.*(1+Q))-P.*r2/2);
+  tmp = (r-e2*ro).^2;
+  U = sqrt(tmp+Z.^2);
+  V = sqrt(tmp+(1-e2)*Z.^2);
+  zo = (b^2*Z)./(a*V);
+  lolah = [atan2(Y, X); atan2(Z+ep2*zo, r); U.*(1-b^2./(a*V))];
 end

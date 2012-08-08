@@ -74,11 +74,11 @@ classdef Optimizer < handle
     end
   end
   
-  methods (Abstract = true, Access = public, Static = true)
+  methods (Access = public, Abstract = true, Static = true)
     initialize(name);
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     num = numInitialConditions(this);
     defineProblem(dynamicModel, measure, randomize);
     refreshProblem(this);

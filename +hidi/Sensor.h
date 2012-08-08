@@ -1,14 +1,7 @@
 #ifndef HIDISENSOR_H
 #define HIDISENSOR_H
 
-// define integer types
-#ifndef _MSC_VER
-#include <stdint.h>
-#else
-#ifndef uint32_t
-typedef unsigned __int32 uint32_t;
-#endif
-#endif
+#include "hidi.h"
 
 namespace hidi
 {

@@ -1,10 +1,10 @@
 classdef Altimeter < hidi.Sensor
-  methods (Static = true, Access = protected)
+  methods (Access = protected, Static = true)
     function this = Altimeter()
     end
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     altitude = getAltitude(this, n);
   end 
 end

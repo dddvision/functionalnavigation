@@ -1,10 +1,9 @@
-#include <limits>
 #include "DynamicModel.h"
 
 namespace tom
 {
   /** This default dynamic model represents a stationary body at the world origin with no input parameters. */
-  class DynamicModelDefault : virtual public DynamicModel
+  class DynamicModelDefault : public virtual DynamicModel
   {
   protected:
     hidi::TimeInterval interval; /**< stores the Trajectory domain */
@@ -15,7 +14,7 @@ namespace tom
       DynamicModel(initialTime, uri)
     {
       interval.first = initialTime;
-      interval.second = std::numeric_limits<double>::infinity();
+      interval.second = INF;
       return;
     }
 

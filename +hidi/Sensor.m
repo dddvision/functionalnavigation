@@ -1,10 +1,10 @@
 classdef Sensor < handle
-  methods (Static = true, Access = protected)
+  methods (Access = protected, Static = true)
     function this = Sensor()
     end
   end
   
-  methods (Abstract = true, Access = public)
+  methods (Access = public, Abstract = true)
     refresh(this, varargin);
     flag = hasData(this);
     n = first(this);
