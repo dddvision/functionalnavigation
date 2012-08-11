@@ -5,10 +5,8 @@ classdef SensorPackageBridge < hidi.SensorPackage
   
   methods (Access = public, Static = true)
     function initialize(name)
-      assert(isa(name, 'char'));
-      compileOnDemand(name);
-      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];     
-      mName = [className, 'Bridge'];
+      assert(isa(name, 'char'));   
+      mName = compileOnDemand(name);
       function text = componentDescription
         text = feval(mName, uint32(0), 'SensorPackageDescription', name);
       end
@@ -24,9 +22,7 @@ classdef SensorPackageBridge < hidi.SensorPackage
       if(nargin>0)
         assert(isa(name, 'char'));
         assert(isa(parameters, 'char'));
-        compileOnDemand(name);
-        className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
-        this.m = [className, 'Bridge'];
+        this.m = compileOnDemand(name);
         feval(this.m, uint32(0), 'SensorPackageCreate', name, parameters);
       end
     end
@@ -83,22 +79,25 @@ classdef SensorPackageBridge < hidi.SensorPackage
   end
 end
 
-function compileOnDemand(name)
-  persistent tried
-  if(~isempty(tried))
-    return;
+% Attempt once to compile on demand.
+function mName = compileOnDemand(name)
+  persistent mNameCache
+  if(isempty(mNameCache))
+    mNameCache = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];
+    bridge = mfilename('fullpath');
+    arg{1} = ['-I"', fileparts(fileparts(bridge)), '"'];
+    arg{2} = ['-I"', fileparts(bridge), '"'];
+    arg{3} = [bridge, '.cpp'];
+    arg{4} = '-output';
+    cpp = which([fullfile(['+', name], name), '.cpp']);
+    arg{5} = [cpp(1:(end-4)), 'Bridge'];
+    if(exist(arg{5}, 'file'))
+      delete([arg{5}, '.', mexext]);
+    end
+    fprintf('mex');
+    fprintf(' %s', arg{:});
+    fprintf('\n');
+    mex(arg{:});
   end
-  tried = true;
-  bridge = mfilename('fullpath');
-  bridgecpp = [bridge, '.cpp'];
-  include1 = ['-I"', fileparts(bridge), '"'];
-  include2 = ['-I"', fileparts(fileparts(bridge)), '"'];
-  base = fullfile(['+', name], name);
-  basecpp = [base, '.cpp'];
-  cpp = which(basecpp);
-  output = [cpp(1:(end-4)), 'Bridge'];
-  if(exist(output, 'file'))
-    delete([output, '.', mexext]);
-  end
-  mex(include1, include2, bridgecpp, '-output', output);
+  mName = mNameCache;
 end

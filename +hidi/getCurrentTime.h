@@ -1,7 +1,7 @@
 #ifndef HIDIGETCURRENTTIME_H
 #define HIDIGETCURRENTTIME_H
 
-#include <stddef.h>
+#include <cstddef>
 #include "hidi.h"
 
 // define relevant types

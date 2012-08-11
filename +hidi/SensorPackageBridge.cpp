@@ -1,8 +1,8 @@
 #include <map>
 #include <vector>
-#include "mex.h"
 #include "SensorPackage.h"
 #include "packages.h"
+#include "mex.h" // must be last
 
 namespace SensorPackageBridge
 {
@@ -1111,4 +1111,3 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   }
   return;
 }
-
