@@ -41,6 +41,9 @@ namespace hidi
       return (extractors[extractorIndex]->getFeatureValue(featureIndex));
     }
 
+    /**
+     * Append a feature extractor to the composite.
+     */
     void append(FeatureExtractor* featureExtractor)
     {
       std::pair<size_t, size_t> item(extractors.size(), 0);
@@ -54,7 +57,13 @@ namespace hidi
       extractors.push_back(featureExtractor);
       return;
     }
-
+    
+    /**
+     * Virtual base class destructor.
+     */
+    virtual ~FeatureExtractorComposite(void)
+    {}
+    
   private:
     typedef std::pair<size_t, size_t> ExtractorFeaturePair;
     std::vector<ExtractorFeaturePair> lookup;

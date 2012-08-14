@@ -37,6 +37,12 @@ namespace hidi
      * Throws an error if the feature index is out of range.
      */
     virtual double getFeatureValue(const size_t& index) = 0;
+    
+    /**
+     * Virtual base class destructor.
+     */
+    virtual ~FeatureExtractor(void)
+    {}
   };
 }
 
