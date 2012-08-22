@@ -79,7 +79,7 @@ namespace hidi
      * Throws an exception if information is not available
      * Throws an exception if the data index is out of range
      */
-    virtual double getPrecisionHorizontal(const uint32_t& n) = 0;
+    virtual double getHDOP(const uint32_t& n) = 0;
 
     /**
      * Get vertical dilution of precision.
@@ -91,19 +91,19 @@ namespace hidi
      * Throws an exception if information is not available
      * Throws an exception if the data index is out of range
      */
-    virtual double getPrecisionVertical(const uint32_t& n) = 0;
+    virtual double getVDOP(const uint32_t& n) = 0;
 
     /**
-     * Get standard deviation of equivalent circular error.
+     * Get position dilution of precision.
      *
      * @param[in] n data index (MATLAB: M-by-N)
-     * @return      standard deviation (meters) (MATLAB: M-by-N)
+     * @return      standard deviation (unitless) (MATLAB: M-by-N)
      *
      * @note
      * Throws an exception if information is not available
      * Throws an exception if the data index is out of range
      */
-    virtual double getPrecisionCircular(const uint32_t& n) = 0;
+    virtual double getPDOP(const uint32_t& n) = 0;
 
     /**
      * Virtual base class destructor.

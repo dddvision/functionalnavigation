@@ -48,16 +48,16 @@ classdef GPSReceiverBridge < hidi.GPSReceiver
       flag = feval(this.m, this.h, 'hasPrecision');
     end
     
-    function horizontal = getPrecisionHorizontal(this, n)
-      horizontal = feval(this.m, this.h, 'getPrecisionHorizontal', n);
+    function horizontal = getHDOP(this, n)
+      horizontal = feval(this.m, this.h, 'getHDOP', n);
     end
     
-    function vertical = getPrecisionVertical(this, n)
-      vertical = feval(this.m, this.h, 'getPrecisionVertical', n);
+    function vertical = getVDOP(this, n)
+      vertical = feval(this.m, this.h, 'getVDOP', n);
     end
     
-    function circular = getPrecisionCircular(this, n)
-      circular = feval(this.m, this.h, 'getPrecisionCircular', n);
+    function circular = getPDOP(this, n)
+      circular = feval(this.m, this.h, 'getPDOP', n);
     end
   end
 end

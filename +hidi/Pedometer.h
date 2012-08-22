@@ -144,7 +144,7 @@ namespace hidi
      * Get the mean statistic of magnitude of distance traveled during the measurement period.
      *
      * @param[in] node data index
-     * @return         mean statistic
+     * @return         mean statistic (meters)
      *
      * @note
      * Throws an error if the measurement is not complete.
@@ -156,7 +156,7 @@ namespace hidi
      * Get the standard deviation statistic of magnitude of distance traveled during the measurement period.
      *
      * @param[in] node data index
-     * @return         deviation statistic
+     * @return         deviation statistic (meters)
      *
      * @note
      * This deviation accounts for a representative percentage of mislabled steps.

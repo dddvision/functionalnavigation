@@ -68,9 +68,9 @@ namespace SensorPackageBridge
     getLatitude,
     getHeight,
     hasPrecision,
-    getPrecisionHorizontal,
-    getPrecisionVertical,
-    getPrecisionCircular,
+    getHDOP,
+    getVDOP,
+    getPDOP,
     pedometerRefresh,
     pedometerHasData,
     pedometerFirst,
@@ -273,9 +273,9 @@ namespace SensorPackageBridge
       memberMap["getLatitude"] = getLatitude;
       memberMap["getHeight"] = getHeight;
       memberMap["hasPrecision"] = hasPrecision;
-      memberMap["getPrecisionHorizontal"] = getPrecisionHorizontal;
-      memberMap["getPrecisionVertical"] = getPrecisionVertical;
-      memberMap["getPrecisionCircular"] = getPrecisionCircular;
+      memberMap["getHDOP"] = getHDOP;
+      memberMap["getVDOP"] = getVDOP;
+      memberMap["getPDOP"] = getPDOP;
       memberMap["pedometerRefresh"] = pedometerRefresh;
       memberMap["pedometerHasData"] = pedometerHasData;
       memberMap["pedometerFirst"] = pedometerFirst;
@@ -906,7 +906,7 @@ namespace SensorPackageBridge
         break;
       }
 
-      case getPrecisionHorizontal:
+      case getHDOP:
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
@@ -920,12 +920,12 @@ namespace SensorPackageBridge
         data = mxGetPr(plhs[0]);
         for(k = 0; k<N; ++k)
         {
-          data[k] = sensor->getPrecisionHorizontal(node[k]);
+          data[k] = sensor->getHDOP(node[k]);
         }
         break;
       }
 
-      case getPrecisionVertical:
+      case getVDOP:
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
@@ -939,12 +939,12 @@ namespace SensorPackageBridge
         data = mxGetPr(plhs[0]);
         for(k = 0; k<N; ++k)
         {
-          data[k] = sensor->getPrecisionVertical(node[k]);
+          data[k] = sensor->getVDOP(node[k]);
         }
         break;
       }
 
-      case getPrecisionCircular:
+      case getPDOP:
       {
         argcheck(nrhs, 3);
         hidi::GPSReceiver* sensor = package->getGPSReceiver()[index];
@@ -958,7 +958,7 @@ namespace SensorPackageBridge
         data = mxGetPr(plhs[0]);
         for(k = 0; k<N; ++k)
         {
-          data[k] = sensor->getPrecisionCircular(node[k]);
+          data[k] = sensor->getPDOP(node[k]);
         }
         break;
       }
