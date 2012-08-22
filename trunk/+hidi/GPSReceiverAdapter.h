@@ -38,19 +38,19 @@ namespace hidi
       return (source->hasPrecision());
     }
 
-    virtual double getPrecisionHorizontal(const uint32_t& n)
+    virtual double getHDOP(const uint32_t& n)
     {
-      return (source->getPrecisionHorizontal(n));
+      return (source->getHDOP(n));
     }
 
-    virtual double getPrecisionVertical(const uint32_t& n)
+    virtual double getVDOP(const uint32_t& n)
     {
-      return (source->getPrecisionVertical(n));
+      return (source->getVDOP(n));
     }
 
-    virtual double getPrecisionCircular(const uint32_t& n)
+    virtual double getPDOP(const uint32_t& n)
     {
-      return (source->getPrecisionCircular(n));
+      return (source->getPDOP(n));
     }
     
     virtual ~GPSReceiverAdapter(void)

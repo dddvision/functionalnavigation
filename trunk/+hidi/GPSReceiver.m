@@ -9,8 +9,8 @@ classdef GPSReceiver < hidi.Sensor
     latitude = getLatitude(this, n);
     height = getHeight(this, n);
     flag = hasPrecision(this);
-    horizontal = getPrecisionHorizontal(this, n);
-    vertical = getPrecisionVertical(this, n);
-    circular = getPrecisionCircular(this, n);
+    horizontal = getHDOP(this, n);
+    vertical = getVDOP(this, n);
+    circular = getPDOP(this, n);
   end 
 end

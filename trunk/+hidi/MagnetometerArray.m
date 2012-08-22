@@ -6,5 +6,6 @@ classdef MagnetometerArray < hidi.Sensor
   
   methods (Access = public, Abstract = true)
     field = getMagneticField(this, n, ax);
+    field = getMagneticFieldCalibrated(this, n, ax);
   end
 end

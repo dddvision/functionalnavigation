@@ -33,7 +33,10 @@ namespace hidi
      * Get altimeter data.
      * 
      * @param[in] n data index (MATLAB: M-by-N)
-     * @return      altitude above the WGS84 ellipsoid (meters) (MATLAB: M-by-N)
+     * @return      barometric altitude including inherent bias (meters) (MATLAB: M-by-N)
+     *
+     * @note
+     * The probability distribution associated with the inherent bias is uniform over the sensor range.
      */
     virtual double getAltitude(const uint32_t& n) = 0;
 

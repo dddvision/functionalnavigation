@@ -28,13 +28,13 @@ namespace hidi
     MagnetometerArray(void)
     {}
 
-  public:
+  public:   
     /**
      * Get magnetometer data.
      * 
-     * @param[in]  n  data index (MATLAB: N-by-1)
-     * @param[in]  ax axis index (MATLAB: 1-by-A)
-     * @return        average magnetic field during the preceding integration period (tesla) (MATLAB: N-by-A)
+     * @param[in] n  data index (MATLAB: N-by-1)
+     * @param[in] ax axis index (MATLAB: 1-by-A)
+     * @return       average magnetic field during the preceding integration period (tesla) (MATLAB: N-by-A)
      *
      * @note
      * This measurement is taken by integrating about the instantaneous axis as it moves 
@@ -46,9 +46,9 @@ namespace hidi
     /**
      * Get calibrated magnetometer data.
      *
-     * @param[in]  n  data index (MATLAB: N-by-1)
-     * @param[in]  ax axis index (MATLAB: 1-by-A)
-     * @return        average magnetic field during the preceding integration period (tesla) (MATLAB: N-by-A)
+     * @param[in] n  data index (MATLAB: N-by-1)
+     * @param[in] ax axis index (MATLAB: 1-by-A)
+     * @return       average magnetic field during the preceding integration period (tesla) (MATLAB: N-by-A)
      *
      * @note
      * @see getMagneticField()
