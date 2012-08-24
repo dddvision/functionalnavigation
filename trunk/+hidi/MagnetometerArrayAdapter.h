@@ -22,11 +22,6 @@ namespace hidi
     {
       return (source->getMagneticField(n, ax));
     }
-
-    virtual double getMagneticFieldCalibrated(const uint32_t& n, const uint32_t& ax)
-    {
-      return (source->getMagneticFieldCalibrated(n, ax));
-    }
     
     virtual ~MagnetometerArrayAdapter(void)
     {}

@@ -39,25 +39,12 @@ namespace hidi
      * @note
      * Specific force is a raw measurement from a typical integrating accelerometer
      * This measurement has not been gravity compensated
+     * The axis interpretation is typically 0=Forward, 1=Right, 2=Down
      * This measurement is taken by integrating about the instantaneous axis as it moves 
      *   during the preceding time period and dividing by the time period
      * Throws an exception if either input index is out of range
      */
     virtual double getSpecificForce(const uint32_t& n, const uint32_t& ax) = 0;
-
-    /**
-     * Get calibrated accelerometer data.
-     *
-     * @param[in]  n  data index (MATLAB: N-by-1)
-     * @param[in]  ax axis index (MATLAB: 1-by-A)
-     * @return        average specific force during the preceding integration period (meter/second^2) (MATLAB: N-by-A)
-     *
-     * @note
-     * @see getSpecificForce()
-     * Calibration may correct bias, scale, and/or orientation, depending on the specific implementation
-     * The calibrated axis interpretation is typically 0=Forward, 1=Right, 2=Down
-     */
-    virtual double getSpecificForceCalibrated(const uint32_t& n, const uint32_t& ax) = 0;
 
     /**
      * Get velocity random walk standard deviation.

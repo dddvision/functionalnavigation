@@ -23,11 +23,6 @@ namespace hidi
       return (source->getAngularRate(n, ax));
     }
 
-    virtual double getAngularRateCalibrated(const uint32_t& n, const uint32_t& ax)
-    {
-      return (source->getAngularRateCalibrated(n, ax));
-    }
-
     virtual double getGyroscopeRandomWalk(void)
     {
       return (source->getGyroscopeRandomWalk());

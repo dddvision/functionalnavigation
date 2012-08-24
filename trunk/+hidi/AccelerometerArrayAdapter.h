@@ -22,11 +22,6 @@ namespace hidi
       return (source->getSpecificForce(n, ax));
     }
 
-    virtual double getSpecificForceCalibrated(const uint32_t& n, const uint32_t& ax)
-    {
-      return (source->getSpecificForceCalibrated(n, ax));
-    }
-
     virtual double getAccelerometerRandomWalk(void)
     {
       return (source->getAccelerometerRandomWalk());

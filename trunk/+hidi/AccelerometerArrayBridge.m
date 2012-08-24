@@ -36,10 +36,6 @@ classdef AccelerometerArrayBridge < hidi.AccelerometerArray
       force = feval(this.m, this.h, 'getSpecificForce', n, ax);
     end
     
-    function force = getSpecificForceCalibrated(this, n, ax)
-      force = feval(this.m, this.h, 'getSpecificForceCalibrated', n, ax);
-    end
-    
     function walk = getAccelerometerRandomWalk(this)
       walk = feval(this.m, this.h, 'getAccelerometerRandomWalk');
     end

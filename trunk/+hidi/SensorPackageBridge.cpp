@@ -24,7 +24,6 @@ namespace SensorPackageBridge
     accelerometerArrayLast,
     accelerometerArrayGetTime,
     getSpecificForce,
-    getSpecificForceCalibrated,
     getAccelerometerRandomWalk,
     getAccelerometerTurnOnBiasSigma,
     getAccelerometerInRunBiasSigma,
@@ -38,7 +37,6 @@ namespace SensorPackageBridge
     gyroscopeArrayLast,
     gyroscopeArrayGetTime,
     getAngularRate,
-    getAngularRateCalibrated,
     getGyroscopeRandomWalk,
     getGyroscopeTurnOnBiasSigma,
     getGyroscopeInRunBiasSigma,
@@ -52,7 +50,6 @@ namespace SensorPackageBridge
     magnetometerArrayLast,
     magnetometerArrayGetTime,
     getMagneticField,
-    getMagneticFieldCalibrated,
     altimeterRefresh,
     altimeterHasData,
     altimeterFirst,
@@ -229,7 +226,6 @@ namespace SensorPackageBridge
       memberMap["accelerometerArrayLast"] = accelerometerArrayLast;
       memberMap["accelerometerArrayGetTime"] = accelerometerArrayGetTime;
       memberMap["getSpecificForce"] = getSpecificForce;
-      memberMap["getSpecificForceCalibrated"] = getSpecificForceCalibrated;
       memberMap["getAccelerometerRandomWalk"] = getAccelerometerRandomWalk;
       memberMap["getAccelerometerTurnOnBiasSigma"] = getAccelerometerTurnOnBiasSigma;
       memberMap["getAccelerometerInRunBiasSigma"] = getAccelerometerInRunBiasSigma;
@@ -243,7 +239,6 @@ namespace SensorPackageBridge
       memberMap["gyroscopeArrayLast"] = gyroscopeArrayLast;
       memberMap["gyroscopeArrayGetTime"] = gyroscopeArrayGetTime;
       memberMap["getAngularRate"] = getAngularRate;
-      memberMap["getAngularRateCalibrated"] = getAngularRateCalibrated;
       memberMap["getGyroscopeRandomWalk"] = getGyroscopeRandomWalk;
       memberMap["getGyroscopeTurnOnBiasSigma"] = getGyroscopeTurnOnBiasSigma;
       memberMap["getGyroscopeInRunBiasSigma"] = getGyroscopeInRunBiasSigma;
@@ -257,7 +252,6 @@ namespace SensorPackageBridge
       memberMap["magnetometerArrayLast"] = magnetometerArrayLast;
       memberMap["magnetometerArrayGetTime"] = magnetometerArrayGetTime;
       memberMap["getMagneticField"] = getMagneticField;
-      memberMap["getMagneticFieldCalibrated"] = getMagneticFieldCalibrated;
       memberMap["altimeterRefresh"] = altimeterRefresh;
       memberMap["altimeterHasData"] = altimeterHasData;
       memberMap["altimeterFirst"] = altimeterFirst;
@@ -431,36 +425,6 @@ namespace SensorPackageBridge
         break;
       }
 
-      case getSpecificForceCalibrated:
-      {
-        argcheck(nrhs, 4);
-        hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
-        const mxArray* n = prhs[2];
-        const mxArray* ax = prhs[3];
-        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
-        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
-        size_t N = mxGetNumberOfElements(n);
-        size_t A = mxGetNumberOfElements(ax);
-        double* data;
-        size_t i;
-        size_t j;
-        size_t k;
-        uint32check(n);
-        uint32check(ax);
-        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
-        data = mxGetPr(plhs[0]);
-        k = 0;
-        for(j = 0; j<A; ++j)
-        {
-          for(i = 0; i<N; ++i)
-          {
-            data[k] = sensor->getSpecificForceCalibrated(node[i], axis[j]);
-            ++k;
-          }
-        }
-        break;
-      }
-
       case getAccelerometerRandomWalk:
       {
         hidi::AccelerometerArray* sensor = package->getAccelerometerArray()[index];
@@ -576,36 +540,6 @@ namespace SensorPackageBridge
         break;
       }
 
-      case getAngularRateCalibrated:
-      {
-        argcheck(nrhs, 4);
-        hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-        const mxArray* n = prhs[2];
-        const mxArray* ax = prhs[3];
-        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
-        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
-        size_t N = mxGetNumberOfElements(n);
-        size_t A = mxGetNumberOfElements(ax);
-        double* data;
-        size_t i;
-        size_t j;
-        size_t k;
-        uint32check(n);
-        uint32check(ax);
-        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
-        data = mxGetPr(plhs[0]);
-        k = 0;
-        for(j = 0; j<A; ++j)
-        {
-          for(i = 0; i<N; ++i)
-          {
-            data[k] = sensor->getAngularRateCalibrated(node[i], axis[j]);
-            ++k;
-          }
-        }
-        break;
-      }
-
       case getGyroscopeRandomWalk:
       {
         hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
@@ -715,36 +649,6 @@ namespace SensorPackageBridge
           for(i = 0; i<N; ++i)
           {
             data[k] = sensor->getMagneticField(node[i], axis[j]);
-            ++k;
-          }
-        }
-        break;
-      }
-
-      case getMagneticFieldCalibrated:
-      {
-        argcheck(nrhs, 4);
-        hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-        const mxArray* n = prhs[2];
-        const mxArray* ax = prhs[3];
-        uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
-        uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
-        size_t N = mxGetNumberOfElements(n);
-        size_t A = mxGetNumberOfElements(ax);
-        double* data;
-        size_t i;
-        size_t j;
-        size_t k;
-        uint32check(n);
-        uint32check(ax);
-        plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
-        data = mxGetPr(plhs[0]);
-        k = 0;
-        for(j = 0; j<A; ++j)
-        {
-          for(i = 0; i<N; ++i)
-          {
-            data[k] = sensor->getMagneticFieldCalibrated(node[i], axis[j]);
             ++k;
           }
         }

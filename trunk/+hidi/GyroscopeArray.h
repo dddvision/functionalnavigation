@@ -38,25 +38,12 @@ namespace hidi
      *
      * @note
      * Average angular rate is a raw measurement from a typical integrating gyroscope
+     * The axis interpretation is typically 0=Forward, 1=Right, 2=Down
      * This measurement is taken by integrating about the instantaneous axis as it moves 
      *   during the preceding time period and dividing by the time period
      * Throws an exception if either input index is out of range
      */
     virtual double getAngularRate(const uint32_t& n, const uint32_t& ax) = 0;
-
-    /**
-     * Get calibrated gyroscope data.
-     *
-     * @param[in]  n  data index (MATLAB: N-by-1)
-     * @param[in]  ax axis index (MATLAB: 1-by-A)
-     * @return        average angular rate during the preceding integration period (radian/second) (MATLAB: N-by-A)
-     *
-     * @note
-     * @see getAngularRate()
-     * Calibration may correct bias, scale, and/or orientation, depending on the specific implementation
-     * The calibrated axis interpretation is typically 0=Forward, 1=Right, 2=Down
-     */
-    virtual double getAngularRateCalibrated(const uint32_t& n, const uint32_t& ax) = 0;
 
     /**
      * Get angle random walk standard deviation.

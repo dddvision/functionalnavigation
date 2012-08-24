@@ -36,10 +36,6 @@ classdef GyroscopeArrayBridge < hidi.GyroscopeArray
       rate = feval(this.m, this.h, 'getAngularRate', n, ax);
     end
     
-    function rate = getAngularRateCalibrated(this, n, ax)
-      rate = feval(this.m, this.h, 'getAngularRateCalibrated', n, ax);
-    end
-    
     function walk = getGyroscopeRandomWalk(this)
       walk = feval(this.m, this.h, 'getGyroscopeRandomWalk');
     end

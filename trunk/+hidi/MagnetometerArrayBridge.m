@@ -35,10 +35,6 @@
     function field = getMagneticField(this, n, ax)
       field = feval(this.m, this.h, 'getMagneticField', n, ax);
     end
-    
-    function field = getMagneticFieldCalibrated(this, n, ax)
-      field = feval(this.m, this.h, 'getMagneticFieldCalibrated', n, ax);
-    end
   end
 end
  
