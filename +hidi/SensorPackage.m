@@ -87,8 +87,8 @@ classdef SensorPackage < handle
       packageName = packageName(1:(delimeter-1));
     end
     
-    function value = getParameter(parameters, key)
-      value = '';
+    function str = getParameter(parameters, key)
+      str = '';
       if(isempty(key))
         return;
       end
@@ -96,11 +96,23 @@ classdef SensorPackage < handle
       if(isempty(delimeter))
         return;
       end
-      value = parameters((delimeter+numel(key)+1):end);
+      str = parameters((delimeter+numel(key)+1):end);
       if(~strcmp(key, 'uri'))
-        delimeter = strfind(value, ';');
+        delimeter = strfind(str, ';');
         if(~isempty(delimeter))
-          value = value(1:(delimeter-1));
+          str = str(1:(delimeter-1));
+        end
+      end
+    end
+    
+    function value = getDoubleParameter(parameters, key)
+      str = hidi.SensorPackage.getParameter(parameters, key);
+      if(isempty(str))
+        value = NaN;
+      else
+        value = str2double(str);
+        if(isnan(value))
+          value = 0.0;
         end
       end
     end

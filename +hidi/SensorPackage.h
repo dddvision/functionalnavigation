@@ -1,6 +1,7 @@
 #ifndef HIDISENSORPACKAGE_H
 #define HIDISENSORPACKAGE_H
 
+#include <cstdlib>
 #include <map>
 #include <string>
 #include <vector>
@@ -180,31 +181,63 @@ namespace hidi
      *
      * @param[in] parameters see SensorPackage::create()
      * @param[in] key        see SensorPackage::create()
-     * @return               value of the selected parameter
+     * @return               string value of the selected parameter
      *
      * @note
+     * Returns empty string if the key is not found.
      * The special key 'uri' causes the remainder of the string to be returned ignoring semicolons.
      */
     static std::string getParameter(const std::string& parameters, const std::string& key)
     {
       size_t delimeter;
-      std::string value = "";
+      std::string str = "";
       if(key.size()==0)
       {
-        return (value);
+        return (str);
       }
       delimeter = parameters.find(key+"=");
       if(delimeter==std::string::npos)
       {
-        return (value);
+        return (str);
       }
-      value = parameters.substr(delimeter+key.size()+1);
+      str = parameters.substr(delimeter+key.size()+1);
       if(key.compare("uri"))
       {
-        delimeter = value.find(';');
+        delimeter = str.find(';');
         if(delimeter!=std::string::npos)
         {
-          value = value.substr(0, delimeter);
+          str = str.substr(0, delimeter);
+        }
+      }
+      return (str);
+    }
+    
+    /**
+     * Get double parameter from string.
+     *
+     * @param[in] parameters see SensorPackage::create()
+     * @param[in] key        see SensorPackage::create()
+     * @return               numeric value of the selected parameter
+     *
+     * @note
+     * Returns NAN if the value is not present.
+     * Returns 0 if the value cannot be converted.
+     */
+    static double getDoubleParameter(const std::string& parameters, const std::string& key)
+    {
+      std::string str;
+      double value;
+      str = SensorPackage::getParameter(parameters, key);
+      if(str.empty())
+      {
+        value = NAN;
+      }
+      else
+      {
+        value = strtod(str.c_str(), NULL);
+        if((value==HUGE_VAL)||(value==-HUGE_VAL))
+        {
+          value = 0.0;
         }
       }
       return (value);
