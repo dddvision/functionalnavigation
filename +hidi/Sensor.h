@@ -75,7 +75,7 @@ namespace hidi
      *
      * @note
      * Time stamps must not decrease with increasing indices.
-     * Throws an exception if data at the node is invalid.
+     * Throws an exception if any index is out of range.
      */
     virtual double getTime(const uint32_t& n) = 0;
 

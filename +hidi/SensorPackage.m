@@ -135,22 +135,22 @@ classdef SensorPackage < handle
         init = true;
       end
       for n = 1:numel(accelerometerArray)
-        accelerometerArray(n).refresh();
+        accelerometerArray{n}.refresh();
       end
       for n = 1:numel(gyroscopeArray)
-        gyroscopeArray(n).refresh();
+        gyroscopeArray{n}.refresh();
       end
       for n = 1:numel(magnetometerArray)
-        magnetometerArray(n).refresh();
+        magnetometerArray{n}.refresh();
       end
       for n = 1:numel(altimeter)
-        altimeter(n).refresh();
+        altimeter{n}.refresh();
       end
       for n = 1:numel(gpsReceiver)
-        gpsReceiver(n).refresh();
+        gpsReceiver{n}.refresh();
       end
       for n = 1:numel(pedometer)
-        pedometer(n).refresh();
+        pedometer{n}.refresh();
       end
     end
   end

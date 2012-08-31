@@ -37,6 +37,7 @@ namespace hidi
      *
      * @note
      * The probability distribution associated with the inherent bias is uniform over the sensor range.
+     * Throws an exception if any index is out of range.
      */
     virtual double getAltitude(const uint32_t& n) = 0;
 

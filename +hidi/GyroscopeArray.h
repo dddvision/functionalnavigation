@@ -37,11 +37,11 @@ namespace hidi
      * @return        average angular rate during the preceding integration period (radian/second) (MATLAB: N-by-A)
      *
      * @note
-     * Average angular rate is a raw measurement from a typical integrating gyroscope
-     * The axis interpretation is typically 0=Forward, 1=Right, 2=Down
+     * Average angular rate is a raw measurement from a typical integrating gyroscope.
+     * The axis interpretation is typically 0=Forward, 1=Right, 2=Down.
      * This measurement is taken by integrating about the instantaneous axis as it moves 
-     *   during the preceding time period and dividing by the time period
-     * Throws an exception if either input index is out of range
+     *   during the preceding time period and dividing by the time period.
+     * Throws an exception if any index is out of range.
      */
     virtual double getAngularRate(const uint32_t& n, const uint32_t& ax) = 0;
 

@@ -129,51 +129,51 @@ namespace hidi
     /**
      * Check for the successful completion of a step measurement.
      *
-     * @param[in] node data index
-     * @return         flag
+     * @param[in] node data index (MATLAB: M-by-N)
+     * @return         flag (MATLAB: M-by-N)
      *
      * @note
      * Each node refers to a time period that begins the instant after the previous node and ends at the node.
      * The flag will be true only if the motion was successfully characterized.
      * A false flag indicates either the initial time or the end of an unsuccessful measurement period.
-     * Throws an error if the index is out of range.
+     * Throws an exception if any index is out of range.
      */
     virtual bool isStepComplete(const uint32_t& n) = 0;
 
     /**
      * Get the mean statistic of magnitude of distance traveled during the measurement period.
      *
-     * @param[in] node data index
-     * @return         mean statistic (meters)
+     * @param[in] node data index (MATLAB: M-by-N)
+     * @return         mean statistic (meters) (MATLAB: M-by-N)
      *
      * @note
-     * Throws an error if the measurement is not complete.
-     * Throws an error if the index is out of range.
+     * Throws an exception if the step is not complete.
+     * Throws an exception if any index is out of range.
      */
     virtual double getStepMagnitude(const uint32_t& n) = 0;
 
     /**
      * Get the standard deviation statistic of magnitude of distance traveled during the measurement period.
      *
-     * @param[in] node data index
-     * @return         deviation statistic (meters)
+     * @param[in] node data index (MATLAB: M-by-N)
+     * @return         deviation statistic (meters) (MATLAB: M-by-N)
      *
      * @note
      * This deviation accounts for a representative percentage of mislabled steps.
-     * Throws an error if the measurement is not complete.
-     * Throws an error if the index is out of range.
+     * Throws an exception if the step is not complete.
+     * Throws an exception if any index is out of range.
      */
     virtual double getStepDeviation(const uint32_t& n) = 0;
     
     /**
      * Get step identifier.
      *
-     * @param[in] node data index
-     * @return         step identifier
+     * @param[in] node data index (MATLAB: M-by-N)
+     * @return         step identifier (MATLAB: M-by-N)
      *
      * @note
-     * Throws an error if the index is out of range.
-     * Throws an error if the measurement is not complete.
+     * Throws an exception if the step is not complete.
+     * Throws an exception if any index is out of range.
      */
     virtual uint32_t getStepID(const uint32_t& n) = 0;
     
