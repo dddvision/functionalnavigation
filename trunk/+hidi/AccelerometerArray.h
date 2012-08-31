@@ -37,12 +37,12 @@ namespace hidi
      * @return        average specific force during the preceding integration period (meter/second^2) (MATLAB: N-by-A)
      *
      * @note
-     * Specific force is a raw measurement from a typical integrating accelerometer
-     * This measurement has not been gravity compensated
-     * The axis interpretation is typically 0=Forward, 1=Right, 2=Down
+     * Specific force is a raw measurement from a typical integrating accelerometer.
+     * This measurement has not been gravity compensated.
+     * The axis interpretation is typically 0=Forward, 1=Right, 2=Down.
      * This measurement is taken by integrating about the instantaneous axis as it moves 
-     *   during the preceding time period and dividing by the time period
-     * Throws an exception if either input index is out of range
+     *   during the preceding time period and dividing by the time period.
+     * Throws an exception if any index is out of range.
      */
     virtual double getSpecificForce(const uint32_t& n, const uint32_t& ax) = 0;
 
@@ -59,7 +59,7 @@ namespace hidi
      * @return standard deviation of turn-on bias applied to specific force (meter/second^2)
      *
      * @note
-     * Turn-on bias does not evolve over time
+     * Turn-on bias does not evolve over time.
      */
     virtual double getAccelerometerTurnOnBiasSigma(void) = 0;
 
@@ -69,7 +69,7 @@ namespace hidi
      * @return standard deviation of in-run bias stability applied to specific force (meter/second^2)
      *
      * @note
-     * In-run bias stability evolves over time according to a Gauss-Markov process
+     * In-run bias stability evolves over time according to a Gauss-Markov process.
      */
     virtual double getAccelerometerInRunBiasSigma(void) = 0;
 
@@ -79,7 +79,7 @@ namespace hidi
      * @return Markov time constant of in-run bias stability applied to specific force (second)
      *
      * @note
-     * In-run bias stability evolves over time according to a Gauss-Markov process
+     * In-run bias stability evolves over time according to a Gauss-Markov process.
      */
     virtual double getAccelerometerInRunBiasStability(void) = 0;
 
@@ -89,7 +89,7 @@ namespace hidi
      * @return standard deviation of turn-on scale factor applied to specific force (unitless)
      *
      * @note
-     * Turn-on scale factor does not evolve over time
+     * Turn-on scale factor does not evolve over time.
      */
     virtual double getAccelerometerTurnOnScaleSigma(void) = 0;
 
@@ -99,7 +99,7 @@ namespace hidi
      * @return standard deviation of in-run scale factor stability applied to specific force (unitless)
      *
      * @note
-     * In-run scale factor stability evolves over time according to a Gauss-Markov process
+     * In-run scale factor stability evolves over time according to a Gauss-Markov process.
      */
     virtual double getAccelerometerInRunScaleSigma(void) = 0;
 
@@ -109,7 +109,7 @@ namespace hidi
      * @return Markov time constant of in-run scale factor stability applied to specific force (second)
      *
      * @note
-     * In-run scale factor stability evolves over time according to a Gauss-Markov process
+     * In-run scale factor stability evolves over time according to a Gauss-Markov process.
      */
     virtual double getAccelerometerInRunScaleStability(void) = 0;
 

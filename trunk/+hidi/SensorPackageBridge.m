@@ -31,49 +31,43 @@ classdef SensorPackageBridge < hidi.SensorPackage
   methods (Access = public) 
     function sensor = getAccelerometerArray(this)
       h = feval(this.m, uint32(0), 'getAccelerometerArray');
-      sensor = repmat(hidi.AccelerometerArrayBridge, numel(h), 1);
       for s = 1:numel(h)
-        sensor(s) = hidi.AccelerometerArrayBridge(this.m, h(s));
+        sensor{s} = hidi.AccelerometerArrayBridge(this.m, h(s)); %#ok grows in loop
       end
     end
     
     function sensor = getGyroscopeArray(this)
       h = feval(this.m, uint32(0), 'getGyroscopeArray');
-      sensor = repmat(hidi.GyroscopeArrayBridge, numel(h), 1);
       for s = 1:numel(h)
-        sensor(s) = hidi.GyroscopeArrayBridge(this.m, h(s));
+        sensor{s} = hidi.GyroscopeArrayBridge(this.m, h(s)); %#ok grows in loop
       end
     end
     
     function sensor = getMagnetometerArray(this)
       h = feval(this.m, uint32(0), 'getMagnetometerArray');
-      sensor = repmat(hidi.MagnetometerArrayBridge, numel(h), 1);
       for s = 1:numel(h)
-        sensor(s) = hidi.MagnetometerArrayBridge(this.m, h(s));
+        sensor{s} = hidi.MagnetometerArrayBridge(this.m, h(s)); %#ok grows in loop
       end
     end
     
     function sensor = getAltimeter(this)
       h = feval(this.m, uint32(0), 'getAltimeter');
-      sensor = repmat(hidi.AltimeterBridge, numel(h), 1);
       for s = 1:numel(h)
-        sensor(s) = hidi.AltimeterBridge(this.m, h(s));
+        sensor{s} = hidi.AltimeterBridge(this.m, h(s)); %#ok grows in loop
       end
     end
     
     function sensor = getGPSReceiver(this)
       h = feval(this.m, uint32(0), 'getGPSReceiver');
-      sensor = repmat(hidi.GPSReceiverBridge, numel(h), 1);
       for s = 1:numel(h)
-        sensor(s) = hidi.GPSReceiverBridge(this.m, h(s));
+        sensor{s} = hidi.GPSReceiverBridge(this.m, h(s)); %#ok grows in loop
       end
     end
     
     function sensor = getPedometer(this)
       h = feval(this.m, uint32(0), 'getPedometer');
-      sensor = repmat(hidi.PedometerBridge, numel(h), 1);
       for s = 1:numel(h)
-        sensor(s) = hidi.PedometerBridge(this.m, h(s));
+        sensor{s} = hidi.PedometerBridge(this.m, h(s)); %#ok grows in loop
       end
     end
   end

@@ -36,7 +36,7 @@ namespace hidi
      * @return      longitude (radians) (MATLAB: M-by-N)
      *
      * @note
-     * Throws an exception if the data index is out of range
+     * Throws an exception if any index is out of range.
      */
     virtual double getLongitude(const uint32_t& n) = 0;
 
@@ -47,7 +47,7 @@ namespace hidi
      * @return      geodetic latitude (radians) (MATLAB: M-by-N)
      *
      * @note
-     * Throws an exception if the data index is out of range
+     * Throws an exception if any index is out of range.
      */
     virtual double getLatitude(const uint32_t& n) = 0;
 
@@ -58,7 +58,7 @@ namespace hidi
      * @return      height (meters) (MATLAB: M-by-N)
      *
      * @note
-     * Throws an exception if the data index is out of range
+     * Throws an exception if any index is out of range.
      */
     virtual double getHeight(const uint32_t& n) = 0;
 
@@ -76,8 +76,8 @@ namespace hidi
      * @return      horizontal dilution of precision (unitless) (MATLAB: M-by-N)
      *
      * @note
-     * Throws an exception if information is not available
-     * Throws an exception if the data index is out of range
+     * Throws an exception if precision information is not available.
+     * Throws an exception if any index is out of range.
      */
     virtual double getHDOP(const uint32_t& n) = 0;
 
@@ -88,8 +88,8 @@ namespace hidi
      * @return      vertical dilution of precision (unitless) (MATLAB: M-by-N)
      *
      * @note
-     * Throws an exception if information is not available
-     * Throws an exception if the data index is out of range
+     * Throws an exception if precision information is not available.
+     * Throws an exception if any index is out of range.
      */
     virtual double getVDOP(const uint32_t& n) = 0;
 
@@ -100,8 +100,8 @@ namespace hidi
      * @return      standard deviation (unitless) (MATLAB: M-by-N)
      *
      * @note
-     * Throws an exception if information is not available
-     * Throws an exception if the data index is out of range
+     * Throws an exception if precision information is not available.
+     * Throws an exception if any index is out of range.
      */
     virtual double getPDOP(const uint32_t& n) = 0;
 
