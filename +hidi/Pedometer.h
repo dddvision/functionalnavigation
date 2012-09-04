@@ -28,6 +28,16 @@ namespace hidi
     
   public:
     /**
+     * Get number of step labels.
+     *
+     * @return number of step labels
+     */
+    static uint32_t numStepLabels(void)
+    {
+      return (28);
+    }
+    
+    /**
      * Get step label.
      *
      * @param[in] stepID step identifier
