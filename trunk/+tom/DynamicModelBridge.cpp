@@ -1,4 +1,5 @@
-#include "mex.h"
+#include <cstdio>
+#include "mex.h" // must follow cstdio and precede other headers for printf to work
 #include "DynamicModel.h"
 
 enum DynamicModelMember
