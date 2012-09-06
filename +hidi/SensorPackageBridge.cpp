@@ -1,8 +1,7 @@
-#include <map>
-#include <vector>
+#include <cstdio>
+#include "mex.h" // must follow cstdio and precede other headers for printf to work
 #include "SensorPackage.h"
 #include "packages.h"
-#include "mex.h" // must be last
 
 namespace SensorPackageBridge
 {
