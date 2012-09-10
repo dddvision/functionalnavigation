@@ -176,7 +176,7 @@ namespace hidi
     virtual double getStepDeviation(const uint32_t& n) = 0;
     
     /**
-     * Get step identifier.
+     * Get the step identifier corresponding to the measurement period.
      *
      * @param[in] node data index (MATLAB: M-by-N)
      * @return         step identifier (MATLAB: M-by-N)
