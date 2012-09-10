@@ -65,8 +65,8 @@ classdef DataContainerTest < handle
         
         hidi.SensorTest(sensor);
         
-        if(isa(sensor, 'hidi.CameraArray'))
-          hidi.CameraArrayTest(sensor);
+        if(isa(sensor, 'hidi.Camera'))
+          hidi.CameraTest(sensor);
         end
         
         % tests that require a reference trajectory

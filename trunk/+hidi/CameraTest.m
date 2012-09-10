@@ -1,5 +1,5 @@
 % Assumes that the general Sensor interface has already been tested
-classdef CameraArrayTest
+classdef CameraTest
   
   methods (Access = private, Static = true)
     function handle = figureHandle
@@ -13,32 +13,29 @@ classdef CameraArrayTest
   end
   
   methods (Access = public, Static = true)
-    function this = CameraArrayTest(cam)
-      assert(isa(cam, 'hidi.CameraArray'));
+    function this = CameraTest(cam)
+      assert(isa(cam, 'hidi.Camera'));
       
       if(~cam.hasData())
         return;
       end
       nb = cam.last();
       
-      testCameraArrayProjection(cam, nb);
-      testCameraArrayProjectionRoundTrip(cam, nb);
+      testCameraProjection(cam, nb);
+      testCameraProjectionRoundTrip(cam, nb);
     end
   end
   
 end
     
-function testCameraArrayProjection(cam, nb)
-  figure(hidi.CameraArrayTest.figureHandle());
-
-  % test each view 
-  for view = ((uint32(1):cam.numViews())-uint32(1))
+function testCameraProjection(cam, nb)
+  figure(hidi.CameraTest.figureHandle());
 
     % get an image
-    gray = cam.getImage(nb, view);
+    gray = cam.getImage(nb);
 
     % convert to grayscale
-    switch( interpretLayers(cam, view) )
+    switch( interpretLayers(cam) )
     case {'rgb', 'rgbi'}
       gray = double(rgb2gray(gray(:, :, 1:3)))/255;
      case {'hsv', 'hsvi'}
@@ -68,7 +65,7 @@ function testCameraArrayProjection(cam, nb)
       rays = [c1(:)';c2(:)';c3(:)'];
 
       % project these rays to the given camera
-      pix = cam.projection(rays, nb, view);
+      pix = cam.projection(rays, nb);
 
       % grab pixels using bilinear interpolation
       bad = isnan(pix(1, :))|isnan(pix(2, :));
@@ -83,17 +80,13 @@ function testCameraArrayProjection(cam, nb)
       drawnow;
       pause(0.1);
     end
-  end 
 end
 
-function testCameraArrayProjectionRoundTrip(cam, nb)
-  figure(hidi.CameraArrayTest.figureHandle());
-
-  % test each view
-  for view = ((uint32(1):cam.numViews())-uint32(1))
+function testCameraProjectionRoundTrip(cam, nb)
+  figure(hidi.CameraTest.figureHandle());
 
     % get an image
-    img = cam.getImage(nb, view);
+    img = cam.getImage(nb);
 
     % show image
     imshow(img, 'Parent', subplot(3, 3, 3));
@@ -107,7 +100,7 @@ function testCameraArrayProjectionRoundTrip(cam, nb)
     pix = [jj(:)';ii(:)'];
 
     % create ray vectors from pixels
-    ray = cam.inverseProjection(pix, nb, view);
+    ray = cam.inverseProjection(pix, nb);
     c1 = reshape(ray(1, :), [HEIGHT, WIDTH]);
     c2 = reshape(ray(2, :), [HEIGHT, WIDTH]);
     c3 = reshape(ray(3, :), [HEIGHT, WIDTH]);
@@ -119,7 +112,7 @@ function testCameraArrayProjectionRoundTrip(cam, nb)
     imshow(c3, [], 'Parent', subplot(3, 3, 6));
     
     % reproject the rays to pixel coordinates
-    pixout = cam.projection(ray, nb, view);
+    pixout = cam.projection(ray, nb);
     iout = reshape(pixout(2, :), [HEIGHT, WIDTH]);
     jout = reshape(pixout(1, :), [HEIGHT, WIDTH]);
 
@@ -131,5 +124,4 @@ function testCameraArrayProjectionRoundTrip(cam, nb)
     imshow(10000*idiff+0.5, 'Parent', subplot(3, 3, 7));
     imshow(10000*jdiff+0.5, 'Parent', subplot(3, 3, 8));
     title('Test Camera Array Projection Round Trip (image area should be gray)');
-  end
 end
