@@ -8,12 +8,12 @@ classdef SensorPackageBridge < hidi.SensorPackage
       assert(isa(name, 'char'));   
       mName = compileOnDemand(name);
       function text = componentDescription
-        text = feval(mName, uint32(0), 'SensorPackageDescription', name);
+        text = feval(mName, uint32(0), 'description', name);
       end
       function obj = componentFactory(parameters)
         obj = hidi.SensorPackageBridge(name, parameters);
       end
-      if(feval(mName, uint32(0), 'SensorPackageIsConnected', name))
+      if(feval(mName, uint32(0), 'isConnected', name))
         hidi.SensorPackage.connect(name, @componentDescription, @componentFactory);
       end
     end
@@ -23,7 +23,7 @@ classdef SensorPackageBridge < hidi.SensorPackage
         assert(isa(name, 'char'));
         assert(isa(parameters, 'char'));
         this.m = compileOnDemand(name);
-        feval(this.m, uint32(0), 'SensorPackageCreate', name, parameters);
+        feval(this.m, uint32(0), 'create', name, parameters);
       end
     end
   end

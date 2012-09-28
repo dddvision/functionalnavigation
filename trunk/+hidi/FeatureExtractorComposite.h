@@ -10,15 +10,15 @@ namespace hidi
   class FeatureExtractorComposite : FeatureExtractor
   {
   public:
-    size_t numFeatures(void)
+    uint32_t numFeatures(void)
     {
       return (lookup.size());
     }
 
-    std::string getFeatureLabel(const size_t& index)
+    std::string getFeatureLabel(const uint32_t& index)
     {
-      size_t extractorIndex;
-      size_t featureIndex;
+      uint32_t extractorIndex;
+      uint32_t featureIndex;
       if(index>=numFeatures())
       {
         throw("FeatureExtractorComposite: Feature label index is out of range.");
@@ -28,10 +28,10 @@ namespace hidi
       return (extractors[extractorIndex]->getFeatureLabel(featureIndex));
     }
 
-    double getFeatureValue(const size_t& index)
+    double getFeatureValue(const uint32_t& index)
     {
-      size_t extractorIndex;
-      size_t featureIndex;
+      uint32_t extractorIndex;
+      uint32_t featureIndex;
       if(index>=numFeatures())
       {
         throw("FeatureExtractorComposite: Feature value index is out of range.");
@@ -46,9 +46,9 @@ namespace hidi
      */
     void append(FeatureExtractor* featureExtractor)
     {
-      std::pair<size_t, size_t> item(extractors.size(), 0);
-      size_t N = featureExtractor->numFeatures();
-      size_t n;
+      std::pair<uint32_t, uint32_t> item(extractors.size(), 0);
+      uint32_t N = featureExtractor->numFeatures();
+      uint32_t n;
       for(n = 0; n<N; ++n)
       {
         item.second = n;
@@ -65,7 +65,7 @@ namespace hidi
     {}
     
   private:
-    typedef std::pair<size_t, size_t> ExtractorFeaturePair;
+    typedef std::pair<uint32_t, uint32_t> ExtractorFeaturePair;
     std::vector<ExtractorFeaturePair> lookup;
     std::vector<FeatureExtractor*> extractors;
   };

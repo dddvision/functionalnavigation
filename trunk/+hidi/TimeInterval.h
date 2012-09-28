@@ -1,6 +1,7 @@
 #ifndef HIDITIMEINTERVAL_H
 #define HIDITIMEINTERVAL_H
 
+#include <utility>
 #include "hidi.h"
 
 namespace hidi
