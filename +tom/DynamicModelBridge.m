@@ -89,7 +89,7 @@ classdef DynamicModelBridge < tom.DynamicModel
     end
     
     function v = getInitial(this, p)
-      v = feval(this.m, this.h, 'getInitialUint32', p);
+      v = feval(this.m, this.h, 'getInitial', p);
     end
     
     function v = getExtension(this, b, p)

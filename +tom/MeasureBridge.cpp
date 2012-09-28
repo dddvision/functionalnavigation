@@ -1,5 +1,4 @@
-#include <cstdio>
-#include "mex.h" // must follow cstdio and precede other headers for printf to work
+#include "hidiBridge.h"
 #include "Measure.h"
 
 enum MeasureMember
@@ -17,73 +16,6 @@ enum MeasureMember
     computeEdgeCost,
     copy
 };
-
-void argcheck(int& narg, int n)
-{
-  if(n>narg)
-  {
-    throw("MeasureBridge: too few input arguments");
-  }
-  return;
-}
-
-void convert(const mxArray*& array, double& value)
-{
-  if(mxGetClassID(array)!=mxDOUBLE_CLASS)
-  {
-    throw("MeasureBridge: input array must be double.");
-  }
-  value = (*static_cast<double*>(mxGetData(array)));
-  return;
-}
-
-void convert(const mxArray* array, uint32_t& value)
-{
-  if(mxGetClassID(array)!=mxUINT32_CLASS)
-  {
-    mexErrMsgTxt("MeasureBridge: input array must be uint32");
-  }
-  value = (*static_cast<uint32_t*>(mxGetData(array)));
-  return;
-}
-
-void convert(const mxArray* array, std::string& cppString)
-{
-  unsigned N = mxGetNumberOfElements(array)+1; // add one for terminating character
-  char *cString = new char[N];
-  if(mxGetClassID(array)!=mxCHAR_CLASS)
-  {
-    mexErrMsgTxt("MeasureBridge: input array must be char");
-  }
-  mxGetString(array, cString, N);
-  cppString = cString;
-  delete[] cString;
-  return;
-}
-
-void convert(const mxArray* array, hidi::TimeInterval& value)
-{
-  static mxArray *first;
-  static mxArray *second;
-  static mxArray *firstDouble;
-  static mxArray *secondDouble;
-
-  first = mxGetProperty(array, 0, "first");
-  second = mxGetProperty(array, 0, "second");
-
-  mexCallMATLAB(1, &firstDouble, 1, &first, "double");
-  mexCallMATLAB(1, &secondDouble, 1, &second, "double");
-
-  value.first = (*static_cast<double*>(mxGetData(firstDouble)));
-  value.second = (*static_cast<double*>(mxGetData(secondDouble)));
-
-  mxDestroyArray(first);
-  mxDestroyArray(second);
-  mxDestroyArray(firstDouble);
-  mxDestroyArray(secondDouble);
-
-  return;
-}
 
 void convert(const mxArray* array, tom::GraphEdge& value)
 {
@@ -222,45 +154,6 @@ void convert(const mxArray* array, std::vector<tom::TangentPose>& tangentPose)
   return;
 }
 
-void convert(const double value, mxArray*& array)
-{
-  array = mxCreateDoubleScalar(value);
-  return;
-}
-
-void convert(const std::vector<double>& value, mxArray*& array)
-{
-  double* pValue;
-  unsigned n;
-  unsigned N = value.size();
-  array = mxCreateDoubleMatrix(1, N, mxREAL);
-  pValue = mxGetPr(array);
-  for(n = 0; n<N; ++n)
-  {
-    pValue[n] = value[n];
-  }
-  return;
-}
-
-void convert(const uint32_t value, mxArray*& array)
-{
-  array = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
-  (*static_cast<uint32_t*>(mxGetData(array))) = value;
-  return;
-}
-
-void convert(const bool value, mxArray*& array)
-{
-  array = mxCreateLogicalScalar(value);
-  return;
-}
-
-void convert(std::string str, mxArray*& array)
-{
-  array = mxCreateString(str.c_str());
-  return;
-}
-
 void convert(const std::vector<tom::GraphEdge>& graphEdge, mxArray*& array)
 {
   static mxArray* prhs[3];
@@ -355,7 +248,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     initialized = true;
   }
 
-  argcheck(nrhs, 1);
+  checkNumArgs(nrhs, 1);
   if(mxIsChar(prhs[0])) // call static function or constructor
   {
     convert(prhs[0], memberName);
@@ -365,7 +258,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static std::string name;
 
-        argcheck(nrhs, 2);
+        checkNumArgs(nrhs, 2);
         convert(prhs[1], name);
         convert(tom::Measure::isConnected(name), plhs[0]);
         break;
@@ -374,7 +267,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static std::string name;
 
-        argcheck(nrhs, 2);
+        checkNumArgs(nrhs, 2);
         convert(prhs[1], name);
         convert(tom::Measure::description(name), plhs[0]);
         break;
@@ -387,7 +280,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t numInstances;
         tom::Measure* obj;
 
-        argcheck(nrhs, 4);
+        checkNumArgs(nrhs, 4);
         convert(prhs[1], name);
         convert(prhs[2], initialTime);
         convert(prhs[3], uri);
@@ -408,7 +301,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   {
     uint32_t handle;
 
-    argcheck(nrhs, 2);
+    checkNumArgs(nrhs, 2);
     convert(prhs[0], handle);
     convert(prhs[1], memberName);
 
@@ -441,7 +334,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
 
       case getTime:
         static uint32_t n;
-        argcheck(nrhs, 3);
+        checkNumArgs(nrhs, 3);
         convert(prhs[2], n);
         convert(instance[handle]->getTime(n), plhs[0]);
         break;
@@ -454,7 +347,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t nbMax;
         static std::vector<tom::GraphEdge> edgeList;
 
-        argcheck(nrhs, 6);
+        checkNumArgs(nrhs, 6);
         convert(prhs[2], naMin);
         convert(prhs[3], naMax);
         convert(prhs[4], nbMin);
@@ -468,7 +361,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static TrajectoryBridge x;
         static tom::GraphEdge graphEdge;
-        argcheck(nrhs, 3);
+        checkNumArgs(nrhs, 3);
         convert(prhs[2], graphEdge);
         convert(instance[handle]->computeEdgeCost(&x, graphEdge), plhs[0]);
         break;

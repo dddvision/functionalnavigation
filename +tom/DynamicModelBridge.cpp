@@ -1,5 +1,5 @@
-#include <cstdio>
-#include "mex.h" // must follow cstdio and precede other headers for printf to work
+#include "hidiBridge.h"
+#include "TimeIntervalBridge.h"
 #include "DynamicModel.h"
 
 enum DynamicModelMember
@@ -23,104 +23,6 @@ enum DynamicModelMember
     extend,
     copy
 };
-
-void argcheck(int& narg, int n)
-{
-  if(n>narg)
-  {
-    throw("DynamicModelBridge: too few input arguments");
-  }
-  return;
-}
-
-void convert(const mxArray*& array, double& value)
-{
-  if(mxGetClassID(array)!=mxDOUBLE_CLASS)
-  {
-    throw("DynamicModelBridge: array must be double");
-  }
-  value = (*static_cast<double*>(mxGetData(array)));
-  return;
-}
-
-void convert(const mxArray*& array, uint32_t& value)
-{
-  if(mxGetClassID(array)!=mxUINT32_CLASS)
-  {
-    throw("DynamicModelBridge: array must be uint32");
-  }
-  value = (*static_cast<uint32_t*>(mxGetData(array)));
-  return;
-}
-
-void convert(const mxArray*& array, std::string& cppString)
-{
-  unsigned N = mxGetNumberOfElements(array)+1; // add one for terminating character
-  char *cString = new char[N];
-  if(mxGetClassID(array)!=mxCHAR_CLASS)
-  {
-    throw("DynamicModelBridge: array must be char");
-  }
-  mxGetString(array, cString, N);
-  cppString = cString;
-  delete[] cString;
-  return;
-}
-
-void convert(const mxArray*& array, std::vector<double>& cppTime)
-{
-  double* mTime;
-  unsigned n;
-  unsigned N = mxGetNumberOfElements(array);
-  mTime = mxGetPr(array);
-  cppTime.resize(N);
-  for(n = 0; n<N; ++n)
-  {
-    cppTime[n] = mTime[n];
-  }
-  return;
-}
-
-void convert(const double& value, mxArray*& array)
-{
-  array = mxCreateDoubleScalar(value);
-  return;
-}
-
-void convert(const uint32_t& value, mxArray*& array)
-{
-  array = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
-  (*static_cast<uint32_t*>(mxGetData(array))) = value;
-  return;
-}
-
-void convert(const bool& value, mxArray*& array)
-{
-  array = mxCreateLogicalScalar(value);
-  return;
-}
-
-void convert(std::string str, mxArray*& array)
-{
-  array = mxCreateString(str.c_str());
-  return;
-}
-
-void convert(const hidi::TimeInterval& timeInterval, mxArray*& array)
-{
-  mxArray* first;
-  mxArray* second;
-  mxArray* interval[2];
-
-  first = mxCreateDoubleScalar(timeInterval.first);
-  second = mxCreateDoubleScalar(timeInterval.second);
-  interval[0] = first;
-  interval[1] = second;
-  mexCallMATLAB(1, &array, 2, interval, "hidi.TimeInterval");
-  mxDestroyArray(first);
-  mxDestroyArray(second);
-  return;
-}
 
 void convert(const std::vector<tom::Pose>& pose, const mxArray*& source, mxArray*& array)
 {
@@ -223,7 +125,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     initialized = true;
   }
 
-  argcheck(nrhs, 1);
+  checkNumArgs(nrhs, 1);
   if(mxIsChar(prhs[0])) // call static function or constructor
   {
     convert(prhs[0], memberName);
@@ -233,7 +135,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static std::string name;
 
-        argcheck(nrhs, 2);
+        checkNumArgs(nrhs, 2);
         convert(prhs[1], name);
         convert(tom::DynamicModel::isConnected(name), plhs[0]);
         break;
@@ -242,7 +144,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static std::string name;
 
-        argcheck(nrhs, 2);
+        checkNumArgs(nrhs, 2);
         convert(prhs[1], name);
         convert(tom::DynamicModel::description(name), plhs[0]);
         break;
@@ -255,7 +157,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t numInstances;
         tom::DynamicModel* obj;
 
-        argcheck(nrhs, 4);
+        checkNumArgs(nrhs, 4);
         convert(prhs[1], name);
         convert(prhs[2], initialTime);
         convert(prhs[3], uri);
@@ -276,7 +178,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   {
     uint32_t handle;
 
-    argcheck(nrhs, 2);
+    checkNumArgs(nrhs, 2);
     convert(prhs[0], handle);
     convert(prhs[1], memberName);
 
@@ -300,7 +202,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static std::vector<tom::Pose> pose;
         size_t n;
         size_t N;
-        argcheck(nrhs, 4);
+        checkNumArgs(nrhs, 4);
         convert(prhs[3], time);
         N = time.size();
         pose.resize(N);
@@ -318,7 +220,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static std::vector<tom::TangentPose> tangentPose;
         size_t n;
         size_t N;
-        argcheck(nrhs, 4);
+        checkNumArgs(nrhs, 4);
         convert(prhs[3], time);
         N = time.size();
         tangentPose.resize(N);
@@ -345,7 +247,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       case getInitial:
       {
         static uint32_t p;
-        argcheck(nrhs, 3);
+        checkNumArgs(nrhs, 3);
         convert(prhs[2], p);
         convert(instance[handle]->getInitial(p), plhs[0]);
         break;
@@ -355,7 +257,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static uint32_t b;
         static uint32_t p;
-        argcheck(nrhs, 4);
+        checkNumArgs(nrhs, 4);
         convert(prhs[2], b);
         convert(prhs[3], p);
         convert(instance[handle]->getExtension(b, p), plhs[0]);
@@ -366,7 +268,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static uint32_t p;
         static uint32_t v;
-        argcheck(nrhs, 4);
+        checkNumArgs(nrhs, 4);
         convert(prhs[2], p);
         convert(prhs[3], v);
         instance[handle]->setInitial(p, v);
@@ -378,7 +280,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t b;
         static uint32_t p;
         static uint32_t v;
-        argcheck(nrhs, 5);
+        checkNumArgs(nrhs, 5);
         convert(prhs[2], b);
         convert(prhs[3], p);
         convert(prhs[4], v);
@@ -393,7 +295,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       case computeExtensionCost:
       {
         static uint32_t b;
-        argcheck(nrhs, 3);
+        checkNumArgs(nrhs, 3);
         convert(prhs[2], b);
         convert(instance[handle]->computeExtensionCost(b), plhs[0]);
         break;

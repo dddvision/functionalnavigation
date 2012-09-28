@@ -14,7 +14,7 @@ namespace hidi
      *
      * @return number of features
      */
-    virtual size_t numFeatures(void) = 0;
+    virtual uint32_t numFeatures(void) = 0;
 
     /**
      * Get a feature label.
@@ -25,7 +25,7 @@ namespace hidi
      * @note
      * Throws an error if the feature index is out of range.
      */
-    virtual std::string getFeatureLabel(const size_t& index) = 0;
+    virtual std::string getFeatureLabel(const uint32_t& index) = 0;
 
     /**
      * Get a feature value.
@@ -36,7 +36,7 @@ namespace hidi
      * @note
      * Throws an error if the feature index is out of range.
      */
-    virtual double getFeatureValue(const size_t& index) = 0;
+    virtual double getFeatureValue(const uint32_t& index) = 0;
     
     /**
      * Virtual base class destructor.
