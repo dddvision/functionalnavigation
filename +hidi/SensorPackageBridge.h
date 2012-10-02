@@ -210,7 +210,7 @@ namespace hidi
       return;
     }
     
-    void handler(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prhs)
+    void SensorPackageBridge(int nlhs, mxArray** plhs, int nrhs, const mxArray** prhs)
     {
       static MemberMap memberMap;
       uint32_t index;
@@ -223,7 +223,7 @@ namespace hidi
       {
         case undefined:
         {
-          throw("Undefined function call.");
+          throw("SensorPackageBridge: Undefined function call.");
           break;
         }
 
@@ -916,36 +916,8 @@ namespace hidi
 
         default:
         {
-          throw("Invalid member function call.");
+          throw("SensorPackageBridge: Invalid member function call.");
         }
-      }
-      return;
-    }
-
-    void SensorPackageBridge(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
-    {
-      std::string message;
-      try
-      {
-        handler(nlhs, plhs, nrhs, prhs);
-      }
-      catch(std::exception& e)
-      {
-        message = "SensorPackageBridge: ";
-        message = message+e.what();
-        mexErrMsgTxt(message.c_str());
-      }
-      catch(const char* str)
-      {
-        message = "SensorPackageBridge: ";
-        message = message+str;
-        mexErrMsgTxt(message.c_str());
-      }
-      catch(...)
-      {
-        message = "SensorPackageBridge: ";
-        message = message+"Unhandled exception.";
-        mexErrMsgTxt(message.c_str());
       }
       return;
     }

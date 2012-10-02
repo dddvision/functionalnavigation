@@ -2,7 +2,10 @@
 #define HIDI_H
 
 #include <cmath>
+#include <cstdio>
 #include <limits>
+#include <string>
+#include <vector>
 
 #ifndef PI
 static const double PI = 4.0*atan(1.0);
