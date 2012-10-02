@@ -2,14 +2,11 @@
 #define HIDIBRIDGE_H
 
 #include <cstdio>
-#include <string>
-#include <vector>
 #include "mex.h" // must follow cstdio and precede custom headers for printf to work
 #include "hidi.h"
 
 namespace hidi
 {
-
   void checkNumArgs(const int& narg, const int& n)
   {
     if(n>narg)
@@ -520,6 +517,35 @@ namespace hidi
   void convert(const std::string& str, mxArray*& array)
   {
     array = mxCreateString(str.c_str());
+    return;
+  }
+
+  typedef void (*MEXFunctionWithCatchCallback)(int, mxArray**, int, const mxArray**);
+  void mexFunctionWithCatch(MEXFunctionWithCatchCallback mexFunctionWithCatchCallback, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+  {
+    std::string message;
+    try
+    {
+      mexFunctionWithCatchCallback(nlhs, plhs, nrhs, prhs);
+    }
+    catch(std::exception& e)
+    {
+      message = "ERROR: ";
+      message = message+e.what();
+      mexErrMsgTxt(message.c_str());
+    }
+    catch(const char* str)
+    {
+      message = "ERROR: ";
+      message = message+str;
+      mexErrMsgTxt(message.c_str());
+    }
+    catch(...)
+    {
+      message = "ERROR: ";
+      message = message+"Unhandled exception.";
+      mexErrMsgTxt(message.c_str());
+    }
     return;
   }
 }
