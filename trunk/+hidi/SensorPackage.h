@@ -29,18 +29,18 @@ namespace hidi
 
     /* Storage for package descriptions */
     typedef std::string (*SensorPackageDescription)(void);
-    static std::map<std::string, SensorPackageDescription>* pDescriptionList(void)
+    static std::map<std::string, SensorPackageDescription>& pDescriptionList(void)
     {
       static std::map<std::string, SensorPackageDescription> descriptionList;
-      return &descriptionList;
+      return descriptionList;
     }
 
     /* Storage for package factories */
     typedef SensorPackage* (*SensorPackageFactory)(const std::string&);
-    static std::map<std::string, SensorPackageFactory>* pFactoryList(void)
+    static std::map<std::string, SensorPackageFactory>& pFactoryList(void)
     {
       static std::map<std::string, SensorPackageFactory> factoryList;
-      return &factoryList;
+      return factoryList;
     }
 
   protected:
@@ -67,8 +67,8 @@ namespace hidi
     {
       if(!((cD==NULL)|(cF==NULL)))
       {
-        (*pDescriptionList())[name] = cD;
-        (*pFactoryList())[name] = cF;
+        pDescriptionList()[name] = cD;
+        pFactoryList()[name] = cF;
       }
       return;
     }
@@ -87,7 +87,7 @@ namespace hidi
      */
     static bool isConnected(const std::string& name)
     {
-      return (pFactoryList()->find(name)!=pFactoryList()->end());
+      return (pFactoryList().find(name)!=pFactoryList().end());
     }
 
     /**
@@ -106,7 +106,7 @@ namespace hidi
       std::string str = "";
       if(isConnected(name))
       {
-        str = (*pDescriptionList())[name]();
+        str = pDescriptionList()[name]();
       }
 	  else
       {
@@ -137,7 +137,7 @@ namespace hidi
       SensorPackage* obj = NULL;
       if(isConnected(name))
       {
-        obj = (*pFactoryList())[name](parameters);
+        obj = pFactoryList()[name](parameters);
       }
       else
       {
