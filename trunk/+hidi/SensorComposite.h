@@ -69,7 +69,14 @@ namespace hidi
       }
     }
     
-    //TODO: add delete method
+    ~SensorComposite(void)
+    {
+      uint32_t k;
+      for(k = 0; k<sensor.size(); ++k)
+      {
+        delete sensor[k];
+      }
+    }
     
     uint32_t numSensors(void)
     {
