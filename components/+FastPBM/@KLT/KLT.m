@@ -25,9 +25,10 @@ classdef KLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
           fprintf('\nCompiling mex wrapper for native KLT...');
         end
         userDirectory = pwd;
+        hidiDirectory = fullfile(userDirectory, '+hidi');
         cd(fullfile(fileparts(mfilename('fullpath')), 'private'));
         try
-          mex('mexTrackFeaturesKLT.cpp');
+          mex(['-I"', userDirectory, '"'], ['-I"', hidiDirectory, '"'], 'mexTrackFeaturesKLT.cpp');
         catch err
           cd(userDirectory);
           error(err.message);
