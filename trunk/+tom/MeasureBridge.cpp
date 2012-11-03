@@ -1,4 +1,5 @@
 #include "hidiBridge.h"
+#include "TimeIntervalBridge.h"
 #include "Measure.h"
 
 enum MeasureMember
@@ -194,7 +195,7 @@ public:
     static hidi::TimeInterval timeInterval;
     mexEvalString("interval=x.domain();"); // depends on Trajectory named 'x' in MATLAB workspace
     lhs = mexGetVariable("caller", "interval");
-    convert(lhs, timeInterval);
+    hidi::convert(lhs, timeInterval);
     mxDestroyArray(lhs);
     return timeInterval;
   }
@@ -203,7 +204,7 @@ public:
   {
     static mxArray* rhs;
     static mxArray* lhs;
-    convert(time, rhs);
+    hidi::convert(time, rhs);
     mexPutVariable("caller", "t", rhs);
     mexEvalString("pose=x.evaluate(t);"); // depends on Trajectory named 'x' in MATLAB workspace
     lhs = mexGetVariable("caller", "pose");
@@ -216,7 +217,7 @@ public:
   {
     static mxArray* rhs;
     static mxArray* lhs;
-    convert(time, rhs);
+    hidi::convert(time, rhs);
     mexPutVariable("caller", "t", rhs);
     mexEvalString("tangentPose=x.tangent(t);"); // depends on Trajectory named 'x' in MATLAB workspace
     lhs = mexGetVariable("caller", "tangentPose");
@@ -248,28 +249,28 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     initialized = true;
   }
 
-  checkNumArgs(nrhs, 1);
+  hidi::checkNumArgs(nrhs, 1);
   if(mxIsChar(prhs[0])) // call static function or constructor
   {
-    convert(prhs[0], memberName);
+    hidi::convert(prhs[0], memberName);
     switch(memberMap[memberName])
     {
       case MeasureIsConnected:
       {
         static std::string name;
 
-        checkNumArgs(nrhs, 2);
-        convert(prhs[1], name);
-        convert(tom::Measure::isConnected(name), plhs[0]);
+        hidi::checkNumArgs(nrhs, 2);
+        hidi::convert(prhs[1], name);
+        hidi::convert(tom::Measure::isConnected(name), plhs[0]);
         break;
       }
       case MeasureDescription:
       {
         static std::string name;
 
-        checkNumArgs(nrhs, 2);
-        convert(prhs[1], name);
-        convert(tom::Measure::description(name), plhs[0]);
+        hidi::checkNumArgs(nrhs, 2);
+        hidi::convert(prhs[1], name);
+        hidi::convert(tom::Measure::description(name), plhs[0]);
         break;
       }
       case MeasureFactory:
@@ -280,15 +281,15 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t numInstances;
         tom::Measure* obj;
 
-        checkNumArgs(nrhs, 4);
-        convert(prhs[1], name);
-        convert(prhs[2], initialTime);
-        convert(prhs[3], uri);
+        hidi::checkNumArgs(nrhs, 4);
+        hidi::convert(prhs[1], name);
+        hidi::convert(prhs[2], initialTime);
+        hidi::convert(prhs[3], uri);
         obj = tom::Measure::create(name, initialTime, uri);
         numInstances = instance.size();
         instance.resize(numInstances+1);
         instance[numInstances] = obj;
-        convert(numInstances, plhs[0]);
+        hidi::convert(numInstances, plhs[0]);
         break;
       }
       default:
@@ -301,9 +302,9 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   {
     uint32_t handle;
 
-    checkNumArgs(nrhs, 2);
-    convert(prhs[0], handle);
-    convert(prhs[1], memberName);
+    hidi::checkNumArgs(nrhs, 2);
+    hidi::convert(prhs[0], handle);
+    hidi::convert(prhs[1], memberName);
 
     if(handle>=instance.size())
     {
@@ -321,22 +322,22 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         break;
 
       case hasData:
-        convert(instance[handle]->hasData(), plhs[0]);
+        hidi::convert(instance[handle]->hasData(), plhs[0]);
         break;
 
       case first:
-        convert(instance[handle]->first(), plhs[0]);
+        hidi::convert(instance[handle]->first(), plhs[0]);
         break;
 
       case last:
-        convert(instance[handle]->last(), plhs[0]);
+        hidi::convert(instance[handle]->last(), plhs[0]);
         break;
 
       case getTime:
         static uint32_t n;
-        checkNumArgs(nrhs, 3);
-        convert(prhs[2], n);
-        convert(instance[handle]->getTime(n), plhs[0]);
+        hidi::checkNumArgs(nrhs, 3);
+        hidi::convert(prhs[2], n);
+        hidi::convert(instance[handle]->getTime(n), plhs[0]);
         break;
 
       case findEdges:
@@ -347,11 +348,11 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t nbMax;
         static std::vector<tom::GraphEdge> edgeList;
 
-        checkNumArgs(nrhs, 6);
-        convert(prhs[2], naMin);
-        convert(prhs[3], naMax);
-        convert(prhs[4], nbMin);
-        convert(prhs[5], nbMax);
+        hidi::checkNumArgs(nrhs, 6);
+        hidi::convert(prhs[2], naMin);
+        hidi::convert(prhs[3], naMax);
+        hidi::convert(prhs[4], nbMin);
+        hidi::convert(prhs[5], nbMax);
         instance[handle]->findEdges(naMin, naMax, nbMin, nbMax, edgeList);
         convert(edgeList, plhs[0]);
         break;
@@ -361,9 +362,9 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static TrajectoryBridge x;
         static tom::GraphEdge graphEdge;
-        checkNumArgs(nrhs, 3);
+        hidi::checkNumArgs(nrhs, 3);
         convert(prhs[2], graphEdge);
-        convert(instance[handle]->computeEdgeCost(&x, graphEdge), plhs[0]);
+        hidi::convert(instance[handle]->computeEdgeCost(&x, graphEdge), plhs[0]);
         break;
       }
 

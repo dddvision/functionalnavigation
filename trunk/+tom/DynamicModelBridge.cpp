@@ -125,28 +125,28 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
     initialized = true;
   }
 
-  checkNumArgs(nrhs, 1);
+  hidi::checkNumArgs(nrhs, 1);
   if(mxIsChar(prhs[0])) // call static function or constructor
   {
-    convert(prhs[0], memberName);
+    hidi::convert(prhs[0], memberName);
     switch(memberMap[memberName])
     {
       case DynamicModelIsConnected:
       {
         static std::string name;
 
-        checkNumArgs(nrhs, 2);
-        convert(prhs[1], name);
-        convert(tom::DynamicModel::isConnected(name), plhs[0]);
+        hidi::checkNumArgs(nrhs, 2);
+        hidi::convert(prhs[1], name);
+        hidi::convert(tom::DynamicModel::isConnected(name), plhs[0]);
         break;
       }
       case DynamicModelDescription:
       {
         static std::string name;
 
-        checkNumArgs(nrhs, 2);
-        convert(prhs[1], name);
-        convert(tom::DynamicModel::description(name), plhs[0]);
+        hidi::checkNumArgs(nrhs, 2);
+        hidi::convert(prhs[1], name);
+        hidi::convert(tom::DynamicModel::description(name), plhs[0]);
         break;
       }
       case DynamicModelFactory:
@@ -157,15 +157,15 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t numInstances;
         tom::DynamicModel* obj;
 
-        checkNumArgs(nrhs, 4);
-        convert(prhs[1], name);
-        convert(prhs[2], initialTime);
-        convert(prhs[3], uri);
+        hidi::checkNumArgs(nrhs, 4);
+        hidi::convert(prhs[1], name);
+        hidi::convert(prhs[2], initialTime);
+        hidi::convert(prhs[3], uri);
         obj = tom::DynamicModel::create(name, initialTime, uri);
         numInstances = instance.size();
         instance.resize(numInstances+1);
         instance[numInstances] = obj;
-        convert(numInstances, plhs[0]);
+        hidi::convert(numInstances, plhs[0]);
         break;
       }
       default:
@@ -178,9 +178,9 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
   {
     uint32_t handle;
 
-    checkNumArgs(nrhs, 2);
-    convert(prhs[0], handle);
-    convert(prhs[1], memberName);
+    hidi::checkNumArgs(nrhs, 2);
+    hidi::convert(prhs[0], handle);
+    hidi::convert(prhs[1], memberName);
 
     if(handle>=instance.size())
     {
@@ -193,7 +193,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         break;
 
       case domain:
-        convert(instance[handle]->domain(), plhs[0]);
+        hidi::convert(instance[handle]->domain(), plhs[0]);
         break;
 
       case evaluate:
@@ -202,8 +202,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static std::vector<tom::Pose> pose;
         size_t n;
         size_t N;
-        checkNumArgs(nrhs, 4);
-        convert(prhs[3], time);
+        hidi::checkNumArgs(nrhs, 4);
+        hidi::convert(prhs[3], time);
         N = time.size();
         pose.resize(N);
         for(n = 0; n<N; ++n)
@@ -220,8 +220,8 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static std::vector<tom::TangentPose> tangentPose;
         size_t n;
         size_t N;
-        checkNumArgs(nrhs, 4);
-        convert(prhs[3], time);
+        hidi::checkNumArgs(nrhs, 4);
+        hidi::convert(prhs[3], time);
         N = time.size();
         tangentPose.resize(N);
         for(n = 0; n<N; ++n)
@@ -233,23 +233,23 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       }
 
       case numInitial:
-        convert(instance[handle]->numInitial(), plhs[0]);
+        hidi::convert(instance[handle]->numInitial(), plhs[0]);
         break;
 
       case numExtension:
-        convert(instance[handle]->numExtension(), plhs[0]);
+        hidi::convert(instance[handle]->numExtension(), plhs[0]);
         break;
 
       case numBlocks:
-        convert(instance[handle]->numBlocks(), plhs[0]);
+        hidi::convert(instance[handle]->numBlocks(), plhs[0]);
         break;
 
       case getInitial:
       {
         static uint32_t p;
-        checkNumArgs(nrhs, 3);
-        convert(prhs[2], p);
-        convert(instance[handle]->getInitial(p), plhs[0]);
+        hidi::checkNumArgs(nrhs, 3);
+        hidi::convert(prhs[2], p);
+        hidi::convert(instance[handle]->getInitial(p), plhs[0]);
         break;
       }
 
@@ -257,10 +257,10 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static uint32_t b;
         static uint32_t p;
-        checkNumArgs(nrhs, 4);
-        convert(prhs[2], b);
-        convert(prhs[3], p);
-        convert(instance[handle]->getExtension(b, p), plhs[0]);
+        hidi::checkNumArgs(nrhs, 4);
+        hidi::convert(prhs[2], b);
+        hidi::convert(prhs[3], p);
+        hidi::convert(instance[handle]->getExtension(b, p), plhs[0]);
         break;
       }
 
@@ -268,9 +268,9 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
       {
         static uint32_t p;
         static uint32_t v;
-        checkNumArgs(nrhs, 4);
-        convert(prhs[2], p);
-        convert(prhs[3], v);
+        hidi::checkNumArgs(nrhs, 4);
+        hidi::convert(prhs[2], p);
+        hidi::convert(prhs[3], v);
         instance[handle]->setInitial(p, v);
         break;
       }
@@ -280,24 +280,24 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         static uint32_t b;
         static uint32_t p;
         static uint32_t v;
-        checkNumArgs(nrhs, 5);
-        convert(prhs[2], b);
-        convert(prhs[3], p);
-        convert(prhs[4], v);
+        hidi::checkNumArgs(nrhs, 5);
+        hidi::convert(prhs[2], b);
+        hidi::convert(prhs[3], p);
+        hidi::convert(prhs[4], v);
         instance[handle]->setExtension(b, p, v);
         break;
       }
 
       case computeInitialCost:
-        convert(instance[handle]->computeInitialCost(), plhs[0]);
+        hidi::convert(instance[handle]->computeInitialCost(), plhs[0]);
         break;
 
       case computeExtensionCost:
       {
         static uint32_t b;
-        checkNumArgs(nrhs, 3);
-        convert(prhs[2], b);
-        convert(instance[handle]->computeExtensionCost(b), plhs[0]);
+        hidi::checkNumArgs(nrhs, 3);
+        hidi::convert(prhs[2], b);
+        hidi::convert(instance[handle]->computeExtensionCost(b), plhs[0]);
         break;
       }
 
@@ -315,7 +315,7 @@ void safeMexFunction(int& nlhs, mxArray**& plhs, int& nrhs, const mxArray**& prh
         obj = instance[handle]->copy();
         instance.resize(numInstances+1);
         instance[numInstances] = obj;
-        convert(numInstances, plhs[0]);
+        hidi::convert(numInstances, plhs[0]);
         break;
       }
 
