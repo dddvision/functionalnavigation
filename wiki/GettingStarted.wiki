@@ -3,12 +3,12 @@
 
 To try out the framework in MATLAB, download the source code and run the script {{{demo.m}}}. There is also a C++ framework, but it lacks demonstration components.
 
-You will need MATLAB {{{R2009a}}} or later, and in order to make full use of the current version, you will also need the {{{Image Processing Toolbox}}} and the {{{Genetic Algorithm and Direct Search (GADS) Toolbox}}}.  
+The current version of the framework requires MATLAB {{{R2009a}}} or later. Some components additionally require the {{{Image Processing Toolbox}}} or the {{{Genetic Algorithm and Direct Search (GADS) Toolbox}}}.
 
 === Next Steps ===
 
 The framework comes with a few default examples of components that can be selected by editing DemoConfig.m. In addition, here is a list of downloadable components created by others to demonstrate more system configurations:
-  * [http://code.google.com/p/functionalnavigationgpl/downloads/list PointBasedMeasure] - The University of Central Florida has assembled a state-of-the-art visual measure that employs David Nister's five-point Structure From Motion (SFM) algorithm. In a calibrated framework, the algorithm finds SURF point correspondence between pairs of images, computes the essential matrix, decomposes it into camera rotation and translation, and then triangulates each set of point correspondences in order to obtain the 3D structure of the scene. This measure depends on OpenCV, Sparse Bundle Adjustment (SBA), and LAPACK.
+  * [http://code.google.com/p/functionalnavigation/downloads/list PointBasedMeasure] - The University of Central Florida has assembled a state-of-the-art visual measure that employs David Nister's five-point Structure From Motion (SFM) algorithm. In a calibrated framework, the algorithm finds SURF point correspondence between pairs of images, computes the essential matrix, decomposes it into camera rotation and translation, and then triangulates each set of point correspondences in order to obtain the 3D structure of the scene. This measure depends on OpenCV, Sparse Bundle Adjustment (SBA), and LAPACK.
 
 === Layer Diagram for Embedded Systems ===
 
