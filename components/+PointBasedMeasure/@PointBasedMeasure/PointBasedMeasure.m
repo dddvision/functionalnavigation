@@ -46,9 +46,8 @@ classdef PointBasedMeasure < PointBasedMeasure.PointBasedMeasureConfig & tom.Mea
             mex('MEXSURF.cpp',['-L"',libdir,'"'],'-lcv','-lcxcore', '-lhighgui', '-lcvaux');
           end
         catch err
-          details =['mex fail' err.message];
           cd(userDirectory);
-          error(details);
+          error(err.message);
         end
         cd(userDirectory);     
         fprintf('Done\n');
