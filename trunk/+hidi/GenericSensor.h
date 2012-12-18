@@ -5,6 +5,9 @@
 
 namespace hidi
 {
+  /**
+   * This class wraps a single axis of a specific sensor and provides generic data access.
+   */
   class GenericSensor : hidi::Sensor
   {
   private:
@@ -13,6 +16,13 @@ namespace hidi
     uint32_t axisIndex; 
 
   public:
+    /**
+     * Constructor.
+     *
+     * @param[in] sensorType sensor type
+     * @param[in] sensor     sensor object
+     * @param[in] axisIndex  axis index
+     */
     GenericSensor(const hidi::SensorType& sensorType, hidi::Sensor* sensor, const uint32_t& axisIndex)
     {
       this->sensorType = sensorType;
@@ -43,6 +53,15 @@ namespace hidi
       return (sensor->getTime(node));
     }
 
+    /**
+     * Get generic data.
+     * 
+     * @param[in] n data index (MATLAB: M-by-N)
+     * @return      generic data (MATLAB: M-by-N)
+     *
+     * @note
+     * Throws an exception if any index is out of range.
+     */
     double getData(const uint32_t& node)
     {
       double data;
@@ -74,11 +93,11 @@ namespace hidi
               data = dynamic_cast<hidi::GPSReceiver*>(sensor)->getHeight(node);
               break;
             default:
-              throw("ExtractNorms: Sensor axis index out of range.");
+              throw("GenericSensor: Sensor axis index out of range.");
           }
           break;
         default:
-          throw("ExtractNorms: Invalid sensor type.");
+          throw("GenericSensor: Invalid sensor type.");
         }
       }
       return (data);

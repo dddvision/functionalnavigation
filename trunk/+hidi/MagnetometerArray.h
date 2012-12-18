@@ -34,7 +34,7 @@ namespace hidi
      * 
      * @param[in] n  data index (MATLAB: N-by-1)
      * @param[in] ax axis index (MATLAB: 1-by-A)
-     * @return       average magnetic field during the preceding integration period (tesla) (MATLAB: N-by-A)
+     * @return       average magnetic field during the preceding integration period (microtesla) (MATLAB: N-by-A)
      *
      * @note
      * The axis interpretation is typically 0=Forward, 1=Right, 2=Down.

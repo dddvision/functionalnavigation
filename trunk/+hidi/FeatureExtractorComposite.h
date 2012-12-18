@@ -7,6 +7,9 @@
 
 namespace hidi
 {
+  /**
+   * This class is a FeatureExtractor composed of multiple FeatureExtractors.
+   */
   class FeatureExtractorComposite : FeatureExtractor
   {
   public:

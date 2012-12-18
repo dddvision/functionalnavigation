@@ -6,6 +6,9 @@
 
 namespace hidi
 {
+  /**
+   * This class wraps a SensorPackage and provides access to each data axis as a GenericSensor.
+   */
   class SensorComposite
   {
   private:
@@ -20,6 +23,11 @@ namespace hidi
     }
     
   public:
+    /**
+     * Constructor.
+     *
+     * @param[in] package sensor package object
+     */
     SensorComposite(hidi::SensorPackage* package)
     {
       uint32_t s;
@@ -78,16 +86,33 @@ namespace hidi
       }
     }
     
+    /**
+     * Get the number of sensors.
+     *
+     * @return number of sensors
+     */
     uint32_t numSensors(void)
     {
       return(sensor.size());
     }
     
+    /**
+     * Get data axis as a GenericSensor.
+     *
+     * @param[in] compositeIndex composite index
+     * @return                   generic sensor object
+     */
     hidi::GenericSensor* getSensor(const uint32_t& compositeIndex)
     {
       return (sensor[compositeIndex]);
     }
     
+    /**
+     * Get a label indicating the sensors type, array index, and axis index.
+     *
+     * @param[in] compositeIndex composite index
+     * @return                   label of the form "Type[arrayIndex][axisIndex]"
+     */
     std::string getLabel(const uint32_t& compositeIndex)
     {
       return (sensorLabel[compositeIndex]);

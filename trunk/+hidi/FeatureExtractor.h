@@ -10,7 +10,7 @@ namespace hidi
   {
   public:
     /**
-     * Get the number of features available.
+     * Get the number of features.
      *
      * @return number of features
      */
