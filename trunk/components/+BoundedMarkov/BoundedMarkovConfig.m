@@ -18,7 +18,7 @@ classdef BoundedMarkovConfig < handle
 %     B = sparse([zeros(6); diag([1, 1, 0, 0, 0, 0])]); % 2-DOF (X,Y)
 
     % Fixed initial state
-    initialPosition = [6378137.0; 0; 0]; % ([6378137.0; 0; 0]) WGS84 intersection of equator and prime meridian
+    initialPosition = [tom.WGS84.majorRadius; 0; 0]; % (default) intersection of equator and prime meridian
     initialRotation = [1; 0; 0; 0];
     initialPositionRate = [0; 0; 0];
     initialOmega = [0; 0; 0];

@@ -3,6 +3,7 @@
 #include <string>
 
 #include "DynamicModel.h"
+#include "WGS84.h"
 
 namespace BrownianPlanar
 {

@@ -2,7 +2,6 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
 
   properties (Constant = true,GetAccess = private)
     speed = 0.160; % Reference: http://vision.middlebury.edu/stereo/data/scenes2005/
-    earthMajorRadius = 6378137.0; % WGS84
   end
 
   properties (Access = private)
@@ -31,7 +30,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
         good = (t>=tmin);
         dt = t-this.interval.first;
         for k = find(good)
-          pose(k).p = [this.earthMajorRadius; this.speed*dt(k); 0];
+          pose(k).p = [tom.WGS84.majorRadius; this.speed*dt(k); 0];
           pose(k).q = [1; 0; 0; 0];
         end
       end
@@ -48,7 +47,7 @@ classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
         good = (t>=tmin);
         dt = t-this.interval.first;
         for k = find(good)
-          tangentPose(k).p = [this.earthMajorRadius; this.speed*dt(k); 0];
+          tangentPose(k).p = [tom.WGS84.majorRadius; this.speed*dt(k); 0];
           tangentPose(k).q = [1; 0; 0; 0];
           tangentPose(k).r = [0; this.speed; 0];
           tangentPose(k).s = [0; 0; 0];

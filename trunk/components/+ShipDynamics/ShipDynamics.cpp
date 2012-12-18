@@ -3,7 +3,8 @@
 #include <string>
 #include <cstdio>
 
-#include "../+tom/DynamicModel.h"
+#include "DynamicModel.h"
+#include "WGS84.h"
 
 namespace ShipDynamics
 {
@@ -47,23 +48,6 @@ namespace ShipDynamics
 
     hidi::TimeInterval interval;
     uint32_t firstNewBlock;
-    
-    void lolah2ecef(const double lon, const double lat, const double alt, std::vector<double> &ecef)
-    {
-      static const double a = 6378137.0;
-      static const double finv = 298.257223563;
-      double b = a-a/finv;
-      double a2 = a*a;
-      double b2 = b*b;
-      double e = sqrt((a2-b2)/a2);
-      double slat = sin(lat);
-      double clat = cos(lat);
-      double N = a/sqrt(1-(e*e)*(slat*slat));
-      ecef[0] = (alt+N)*clat*cos(lon);
-      ecef[1] = (alt+N)*clat*sin(lon);
-      ecef[2] = ((b2/a2)*N+alt)*slat;
-      return;
-    }
 
     void euler2quat(const double a, const double b, const double c, std::vector<double> &q)
     {
@@ -459,7 +443,8 @@ namespace ShipDynamics
 
       // set initial frame
       initialPosition.resize(3, 0.0);
-      lolah2ecef(initialLongitude, initialLatitude, 0.0, initialPosition);
+      tom::WGS84::lolah2ecef(initialLongitude, initialLatitude, 0.0, initialPosition[0], initialPosition[1], 
+        initialPosition[2]);
       initialQuaternion.resize(4, 0.0);
       euler2quat(0.0, -PI/2.0, 0.0, initialQuaternion);
       euler2quat(-initialHeading, 0.0, 0.0, quat);

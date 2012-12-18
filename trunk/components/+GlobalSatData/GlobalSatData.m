@@ -58,9 +58,9 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.Measure
       % TODO: incorporate offset
       % offset = this.sensor.getAntennaOffset();
       if(this.sensor.hasPrecision())
-%         hDOP = this.sensor.getPrecisionHorizontal(n);
-%         vDOP = this.sensor.getPrecisionVertical(n);
-        sigmaR = this.sensor.getPrecisionCircular(n);
+%         hDOP = this.sensor.getHDOP(n);
+%         vDOP = this.sensor.getVDOP(n);
+        sigmaR = this.sensor.getPDOP(n);
       else
         % hDOP = 10;
         % vDOP = 10;
