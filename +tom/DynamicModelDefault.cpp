@@ -1,4 +1,5 @@
 #include "DynamicModel.h"
+#include "WGS84.h"
 
 namespace tom
 {
@@ -82,7 +83,7 @@ namespace tom
       }
       else
       {
-        pose.p[0] = 6378137.0;
+        pose.p[0] = WGS84::majorRadius;
         pose.p[1] = 0.0;
         pose.p[2] = 0.0;
         pose.q[0] = 1.0;
@@ -102,7 +103,7 @@ namespace tom
       }
       else
       {
-        tangentPose.p[0] = 6378137.0;
+        tangentPose.p[0] = WGS84::majorRadius;
         tangentPose.p[1] = 0.0;
         tangentPose.p[2] = 0.0;
         tangentPose.q[0] = 1.0;

@@ -136,17 +136,17 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       flag = this.precisionFlag;
     end
     
-    function hDOP = getPrecisionHorizontal(this, n)
+    function hDOP = getHDOP(this, n)
       assert(isa(n,'uint32'));
       hDOP = this.hDOP;
     end
     
-    function vDOP = getPrecisionVertical(this, n)
+    function vDOP = getVDOP(this, n)
       assert(isa(n,'uint32'));
       vDOP = this.vDOP;
     end
     
-    function sigmaR = getPrecisionCircular(this, n)
+    function sigmaR = getPDOP(this, n)
       assert(isa(n,'uint32'));
       sigmaR = this.sigmaR;
     end

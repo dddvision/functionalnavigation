@@ -1,9 +1,5 @@
 classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & hidi.DataContainer
 
-  properties (Constant = true, GetAccess = private)
-    earthMajorRadius = 6378137.0; % WGS84
-  end
-
   properties (GetAccess = private, SetAccess = private)
     sensor
     sensorDescription
@@ -112,7 +108,7 @@ classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & hidi.DataC
       end
       fclose(fid);
       p = this.scale*p;
-      p(1, :) = p(1, :)+this.earthMajorRadius;
+      p(1, :) = p(1, :)+tom.WGS84.majorRadius;
     end
   end
   
