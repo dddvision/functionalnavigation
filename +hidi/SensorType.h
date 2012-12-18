@@ -5,6 +5,9 @@
 
 namespace hidi
 {
+  /**
+   * Enumerated sensor type identifiers.
+   */
   typedef enum
   {
     ACCELEROMETER_ARRAY,
