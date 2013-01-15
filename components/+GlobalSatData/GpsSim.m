@@ -181,11 +181,11 @@ function noise = readNoiseData(fname)
 
       [latd,lond] = ll_string2deg(latstr, lonstr);
 
-      if strmatch(latDir, 'W')
+      if strmatch(latDir, 'S')
         latd = -latd;
       end
 
-      if strmatch(lonDir, 'S');
+      if strmatch(lonDir, 'W');
         lond = -lond;
       end
       
