@@ -31,7 +31,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       end
            
       % Read the noise errors from real Global Sat GPS data file
-      this.noise = readNoiseData(this.rawGPSfile); % (time, easting, northing, altitude)
+      this.noise = readNoiseData(this.rawGPSfile);
       interval = this.refTraj.domain();
       tdelta = interval.second-interval.first;
       this.noise = this.noise(:, this.noise(1, :)<tdelta);
@@ -179,7 +179,7 @@ function noise = readNoiseData(fname)
       [strId, time, latstr, latDir, lonstr, lonDir, quality, numSat, precision, alt, mStr1, geoidalSep, mStr2, ...
         ageData, stationId] = strread(str,'%s %s %s %s %s %s %d %d %f %f %s %f %s %f %s', 'delimiter', ',');
 
-      [lond,latd] = ll_string2deg(latstr, lonstr);
+      [latd,lond] = ll_string2deg(latstr, lonstr);
 
       if strmatch(latDir, 'W')
         latd = -latd;
