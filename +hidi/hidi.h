@@ -18,6 +18,8 @@ static const double INF = std::numeric_limits<double>::infinity();
 #endif
 #ifndef NAN
 static const double NAN = sqrt(static_cast<double>(-1.0));
+#endif
+#ifndef isnan
 static bool isnan(const double& x)
 {
   volatile double y = x;
