@@ -204,13 +204,6 @@ classdef WGS84
       alt = U.*(1-b^2./(a*V));
     end
     
-    % Convert geocentric angle to geodetic angle.
-    %
-    % @param[in]  lambda geocentric latitude
-    % @return            geodetic latitude
-    %
-    % @note
-    % Returns NAN if input is not in the range [-pi/2 pi/2].
     function gamma = geocentric2Geodetic(lambda)
       if(isnumeric(lambda))
         if(any((lambda<-pi/2)||(lambda>pi/2)))
@@ -225,13 +218,6 @@ classdef WGS84
       end
     end
     
-    % Convert geodetic angle to geocentric angle.
-    %
-    % @param[in]  gamma  geodetic latitude
-    % @return            geocentric latitude
-    %
-    % @note
-    % Returns NAN if input is not in the range [-pi/2 pi/2].
     function lambda = geodetic2Geocentric(gamma)
       if(isnumeric(gamma))
         if(any((gamma<-pi/2)||(gamma>pi/2)))
@@ -245,20 +231,12 @@ classdef WGS84
       end
     end
 
-    % Radius from center of ellipse to point on the ellipse at a geocentric angle from the major axis.
-    % 
-    % @param[in]  lambda Geocentric latitude in radians
-    % @param[out] radius Radius in meters
     function radius = geocentricRadius(lambda)
       A = tom.WGS84.majorRadius*sin(lambda);
       B = tom.WGS84.minorRadius*cos(lambda);
       radius = (tom.WGS84.majorRadius*tom.WGS84.minorRadius)./sqrt(A.*A+B.*B);
     end
     
-    % Radius from center of ellipse to point on the ellipse at a geodetic angle from the major axis.
-    % 
-    % @param[in]  gamma  Geodetic latitude in radians
-    % @param[out] radius Radius in meters
     function radius = geodeticRadius(gamma)
       lambda = tom.WGS84.geodetic2Geocentric(gamma);
       A = tom.WGS84.majorRadius*sin(lambda);
@@ -266,13 +244,6 @@ classdef WGS84
       radius = (tom.WGS84.majorRadius*tom.WGS84.minorRadius)./sqrt(A.*A+B.*B);
     end
     
-    % Calculates the acceleration and rotation rate effects felt in a non-inertial NED frame
-    %
-    % @param[in]  X_rel    position relative to the NED frame origin (3-by-n)
-    % @param[in]  Xdav_rel average velocity relative to the NED frame origin (3-by-n)
-    % @param[in]  gamma    geodetic latitude of the NED frame origin
-    % @param[out] OmegaNED rotation rate effect in the NED frame (3-by-n)
-    % @param[out] XddNED   acceleration effect in the NED frame (3-by-n)
     function [OmegaNED, XddNED] = rotationEffectNED(X_rel, Xdav_rel, gamma)
       [m,na]=size(X_rel);
       if m~=3
