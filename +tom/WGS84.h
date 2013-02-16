@@ -13,6 +13,11 @@
  *   Axis 1 goes through the equator at the prime meridian
  *   Axis 2 completes the frame using the right-hand-rule
  *   Axis 3 goes through the north pole
+ * North East Down (NED) frame convention:
+ *   This is an Earth fixed frame tangent to the WGS84 ellipsoid at a given latitude and longitude (undefined at poles)
+ *   Axis 1 points North from the frame origin
+ *   Axis 2 points East from the frame origin
+ *   Axis 3 points Down from the frame origin
  */
 namespace tom
 {
@@ -228,7 +233,7 @@ namespace tom
     }
 
     /**
-     * (DEPRECATED) Converts from Longitude-Latitude-Height to Earth Centered Earth Fixed coordinates.
+     * Converts from Longitude-Latitude-Height to Earth Centered Earth Fixed coordinates.
      *
      * @param[in]  lon Longitude in radians
      * @param[in]  lat Geodetic latitude in radians
