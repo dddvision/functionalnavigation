@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "DynamicModel.h"
+#include "Rotation.h"
 #include "WGS84.h"
 
 namespace ShipDynamics
@@ -22,8 +23,8 @@ namespace ShipDynamics
     double initialLongitude;
     double initialLatitude;
     double initialHeading;
-    std::vector<double> initialPosition;
-    std::vector<double> initialQuaternion;
+    double initialPosition[3];
+    double initialQuaternion[4];
     
     // dynamic parameters
     std::vector<uint32_t> pL;
@@ -49,22 +50,6 @@ namespace ShipDynamics
     hidi::TimeInterval interval;
     uint32_t firstNewBlock;
 
-    void euler2quat(const double a, const double b, const double c, std::vector<double> &q)
-    {
-      double c1 = cos(a/2.0);
-      double c2 = cos(b/2.0);
-      double c3 = cos(c/2.0);
-      double s1 = sin(a/2.0);
-      double s2 = sin(b/2.0);
-      double s3 = sin(c/2.0);
-
-      q[0] = c3*c2*c1+s3*s2*s1;
-      q[1] = c3*c2*s1-s3*s2*c1;
-      q[2] = c3*s2*c1+s3*c2*s1;
-      q[3] = s3*c2*c1-c3*s2*s1;
-      return;
-    }
-
     void convertForces(const double L, const double R, const double heading, 
       const double NRate, const double ERate, const double CWRate,
       double &N, double &E, double &CW)
@@ -80,24 +65,7 @@ namespace ShipDynamics
       static const double halfIntMax = 4294967295.0/2.0;
       return (static_cast<double>(p)/halfIntMax-1.0);
     }
-
-    // Multiplies quaternions
-    //
-    // a = outer frame
-    // b = inner frame
-    // c = resulting frame
-    //
-    // @note
-    // c = homogenous(a)*b
-    void quatMultiply(const std::vector<double> a, const std::vector<double> b, std::vector<double> &c)
-    {
-      c[0] = b[0]*a[0]-b[1]*a[1]-b[2]*a[2]-b[3]*a[3];
-      c[1] = b[0]*a[1]+b[1]*a[0]-b[2]*a[3]+b[3]*a[2];
-      c[2] = b[0]*a[2]+b[1]*a[3]+b[2]*a[0]-b[3]*a[1];
-      c[3] = b[0]*a[3]-b[1]*a[2]+b[2]*a[1]+b[3]*a[0];
-      return;
-    }
-    
+   
     void transformPose(tom::Pose& pose)
     {   
       double i0 = initialQuaternion[0];
@@ -388,7 +356,7 @@ namespace ShipDynamics
     {
       static const double DTOR = PI/180.0;
       static const unsigned reserve = 1024;
-      static std::vector<double> quat(4, 0.0);
+      static double quat[4];
 
       initialLongitude = 0.0;
       initialLatitude = 0.0;
@@ -442,17 +410,15 @@ namespace ShipDynamics
       initialHeading *= DTOR;
 
       // set initial frame
-      initialPosition.resize(3, 0.0);
       tom::WGS84::lolah2ecef(initialLongitude, initialLatitude, 0.0, initialPosition[0], initialPosition[1], 
         initialPosition[2]);
-      initialQuaternion.resize(4, 0.0);
-      euler2quat(0.0, -PI/2.0, 0.0, initialQuaternion);
-      euler2quat(-initialHeading, 0.0, 0.0, quat);
-      quatMultiply(quat, initialQuaternion, initialQuaternion);
-      euler2quat(0.0, -initialLatitude, 0.0, quat);
-      quatMultiply(quat, initialQuaternion, initialQuaternion);
-      euler2quat(0.0, 0.0, initialLongitude, quat);
-      quatMultiply(quat, initialQuaternion, initialQuaternion);
+      tom::Rotation::eulerToQuat(0.0, -PI/2.0, 0.0, initialQuaternion);
+      tom::Rotation::eulerToQuat(-initialHeading, 0.0, 0.0, quat);
+      tom::Rotation::quatMult(quat, initialQuaternion, initialQuaternion);
+      tom::Rotation::eulerToQuat(0.0, -initialLatitude, 0.0, quat);
+      tom::Rotation::quatMult(quat, initialQuaternion, initialQuaternion);
+      tom::Rotation::eulerToQuat(0.0, 0.0, initialLongitude, quat);
+      tom::Rotation::quatMult(quat, initialQuaternion, initialQuaternion);
 
       //printf("\nX=%0.16f,Y=%0.16f,Z=%0.16f", initialPosition[0], initialPosition[1], initialPosition[2]);
       //printf("\ninitialQuaternion=[%0.16f,%0.16f,%0.16f,%0.16f]", initialQuaternion[0], initialQuaternion[1], initialQuaternion[2], initialQuaternion[3]);

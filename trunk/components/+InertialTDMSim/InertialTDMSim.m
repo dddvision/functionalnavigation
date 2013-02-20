@@ -246,9 +246,9 @@ end
 function xp = F(xm, u, v, dt)
   aCorrected = u(1:3)-u(7)*block2deviation(v(1:3));
   gCorrected = u(4:6)-u(8)*block2deviation(v(4:6));
-  deltaV = Quat2Matrix(xm(4:7))*(dt*aCorrected);
+  deltaV = tom.Rotation.quatToMatrix(xm(4:7))*(dt*aCorrected);
   xp = [xm(1:3)+dt*xm(8:10)+0.5*dt*deltaV;
-    Quat2Homo(xm(4:7))*AxisAngle2Quat(dt*gCorrected);
+    tom.Rotation.quatToHomo(xm(4:7))*tom.Rotation.axisToQuat(dt*gCorrected);
     xm(8:10)+deltaV;
     2*gCorrected];
 end
@@ -266,8 +266,8 @@ function pose = predictPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  dq = AxisAngle2Quat(tP.s*dt);
-  q = Quat2HomoReverse(tP.q)*dq; % dq*q
+  dq = tom.Rotation.axisToQuat(tP.s*dt);
+  q = tom.Rotation.quatMult(dq, tP.q);
   
   pose(1, N) = tom.Pose;
   for n = 1:N
@@ -284,8 +284,8 @@ function tangentPose = predictTangentPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  dq = AxisAngle2Quat(tP.s*dt); 
-  q = Quat2HomoReverse(tP.q)*dq; % dq*q
+  dq = tom.Rotation.axisToQuat(tP.s*dt); 
+  q = tom.Rotation.quatMult(dq, tP.q);
 
   tangentPose(1, N) = tP;
   for n = 1:N
@@ -294,87 +294,4 @@ function tangentPose = predictTangentPose(tP, dt)
     tangentPose(n).r = tP.r;
     tangentPose(n).s = tP.s;
   end
-end
-
-function h = Quat2HomoReverse(q)
-  q1 = q(1);
-  q2 = q(2);
-  q3 = q(3);
-  q4 = q(4);
-  h = [[q1, -q2, -q3, -q4]
-       [q2,  q1,  q4, -q3]
-       [q3, -q4,  q1,  q2]
-       [q4,  q3, -q2,  q1]];
-end
-
-function h = Quat2Homo(q)
-  q1 = q(1);
-  q2 = q(2);
-  q3 = q(3);
-  q4 = q(4);
-  h = [[q1, -q2, -q3, -q4]
-       [q2,  q1, -q4,  q3]
-       [q3,  q4,  q1, -q2]
-       [q4, -q3,  q2,  q1]];
-end
-
-function q = AxisAngle2Quat(v)
-  v1 = v(1, :);
-  v2 = v(2, :);
-  v3 = v(3, :);
-  n = sqrt(v1.*v1+v2.*v2+v3.*v3);
-  good = n>eps;
-  ngood = n(good);
-  N = numel(n);
-  a = zeros(1, N);
-  b = zeros(1, N);
-  c = zeros(1, N);
-  th2 = zeros(1, N);
-  a(good) = v1(good)./ngood;
-  b(good) = v2(good)./ngood;
-  c(good) = v3(good)./ngood;
-  th2(good) = ngood/2;
-  s = sin(th2);
-  q1 = cos(th2);
-  q2 = s.*a;
-  q3 = s.*b;
-  q4 = s.*c;
-  q = [q1; q2; q3; q4];
-end
-
-% Converts a quaternion to a rotation matrix
-%
-% Q = body orientation in quaternion <scalar, vector> form,  double 4-by-1
-% R = matrix that represents the body frame in the world frame,  double 3-by-3
-function R = Quat2Matrix(Q)
-  q1 = Q(1);
-  q2 = Q(2);
-  q3 = Q(3);
-  q4 = Q(4);
-
-  q11 = q1*q1;
-  q22 = q2*q2;
-  q33 = q3*q3;
-  q44 = q4*q4;
-
-  q12 = q1*q2;
-  q23 = q2*q3;
-  q34 = q3*q4;
-  q14 = q1*q4;
-  q13 = q1*q3;
-  q24 = q2*q4;
-
-  R = zeros(3, 3);
-
-  R(1, 1) = q11+q22-q33-q44;
-  R(2, 1) = 2*(q23+q14);
-  R(3, 1) = 2*(q24-q13);
-
-  R(1, 2) = 2*(q23-q14);
-  R(2, 2) = q11-q22+q33-q44;
-  R(3, 2) = 2*(q34+q12);
-
-  R(1, 3) = 2*(q24+q13);
-  R(2, 3) = 2*(q34-q12);
-  R(3, 3) = q11-q22-q33+q44;
 end

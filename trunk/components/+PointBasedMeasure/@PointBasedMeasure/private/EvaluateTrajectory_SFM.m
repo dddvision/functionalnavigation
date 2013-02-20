@@ -51,7 +51,6 @@ normalizedMatches = [newMatches1(:,1:2) newMatches2(:,1:2)];
 p = [normalizedMatches(:,1:2) ones(length(normalizedMatches),1)]';
 q =[normalizedMatches(:,3:4) ones(length(normalizedMatches),1)]';
 [Tt,Rt,E]  = dessential(p,q);
-Q = Matrix2Quat(Rt);
 
 % Triangulate
 P1 = k1*[eye(3,3), [0;0;0]];

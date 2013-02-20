@@ -64,7 +64,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
           if(upperBound(n))
             substate = this.subIntegrate(dkFloor(n), dtRemain(n));
             pose(n).p = substate(1:3)+this.initialPosition;
-            pose(n).q = Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
+            pose(n).q = tom.Rotation.quatToHomo(tom.Rotation.axisToQuat(substate(4:6)))*this.initialRotation;
           else
             finalTangentPose = this.tangent(this.interval.second);
             pose(n) = predictPose(finalTangentPose, t(n)-this.interval.second);
@@ -84,7 +84,7 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
           if(upperBound(n))
             substate = this.subIntegrate(dkFloor(n), dtRemain(n));
             tangentPose(n).p = substate(1:3)+this.initialPosition;
-            tangentPose(n).q = Quat2Homo(AxisAngle2Quat(substate(4:6)))*this.initialRotation; % verified
+            tangentPose(n).q = tom.Rotation.quatToHomo(tom.Rotation.axisToQuat(substate(4:6)))*this.initialRotation;
             tangentPose(n).r = substate(7:9)+this.initialPositionRate;
             tangentPose(n).s = this.initialOmega+substate(10:12);
           else
@@ -212,8 +212,8 @@ function pose = predictPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  dq = AxisAngle2Quat(tP.s*dt);
-  q = Quat2HomoReverse(tP.q)*dq; % dq*q
+  dq = tom.Rotation.axisToQuat(tP.s*dt);
+  q = tom.Rotation.quatMult(dq, tP.q);
   
   pose(1, N) = tom.Pose;
   for n = 1:N
@@ -230,8 +230,8 @@ function tangentPose = predictTangentPose(tP, dt)
   end
 
   p = tP.p*ones(1, N)+tP.r*dt;
-  dq = AxisAngle2Quat(tP.s*dt); 
-  q = Quat2HomoReverse(tP.q)*dq; % dq*q
+  dq = tom.Rotation.axisToQuat(tP.s*dt); 
+  q = tom.Rotation.quatMult(dq, tP.q);
 
   tangentPose(1, N) = tP;
   for n = 1:N
@@ -240,50 +240,4 @@ function tangentPose = predictTangentPose(tP, dt)
     tangentPose(n).r = tP.r;
     tangentPose(n).s = tP.s;
   end
-end
-
-function h = Quat2HomoReverse(q)
-  q1 = q(1);
-  q2 = q(2);
-  q3 = q(3);
-  q4 = q(4);
-  h = [[q1, -q2, -q3, -q4]
-       [q2,  q1,  q4, -q3]
-       [q3, -q4,  q1,  q2]
-       [q4,  q3, -q2,  q1]];
-end
-
-function h = Quat2Homo(q)
-  q1 = q(1);
-  q2 = q(2);
-  q3 = q(3);
-  q4 = q(4);
-  h = [[q1, -q2, -q3, -q4]
-       [q2,  q1, -q4,  q3]
-       [q3,  q4,  q1, -q2]
-       [q4, -q3,  q2,  q1]];
-end
-
-function q = AxisAngle2Quat(v)
-  v1 = v(1, :);
-  v2 = v(2, :);
-  v3 = v(3, :);
-  n = sqrt(v1.*v1+v2.*v2+v3.*v3);
-  good = n>eps;
-  ngood = n(good);
-  N = numel(n);
-  a = zeros(1, N);
-  b = zeros(1, N);
-  c = zeros(1, N);
-  th2 = zeros(1, N);
-  a(good) = v1(good)./ngood;
-  b(good) = v2(good)./ngood;
-  c(good) = v3(good)./ngood;
-  th2(good) = ngood/2;
-  s = sin(th2);
-  q1 = cos(th2);
-  q2 = s.*a;
-  q3 = s.*b;
-  q4 = s.*c;
-  q = [q1; q2; q3; q4];
 end

@@ -102,7 +102,7 @@ classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & hidi.DataC
         p(:, k) = Rinv*T;
         % Convert from left-down-backward to forward-right-down
         Rinv = [-Rinv(:, 3), -Rinv(:, 1), Rinv(:, 2)];
-        q(:, k) = Euler2Quat(Matrix2Euler(Rinv));
+        q(:, k) = tom.Rotation.eulerToQuat(tom.Rotation.matrixToEuler(Rinv));
         frewind(fid);
         fgetl(fid);
       end
@@ -112,27 +112,4 @@ classdef MiddleburyTemple < MiddleburyTemple.MiddleburyTempleConfig & hidi.DataC
     end
   end
   
-end
-
-function Y = Matrix2Euler(R)
-  Y = zeros(3, 1); 
-  Y(1) = atan2(R(3, 2), R(3, 3));
-  Y(2) = asin(-R(3, 1));
-  Y(3) = atan2(R(2, 1), R(1, 1));
-end
-
-function Q = Euler2Quat(E)
-  a = E(1, :);
-  b = E(2, :);
-  c = E(3, :);
-  c1 = cos(a/2);
-  c2 = cos(b/2);
-  c3 = cos(c/2);
-  s1 = sin(a/2);
-  s2 = sin(b/2);
-  s3 = sin(c/2);
-  Q(1, :) = c3.*c2.*c1 + s3.*s2.*s1;
-  Q(2, :) = c3.*c2.*s1 - s3.*s2.*c1;
-  Q(3, :) = c3.*s2.*c1 + s3.*c2.*s1;
-  Q(4, :) = s3.*c2.*c1 - c3.*s2.*s1;
 end

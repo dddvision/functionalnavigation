@@ -6,14 +6,16 @@
 
 namespace tom
 {
-  // Convert between orientation representations.
-  //
-  // @note
-  // v = axis angle such that the magnitude is the rotation angle in radians (3-by-K)
-  // y = Euler angle in radians [forward; right; down] (3-by-K)
-  // q = quaternion [scalar; vector] (4-by-K)
-  // r = rotation matrix that rotates a point from the body frame to the world frame (3-by-3-by-K)
-  // h = homogenous matrix that premuliplies a quaternion to rotate an inner gimbal axis (4-by-4-by-K)
+  /**
+   * Convert between orientation representations.
+   *
+   * @note
+   * v = axis angle such that the magnitude is the rotation angle in radians (MATLAB: 3-by-K)
+   * y = Euler angle in radians [forward; right; down] (MATLAB: 3-by-K)
+   * q = quaternion [scalar; vector] (MATLAB: 4-by-K)
+   * r = rotation matrix that rotates a point from the body frame to the world frame (MATLAB: 3-by-3-by-K)
+   * h = homogenous matrix that premuliplies a quaternion to rotate an inner gimbal axis (MATLAB: 4-by-4-by-K)
+   */
   class Rotation
   {
   public:
@@ -41,7 +43,9 @@ namespace tom
       return;
     }
     
-    // Converts from axis angle to rotation matrix.
+    /**
+     * Converts from axis angle to rotation matrix.
+     */
     static void axisToMatrix(const double& v0, const double& v1, const double& v2, double& r00, double& r10, double& r20, 
       double& r01, double& r11, double& r21, double& r02, double& r12, double& r22)
     {
@@ -89,7 +93,9 @@ namespace tom
       return;
     }
 
-    // Converts from axis angle to quaternion.
+    /**
+     * Converts from axis angle to quaternion.
+     */
     static void axisToQuat(const double& v0, const double& v1, const double& v2, double& q0, double& q1, double& q2, 
       double& q3)
     {
@@ -130,7 +136,9 @@ namespace tom
       return;
     }
     
-    // Converts from Euler angle to axis angle.
+    /**
+     * Converts from Euler angle to axis angle.
+     */
     static void eulerToAxis(const double& y0, const double& y1, const double& y2, double& v0, double& v1, double& v2)
     {
       double q0, q1, q2, q3;
@@ -154,7 +162,9 @@ namespace tom
       return;
     }
     
-    // Converts from Euler angle to rotation matrix.
+    /**
+     * Converts from Euler angle to rotation matrix.
+     */
     static void eulerToMatrix(const double& y0, const double& y1, const double& y2, double& r00, double& r10, double& r20, 
       double& r01, double& r11, double& r21, double& r02, double& r12, double& r22)
     {
@@ -194,7 +204,9 @@ namespace tom
       return;
     }
     
-    // Converts from Euler angle to quaternion.
+    /**
+     * Converts from Euler angle to quaternion.
+     */
     static void eulerToQuat(const double& y0, const double& y1, const double& y2, double& q0, double& q1, double& q2, 
       double& q3)
     {
@@ -230,7 +242,9 @@ namespace tom
       return;
     }
 
-    // Converts from rotation matrix to axis angle.
+    /**
+     * Converts from rotation matrix to axis angle.
+     */
     static void matrixToAxis(const double& r00, const double& r10, const double& r20, const double& r01, const double& r11, 
       const double& r21, const double& r02, const double& r12, const double& r22, double& v0, double& v1, double& v2)
     {
@@ -258,7 +272,9 @@ namespace tom
       return;
     }
     
-    // Converts from rotation matrix to Euler angle.
+    /**
+     * Converts from rotation matrix to Euler angle.
+     */
     static void matrixToEuler(const double& r00, const double& r10, const double& r20, const double& r01, const double& r11, 
       const double& r21, const double& r02, const double& r12, const double& r22, double& y0, double& y1, double& y2)
     {
@@ -286,7 +302,9 @@ namespace tom
       return;
     }
     
-    // Converts from rotation matrix to quaternion.
+    /**
+     * Converts from rotation matrix to quaternion.
+     */
     static void matrixToQuat(const double& r00, const double& r10, const double& r20, const double& r01, const double& r11, 
       const double& r21, const double& r02, const double& r12, const double& r22, double& q0, double& q1, double& q2, 
       double& q3)
@@ -315,7 +333,9 @@ namespace tom
       return;
     }
 
-    // Converts from quaternion to axis angle.
+    /**
+     * Converts from quaternion to axis angle.
+     */
     static void quatToAxis(const double& q0, const double& q1, const double& q2, const double& q3, double& v0, double& v1, 
       double& v2)
     {
@@ -353,7 +373,9 @@ namespace tom
       return;
     }
     
-    // Converts from quaternion to Euler angle.
+    /**
+     * Converts from quaternion to Euler angle.
+     */
     static void quatToEuler(const double& q0, const double& q1, const double& q2, const double& q3, double& y0, double& y1, 
       double& y2)
     {
@@ -392,7 +414,9 @@ namespace tom
       return;
     }
     
-    // Converts from quaternion to rotation matrix.
+    /**
+     * Converts from quaternion to rotation matrix.
+     */
     static void quatToMatrix(const double& q0, const double& q1, const double& q2, const double& q3, double& r00, double& r10, 
       double& r20, double& r01, double& r11, double& r21, double& r02, double& r12, double& r22)
     {
@@ -440,7 +464,9 @@ namespace tom
       return;
     }
     
-    // Converts from quaternion to homogenous matrix.
+    /**
+     * Converts from quaternion to homogenous matrix.
+     */
     static void quatToHomo(const double& q0, const double& q1, const double& q2, const double& q3, double (&h)[4][4])
     {
       h[0][0] = q0;
@@ -467,7 +493,26 @@ namespace tom
       return;
     }
     
-    // Normalizes a quaternion to enforce unit magnitude and a non-negative first element.
+    /**
+     * Converts from homogenous matrix to quaternion.
+     */
+    static void homoToQuat(const double (&h)[4][4], double& q0, double& q1, double& q2, double& q3)
+    {
+      q0 = h[0][0];
+      q1 = h[1][0];
+      q2 = h[2][0];
+      q3 = h[3][0];
+      return;
+    }
+    static inline void homoToQuat(const double (&h)[4][4], double (&q)[4])
+    {
+      tom::Rotation::homoToQuat(h, q[0], q[1], q[2], q[3]);
+      return;
+    }
+    
+    /**
+     * Normalizes a quaternion to enforce unit magnitude and a non-negative first element.
+     */
     static void quatNorm(const double& q0, const double& q1, const double& q2, const double& q3, double& qNorm0, 
       double& qNorm1, double& qNorm2, double& qNorm3)
     {
@@ -512,7 +557,9 @@ namespace tom
       return;
     }
     
-    // Inverts a quaternion.
+    /**
+     * Inverts a quaternion.
+     */
     static void quatInv(const double& q0, const double& q1, const double& q2, const double& q3, double& qInv0, double& qInv1, 
       double& qInv2, double& qInv3)
     {
@@ -536,6 +583,152 @@ namespace tom
     static inline void quatInv(const double (&q)[4], double (&qInv)[4])
     {
       tom::Rotation::quatInv(q[0], q[1], q[2], q[3], qInv[0], qInv[1], qInv[2], qInv[3]);
+      return;
+    }
+    
+    /**
+     * Multiplies two quaternions.
+     *
+     * @param[in]  a outer frame
+     * @param[in]  b nner frame
+     * @param[out] c resulting frame
+     * 
+     * @note
+     * c = quatToHomo(a)*b;
+     * Inputs are not references, so the input and output can occupy the same memory.
+     */
+    static void quatMult(const double a0, const double a1, const double a2, const double a3, const double b0, 
+      const double b1, const double b2, const double b3, double& c0, double& c1, double& c2, double& c3)
+    {
+      c0 = b0*a0-b1*a1-b2*a2-b3*a3;
+      c1 = b0*a1+b1*a0-b2*a3+b3*a2;
+      c2 = b0*a2+b1*a3+b2*a0-b3*a1;
+      c3 = b0*a3-b1*a2+b2*a1+b3*a0;
+      return;
+    }
+    static inline void quatMult(const double (&a)[4], const double (&b)[4], double& c0, double& c1, double& c2, 
+      double& c3)
+    {
+      tom::Rotation::quatMult(a[0], a[1], a[2], a[3], b[0], b[1], b[2], b[3], c0, c1, c2, c3);
+      return;
+    }
+    static inline void quatMult(const double& a0, const double& a1, const double& a2, const double& a3, 
+      const double& b0, const double& b1, const double& b2, const double& b3, double (&c)[4])
+    {
+      tom::Rotation::quatMult(a0, a1, a2, a3, b0, b1, b2, b3, c[0], c[1], c[2], c[3]);
+      return;
+    }
+    static inline void quatMult(const double (&a)[4], const double (&b)[4], double (&c)[4])
+    {
+      tom::Rotation::quatMult(a[0], a[1], a[2], a[3], b[0], b[1], b[2], b[3], c[0], c[1], c[2], c[3]);
+      return;
+    }
+    
+    /**
+     * Multiplies two 3x3 matrices.
+     *
+     * @note
+     * Temporary variables allow input and output to occupy the same memory.
+     */
+    static void mtimes(const double (&a)[3][3], const double (&b)[3][3], double (&c)[3][3])
+    {
+      double c00 = a[0][0]*b[0][0]+a[0][1]*b[1][0]+a[0][2]*b[2][0];
+      double c10 = a[1][0]*b[0][0]+a[1][1]*b[1][0]+a[1][2]*b[2][0];      
+      double c20 = a[2][0]*b[0][0]+a[2][1]*b[1][0]+a[2][2]*b[2][0];
+      double c01 = a[0][0]*b[0][1]+a[0][1]*b[1][1]+a[0][2]*b[2][1];
+      double c11 = a[1][0]*b[0][1]+a[1][1]*b[1][1]+a[1][2]*b[2][1];
+      double c21 = a[2][0]*b[0][1]+a[2][1]*b[1][1]+a[2][2]*b[2][1];
+      double c02 = a[0][0]*b[0][2]+a[0][1]*b[1][2]+a[0][2]*b[2][2];
+      double c12 = a[1][0]*b[0][2]+a[1][1]*b[1][2]+a[1][2]*b[2][2];
+      double c22 = a[2][0]*b[0][2]+a[2][1]*b[1][2]+a[2][2]*b[2][2];
+      c[0][0] = c00;
+      c[1][0] = c10;
+      c[2][0] = c20;
+      c[0][1] = c01;
+      c[1][1] = c11;
+      c[2][1] = c21;
+      c[0][2] = c02;
+      c[1][2] = c12;
+      c[2][2] = c22;
+      return;
+    }
+    
+    /**
+     * Multiplies two 4x4 matrices.
+     *
+     * @note
+     * Temporary variables allow input and output to occupy the same memory.
+     */
+    static void mtimes(const double (&a)[4][4], const double (&b)[4][4], double (&c)[4][4])
+    {
+      double c00 = a[0][0]*b[0][0]+a[0][1]*b[1][0]+a[0][2]*b[2][0]+a[0][3]*b[3][0];
+      double c10 = a[1][0]*b[0][0]+a[1][1]*b[1][0]+a[1][2]*b[2][0]+a[1][3]*b[3][0];
+      double c20 = a[2][0]*b[0][0]+a[2][1]*b[1][0]+a[2][2]*b[2][0]+a[2][3]*b[3][0];
+      double c30 = a[3][0]*b[0][0]+a[3][1]*b[1][0]+a[3][2]*b[2][0]+a[3][3]*b[3][0];
+      double c01 = a[0][0]*b[0][1]+a[0][1]*b[1][1]+a[0][2]*b[2][1]+a[0][3]*b[3][1];
+      double c11 = a[1][0]*b[0][1]+a[1][1]*b[1][1]+a[1][2]*b[2][1]+a[1][3]*b[3][1];
+      double c21 = a[2][0]*b[0][1]+a[2][1]*b[1][1]+a[2][2]*b[2][1]+a[2][3]*b[3][1];
+      double c31 = a[3][0]*b[0][1]+a[3][1]*b[1][1]+a[3][2]*b[2][1]+a[3][3]*b[3][1];
+      double c02 = a[0][0]*b[0][2]+a[0][1]*b[1][2]+a[0][2]*b[2][2]+a[0][3]*b[3][2];
+      double c12 = a[1][0]*b[0][2]+a[1][1]*b[1][2]+a[1][2]*b[2][2]+a[1][3]*b[3][2];
+      double c22 = a[2][0]*b[0][2]+a[2][1]*b[1][2]+a[2][2]*b[2][2]+a[2][3]*b[3][2];
+      double c32 = a[3][0]*b[0][2]+a[3][1]*b[1][2]+a[3][2]*b[2][2]+a[3][3]*b[3][2];
+      double c03 = a[0][0]*b[0][3]+a[0][1]*b[1][3]+a[0][2]*b[2][3]+a[0][3]*b[3][3];
+      double c13 = a[1][0]*b[0][3]+a[1][1]*b[1][3]+a[1][2]*b[2][3]+a[1][3]*b[3][3];
+      double c23 = a[2][0]*b[0][3]+a[2][1]*b[1][3]+a[2][2]*b[2][3]+a[2][3]*b[3][3];
+      double c33 = a[3][0]*b[0][3]+a[3][1]*b[1][3]+a[3][2]*b[2][3]+a[3][3]*b[3][3];
+      c[0][0] = c00;
+      c[1][0] = c10;
+      c[2][0] = c20;
+      c[3][0] = c30;
+      c[0][1] = c01;
+      c[1][1] = c11;
+      c[2][1] = c21;
+      c[3][1] = c31;
+      c[0][2] = c02;
+      c[1][2] = c12;
+      c[2][2] = c22;
+      c[3][2] = c32;
+      c[0][3] = c03;
+      c[1][3] = c13;
+      c[2][3] = c23;
+      c[3][3] = c33;
+      return;
+    }
+    
+    /**
+     * Multiplies a 3x3 matrix with a 3x1 vector.
+     *
+     * @note
+     * Temporary variables allow input and output to occupy the same memory.
+     */
+    static void mtimes(const double (&a)[3][3], const double (&b)[3], double (&c)[3])
+    {
+      double c0 = a[0][0]*b[0]+a[0][1]*b[1]+a[0][2]*b[2];
+      double c1 = a[1][0]*b[0]+a[1][1]*b[1]+a[1][2]*b[2];
+      double c2 = a[2][0]*b[0]+a[2][1]*b[1]+a[2][2]*b[2];
+      c[0] = c0;
+      c[1] = c1;
+      c[2] = c2;
+      return;
+    }
+    
+    /**
+     * Multiplies a 4x4 matrix with a 4x1 vector.
+     *
+     * @note
+     * Temporary variables allow input and output to occupy the same memory.
+     */
+    static void mtimes(const double (&a)[4][4], const double (&b)[4], double (&c)[4])
+    {
+      double c0 = a[0][0]*b[0]+a[0][1]*b[1]+a[0][2]*b[2]+a[0][3]*b[3];
+      double c1 = a[1][0]*b[0]+a[1][1]*b[1]+a[1][2]*b[2]+a[1][3]*b[3];
+      double c2 = a[2][0]*b[0]+a[2][1]*b[1]+a[2][2]*b[2]+a[2][3]*b[3];
+      double c3 = a[3][0]*b[0]+a[3][1]*b[1]+a[3][2]*b[2]+a[3][3]*b[3];
+      c[0] = c0;
+      c[1] = c1;
+      c[2] = c2;
+      c[3] = c3;
       return;
     }
   };
