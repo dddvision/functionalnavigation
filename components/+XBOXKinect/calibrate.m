@@ -133,7 +133,7 @@ function cost = objective(theta, kinect, n, displayFlag)
 
   R = theta(1:3);
   T = theta(4:6);
-  zz = Euler2Matrix(R)*([z1+T(1); z2+T(2); z3+T(3)]);
+  zz = tom.Rotation.eulerToMatrix(R)*([z1+T(1); z2+T(2); z3+T(3)]);
   depthCamera = sqrt(zz(1, :).^2+zz(2, :).^2+zz(3, :).^2);
   rayCamera = zz./([1; 1; 1]*max(depthCamera, eps));
 

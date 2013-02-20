@@ -146,7 +146,7 @@ classdef PointBasedMeasure < PointBasedMeasure.PointBasedMeasureConfig & tom.Mea
                 fprintf('\n[%d,%d]: Testing...', ka, kb);
                 use = false;
                 try
-                  [use, data] = computeIntermediateDataCache(this, ka, kb);
+                  use = computeIntermediateDataCache(this, ka, kb);
                 catch err
                   fprintf('%s',err.message);
                 end
@@ -195,8 +195,8 @@ classdef PointBasedMeasure < PointBasedMeasure.PointBasedMeasureConfig & tom.Mea
       poseB=evaluate(x,tb);      
           
                   
-      Ea=Quat2Euler(poseA.q);
-      Eb=Quat2Euler(poseB.q);
+      Ea=tom.Rotation.quatToEuler(poseA.q);
+      Eb=tom.Rotation.quatToEuler(poseB.q);
       
       testTrajectory.Translation = [poseB.p(1)-poseA.p(1);
                                     poseB.p(2)-poseA.p(2);

@@ -36,7 +36,7 @@ classdef MeasureTestPerturbation < tom.Trajectory
         tA = double(this.interval.first);
         tB = double(this.interval.second);
         pB = this.tangentPoseOffsetB.p;
-        aB = Quat2AxisAngle(this.tangentPoseOffsetB.q);
+        aB = tom.Rotation.quatToAxis(this.tangentPoseOffsetB.q);
         rB = this.tangentPoseOffsetB.r;
         sB = this.tangentPoseOffsetB.s;
         for dim = 1:3
@@ -47,7 +47,7 @@ classdef MeasureTestPerturbation < tom.Trajectory
         pose = this.refTrajectory.evaluate(t);
         for n = 1:N
           pose(n).p = pose(n).p+pPerturb(:, n);
-          pose(n).q = Quat2Homo(AxisAngle2Quat(aPerturb(:, n)))*pose(n).q;  % small angle approximation
+          pose(n).q = tom.Rotation.quatToHomo(tom.Rotation.axisToQuat(aPerturb(:, n)))*pose(n).q;  % small angle approximation
         end
       end   
     end
@@ -65,7 +65,7 @@ classdef MeasureTestPerturbation < tom.Trajectory
         tB = double(this.interval.second);
 
         pB = this.tangentPoseOffsetB.p;
-        aB = Quat2AxisAngle(this.tangentPoseOffsetB.q);
+        aB = tom.Rotation.quatToAxis(this.tangentPoseOffsetB.q);
         rB = this.tangentPoseOffsetB.r;
         sB = this.tangentPoseOffsetB.s;
         for dim = 1:3
@@ -76,70 +76,13 @@ classdef MeasureTestPerturbation < tom.Trajectory
         tangentPose = this.refTrajectory.tangent(t);
         for n = 1:N
           tangentPose(n).p = tangentPose(n).p+pPerturb(:, n);
-          tangentPose(n).q = Quat2Homo(AxisAngle2Quat(aPerturb(:, n)))*tangentPose(n).q; % small angle approximation
+          tangentPose(n).q = tom.Rotation.quatToHomo(tom.Rotation.axisToQuat(aPerturb(:, n)))*tangentPose(n).q; % small angle approximation
           tangentPose(n).r = tangentPose(n).r+rPerturb(:, n);
           tangentPose(n).s = tangentPose(n).s+sPerturb(:, n); % small angle approximation
         end
       end
     end
   end
-end
-
-function h = Quat2Homo(q)
-  q1 = q(1);
-  q2 = q(2);
-  q3 = q(3);
-  q4 = q(4);
-  h = [[q1, -q2, -q3, -q4]
-       [q2,  q1, -q4,  q3]
-       [q3,  q4,  q1, -q2]
-       [q4, -q3,  q2,  q1]];
-end
-
-function q = AxisAngle2Quat(v)
-  v1 = v(1, :);
-  v2 = v(2, :);
-  v3 = v(3, :);
-  n = sqrt(v1.*v1+v2.*v2+v3.*v3);
-  good = n>eps;
-  ngood = n(good);
-  N = numel(n);
-  a = zeros(1, N);
-  b = zeros(1, N);
-  c = zeros(1, N);
-  th2 = zeros(1, N);
-  a(good) = v1(good)./ngood;
-  b(good) = v2(good)./ngood;
-  c(good) = v3(good)./ngood;
-  th2(good) = ngood/2;
-  s = sin(th2);
-  q1 = cos(th2);
-  q2 = s.*a;
-  q3 = s.*b;
-  q4 = s.*c;
-  q = [q1; q2; q3; q4];
-end
-
-function v = Quat2AxisAngle(q)
-  q1 = q(1, :);
-  q2 = q(2, :);
-  q3 = q(3, :);
-  q4 = q(4, :);
-
-  theta = 2*real(acos(q1));
-  
-  n = sqrt(q2.*q2+q3.*q3+q4.*q4);
-  n(n<eps) = eps;
-  
-  a = q2./n;
-  b = q3./n;
-  c = q4./n;
-
-  v1 = theta.*a;
-  v2 = theta.*b;
-  v3 = theta.*c;
-
-  v = [v1; v2; v3];
 end
 
 % Evaluates the one-dimensional 3rd-order perturbation function x(t) on the interval [tA, Inf].

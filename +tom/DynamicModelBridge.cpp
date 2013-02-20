@@ -24,7 +24,7 @@ enum DynamicModelMember
     copy
 };
 
-void convert(const std::vector<tom::Pose>& pose, const mxArray*& source, mxArray*& array)
+void convert(const std::vector<tom::Pose>& pose, const mxArray* source, mxArray*& array)
 {
   mxArray* p;
   mxArray* q;
@@ -52,7 +52,7 @@ void convert(const std::vector<tom::Pose>& pose, const mxArray*& source, mxArray
   return;
 }
 
-void convert(const std::vector<tom::TangentPose>& tangentPose, const mxArray*& source, mxArray*& array)
+void convert(const std::vector<tom::TangentPose>& tangentPose, const mxArray* source, mxArray*& array)
 {
   mxArray* p;
   mxArray* q;

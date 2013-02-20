@@ -18,13 +18,13 @@ static const double INF = std::numeric_limits<double>::infinity();
 #endif
 #ifndef NAN
 static const double NAN = sqrt(static_cast<double>(-1.0));
-#endif
-#ifndef isnan
+#ifndef __APPLE__
 static bool isnan(const double& x)
 {
   volatile double y = x;
   return (y!=x);
 }
+#endif
 #endif
 
 #ifndef _MSC_VER

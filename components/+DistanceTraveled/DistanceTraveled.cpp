@@ -1,6 +1,7 @@
 #include <string>
 #include <cmath>
 #include "Measure.h"
+#include "Rotation.h"
 
 namespace DistanceTraveled
 {

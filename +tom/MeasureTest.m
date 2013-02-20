@@ -164,7 +164,7 @@ classdef MeasureTest < handle
 %                 currEps = 2 * currEps;
 %                 epsPose(e).p = 2*epsPose(e).p;
 %                 axisAng(:,e) = 2*axisAng(:,e);
-%                 epsPose(e).q = AxisAngle2Quat(axisAng(:,e));
+%                 epsPose(e).q = tom.Rotation.axisToQuat(axisAng(:,e));
 %                 x.setPerturbation(epsPose(e));
 %                 fprintf('Testing with value %f, cost: %f\n', currEps, result(1));
 %                 if(stop==1)
@@ -191,7 +191,7 @@ classdef MeasureTest < handle
 %                 currEps = 2 * currEps;
 %                 epsPose(e).p = 2*epsPose(e).p;
 %                 axisAng(:,e) = 2*axisAng(:,e);
-%                 epsPose(e).q = AxisAngle2Quat(axisAng);
+%                 epsPose(e).q = tom.Rotation.axisToQuat(axisAng);
 %                 x.setPerturbation(epsPose(e));
 %               end
 % 
@@ -214,7 +214,7 @@ end
 function cost = MTEval(interval, x, measure, edge, delta)
   perturb = tom.TangentPose;
   perturb.p = delta(1:3);
-  perturb.q = AxisAngle2Quat(delta(4:6));
+  perturb.q = tom.Rotation.axisToQuat(delta(4:6));
   perturb.r = delta(7:9);
   perturb.s = delta(10:12);
   x.setPerturbation(interval, perturb);
@@ -269,28 +269,4 @@ end
 
 function flag = unequal(a, b)
   flag = typecast(a, 'uint64')~=typecast(b, 'uint64');
-end
-  
-function q = AxisAngle2Quat(v)
-  v1 = v(1, :);
-  v2 = v(2, :);
-  v3 = v(3, :);
-  n = sqrt(v1.*v1+v2.*v2+v3.*v3);
-  good = n>eps;
-  ngood = n(good);
-  N = numel(n);
-  a = zeros(1, N);
-  b = zeros(1, N);
-  c = zeros(1, N);
-  th2 = zeros(1, N);
-  a(good) = v1(good)./ngood;
-  b(good) = v2(good)./ngood;
-  c(good) = v3(good)./ngood;
-  th2(good) = ngood/2;
-  s = sin(th2);
-  q1 = cos(th2);
-  q2 = s.*a;
-  q3 = s.*b;
-  q4 = s.*c;
-  q = [q1; q2; q3; q4];
 end

@@ -28,7 +28,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       dbstop(breakpoints);
       
       % initialize the default pseudorandom number generator
-      RandStream.getDefaultStream.reset();
+      RandStream.getDefaultStream.reset(); %#ok until deprecated by MATLAB
       
       this = tom.Measure.create('FastPBM', initialTime, uri);
       container = hidi.DataContainer.create(uri(6:end), initialTime);
@@ -182,8 +182,8 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       poseB = x.evaluate(tB);
       
       % adjust for rotation
-      RA = Quat2Matrix(poseA.q);
-      RB = Quat2Matrix(poseB.q);
+      RA = tom.Rotation.quatToMatrix(poseA.q);
+      RB = tom.Rotation.quatToMatrix(poseB.q);
       rayRA = RA*rayA;
       rayRB = RB*rayB;
 
@@ -244,49 +244,12 @@ function y = crossMatrix(x)
   y = [0, -x(3), x(2); x(3), 0, -x(1); -x(2), x(1), 0];
 end
 
-% Converts a quaternion to a rotation matrix
-%
-% Q = body orientation in quaternion <scalar, vector> form,  double 4-by-1
-% R = matrix that represents the body frame in the world frame,  double 3-by-3
-function R = Quat2Matrix(Q)
-  q1 = Q(1);
-  q2 = Q(2);
-  q3 = Q(3);
-  q4 = Q(4);
-
-  q11 = q1*q1;
-  q22 = q2*q2;
-  q33 = q3*q3;
-  q44 = q4*q4;
-
-  q12 = q1*q2;
-  q23 = q2*q3;
-  q34 = q3*q4;
-  q14 = q1*q4;
-  q13 = q1*q3;
-  q24 = q2*q4;
-
-  R = zeros(3, 3);
-
-  R(1, 1) = q11+q22-q33-q44;
-  R(2, 1) = 2*(q23+q14);
-  R(3, 1) = 2*(q24-q13);
-
-  R(1, 2) = 2*(q23-q14);
-  R(2, 2) = q11-q22+q33-q44;
-  R(3, 2) = 2*(q34+q12);
-
-  R(1, 3) = 2*(q24+q13);
-  R(2, 3) = 2*(q34-q12);
-  R(3, 3) = q11-q22-q33+q44;
-end
-
 function cost=computeCost2(poseA, poseB, rayA, rayB, deviation)
   data = edgeCache(nodeA, nodeB, this);
   u = transpose(data.pixB(:, 1)-data.pixA(:, 1));
   v = transpose(data.pixB(:, 2)-data.pixA(:, 2));
-  Ea = Quat2Euler(poseA.q);
-  Eb = Quat2Euler(poseB.q);
+  Ea = tom.Rotation.quatToEuler(poseA.q);
+  Eb = tom.Rotation.quatToEuler(poseB.q);
   translation = [poseB.p(1)-poseA.p(1);
     poseB.p(2)-poseA.p(2);
     poseB.p(3)-poseA.p(3)];
@@ -395,64 +358,4 @@ function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix, nA)
   
   % Convert NaN to zero
   uvt(isnan(uvt(:))) = 0;
-end
-
-% Converts a set of quaternions to a set of Euler angles
-%
-% INPUT
-% Q = body orientation states in quaternion <scalar,vector> form (4-by-N)
-%
-% OUTPUT
-% E = Euler angles, in the order forward-right-down (4-by-N)
-function E=Quat2Euler(Q)
-  N=size(Q,2);
-  Q=QuatNorm(Q);
-
-  q1=Q(1,:);
-  q2=Q(2,:);
-  q3=Q(3,:);
-  q4=Q(4,:);
-
-  q11=q1.*q1;
-  q22=q2.*q2;
-  q33=q3.*q3;
-  q44=q4.*q4;
-
-  q12=q1.*q2;
-  q23=q2.*q3;
-  q34=q3.*q4;
-  q14=q1.*q4;
-  q13=q1.*q3;
-  q24=q2.*q4;
-
-  E=zeros(3,N);
-  E(1,:)=atan2(2*(q34+q12),q11-q22-q33+q44);
-  E(2,:)=real(asin(-2*(q24-q13)));
-  E(3,:)=atan2(2*(q23+q14),q11+q22-q33-q44);
-end
-
-% Normalize each quaternion to have unit magnitude and positive first element
-%
-% INPUT/OUTPUT
-% Q = quaternions (4-by-n)
-function Q = QuatNorm(Q)
-  % extract elements
-  q1 = Q(1, :);
-  q2 = Q(2, :);
-  q3 = Q(3, :);
-  q4 = Q(4, :);
-
-  % normalization factor
-  n = sqrt(q1.*q1+q2.*q2+q3.*q3+q4.*q4);
-
-  % handle negative first element and zero denominator
-  s = sign(q1);
-  s(s==0) = 1;
-  ns = n.*s;
-  
-  % normalize
-  Q(1, :) = q1./ns;
-  Q(2, :) = q2./ns;
-  Q(3, :) = q3./ns;
-  Q(4, :) = q4./ns;
 end
