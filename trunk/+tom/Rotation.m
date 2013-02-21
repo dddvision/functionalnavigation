@@ -1,7 +1,7 @@
 classdef Rotation 
   methods (Access = public, Static = true)
     function [y0, y1, y2] = axisToEuler(v0, v1, v2)
-      if(nargin<=1)
+      if(nargin==1)
         v2 = v0(3, :);
         v1 = v0(2, :);
         v0 = v0(1, :);
@@ -14,7 +14,7 @@ classdef Rotation
     end
     
     function [r00, r10, r20, r01, r11, r21, r02, r12, r22] = axisToMatrix(v0, v1, v2)
-      if(nargin<=1)
+      if(nargin==1)
         v2 = v0(3, :);
         v1 = v0(2, :);
         v0 = v0(1, :);
@@ -49,7 +49,7 @@ classdef Rotation
     end
 
     function [q0, q1, q2, q3] = axisToQuat(v0, v1, v2)
-      if(nargin<=1)
+      if(nargin==1)
         v2 = v0(3, :);
         v1 = v0(2, :);
         v0 = v0(1, :);
@@ -79,7 +79,7 @@ classdef Rotation
     end
     
     function [v0, v1, v2] = eulerToAxis(y0, y1, y2)
-      if(nargin<=1)
+      if(nargin==1)
         y2 = y0(3, :);
         y1 = y0(2, :);
         y0 = y0(1, :);
@@ -92,7 +92,7 @@ classdef Rotation
     end
     
     function [r00, r10, r20, r01, r11, r21, r02, r12, r22] = eulerToMatrix(y0, y1, y2)
-      if(nargin<=1)
+      if(nargin==1)
         y2 = y0(3, :);
         y1 = y0(2, :);
         y0 = y0(1, :);
@@ -119,7 +119,7 @@ classdef Rotation
     end
     
     function [q0, q1, q2, q3] = eulerToQuat(y0, y1, y2)
-      if(nargin<=1)
+      if(nargin==1)
         y2 = y0(3, :);
         y1 = y0(2, :);
         y0 = y0(1, :);
@@ -144,7 +144,7 @@ classdef Rotation
     end
 
     function [v0, v1, v2] = matrixToAxis(r00, r10, r20, r01, r11, r21, r02, r12, r22)
-      if(nargin<=1)
+      if(nargin==1)
         r22 = r00(3, 3, :);
         r12 = r00(2, 3, :);
         r02 = r00(1, 3, :);
@@ -163,7 +163,7 @@ classdef Rotation
     end
     
     function [y0, y1, y2] = matrixToEuler(r00, r10, r20, r01, r11, r21, r02, r12, r22)  %#ok unused
-      if(nargin<=1)
+      if(nargin==1)
         r22 = r00(3, 3, :);
         % r12 = r00(2, 3, :);
         % r02 = r00(1, 3, :);
@@ -189,7 +189,7 @@ classdef Rotation
     end
     
     function [q0, q1, q2, q3] = matrixToQuat(r00, r10, r20, r01, r11, r21, r02, r12, r22)
-      if(nargin<=1)
+      if(nargin==1)
         r22 = r00(3, 3, :);
         r12 = r00(2, 3, :);
         r02 = r00(1, 3, :);
@@ -208,7 +208,7 @@ classdef Rotation
     end
 
     function [v0, v1, v2] = quatToAxis(q0, q1, q2, q3)
-      if(nargin<=1)
+      if(nargin==1)
         q3 = q0(4, :);
         q2 = q0(3, :);
         q1 = q0(2, :);
@@ -233,7 +233,7 @@ classdef Rotation
     end
     
     function [y0, y1, y2] = quatToEuler(q0, q1, q2, q3)
-      if(nargin<=1)
+      if(nargin==1)
         q3 = q0(4, :);
         q2 = q0(3, :);
         q1 = q0(2, :);
@@ -265,7 +265,7 @@ classdef Rotation
     end
     
     function [r00, r10, r20, r01, r11, r21, r02, r12, r22] = quatToMatrix(q0, q1, q2, q3)
-      if(nargin<=1)
+      if(nargin==1)
         q3 = q0(4, :);
         q2 = q0(3, :);
         q1 = q0(2, :);
@@ -296,38 +296,48 @@ classdef Rotation
           numel(r00), 3, 3), 1);
       end
     end
-    
-    function H = quatToHomo(q0, q1, q2, q3)
-      if(nargin<=1)
+
+    function h = quatToHomo(q0, q1, q2, q3)
+      if(nargin==1)
         q3 = q0(4, :);
         q2 = q0(3, :);
         q1 = q0(2, :);
         q0 = q0(1, :);
       end
-      H = zeros(4, 4, numel(q0));
+      h = zeros(4, 4, numel(q0));
       if(~isnumeric(q0))
-        H = sym(H);
+        h = sym(h);
       end
-      H(1, 1, :) = q0;
-      H(2, 1, :) = q1;
-      H(3, 1, :) = q2;
-      H(4, 1, :) = q3;      
-      H(1, 2, :) = -q1;
-      H(2, 2, :) = q0;
-      H(3, 2, :) = q3;
-      H(4, 2, :) = -q2;
-      H(1, 3, :) = -q2;
-      H(2, 3, :) = -q3;
-      H(3, 3, :) = q0;
-      H(4, 3, :) = q1;
-      H(1, 4, :) = -q3;
-      H(2, 4, :) = q2;
-      H(3, 4, :) = -q1;
-      H(4, 4, :) = q0;
+      h(1, 1, :) = q0;
+      h(2, 1, :) = q1;
+      h(3, 1, :) = q2;
+      h(4, 1, :) = q3;      
+      h(1, 2, :) = -q1;
+      h(2, 2, :) = q0;
+      h(3, 2, :) = q3;
+      h(4, 2, :) = -q2;
+      h(1, 3, :) = -q2;
+      h(2, 3, :) = -q3;
+      h(3, 3, :) = q0;
+      h(4, 3, :) = q1;
+      h(1, 4, :) = -q3;
+      h(2, 4, :) = q2;
+      h(3, 4, :) = -q1;
+      h(4, 4, :) = q0;
+    end
+    
+    function [q0, q1, q2, q3] = homoToQuat(h)
+      q0 = h(1, 1, :);
+      q1 = h(2, 1, :);
+      q2 = h(3, 1, :);
+      q3 = h(4, 1, :);
+      if(nargout<=1)
+        q0 = shiftdim(reshape(cat(1, q0(:), q1(:), q2(:), q3(:)), numel(q0), 4), 1);
+      end
     end
     
     function [qNorm0, qNorm1, qNorm2, qNorm3] = quatNorm(q0, q1, q2, q3)
-      if(nargin<=1)
+      if(nargin==1)
         q3 = q0(4, :);
         q2 = q0(3, :);
         q1 = q0(2, :);
@@ -358,7 +368,7 @@ classdef Rotation
     end
     
     function [qInv0, qInv1, qInv2, qInv3] = quatInv(q0, q1, q2, q3)
-      if(nargin<=1)
+      if(nargin==1)
         q3 = q0(4, :);
         q2 = q0(3, :);
         q1 = q0(2, :);
@@ -371,6 +381,30 @@ classdef Rotation
       if(nargout<=1)
         qInv0 = shiftdim(reshape(cat(1, qInv0(:), qInv1(:), qInv2(:), qInv3(:)), numel(qInv0), 4), 1);
       end
+    end
+    
+    function [c0, c1, c2, c3] = quatMult(a0, a1, a2, a3, b0, b1, b2, b3)
+      if(nargin==2)
+        b3 = a1(4, :);
+        b2 = a1(3, :);
+        b1 = a1(2, :);
+        b0 = a1(1, :);
+        a3 = a0(4, :);
+        a2 = a0(3, :);
+        a1 = a0(2, :);
+        a0 = a0(1, :);
+      end
+      c0 = b0.*a0-b1.*a1-b2.*a2-b3.*a3;
+      c1 = b0.*a1+b1.*a0-b2.*a3+b3.*a2;
+      c2 = b0.*a2+b1.*a3+b2.*a0-b3.*a1;
+      c3 = b0.*a3-b1.*a2+b2.*a1+b3.*a0;
+      if(nargout<=1)
+        c0 = shiftdim(reshape(cat(1, c0(:), c1(:), c2(:), c3(:)), numel(c0), 4), 1);
+      end
+    end
+    
+    function c = mtimes(a, b)
+      c = a*b;
     end
   end
 end
