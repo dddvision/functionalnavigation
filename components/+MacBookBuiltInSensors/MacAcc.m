@@ -33,8 +33,8 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Accel
   end
   
   methods (Access = public)
-    function this = MacAcc(initialTime)
-      this = this@hidi.AccelerometerArray(initialTime);
+    function this = MacAcc()
+      this = this@hidi.AccelerometerArray();
       if(this.verbose)
         fprintf('\nInitializing %s', class(this));
       end
@@ -140,31 +140,31 @@ classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Accel
       force = getSpecificForce(this, n, ax);
     end
     
-    function sigma = getAccelBiasTurnOn(this)
+    function sigma = getAccelerometerTurnOnBiasSigma(this)
       sigma = this.biasTurnOn;
     end
     
-    function sigma = getAccelBiasSteadyState(this)
+    function sigma = getAccelerometerInRunBiasSigma(this)
       sigma = this.biasSteadyState;
     end
     
-    function tau = getAccelBiasDecay(this)
+    function tau = getAccelerometerInRunBiasStability(this)
       tau = this.biasDecay;
     end
     
-    function sigma = getAccelScaleTurnOn(this)
+    function sigma = getAccelerometerTurnOnScaleSigma(this)
       sigma = this.scaleTurnOn;
     end
     
-    function sigma = getAccelScaleSteadyState(this)
+    function sigma = getAccelerometerInRunScaleSigma(this)
       sigma = this.scaleSteadyState;
     end
     
-    function tau = getAccelScaleDecay(this)
+    function tau = getAccelerometerInRunScaleStability(this)
       tau = this.scaleDecay;
     end
     
-    function sigma = getAccelRandomWalk(this)
+    function sigma = getAccelerometerRandomWalk(this)
       sigma = this.randomWalk;
     end
     
