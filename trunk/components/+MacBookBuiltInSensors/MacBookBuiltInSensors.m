@@ -36,7 +36,7 @@ classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConf
       this.sensorDescription{1}=this.camDescription;
       this.sensorDescription{2}=this.accDescription;
       this.sensors{1}=MacBookBuiltInSensors.MacCam(initialTime);
-      this.sensors{2}=MacBookBuiltInSensors.MacAcc(initialTime);
+      this.sensors{2}=MacBookBuiltInSensors.MacAcc();
     end
     
     function list=listSensors(this,type)
