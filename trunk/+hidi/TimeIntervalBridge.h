@@ -5,7 +5,7 @@
 
 namespace hidi
 {
-  void convert(const mxArray*& array, hidi::TimeInterval& value)
+  void convert(const mxArray* array, hidi::TimeInterval& value)
   {
     static mxArray *first;
     static mxArray *second;
@@ -24,7 +24,7 @@ namespace hidi
     return;
   }
   
-  void convert(const hidi::TimeInterval& timeInterval, mxArray*& array)
+  void convert(const hidi::TimeInterval& timeInterval, mxArray* array)
   {
     mxArray* first;
     mxArray* second;

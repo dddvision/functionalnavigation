@@ -155,7 +155,7 @@ void convert(const mxArray* array, std::vector<tom::TangentPose>& tangentPose)
   return;
 }
 
-void convert(const std::vector<tom::GraphEdge>& graphEdge, mxArray*& array)
+void convert(const std::vector<tom::GraphEdge>& graphEdge, mxArray* array)
 {
   static mxArray* prhs[3];
   static mxArray* first;
