@@ -180,7 +180,7 @@ namespace hidi
       return;
     }
 
-    void getTime(hidi::Sensor* sensor, const mxArray* n, mxArray*& array)
+    void getTime(hidi::Sensor* sensor, const mxArray*& n, mxArray*& array)
     {    
       uint32_t* node;
       double* data;

@@ -140,7 +140,7 @@ classdef WGS84
       gZ  = gR*slam+gT*clam;
     end
 
-    function [X, Y, Z] = lolah2ecef(lon, lat, alt)
+    function [X, Y, Z] = llaToECEF(lon, lat, alt)
       a = tom.WGS84.majorRadius;
       finv = tom.WGS84.inverseFlattening;
       b = a-a/finv;
@@ -155,7 +155,7 @@ classdef WGS84
       Z = ((b2./a2)*N+alt).*slat;
     end
 
-%     function [X, Y, Z] = lolah2ecef2(lon, lat, alt)
+%     function [X, Y, Z] = llaToECEF(lon, lat, alt)
 %       re = tom.WGS84.majorRadius;
 %       finv = tom.WGS84.inverseFlattening;
 %       rp = re-re/finv;
@@ -178,7 +178,7 @@ classdef WGS84
 %       Z = ecef(3, :);
 %     end
 
-    function [lon, lat, alt] = ecef2lolah(X, Y, Z)
+    function [lon, lat, alt] = ecefToLLA(X, Y, Z)
       a = tom.WGS84.majorRadius;
       finv = tom.WGS84.inverseFlattening;
       f = 1/finv;
