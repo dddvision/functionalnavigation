@@ -203,11 +203,11 @@ namespace tom
     }
     
     /**
-     * Converts from Longitude-Latitude-Height to Earth Centered Earth Fixed coordinates.
+     * Converts from Longitude-Latitude-Altitude to Earth Centered Earth Fixed coordinates.
      *
      * @param[in]  lon Longitude in radians
      * @param[in]  lat Geodetic latitude in radians
-     * @param[in]  alt Height in meters
+     * @param[in]  alt altitude in meters
      * @param[out] X   First coordinate in meters
      * @param[out] Y   Second coordinate in meters
      * @param[out] Z   Third coordinate in meters
@@ -215,7 +215,7 @@ namespace tom
      * @note
      * http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf (Retrieved 11/30/2009)
      */
-    static void lolah2ecef(const double& lon, const double& lat, const double& alt, double& X, double& Y, double& Z)
+    static void llaToECEF(const double& lon, const double& lat, const double& alt, double& X, double& Y, double& Z)
     {
       double a = tom::WGS84::majorRadius;
       double finv = tom::WGS84::inverseFlattening;
@@ -233,16 +233,16 @@ namespace tom
     }
 
     /**
-     * Converts from Longitude-Latitude-Height to Earth Centered Earth Fixed coordinates.
+     * Converts from Longitude-Latitude-Altitude to Earth Centered Earth Fixed coordinates.
      *
      * @param[in]  lon Longitude in radians
      * @param[in]  lat Geodetic latitude in radians
-     * @param[in]  alt Height in meters
+     * @param[in]  alt altitude in meters
      * @param[out] X   First coordinate in meters
      * @param[out] Y   Second coordinate in meters
      * @param[out] Z   Third coordinate in meters
      */
-//     static void lolah2ecef2(const double& lon, const double& lat, const double& alt, double& X, double& Y, double& Z)
+//     static void llaToECEF(const double& lon, const double& lat, const double& alt, double& X, double& Y, double& Z)
 //     {
 //       double re = tom::WGS84::majorRadius;
 //       double finv = tom::WGS84::inverseFlattening;
@@ -285,7 +285,7 @@ namespace tom
      * J. Zhu, "Conversion of Earth-centered Earth-fixed coordinates to geodetic coordinates," Aerospace and Electronic 
      *   Systems, vol. 30, pp. 957-961, 1994.
      */
-    static void ecef2lolah(const double& X, const double& Y, const double& Z, double& lon, double& lat, double& alt)
+    static void ecefToLLA(const double& X, const double& Y, const double& Z, double& lon, double& lat, double& alt)
     {
       double a = tom::WGS84::majorRadius;
       double finv = tom::WGS84::inverseFlattening;

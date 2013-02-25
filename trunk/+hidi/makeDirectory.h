@@ -41,7 +41,7 @@ namespace hidi
     std::string platformPathName = pathName;
     std::replace(platformPathName.begin(), platformPathName.end(), '\\', '/');
     stat(platformPathName.c_str(), &status);
-    if(status.st_mode&S_IFDIR)
+    if(S_ISDIR(status.st_mode))
     {
       return (true);
     }

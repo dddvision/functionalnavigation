@@ -512,8 +512,11 @@ namespace tom
     
     /**
      * Normalizes a quaternion to enforce unit magnitude and a non-negative first element.
+     *
+     * @note
+     * Inputs are not references, so the input and output can occupy the same memory.
      */
-    static void quatNorm(const double& q0, const double& q1, const double& q2, const double& q3, double& qNorm0, 
+    static void quatNorm(const double q0, const double q1, const double q2, const double q3, double& qNorm0, 
       double& qNorm1, double& qNorm2, double& qNorm3)
     {
       double n;
