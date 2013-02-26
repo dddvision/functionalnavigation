@@ -167,7 +167,7 @@ namespace hidi
     };
 
     template<class T>
-    void getSensor(std::vector<T> sensor, mxArray* array)
+    void getSensor(std::vector<T> sensor, mxArray*& array)
     {
       uint32_t* data;
       uint32_t index;
@@ -180,7 +180,7 @@ namespace hidi
       return;
     }
 
-    void getTime(hidi::Sensor* sensor, const mxArray* n, mxArray* array)
+    void getTime(hidi::Sensor* sensor, const mxArray* n, mxArray*& array)
     {    
       uint32_t* node;
       double* data;

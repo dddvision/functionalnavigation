@@ -410,7 +410,7 @@ namespace ShipDynamics
       initialHeading *= DTOR;
 
       // set initial frame
-      tom::WGS84::lolah2ecef(initialLongitude, initialLatitude, 0.0, initialPosition[0], initialPosition[1], 
+      tom::WGS84::llaToECEF(initialLongitude, initialLatitude, 0.0, initialPosition[0], initialPosition[1], 
         initialPosition[2]);
       tom::Rotation::eulerToQuat(0.0, -PI/2.0, 0.0, initialQuaternion);
       tom::Rotation::eulerToQuat(-initialHeading, 0.0, 0.0, quat);

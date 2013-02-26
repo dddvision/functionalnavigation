@@ -87,7 +87,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       
       for k = 1:numel(n)
         % Convert pose to longitude
-        lo = tom.WGS84.ecef2lolah(pose(k).p(1), pose(k).p(2), pose(k).p(3));
+        lo = tom.WGS84.ecefToLLA(pose(k).p(1), pose(k).p(2), pose(k).p(3));
       
         % Add error based on real Global Sat gps data
         lon(k) = lo+this.noise(2, n(k));
@@ -106,7 +106,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       
       for k = 1:numel(n)
         % Convert pose to longitude
-        [lo, la] = tom.WGS84.ecef2lolah(pose(k).p(1), pose(k).p(2), pose(k).p(3)); %#ok unused output
+        [lo, la] = tom.WGS84.ecefToLLA(pose(k).p(1), pose(k).p(2), pose(k).p(3));
       
         % Add error based on real Global Sat gps data
         lat(k) = la+this.noise(3, n(k));
@@ -125,7 +125,7 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       
       for k = 1:numel(n)
         % Convert pose to longitude
-        [lo, la, height] = tom.WGS84.ecef2lolah(pose(k).p(1), pose(k).p(2), pose(k).p(3)); %#ok unused output
+        [lo, la, height] = tom.WGS84.ecefToLLA(pose(k).p(1), pose(k).p(2), pose(k).p(3));
       
         % Add error based on real Global Sat gps data
         h(k) = height+this.noise(4, n(k));
@@ -177,7 +177,7 @@ function noise = readNoiseData(fname)
       
       % collect all outputs from strread, then use those that are needed
       [strId, time, latstr, latDir, lonstr, lonDir, quality, numSat, precision, alt, mStr1, geoidalSep, mStr2, ...
-        ageData, stationId] = strread(str,'%s %s %s %s %s %s %d %d %f %f %s %f %s %f %s', 'delimiter', ',');
+        ageData, stationId] = strread(str,'%s %s %s %s %s %s %d %d %f %f %s %f %s %f %s', 'delimiter', ','); %#ok unused outputs
 
       [latd,lond] = ll_string2deg(latstr, lonstr);
 
@@ -189,11 +189,10 @@ function noise = readNoiseData(fname)
         lond = -lond;
       end
       
-      % length of T,X,Y,Z are not known in advance
-      T(counter) = str2double(time);
-      A(counter) = (pi/180)*lond;
-      B(counter) = (pi/180)*latd;
-      C(counter) = alt;
+      T(counter) = str2double(time); %#ok size not known in advance
+      A(counter) = (pi/180)*lond; %#ok size not known in advance
+      B(counter) = (pi/180)*latd; %#ok size not known in advance
+      C(counter) = alt; %#ok size not known in advance
     end
     str = fgetl(fid);
   end
