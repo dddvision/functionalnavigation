@@ -325,70 +325,70 @@ namespace hidi
     return;
   }
 
-  void convert(const double& value, mxArray* array)
+  void convert(const double& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxDOUBLE_CLASS, mxREAL);
     (*static_cast<double*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const float& value, mxArray* array)
+  void convert(const float& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxSINGLE_CLASS, mxREAL);
     (*static_cast<float*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const uint32_t& value, mxArray* array)
+  void convert(const uint32_t& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
     (*static_cast<uint32_t*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const uint16_t& value, mxArray* array)
+  void convert(const uint16_t& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxUINT16_CLASS, mxREAL);
     (*static_cast<uint16_t*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const uint8_t& value, mxArray* array)
+  void convert(const uint8_t& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxUINT8_CLASS, mxREAL);
     (*static_cast<uint8_t*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const int32_t& value, mxArray* array)
+  void convert(const int32_t& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
     (*static_cast<int32_t*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const int16_t& value, mxArray* array)
+  void convert(const int16_t& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxINT16_CLASS, mxREAL);
     (*static_cast<int16_t*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const int8_t& value, mxArray* array)
+  void convert(const int8_t& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxINT8_CLASS, mxREAL);
     (*static_cast<int8_t*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const bool& value, mxArray* array)
+  void convert(const bool& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxLOGICAL_CLASS, mxREAL);
     (*static_cast<bool*>(mxGetData(array))) = value;
     return;
   }
 
-  void convert(const std::vector<double>& value, mxArray* array)
+  void convert(const std::vector<double>& value, mxArray*& array)
   {
     double* pValue;
     size_t n;
@@ -402,7 +402,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::vector<float>& value, mxArray* array)
+  void convert(const std::vector<float>& value, mxArray*& array)
   {
     float* pValue;
     size_t n;
@@ -416,7 +416,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::vector<uint32_t>& value, mxArray* array)
+  void convert(const std::vector<uint32_t>& value, mxArray*& array)
   {
     uint32_t* pValue;
     size_t n;
@@ -430,7 +430,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::vector<uint16_t>& value, mxArray* array)
+  void convert(const std::vector<uint16_t>& value, mxArray*& array)
   {
     uint16_t* pValue;
     size_t n;
@@ -444,7 +444,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::vector<uint8_t>& value, mxArray* array)
+  void convert(const std::vector<uint8_t>& value, mxArray*& array)
   {
     uint8_t* pValue;
     size_t n;
@@ -458,7 +458,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::vector<int32_t>& value, mxArray* array)
+  void convert(const std::vector<int32_t>& value, mxArray*& array)
   {
     int32_t* pValue;
     size_t n;
@@ -472,7 +472,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::vector<int16_t>& value, mxArray* array)
+  void convert(const std::vector<int16_t>& value, mxArray*& array)
   {
     int16_t* pValue;
     size_t n;
@@ -486,7 +486,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::vector<int8_t>& value, mxArray* array)
+  void convert(const std::vector<int8_t>& value, mxArray*& array)
   {
     int8_t* pValue;
     size_t n;
@@ -500,7 +500,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::vector<bool>& value, mxArray* array)
+  void convert(const std::vector<bool>& value, mxArray*& array)
   {
     bool* pValue;
     size_t n;
@@ -514,7 +514,7 @@ namespace hidi
     return;
   }
 
-  void convert(const std::string& str, mxArray* array)
+  void convert(const std::string& str, mxArray*& array)
   {
     array = mxCreateString(str.c_str());
     return;

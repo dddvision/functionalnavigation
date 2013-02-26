@@ -32,7 +32,7 @@ classdef BodyReference < tom.Trajectory
                [0, 1,  0]
                [1, 0,  0]];
       refR = tom.Rotation.eulerToMatrix([0; -refLatitude; refLongitude])*Raxes;
-      [refTX, refTY, refTZ] = tom.WGS84.lolah2ecef(refLongitude, refLatitude, 0);
+      [refTX, refTY, refTZ] = tom.WGS84.llaToECEF(refLongitude, refLatitude, 0);
       refT = [refTX; refTY; refTZ];
       refH = tom.Rotation.quatToHomo(tom.Rotation.eulerToQuat(tom.Rotation.matrixToEuler(refR)));
       this.x_imu(1:4, :) = refH*this.x_imu(1:4, :);

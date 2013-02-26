@@ -12,7 +12,7 @@ classdef WGS84
   methods (Access = public, Static = true)
     function [gN, gE, gD] = gravityNED(N, E, D, gamma)
       % precalculations
-      lambda = tom.WGS84.geodetic2Geocentric(gamma);
+      lambda = tom.WGS84.geodeticToGeocentric(gamma);
       r = tom.WGS84.geocentricRadius(lambda);
       sgam = sin(gamma);
       cgam = cos(gamma);
@@ -63,7 +63,7 @@ classdef WGS84
 %       g6 = 7.2e-13; % 1/(meter*sec^2)  
 % 
 %       % precalculations
-%       lambda = tom.WGS84.geodetic2Geocentric(gamma);
+%       lambda = tom.WGS84.geodeticToGeocentric(gamma);
 %       r = tom.WGS84.geocentricRadius(lambda);
 %       sgam = sin(gamma);
 %       cgam = cos(gamma);
@@ -85,7 +85,7 @@ classdef WGS84
 % 
 %       % instantaneous latitude
 %       lam = atan2(Z,XY);
-%       gam = tom.WGS84.geocentric2Geodetic(lam);
+%       gam = tom.WGS84.geocentricToGeodetic(lam);
 % 
 %       % instantaneous height
 %       h = R-tom.WGS84.geocentricRadius(lam);
@@ -204,7 +204,7 @@ classdef WGS84
       alt = U.*(1-b^2./(a*V));
     end
     
-    function gamma = geocentric2Geodetic(lambda)
+    function gamma = geocentricToGeodetic(lambda)
       if(isnumeric(lambda))
         if(any((lambda<-pi/2)||(lambda>pi/2)))
           gamma = NaN;
@@ -218,7 +218,7 @@ classdef WGS84
       end
     end
     
-    function lambda = geodetic2Geocentric(gamma)
+    function lambda = geodeticToGeocentric(gamma)
       if(isnumeric(gamma))
         if(any((gamma<-pi/2)||(gamma>pi/2)))
           lambda = NaN;
@@ -238,7 +238,7 @@ classdef WGS84
     end
     
     function radius = geodeticRadius(gamma)
-      lambda = tom.WGS84.geodetic2Geocentric(gamma);
+      lambda = tom.WGS84.geodeticToGeocentric(gamma);
       A = tom.WGS84.majorRadius*sin(lambda);
       B = tom.WGS84.minorRadius*cos(lambda);
       radius = (tom.WGS84.majorRadius*tom.WGS84.minorRadius)./sqrt(A.*A+B.*B);
@@ -264,7 +264,7 @@ classdef WGS84
       re = tom.WGS84.minorRadius;
       rp = tom.WGS84.majorRadius;
       omega = tom.WGS84.rotationRate;
-      lambda = tom.WGS84.geodetic2Geocentric(gamma);
+      lambda = tom.WGS84.geodeticToGeocentric(gamma);
       rs = EllipticalRadius(re, rp, lambda);
       sgam = sin(gamma);
       cgam = cos(gamma);

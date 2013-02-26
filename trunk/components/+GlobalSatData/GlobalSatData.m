@@ -70,7 +70,7 @@ classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.Measure
       lat = this.sensor.getLatitude(n);
       alt = this.sensor.getHeight(n);
       time = this.sensor.getTime(n);
-      [pX, pY, pZ] = tom.WGS84.lolah2ecef(lon, lat, alt);
+      [pX, pY, pZ] = tom.WGS84.llaToECEF(lon, lat, alt);
       pMeasured = [pX; pY; pZ];
       pose = x.evaluate(time);
       pHypothesis = pose.p;

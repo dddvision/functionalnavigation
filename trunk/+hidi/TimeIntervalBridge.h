@@ -2,6 +2,7 @@
 #define HIDITIMEINTERVALBRIDGE_H
 
 #include "hidiBridge.h"
+#include "TimeInterval.h"
 
 namespace hidi
 {
@@ -24,7 +25,7 @@ namespace hidi
     return;
   }
   
-  void convert(const hidi::TimeInterval& timeInterval, mxArray* array)
+  void convert(const hidi::TimeInterval& timeInterval, mxArray*& array)
   {
     mxArray* first;
     mxArray* second;

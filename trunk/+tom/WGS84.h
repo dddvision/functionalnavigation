@@ -47,7 +47,7 @@ namespace tom
       double& gE, double& gD)
     {
       // precalculations
-      double lambda = tom::WGS84::geodetic2Geocentric(gamma);
+      double lambda = tom::WGS84::geodeticToGeocentric(gamma);
       double r = tom::WGS84::geocentricRadius(lambda);
       double sgam = sin(gamma);
       double cgam = cos(gamma);
@@ -112,7 +112,7 @@ namespace tom
 //       static const double g6 = 7.2e-13; // 1/(meter*sec^2)  
 //       
 //       // precalculations
-//       double lambda = tom::WGS84::geodetic2Geocentric(gamma);
+//       double lambda = tom::WGS84::geodeticToGeocentric(gamma);
 //       double r = tom::WGS84::geocentricRadius(lambda);      
 //       double sgam = sin(gamma);
 //       double cgam = cos(gamma);
@@ -134,7 +134,7 @@ namespace tom
 // 
 //       // instantaneous latitude
 //       double lam = atan2(Z, XY);
-//       double gam = tom::WGS84::geocentric2Geodetic(lam);
+//       double gam = tom::WGS84::geocentricToGeodetic(lam);
 // 
 //       // instantaneous height
 //       double h = R-tom::WGS84::geocentricRadius(lam);
@@ -322,7 +322,7 @@ namespace tom
      * @note
      * Returns NAN if input is not in the range [-pi/2 pi/2].
      */
-    static double geocentric2Geodetic(const double& lambda)
+    static double geocentricToGeodetic(const double& lambda)
     {
       double A;
       double gamma;
@@ -347,7 +347,7 @@ namespace tom
      * @note
      * Returns NAN if input is not in the range [-pi/2 pi/2].
      */
-    static double geodetic2Geocentric(const double& gamma)
+    static double geodeticToGeocentric(const double& gamma)
     {
       double lambda;
       if((gamma<-PI/2.0)|(gamma>PI/2.0))
@@ -383,7 +383,7 @@ namespace tom
      */
     static double geodeticRadius(const double& gamma)
     {
-      double lambda = tom::WGS84::geodetic2Geocentric(gamma);
+      double lambda = tom::WGS84::geodeticToGeocentric(gamma);
       double A = tom::WGS84::majorRadius*sin(lambda);
       double B = tom::WGS84::minorRadius*cos(lambda);
       double radius = (tom::WGS84::majorRadius*tom::WGS84::minorRadius)/sqrt(A*A+B*B);
