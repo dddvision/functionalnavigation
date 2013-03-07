@@ -514,7 +514,7 @@ namespace tom
      * Normalizes a quaternion to enforce unit magnitude and a non-negative first element.
      *
      * @note
-     * Inputs are not references, so the input and output can occupy the same memory.
+     * Input and output are allowed to alias.
      */
     static void quatNorm(const double q0, const double q1, const double q2, const double q3, double& qNorm0, 
       double& qNorm1, double& qNorm2, double& qNorm3)
@@ -593,12 +593,12 @@ namespace tom
      * Multiplies two quaternions.
      *
      * @param[in]  a outer frame
-     * @param[in]  b nner frame
+     * @param[in]  b inner frame
      * @param[out] c resulting frame
      * 
      * @note
      * c = quatToHomo(a)*b;
-     * Inputs are not references, so the input and output can occupy the same memory.
+     * Input and output are allowed to alias.
      */
     static void quatMult(const double a0, const double a1, const double a2, const double a3, const double b0, 
       const double b1, const double b2, const double b3, double& c0, double& c1, double& c2, double& c3)
@@ -631,7 +631,7 @@ namespace tom
      * Multiplies two 3x3 matrices.
      *
      * @note
-     * Temporary variables allow input and output to occupy the same memory.
+     * Input and output are allowed to alias.
      */
     static void mtimes(const double (&a)[3][3], const double (&b)[3][3], double (&c)[3][3])
     {
@@ -660,7 +660,7 @@ namespace tom
      * Multiplies two 4x4 matrices.
      *
      * @note
-     * Temporary variables allow input and output to occupy the same memory.
+     * Input and output are allowed to alias.
      */
     static void mtimes(const double (&a)[4][4], const double (&b)[4][4], double (&c)[4][4])
     {
@@ -703,7 +703,7 @@ namespace tom
      * Multiplies a 3x3 matrix with a 3x1 vector.
      *
      * @note
-     * Temporary variables allow input and output to occupy the same memory.
+     * Input and output are allowed to alias.
      */
     static void mtimes(const double (&a)[3][3], const double (&b)[3], double (&c)[3])
     {
@@ -720,7 +720,7 @@ namespace tom
      * Multiplies a 4x4 matrix with a 4x1 vector.
      *
      * @note
-     * Temporary variables allow input and output to occupy the same memory.
+     * Input and output are allowed to alias.
      */
     static void mtimes(const double (&a)[4][4], const double (&b)[4], double (&c)[4])
     {
