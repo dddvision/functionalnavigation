@@ -1,5 +1,4 @@
 classdef GraphEdge
-  
   properties (SetAccess = public, GetAccess = public)
     first = uint32(0);
     second = uint32(0);
@@ -47,5 +46,4 @@ classdef GraphEdge
       fprintf(']');
     end
   end
-  
 end

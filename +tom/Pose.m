@@ -1,5 +1,4 @@
 classdef Pose
-  
   properties (GetAccess = public, SetAccess = public)
     p = nan(3, 1);
     q = nan(4, 1);
@@ -27,10 +26,10 @@ classdef Pose
     function display(this)
       name = inputname(1);
       for n = 1:numel(this)
-        fprintf('\n%s.p = [%f; %f; %f]', name, this(n).p(1), this(n).p(2), this(n).p(3));
-        fprintf('\n%s.q = [%f; %f; %f; %f]\n', name, this(n).q(1), this(n).q(2), this(n).q(3), this(n).q(4));
+        fprintf('\n%s.p = [%+9.6f; %+9.6f; %+9.6f]', name, this(n).p(1), this(n).p(2), this(n).p(3));
+        fprintf('\n%s.q = [%+9.6f; %+9.6f; %+9.6f; %+9.6f]\n', name, this(n).q(1), this(n).q(2), this(n).q(3), ...
+          this(n).q(4));
       end
     end
   end
-  
 end
