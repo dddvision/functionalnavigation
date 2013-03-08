@@ -1,5 +1,4 @@
-#include "hidiBridge.h"
-#include "TimeIntervalBridge.h"
+#include "+hidi/hidiBridge.h"
 #include "DynamicModel.h"
 
 enum DynamicModelMember

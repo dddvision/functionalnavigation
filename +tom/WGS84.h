@@ -1,7 +1,7 @@
 #ifndef TOMWGS84_H
 #define TOMWGS84_H
 
-#include "hidi.h"
+#include "+hidi/hidi.h"
 
 /**
  * WGS84 Ellipsoidal Earth model.

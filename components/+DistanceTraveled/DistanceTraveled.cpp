@@ -1,7 +1,7 @@
 #include <string>
 #include <cmath>
-#include "Measure.h"
-#include "Rotation.h"
+#include "+tom/Measure.h"
+#include "+tom/Rotation.h"
 
 namespace DistanceTraveled
 {
@@ -29,7 +29,7 @@ namespace DistanceTraveled
 
     void refresh(tom::Trajectory* x)
     {
-      hidi::TimeInterval interval;
+      std::pair<double, double> interval;
       interval = x->domain();
       if(interval.second>tMax)
       {

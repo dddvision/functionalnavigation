@@ -1,5 +1,4 @@
-#include "hidiBridge.h"
-#include "TimeIntervalBridge.h"
+#include "+hidi/hidiBridge.h"
 #include "Measure.h"
 
 enum MeasureMember
@@ -189,15 +188,15 @@ void convert(const std::vector<tom::GraphEdge>& graphEdge, mxArray*& array)
 class TrajectoryBridge : public tom::Trajectory
 {
 public:
-  hidi::TimeInterval domain(void)
+  std::pair<double, double> domain(void)
   {
     static mxArray* lhs;
-    static hidi::TimeInterval timeInterval;
+    static std::pair<double, double> interval;
     mexEvalString("interval=x.domain();"); // depends on Trajectory named 'x' in MATLAB workspace
     lhs = mexGetVariable("caller", "interval");
-    hidi::convert(lhs, timeInterval);
+    hidi::convert(lhs, interval);
     mxDestroyArray(lhs);
-    return timeInterval;
+    return (interval);
   }
 
   void evaluate(const double& time, tom::Pose& pose)

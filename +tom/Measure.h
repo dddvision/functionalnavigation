@@ -7,7 +7,7 @@
 
 #include "GraphEdge.h"
 #include "Trajectory.h"
-#include "Sensor.h"
+#include "+hidi/Sensor.h"
 
 namespace tom
 {

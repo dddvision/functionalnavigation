@@ -1,10 +1,9 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
-
-#include "DynamicModel.h"
-#include "Rotation.h"
-#include "WGS84.h"
+#include "+tom/DynamicModel.h"
+#include "+tom/Rotation.h"
+#include "+tom/WGS84.h"
 
 namespace BrownianPlanar
 {
@@ -37,7 +36,7 @@ namespace BrownianPlanar
     std::vector<double> yRate;
     std::vector<double> aRate;
 
-    hidi::TimeInterval interval;
+    std::pair<double, double> interval;
     uint32_t firstNewBlock;
 
     static double paramToForce(uint32_t p)
@@ -298,7 +297,7 @@ namespace BrownianPlanar
       return;
     }
 
-    hidi::TimeInterval domain(void)
+    std::pair<double, double> domain(void)
     {
       return (interval);
     }

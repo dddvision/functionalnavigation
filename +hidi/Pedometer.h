@@ -1,6 +1,7 @@
 #ifndef HIDIPEDOMETER_H
 #define HIDIPEDOMETER_H
 
+#include <map>
 #include <string>
 #include "Sensor.h"
 
@@ -38,12 +39,12 @@ namespace hidi
     }
     
     /**
-     * Get step label.
+     * Convert step ID to label.
      *
      * @param[in] stepID step identifier
      * @return           step label
      */
-    static std::string getStepLabel(const uint32_t& stepID)
+    static std::string idToLabel(const uint32_t& stepID)
     {
       std::string stepLabel;
       switch(stepID)
@@ -135,7 +136,37 @@ namespace hidi
       }
       return (stepLabel);
     }
-       
+    
+    /**
+     * Convert step label to ID.
+     *
+     * @param[in] stepLabel step label
+     * @return              step identifier
+     */
+    static uint32_t labelToID(const std::string& stepLabel)
+    {
+      static std::map<std::string, uint32_t> lookup;
+      std::map<std::string, uint32_t>::iterator iterator;
+      uint32_t stepID;
+      if(lookup.size()==0)
+      {
+        for(stepID = 0; stepID<28; ++stepID)
+        {
+          lookup[Pedometer::idToLabel(stepID)] = stepID;
+        }
+      }
+      iterator = lookup.find(stepLabel);
+      if(iterator==lookup.end())
+      {
+        stepID = 0;
+      }
+      else
+      {
+        stepID = iterator->second;
+      }
+      return (stepID);
+    }
+    
     /**
      * Check for the successful completion of a step measurement.
      *

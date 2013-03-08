@@ -43,7 +43,8 @@ classdef BodyReference < tom.Trajectory
     end
 
     function interval = domain(this)
-      interval = hidi.TimeInterval(this.T_imu(1), this.T_imu(end));
+      interval.first = this.T_imu(1);
+      interval.second = this.T_imu(end);
     end
 
     function pose = evaluate(this, t)

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 namespace tom
 {
@@ -56,7 +57,7 @@ namespace tom
       double c = cos(theta);
       double s = sin(theta);
       double a = 1.0-c;
-      if(theta>EPS)
+      if(theta>std::numeric_limits<double>::epsilon())
       {
         vNorm0 = vNorm0/theta;
         vNorm1 = vNorm1/theta;
@@ -107,7 +108,7 @@ namespace tom
       double c = cos(theta2);
       double s = sin(theta2);
       double qRaw0, qRaw1, qRaw2, qRaw3;
-      if(theta>EPS)
+      if(theta>std::numeric_limits<double>::epsilon())
       {
         vNorm0 = vNorm0/theta;
         vNorm1 = vNorm1/theta;
@@ -344,7 +345,7 @@ namespace tom
       double theta;
       tom::Rotation::quatNorm(q0, q1, q2, q3, qNorm0, qNorm1, qNorm2, qNorm3);
       n = sqrt(qNorm1*qNorm1+qNorm2*qNorm2+qNorm3*qNorm3);
-      if(n>EPS)
+      if(n>std::numeric_limits<double>::epsilon())
       {
         qNorm1 = qNorm1/n;
         qNorm2 = qNorm2/n;
@@ -525,7 +526,7 @@ namespace tom
       qNorm2 = q2;
       qNorm3 = q3;
       n = sqrt(q0*q0+q1*q1+q2*q2+q3*q3);
-      if(n<EPS)
+      if(n<std::numeric_limits<double>::epsilon())
       {
         qNorm0 = 1.0;
         qNorm1 = 0.0;
