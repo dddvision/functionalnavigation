@@ -4,8 +4,6 @@
 #include <map>
 #include <string>
 #include <vector>
-
-#include "TimeInterval.h"
 #include "Trajectory.h"
 
 namespace tom

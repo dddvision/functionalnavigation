@@ -23,7 +23,7 @@ classdef TrajectoryTest
       assert(isa(trajectory, 'tom.Trajectory'));
       
       interval = trajectory.domain();
-      interval.display();
+      fprintf('interval = [%f, %f]\n', interval.first, interval.second);
       
       time = interval.first+this.tau*(min(interval.second, interval.first+this.infinity)-interval.first);
       

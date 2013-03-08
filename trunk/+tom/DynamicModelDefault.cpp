@@ -7,7 +7,7 @@ namespace tom
   class DynamicModelDefault : public virtual DynamicModel
   {
   protected:
-    hidi::TimeInterval interval; /**< stores the Trajectory domain */
+    std::pair<double, double> interval; /**< stores the Trajectory domain */
 
   public:
     /** Constructor and parent class initializer of the same form. */
@@ -69,7 +69,7 @@ namespace tom
       return (0.0);
     }
 
-    TimeInterval domain(void)
+    std::pair<double, double> domain(void)
     {
       return (interval);
     }

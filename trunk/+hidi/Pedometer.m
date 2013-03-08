@@ -5,7 +5,7 @@ classdef Pedometer < hidi.Sensor
   end
   
   methods (Access = public, Static = true)
-    function stepLabel = getStepLabel(stepID)
+    function stepLabel = idToLabel(stepID)
       switch(stepID)
         case 1
           stepLabel = 'Still';

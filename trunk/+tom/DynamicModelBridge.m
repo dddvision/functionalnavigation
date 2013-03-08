@@ -10,10 +10,8 @@ classdef DynamicModelBridge < tom.DynamicModel
   
   methods (Access = public, Static = true)
     function initialize(name)
-      assert(isa(name, 'char'));
-      compileOnDemand(name);
-      className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];     
-      mName = [className, 'Bridge'];
+      assert(isa(name, 'char'));   
+      mName = compileOnDemand(name);
       function text = componentDescription
         text = feval(mName, 'DynamicModelDescription', name);
       end
@@ -35,12 +33,10 @@ classdef DynamicModelBridge < tom.DynamicModel
         assert(isa(name, 'char'));
         assert(isa(initialTime, 'double'));
         assert(isa(uri, 'char'));
-        compileOnDemand(name);
-        className = [name, '.', name(find(['.', name]=='.', 1, 'last'):end)];
+        this.m = compileOnDemand(name);
         this.name = name;
         this.initialTime = initialTime;
         this.uri = uri;
-        this.m = [className, 'Bridge'];
         initialTime = double(initialTime); % workaround avoids array duplication
         this.h = feval(this.m, 'DynamicModelFactory', name, initialTime, uri);
       end
@@ -128,22 +124,26 @@ classdef DynamicModelBridge < tom.DynamicModel
   
 end
 
-function compileOnDemand(name)
-  persistent tried
-  if(~isempty(tried))
-    return;
+function mName = compileOnDemand(name)
+  persistent mNameCache
+  if(isempty(mNameCache))
+    mNameCache = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];
+    bridge = mfilename('fullpath');
+    arg{1} = ['-I"', fileparts(fileparts(bridge)), '"'];
+    arg{2} = [bridge, '.cpp'];
+    base = fullfile(['+', name], name);
+    basecpp = [base, '.cpp'];
+    cpp = which(basecpp);
+    arg{3} = cpp;
+    arg{4} = '-output';
+    arg{5} = [cpp(1:(end-4)), 'Bridge'];
+    if(exist(arg{5}, 'file'))
+      delete([arg{5}, '.', mexext]);
+    end
+    fprintf('\nmex');
+    fprintf(' %s', arg{:});
+    fprintf('\n');
+    mex(arg{:});
   end
-  tried = true;
-  bridge = mfilename('fullpath');
-  bridgecpp = [bridge, '.cpp'];
-  include1 = ['-I"', fileparts(bridge), '"'];
-  include2 = ['-I"', fileparts(which('hidi.SensorPackage')), '"'];
-  base = fullfile(['+', name], name);
-  basecpp = [base, '.cpp'];
-  cpp = which(basecpp);
-  output = [cpp(1:(end-4)), 'Bridge'];
-  if(exist(output, 'file'))
-    delete([output, '.', mexext]);
-  end
-  mex(include1, include2, bridgecpp, cpp, '-output', output);
+  mName = mNameCache;
 end

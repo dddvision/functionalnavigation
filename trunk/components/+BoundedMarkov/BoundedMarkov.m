@@ -38,7 +38,8 @@ classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
       this.initialBlock = struct('logical', false(1, this.initialNumLogical), ...
         'uint32', zeros(1, this.initialNumUint32, 'uint32'));
       this.firstNewBlock = 1;
-      this.interval = hidi.TimeInterval(initialTime, initialTime);
+      this.interval.first = initialTime;
+      this.interval.second = initialTime;
       this.uri = uri;
       this.block = struct('logical', {}, 'uint32', {});
       this.numInputs = size(this.B, 2);

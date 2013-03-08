@@ -23,7 +23,7 @@ classdef DynamicModelTest
 
       fprintf('\n\ndomain =');
       interval = dynamicModel.domain();
-      assert(isa(interval, 'hidi.TimeInterval'));
+      assert(isa(interval, 'struct'));
       assert(interval.first==initialTime);
       fprintf(' ok');
 

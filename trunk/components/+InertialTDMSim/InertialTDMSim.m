@@ -66,7 +66,8 @@ classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
     end
     
     function interval = domain(this)
-      interval = hidi.TimeInterval(this.initialTime, this.finalTime);
+      interval.first = this.initialTime;
+      interval.second = this.finalTime;
     end
     
    function pose = evaluate(this, t)

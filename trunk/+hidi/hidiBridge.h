@@ -324,6 +324,17 @@ namespace hidi
     delete[] cString;
     return;
   }
+  
+  void convert(const mxArray* array, std::pair<double, double>& value)
+  {
+    mxArray *first;
+    mxArray *second;
+    first = mxGetField(array, 0, "first");
+    second = mxGetField(array, 0, "second");
+    value.first = *mxGetPr(first);
+    value.second = *mxGetPr(second);
+    return;
+  }
 
   void convert(const double& value, mxArray*& array)
   {
@@ -517,6 +528,20 @@ namespace hidi
   void convert(const std::string& str, mxArray*& array)
   {
     array = mxCreateString(str.c_str());
+    return;
+  }
+  
+  void convert(const std::pair<double, double>& value, mxArray*& array)
+  {
+    static const mwSize dims[2] = {1, 1};
+    static const char* fieldnames[] = {"first", "second"};
+    mxArray* first;
+    mxArray* second;
+    first = mxCreateDoubleScalar(value.first);
+    second = mxCreateDoubleScalar(value.second);
+    array = mxCreateStructArray(2, dims, 2, fieldnames);
+    mxSetField(array, 0, "first", first);
+    mxSetField(array, 0, "second", second);
     return;
   }
 

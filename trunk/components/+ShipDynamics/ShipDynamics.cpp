@@ -3,9 +3,9 @@
 #include <string>
 #include <cstdio>
 
-#include "DynamicModel.h"
-#include "Rotation.h"
-#include "WGS84.h"
+#include "+tom/DynamicModel.h"
+#include "+tom/Rotation.h"
+#include "+tom/WGS84.h"
 
 namespace ShipDynamics
 {
@@ -47,7 +47,7 @@ namespace ShipDynamics
     std::vector<double> yRate;
     std::vector<double> aRate;
 
-    hidi::TimeInterval interval;
+    std::pair<double, double> interval;
     uint32_t firstNewBlock;
 
     void convertForces(const double L, const double R, const double heading, 
@@ -424,7 +424,7 @@ namespace ShipDynamics
       //printf("\ninitialQuaternion=[%0.16f,%0.16f,%0.16f,%0.16f]", initialQuaternion[0], initialQuaternion[1], initialQuaternion[2], initialQuaternion[3]);
     }
 
-    hidi::TimeInterval domain(void)
+    std::pair<double, double> domain(void)
     {
       return (interval);
     }

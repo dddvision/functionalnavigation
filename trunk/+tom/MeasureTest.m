@@ -113,11 +113,13 @@ classdef MeasureTest < handle
         else
           x = tom.MeasureTestPerturbation(trajectory);
           edge = edgeList(1);
-          interval = hidi.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));
+          interval.first = measure.getTime(edge.first);
+          interval.second = measure.getTime(edge.second);
           granularity = computeGranularity(interval, x, measure, edge);
           for k = 2:numEdges
             edge = edgeList(k);
-            interval = hidi.TimeInterval(measure.getTime(edge.first), measure.getTime(edge.second));
+            interval.first = measure.getTime(edge.first);
+            interval.second = measure.getTime(edge.second);
             granularity = min(granularity, computeGranularity(interval, x, measure, edge));
           end
           fprintf('\ngranularity.p = [%g; %g; %g]', granularity(1), granularity(2), granularity(3));

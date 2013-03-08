@@ -1,7 +1,7 @@
 #ifndef TOMTRAJECTORY_H
 #define TOMTRAJECTORY_H
 
-#include "TimeInterval.h"
+#include <utility>
 #include "Pose.h"
 #include "TangentPose.h"
 
@@ -30,7 +30,7 @@ namespace tom
      *
      * @return time domain bounds
      */
-    virtual hidi::TimeInterval domain(void) = 0;
+    virtual std::pair<double, double> domain(void) = 0;
 
     /**
      * Evaluate a trajectory at a given time instant.
