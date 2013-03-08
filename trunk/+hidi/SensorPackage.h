@@ -238,7 +238,7 @@ namespace hidi
      *
      * @note
      * Returns NAN if the value is not present.
-     * Returns 0 if the value cannot be converted.
+     * Returns 0.0 if the value cannot be converted.
      */
     static double getDoubleParameter(const std::string& parameters, const std::string& key)
     {

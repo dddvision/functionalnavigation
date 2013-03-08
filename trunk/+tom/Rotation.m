@@ -349,7 +349,7 @@ classdef Rotation
       qNorm3 = q3;
       if(isnumeric(q0))
         n = sqrt(q0.*q0+q1.*q1+q2.*q2+q3.*q3);
-        small = find(n<eps);
+        small = find(n<=eps);
         qNorm0(small) = 1.0;
         qNorm1(small) = 0.0;
         qNorm2(small) = 0.0;

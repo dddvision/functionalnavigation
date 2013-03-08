@@ -1,5 +1,4 @@
 classdef TangentPose < tom.Pose
-  
   properties (SetAccess = public, GetAccess = public)
     r = nan(3, 1);
     s = nan(3, 1);
@@ -22,12 +21,12 @@ classdef TangentPose < tom.Pose
     function display(this)
       name = inputname(1);
       for n = 1:numel(this)
-        fprintf('\n%s.p = [%f; %f; %f]', name, this(n).p(1), this(n).p(2), this(n).p(3));
-        fprintf('\n%s.q = [%f; %f; %f; %f]', name, this(n).q(1), this(n).q(2), this(n).q(3), this(n).q(4));
-        fprintf('\n%s.r = [%f; %f; %f]', name, this(n).r(1), this(n).r(2), this(n).r(3));
-        fprintf('\n%s.s = [%f; %f; %f]\n', name, this(n).s(1), this(n).s(2), this(n).s(3));
+        fprintf('\n%s.p = [%+9.6f; %+9.6f; %+9.6f]', name, this(n).p(1), this(n).p(2), this(n).p(3));
+        fprintf('\n%s.q = [%+9.6f; %+9.6f; %+9.6f; %+9.6f]', name, this(n).q(1), this(n).q(2), this(n).q(3), ...
+          this(n).q(4));
+        fprintf('\n%s.r = [%+9.6f; %+9.6f; %+9.6f]', name, this(n).r(1), this(n).r(2), this(n).r(3));
+        fprintf('\n%s.s = [%+9.6f; %+9.6f; %+9.6f; %+9.6f]\n', name, this(n).s(1), this(n).s(2), this(n).s(3));
       end
     end
   end
-  
 end
