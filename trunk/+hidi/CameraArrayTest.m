@@ -61,7 +61,7 @@ function testCameraArrayProjection(cam, nb)
       [c3, c2] = ndgrid((1:HEIGHT)-CENTER_VERT, (1:WIDTH)-CENTER_HORZ);
       c1 = repmat(FOCAL, [HEIGHT, WIDTH]);
       mag = sqrt(c1.*c1+c2.*c2+c3.*c3);
-      mag(abs(mag)<=eps) = NaN;
+      mag(abs(mag)<eps) = NaN;
       c1 = c1./mag;
       c2 = c2./mag;
       c3 = c3./mag;

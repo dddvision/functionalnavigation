@@ -526,7 +526,7 @@ namespace tom
       qNorm2 = q2;
       qNorm3 = q3;
       n = sqrt(q0*q0+q1*q1+q2*q2+q3*q3);
-      if(n<=std::numeric_limits<double>::epsilon())
+      if(n<std::numeric_limits<double>::epsilon())
       {
         qNorm0 = 1.0;
         qNorm1 = 0.0;
