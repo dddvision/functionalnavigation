@@ -19,6 +19,7 @@ static const double INF = std::numeric_limits<double>::infinity();
 #ifndef NAN
 static const double NAN = sqrt(static_cast<double>(-1.0));
 #endif
+
 #if defined(__APPLE__) || defined(_MSC_VER)
 static bool isnan(const double& x)
 {
@@ -26,6 +27,12 @@ static bool isnan(const double& x)
   return (y!=x);
 }
 #endif
+
+namespace hidi
+{
+  static const double RADTODEG = 180.0/PI;
+  static const double DEGTORAD = PI/180.0;
+}
 
 #ifndef _MSC_VER
 #include <stdint.h>
