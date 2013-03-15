@@ -207,7 +207,7 @@ classdef WGS84
     function gamma = geocentricToGeodetic(lambda)
       if(isnumeric(lambda))
         if(any((lambda<-pi/2)||(lambda>pi/2)))
-          gamma = NaN;
+          gamma = nan;
         else
           A = tom.WGS84.majorRadius/tom.WGS84.minorRadius;
           gamma = atan2((A*A)*sin(lambda), cos(lambda));
@@ -221,7 +221,7 @@ classdef WGS84
     function lambda = geodeticToGeocentric(gamma)
       if(isnumeric(gamma))
         if(any((gamma<-pi/2)||(gamma>pi/2)))
-          lambda = NaN;
+          lambda = nan;
         else
           lambda = atan2((tom.WGS84.minorRadius/tom.WGS84.majorRadius)^2*sin(gamma), cos(gamma));
         end

@@ -108,7 +108,7 @@ classdef SensorPackage < handle
     function value = getDoubleParameter(parameters, key)
       str = hidi.SensorPackage.getParameter(parameters, key);
       if(isempty(str))
-        value = NaN;
+        value = nan;
       else
         value = str2double(str);
         if(isnan(value))
