@@ -58,7 +58,7 @@ function testCameraProjection(cam, nb)
       [c3, c2] = ndgrid((1:HEIGHT)-CENTER_VERT, (1:WIDTH)-CENTER_HORZ);
       c1 = repmat(FOCAL, [HEIGHT, WIDTH]);
       mag = sqrt(c1.*c1+c2.*c2+c3.*c3);
-      mag(abs(mag)<eps) = NaN;
+      mag(abs(mag)<eps) = nan;
       c1 = c1./mag;
       c2 = c2./mag;
       c3 = c3./mag;
@@ -71,8 +71,8 @@ function testCameraProjection(cam, nb)
       bad = isnan(pix(1, :))|isnan(pix(2, :));
       good = ~bad;
       newImage = zeros(HEIGHT, WIDTH);
-      newImage(bad) = NaN;
-      newImage(good) = interp2(gray, pix(1, good)+1, pix(2, good)+1, '*linear', NaN);
+      newImage(bad) = nan;
+      newImage(good) = interp2(gray, pix(1, good)+1, pix(2, good)+1, '*linear', nan);
 
       % display the reprojected image
       imshow(newImage, 'Parent', subplot(3, 3, 2));

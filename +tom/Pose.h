@@ -18,7 +18,7 @@ namespace tom
    *   Body Axis 1 points forward;
    *   Body Axis 2 points right;
    *   Body Axis 3 points down relative to the body (not gravity).
-   * The initial undefined pose is represented by NaN values for all parameters.
+   * The initial undefined pose is represented by NAN values for all parameters.
    */
   class Pose
   {
@@ -27,7 +27,7 @@ namespace tom
     double q[4]; /**< orientation of the body frame as a quaternion with a non-negative scalar first element */
 
     /**
-     * Construct a pose initialized to NaN.
+     * Construct a pose initialized to NAN.
      */
     Pose(void)
     {

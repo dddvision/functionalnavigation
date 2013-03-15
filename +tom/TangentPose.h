@@ -9,7 +9,7 @@ namespace tom
    * This class represents a pose and its time derivatives.
    *
    * @note
-   * The initial undefined tangent pose is represented by NaN values for all parameters.
+   * The initial undefined tangent pose is represented by NAN values for all parameters.
    */
   class TangentPose : public virtual Pose
   {
@@ -18,7 +18,7 @@ namespace tom
     double s[3]; /**< angular rate vector (2*conjugate(q)*dq/dt) */
 
     /**
-     * Construct a tangent pose initialized to NaN.
+     * Construct a tangent pose initialized to NAN.
      */
     TangentPose(void)
     {

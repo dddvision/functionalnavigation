@@ -108,8 +108,8 @@ classdef CameraArray < hidi.Sensor
     % @return          points in pixel coordinates, double 2-by-P
     %
     % NOTES
-    % Points outside the valid image area return NaN-valued vectors
-    % Region masking can be indicated through NaN-valued returns
+    % Points outside the valid image area return NAN-valued vectors
+    % Region masking can be indicated through NAN-valued returns
     % Throws an exception when either input index is out of range
     pix = projection(this, ray, n, view);
     
@@ -121,8 +121,8 @@ classdef CameraArray < hidi.Sensor
     % @return          unit vectors in camera frame, double 3-by-P
     %
     % NOTES
-    % Points outside the valid image area return NaN-valued vectors
-    % Region masking can be indicated through NaN-valued returns
+    % Points outside the valid image area return NAN-valued vectors
+    % Region masking can be indicated through NAN-valued returns
     % Throws an exception when either input index is out of range
     ray = inverseProjection(this, pix, n, view);
   end
