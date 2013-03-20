@@ -65,6 +65,21 @@ classdef Pedometer < hidi.Sensor
           stepLabel = 'Undefined';
       end
     end
+    
+    function stepID = labelToID(stepLabel)
+      persistent lookup
+      lookup = containers.Map;
+      if(lookup.length()==0)
+        for stepID = uint32(0:27)
+          lookup(hidi.Pedometer.idToLabel(stepID)) = stepID;
+        end
+      end
+      try
+        stepID = lookup(stepLabel);
+      catch %#ok return zero on lookup error
+        stepID = uint32(0);
+      end
+    end
   end
     
   methods (Access = public, Abstract = true)

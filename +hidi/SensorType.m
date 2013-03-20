@@ -5,5 +5,6 @@ classdef SensorType
     MAGNETOMETER_ARRAY = uint32(2);
     ALTIMETER = uint32(3);
     GPS_RECEIVER = uint32(4);
+    PEDOMETER = uint32(5);
   end
 end
