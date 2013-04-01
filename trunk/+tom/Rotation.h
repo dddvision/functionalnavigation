@@ -16,6 +16,7 @@ namespace tom
    * q = quaternion [scalar; vector] (MATLAB: 4-by-K)
    * r = rotation matrix that rotates a point from the body frame to the world frame (MATLAB: 3-by-3-by-K)
    * h = homogenous matrix that premuliplies a quaternion to rotate an inner gimbal axis (MATLAB: 4-by-4-by-K)
+   * Inputs and outputs of all functions are allowed to alias.
    */
   class Rotation
   {
@@ -513,9 +514,6 @@ namespace tom
     
     /**
      * Normalizes a quaternion to enforce unit magnitude and a non-negative first element.
-     *
-     * @note
-     * Input and output are allowed to alias.
      */
     static void quatNorm(const double q0, const double q1, const double q2, const double q3, double& qNorm0, 
       double& qNorm1, double& qNorm2, double& qNorm3)
@@ -599,15 +597,14 @@ namespace tom
      * 
      * @note
      * c = quatToHomo(a)*b;
-     * Input and output are allowed to alias.
      */
     static void quatMult(const double a0, const double a1, const double a2, const double a3, const double b0, 
       const double b1, const double b2, const double b3, double& c0, double& c1, double& c2, double& c3)
     {
-      c0 = b0*a0-b1*a1-b2*a2-b3*a3;
-      c1 = b0*a1+b1*a0-b2*a3+b3*a2;
-      c2 = b0*a2+b1*a3+b2*a0-b3*a1;
-      c3 = b0*a3-b1*a2+b2*a1+b3*a0;
+      c0 = a0*b0-a1*b1-a2*b2-a3*b3;
+      c1 = a1*b0+a0*b1-a3*b2+a2*b3;
+      c2 = a2*b0+a3*b1+a0*b2-a1*b3;
+      c3 = a3*b0-a2*b1+a1*b2+a0*b3;
       return;
     }
     static inline void quatMult(const double (&a)[4], const double (&b)[4], double& c0, double& c1, double& c2, 
@@ -629,10 +626,66 @@ namespace tom
     }
     
     /**
+     * Transposes a 3x3 matrix.
+     */
+    static void transpose(const double (&a)[3][3], double (&b)[3][3])
+    {
+      double a01 = a[0][1];
+      double a02 = a[0][2];
+      double a10 = a[1][0];
+      double a12 = a[1][2];
+      double a20 = a[2][0];
+      double a21 = a[2][1];
+      b[0][0] = a[0][0];
+      b[0][1] = a10;
+      b[0][2] = a20;
+      b[1][0] = a01;
+      b[1][1] = a[1][1];
+      b[1][2] = a21;
+      b[2][0] = a02;
+      b[2][1] = a12;
+      b[2][2] = a[2][2];
+      return;
+    }
+    
+    /**
+     * Transposes a 4x4 matrix.
+     */
+    static void transpose(const double (&a)[4][4], double (&b)[4][4])
+    {
+      double a01 = a[0][1];
+      double a02 = a[0][2];
+      double a03 = a[0][3];
+      double a10 = a[1][0];
+      double a12 = a[1][2];
+      double a13 = a[1][3];
+      double a20 = a[2][0];
+      double a21 = a[2][1];
+      double a23 = a[2][3];
+      double a30 = a[3][0];
+      double a31 = a[3][1];
+      double a32 = a[3][2];
+      b[0][0] = a[0][0];
+      b[0][1] = a10;
+      b[0][2] = a20;
+      b[0][3] = a30;
+      b[1][0] = a01;
+      b[1][1] = a[1][1];
+      b[1][2] = a21;
+      b[1][3] = a31;
+      b[2][0] = a02;
+      b[2][1] = a12;
+      b[2][2] = a[2][2];
+      b[2][3] = a32;
+      b[3][0] = a03;
+      b[3][1] = a13;
+      b[3][2] = a23;
+      b[3][3] = a[3][3];
+      return;
+    }
+    
+    /**
      * Multiplies two 3x3 matrices.
-     *
-     * @note
-     * Input and output are allowed to alias.
      */
     static void mtimes(const double (&a)[3][3], const double (&b)[3][3], double (&c)[3][3])
     {
@@ -659,9 +712,6 @@ namespace tom
     
     /**
      * Multiplies two 4x4 matrices.
-     *
-     * @note
-     * Input and output are allowed to alias.
      */
     static void mtimes(const double (&a)[4][4], const double (&b)[4][4], double (&c)[4][4])
     {
@@ -702,9 +752,6 @@ namespace tom
     
     /**
      * Multiplies a 3x3 matrix with a 3x1 vector.
-     *
-     * @note
-     * Input and output are allowed to alias.
      */
     static void mtimes(const double (&a)[3][3], const double (&b)[3], double (&c)[3])
     {
@@ -719,9 +766,6 @@ namespace tom
     
     /**
      * Multiplies a 4x4 matrix with a 4x1 vector.
-     *
-     * @note
-     * Input and output are allowed to alias.
      */
     static void mtimes(const double (&a)[4][4], const double (&b)[4], double (&c)[4])
     {
@@ -733,6 +777,20 @@ namespace tom
       c[1] = c1;
       c[2] = c2;
       c[3] = c3;
+      return;
+    }
+    
+    /**
+     * Computes the cross product of two 3x1 vectors.
+     */
+    static void cross(const double (&a)[3], const double (&b)[3], double (&c)[3])
+    {
+      double c0 = a[1]*b[2]-a[2]*b[1];
+      double c1 = a[2]*b[0]-a[0]*b[2];
+      double c2 = a[0]*b[1]-a[1]*b[0];
+      c[0] = c0;
+      c[1] = c1;
+      c[2] = c2;
       return;
     }
   };
