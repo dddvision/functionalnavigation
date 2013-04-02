@@ -52,67 +52,6 @@ classdef WGS84
       gD = -cgam*gX-sgam*gZ;
     end
 
-%     function [gN, gE, gD] = gravityNED2(N, E, D, gamma)
-%       % coefficients
-%       g0 = 9.78039; % meter/sec^2 adjusted value replaces 9.78049
-%       g1 = 1.33e-8; % 1/sec^2
-%       g2 = 5.2884e-3; % dimensionless
-%       g3 = -5.9e-6; % dimensionless
-%       g4 = -3.0877e-6; % 1/sec^2
-%       g5 = 4.5e-8; % 1/sec^2
-%       g6 = 7.2e-13; % 1/(meter*sec^2)  
-% 
-%       % precalculations
-%       lambda = tom.WGS84.geodeticToGeocentric(gamma);
-%       r = tom.WGS84.geocentricRadius(lambda);
-%       sgam = sin(gamma);
-%       cgam = cos(gamma);
-%       slam = sin(lambda);
-%       clam = cos(lambda);
-% 
-%       % position relative to the 3-D ellipsoid in Earth-centered frame
-%       X = r*clam-sgam*N-cgam*D;
-%       Y = E;
-%       Z = r*slam+cgam*N-sgam*D;
-% 
-%       % relative longitude
-%       theta = atan2(Y, X);
-%       sth = sin(theta);
-%       cth = cos(theta);
-% 
-%       XY = sqrt(X.*X+Y.*Y);
-%       R = sqrt(X.*X+Y.*Y+Z.*Z);
-% 
-%       % instantaneous latitude
-%       lam = atan2(Z,XY);
-%       gam = tom.WGS84.geocentricToGeodetic(lam);
-% 
-%       % instantaneous height
-%       h = R-tom.WGS84.geocentricRadius(lam);
-% 
-%       % precalculations
-%       clat = cos(gam);
-%       slat = sin(gam);
-%       slat2 = slat.*slat;
-%       s2lat = sin(2*gam);
-%       s2lat2 = s2lat.*s2lat;
-% 
-%       % gravity model
-%       gNp = g1*h.*s2lat;
-%       gDp = g0*(1.0+g2*slat2+g3*s2lat2)+(g4+g5*slat2).*h+g6*h.*h;
-% 
-%       gZ  =  clat.*gNp-slat.*gDp;
-%       gXY = -slat.*gNp-clat.*gDp-(tom.WGS84.rotationRate*tom.WGS84.rotationRate*100000)*(XY./100000);
-% 
-%       gX = gXY.*cth;
-%       gY = gXY.*sth;
-% 
-%       % gravity viewed in NED frame
-%       gN = -slat.*gX+clat.*gZ;
-%       gE = gY;
-%       gD = -clat.*gX-slat.*gZ;
-%     end
-
     function [gX, gY, gZ] = gravityECEF(X, Y, Z)   
       % relative longitude
       theta = atan2(Y, X);
@@ -140,7 +79,7 @@ classdef WGS84
       gZ  = gR*slam+gT*clam;
     end
 
-    function [X, Y, Z] = llaToECEF(lon, lat, alt)
+    function [x, y, z] = llaToECEF(lon, lat, alt)
       a = tom.WGS84.majorRadius;
       finv = tom.WGS84.inverseFlattening;
       b = a-a/finv;
@@ -149,59 +88,36 @@ classdef WGS84
       e = sqrt((a2-b2)./a2);
       slat = sin(lat);
       clat = cos(lat);
-      N = a./sqrt(1-(e*e)*(slat.*slat));
-      X = (alt+N).*clat.*cos(lon);
-      Y = (alt+N).*clat.*sin(lon);
-      Z = ((b2./a2)*N+alt).*slat;
+      N = a./sqrt(1.0-(e*e)*(slat.*slat));
+      x = (alt+N).*clat.*cos(lon);
+      y = (alt+N).*clat.*sin(lon);
+      z = ((b2./a2)*N+alt).*slat;
     end
 
-%     function [X, Y, Z] = llaToECEF(lon, lat, alt)
-%       re = tom.WGS84.majorRadius;
-%       finv = tom.WGS84.inverseFlattening;
-%       rp = re-re/finv;
-%       clon = cos(lon);
-%       slon = sin(lon);
-%       clat = cos(lat);
-%       slat = sin(lat);
-%       ratio = rp/re;
-%       lambda = atan2(ratio*ratio*slat, clat);
-%       A = re*sin(lambda);
-%       B = rp*cos(lambda);
-%       r = (re*rp)./sqrt(A.*A+B.*B);
-%       clambda = cos(lambda);
-%       slambda = sin(lambda);
-%       surface = [r.*clon.*clambda; r.*slon.*clambda; r.*slambda];
-%       above = [alt.*clon.*clat; alt.*slon.*clat; alt.*slat];
-%       ecef = surface+above;
-%       X = ecef(1, :);
-%       Y = ecef(2, :);
-%       Z = ecef(3, :);
-%     end
-
-    function [lon, lat, alt] = ecefToLLA(X, Y, Z)
+    function [lon, lat, alt] = ecefToLLA(x, y, z)
       a = tom.WGS84.majorRadius;
       finv = tom.WGS84.inverseFlattening;
-      f = 1/finv;
+      f = 1.0/finv;
       b = a-a/finv;
-      e2 = 2*f-f^2;
-      ep2 = f*(2-f)/((1-f)^2);
-      r2 = X.^2+Y.^2;
+      e2 = 2.0*f-f*f;
+      ep2 = f*(2.0-f)/((1.0-f)*(1.0-f));
+      r2 = x.*x+y.*y;
       r = sqrt(r2);
-      E2 = a^2-b^2;
-      F = 54*b^2*Z.^2;
-      G = r2+(1-e2)*Z.^2-e2*E2;
+      E2 = a*a-b*b;
+      F = 54.0*b*b*z.*z;
+      G = r2+(1.0-e2)*z.*z-e2*E2;
       c = (e2*e2*F.*r2)./(G.*G.*G);
-      s = ( 1+c+sqrt(c.*c+2*c) ).^(1/3);
-      P = F./(3*(s+1./s+1).^2.*G.*G);
-      Q = sqrt(1+2*e2*e2*P);
-      ro = -(e2*P.*r)./(1+Q)+sqrt((a*a/2)*(1+1./Q)-((1-e2)*P.*Z.^2)./(Q.*(1+Q))-P.*r2/2);
-      tmp = (r-e2*ro).^2;
-      U = sqrt(tmp+Z.^2);
-      V = sqrt(tmp+(1-e2)*Z.^2);
-      zo = (b^2*Z)./(a*V);
-      lon = atan2(Y, X);
-      lat = atan2(Z+ep2*zo, r);
-      alt = U.*(1-b^2./(a*V));
+      s = power(1.0+c+sqrt(c.*c+2.0*c), 1.0/3.0);
+      P = F./(3.0*power(s+1./s+1, 2.0).*G.*G);
+      Q = sqrt(1.0+2.0*e2*e2*P);
+      ro = -(e2*P.*r)./(1.0+Q)+sqrt((a*a/2.0)*(1.0+1.0./Q)-((1.0-e2)*P.*z.*z)./(Q.*(1.0+Q))-P.*r2/2.0);
+      tmp = power(r-e2*ro, 2.0);
+      U = sqrt(tmp+z.*z);
+      V = sqrt(tmp+(1.0-e2)*z.*z);
+      zo = (b*b*z)./(a*V);
+      lon = atan2(y, x);
+      lat = atan2(z+ep2*zo, r);
+      alt = U.*(1.0-b*b./(a*V));
     end
     
     function gamma = geocentricToGeodetic(lambda)

@@ -89,81 +89,6 @@ namespace tom
     }
     
     /**
-     * Near-Earth gravity model in local North-East-Down frame.
-     * 
-     * @param[in]  N     North coordinate in meters
-     * @param[in]  E     East coordinate in meters
-     * @param[in]  D     Down coordinate in meters
-     * @param[in]  gamma Geodetic latitude that defines the NED frame origin in radians
-     * @param[out] gN    Gravity component in the north direction
-     * @param[out] gE    Gravity component in the east direction
-     * @param[out] gD    Gravity component in the down direction
-     */
-//     static void gravityNED2(const double& N, const double& E, const double& D, const double& gamma, double& gN, 
-//       double& gE, double& gD)
-//     {
-//       // coefficients
-//       static const double g0 = 9.78039; // meter/sec^2 adjusted value replaces 9.78049
-//       static const double g1 = 1.33e-8; // 1/sec^2
-//       static const double g2 = 5.2884e-3; // dimensionless
-//       static const double g3 = -5.9e-6; // dimensionless
-//       static const double g4 = -3.0877e-6; // 1/sec^2
-//       static const double g5 = 4.5e-8; // 1/sec^2
-//       static const double g6 = 7.2e-13; // 1/(meter*sec^2)  
-//       
-//       // precalculations
-//       double lambda = tom::WGS84::geodeticToGeocentric(gamma);
-//       double r = tom::WGS84::geocentricRadius(lambda);      
-//       double sgam = sin(gamma);
-//       double cgam = cos(gamma);
-//       double slam = sin(lambda);
-//       double clam = cos(lambda);
-// 
-//       // position relative to the 3-D ellipsoid in Earth-centered frame
-//       double X = r*clam-sgam*N-cgam*D;
-//       double Y = E;
-//       double Z = r*slam+cgam*N-sgam*D;
-// 
-//       // relative longitude
-//       double theta = atan2(Y, X);
-//       double sth = sin(theta);
-//       double cth = cos(theta);
-// 
-//       double XY = sqrt(X*X+Y*Y);
-//       double R = sqrt(X*X+Y*Y+Z*Z);
-// 
-//       // instantaneous latitude
-//       double lam = atan2(Z, XY);
-//       double gam = tom::WGS84::geocentricToGeodetic(lam);
-// 
-//       // instantaneous height
-//       double h = R-tom::WGS84::geocentricRadius(lam);
-// 
-//       // precalculations
-//       double clat = cos(gam);
-//       double slat = sin(gam);
-//       double slat2 = slat*slat;
-//       double s2lat = sin(2.0*gam);
-//       double s2lat2 = s2lat*s2lat;
-// 
-//       // gravity model
-//       double gNp = g1*h*s2lat;
-//       double gDp = g0*(1.0+g2*slat2+g3*s2lat2)+(g4+g5*slat2)*h+g6*h*h;
-// 
-//       double gZ  =  clat*gNp-slat*gDp;
-//       double gXY = -slat*gNp-clat*gDp-(tom::WGS84::rotationRate*tom::WGS84::rotationRate*100000.0)*(XY/100000.0);
-// 
-//       double gX = gXY*cth;
-//       double gY = gXY*sth;
-// 
-//       // gravity viewed in NED frame
-//       gN = -slat*gX+clat*gZ;
-//       gE = gY;
-//       gD = -clat*gX-slat*gZ;
-//       return;
-//     }
-    
-    /**
      * Ellipsoidal 1/r falloff gravity potential model in Earth-Centered-Earth-Fixed frame.
      * 
      * @param[in]  X  First coordinate in meters
@@ -208,14 +133,14 @@ namespace tom
      * @param[in]  lon Longitude in radians
      * @param[in]  lat Geodetic latitude in radians
      * @param[in]  alt altitude in meters
-     * @param[out] X   First coordinate in meters
-     * @param[out] Y   Second coordinate in meters
-     * @param[out] Z   Third coordinate in meters
+     * @param[out] x   First coordinate in meters
+     * @param[out] y   Second coordinate in meters
+     * @param[out] z   Third coordinate in meters
      *
      * @note
      * http://www.microem.ru/pages/u_blox/tech/dataconvert/GPS.G1-X-00006.pdf (Retrieved 11/30/2009)
      */
-    static void llaToECEF(const double& lon, const double& lat, const double& alt, double& X, double& Y, double& Z)
+    static void llaToECEF(const double& lon, const double& lat, const double& alt, double& x, double& y, double& z)
     {
       double a = tom::WGS84::majorRadius;
       double finv = tom::WGS84::inverseFlattening;
@@ -226,57 +151,34 @@ namespace tom
       double slat = sin(lat);
       double clat = cos(lat);
       double N = a/sqrt(1.0-(e*e)*(slat*slat));
-      X = (alt+N)*clat*cos(lon);
-      Y = (alt+N)*clat*sin(lon);
-      Z = ((b2/a2)*N+alt)*slat;
+      x = (alt+N)*clat*cos(lon);
+      y = (alt+N)*clat*sin(lon);
+      z = ((b2/a2)*N+alt)*slat;
       return;
     }
-
-    /**
-     * Converts from Longitude-Latitude-Altitude to Earth Centered Earth Fixed coordinates.
-     *
-     * @param[in]  lon Longitude in radians
-     * @param[in]  lat Geodetic latitude in radians
-     * @param[in]  alt altitude in meters
-     * @param[out] X   First coordinate in meters
-     * @param[out] Y   Second coordinate in meters
-     * @param[out] Z   Third coordinate in meters
-     */
-//     static void llaToECEF(const double& lon, const double& lat, const double& alt, double& X, double& Y, double& Z)
-//     {
-//       double re = tom::WGS84::majorRadius;
-//       double finv = tom::WGS84::inverseFlattening;
-//       double rp = re-re/finv;
-//       double clon = cos(lon);
-//       double slon = sin(lon);
-//       double clat = cos(lat);
-//       double slat = sin(lat);
-//       double ratio = rp/re;
-//       double lambda = atan2(ratio*ratio*slat, clat);
-//       double A = re*sin(lambda);
-//       double B = rp*cos(lambda);
-//       double r = (re*rp)/sqrt(A*A+B*B);
-//       double clambda = cos(lambda);
-//       double slambda = sin(lambda);
-//       double surface0 = r*clon*clambda;
-//       double surface1 = r*slon*clambda;
-//       double surface2 = r*slambda;
-//       double above0 = alt*clon*clat;
-//       double above1 = alt*slon*clat;
-//       double above2 = alt*slat;
-//       X = surface0+above0;
-//       Y = surface1+above1;
-//       Z = surface2+above2;
-//       return;
-//     }
+    static inline void llaToECEF(const double (&lla)[3], double& x, double& y, double& z)
+    {
+      tom::WGS84::llaToECEF(lla[0], lla[1], lla[2], x, y, z);
+      return;
+    }
+    static inline void llaToECEF(const double& lon, const double& lat, const double& alt, double (&xyz)[3])
+    {
+      tom::WGS84::llaToECEF(lon, lat, alt, xyz[0], xyz[1], xyz[2]);
+      return;
+    }
+    static inline void llaToECEF(const double (&lla)[3], double (&xyz)[3])
+    {
+      tom::WGS84::llaToECEF(lla[0], lla[1], lla[2], xyz[0], xyz[1], xyz[2]);
+      return;
+    }
 
     /**
      * Converts Earth Centered Earth Fixed coordinates to Longitude Latitude Height
      *
      * INPUT
-     * @param[in]  X   First coordinate in meters
-     * @param[in]  Y   Second coordinate in meters
-     * @param[in]  Z   Third coordinate in meters
+     * @param[in]  x   First coordinate in meters
+     * @param[in]  y   Second coordinate in meters
+     * @param[in]  z   Third coordinate in meters
      * @param[out] lon Longitude in radians
      * @param[out] lat Geodetic latitude in radians
      * @param[out] alt Height above the Earth ellipsoid in meters
@@ -285,7 +187,7 @@ namespace tom
      * J. Zhu, "Conversion of Earth-centered Earth-fixed coordinates to geodetic coordinates," Aerospace and Electronic 
      *   Systems, vol. 30, pp. 957-961, 1994.
      */
-    static void ecefToLLA(const double& X, const double& Y, const double& Z, double& lon, double& lat, double& alt)
+    static void ecefToLLA(const double& x, const double& y, const double& z, double& lon, double& lat, double& alt)
     {
       double a = tom::WGS84::majorRadius;
       double finv = tom::WGS84::inverseFlattening;
@@ -293,23 +195,38 @@ namespace tom
       double b = a-a/finv;
       double e2 = 2.0*f-f*f;
       double ep2 = f*(2.0-f)/((1.0-f)*(1.0-f));
-      double r2 = X*X+Y*Y;
+      double r2 = x*x+y*y;
       double r = sqrt(r2);
       double E2 = a*a-b*b;
-      double F = 54.0*b*b*Z*Z;
-      double G = r2+(1.0-e2)*Z*Z-e2*E2;
+      double F = 54.0*b*b*z*z;
+      double G = r2+(1.0-e2)*z*z-e2*E2;
       double c = (e2*e2*F*r2)/(G*G*G);
       double s = pow(1.0+c+sqrt(c*c+2.0*c), 1.0/3.0);
       double P = F/(3.0*pow(s+1.0/s+1.0, 2.0)*G*G);
       double Q = sqrt(1.0+2.0*e2*e2*P);
-      double ro = -(e2*P*r)/(1.0+Q)+sqrt((a*a/2.0)*(1.0+1.0/Q)-((1.0-e2)*P*Z*Z)/(Q*(1.0+Q))-P*r2/2.0);
+      double ro = -(e2*P*r)/(1.0+Q)+sqrt((a*a/2.0)*(1.0+1.0/Q)-((1.0-e2)*P*z*z)/(Q*(1.0+Q))-P*r2/2.0);
       double tmp = pow(r-e2*ro, 2.0);
-      double U = sqrt(tmp+Z*Z);
-      double V = sqrt(tmp+(1.0-e2)*Z*Z);
-      double zo = (b*b*Z)/(a*V);
-      lon = atan2(Y, X);
-      lat = atan2(Z+ep2*zo, r);
+      double U = sqrt(tmp+z*z);
+      double V = sqrt(tmp+(1.0-e2)*z*z);
+      double zo = (b*b*z)/(a*V);
+      lon = atan2(y, x);
+      lat = atan2(z+ep2*zo, r);
       alt = U*(1.0-b*b/(a*V));
+      return;
+    }
+    static inline void ecefToLLA(const double (&xyz)[3], double& lon, double& lat, double& alt)
+    {
+      tom::WGS84::ecefToLLA(xyz[0], xyz[1], xyz[2], lon, lat, alt);
+      return;
+    }
+    static inline void ecefToLLA(const double& x, const double& y, const double& z, double (&lla)[3])
+    {
+      tom::WGS84::ecefToLLA(x, y, z, lla[0], lla[1], lla[2]);
+      return;
+    }
+    static inline void ecefToLLA(const double (&xyz)[3], double (&lla)[3])
+    {
+      tom::WGS84::ecefToLLA(xyz[0], xyz[1], xyz[2], lla[0], lla[1], lla[2]);
       return;
     }
     
