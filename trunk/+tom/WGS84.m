@@ -80,6 +80,11 @@ classdef WGS84
     end
 
     function [x, y, z] = llaToECEF(lon, lat, alt)
+      if(nargin==1)
+        alt = lon(3, :);
+        lat = lon(2, :);
+        lon = lon(1, :);
+      end
       a = tom.WGS84.majorRadius;
       finv = tom.WGS84.inverseFlattening;
       b = a-a/finv;
@@ -89,12 +94,20 @@ classdef WGS84
       slat = sin(lat);
       clat = cos(lat);
       N = a./sqrt(1.0-(e*e)*(slat.*slat));
-      x = (alt+N).*clat.*cos(lon);
-      y = (alt+N).*clat.*sin(lon);
+      x = (N+alt).*clat.*cos(lon);
+      y = (N+alt).*clat.*sin(lon);
       z = ((b2./a2)*N+alt).*slat;
+      if(nargout<=1)
+        x = shiftdim(reshape(cat(1, x(:), y(:), z(:)), numel(x), 3), 1);
+      end
     end
 
     function [lon, lat, alt] = ecefToLLA(x, y, z)
+      if(nargin==1)
+        z = x(3, :);
+        y = x(2, :);
+        x = x(1, :);
+      end
       a = tom.WGS84.majorRadius;
       finv = tom.WGS84.inverseFlattening;
       f = 1.0/finv;
@@ -118,6 +131,9 @@ classdef WGS84
       lon = atan2(y, x);
       lat = atan2(z+ep2*zo, r);
       alt = U.*(1.0-b*b./(a*V));
+      if(nargout<=1)
+        lon = shiftdim(reshape(cat(1, lon(:), lat(:), alt(:)), numel(lon), 3), 1);
+      end
     end
     
     function gamma = geocentricToGeodetic(lambda)
