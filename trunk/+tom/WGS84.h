@@ -309,7 +309,7 @@ namespace tom
   };
   // primary source values
   const double WGS84::majorRadius = 6378137.0; // meters
-  const double WGS84::rotationRate = 7.292115E-5; // rad/sec
+  const double WGS84::rotationRate = 7.2921151467e-5; // rad/sec
   const double WGS84::gm = 3.986005E14; // meters^3/sec^2
   const double WGS84::flattening = 1.0/298.257223563; // unitless
   // const double WGS84::surfacePotential = 62636851.7146; // meters^2/sec^2

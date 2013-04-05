@@ -1,7 +1,7 @@
 classdef WGS84
   properties (Constant = true, GetAccess = public)
     majorRadius = 6378137.0; % meters
-    rotationRate = 7.292115E-5; % rad/sec
+    rotationRate = 7.2921151467e-5; % rad/sec
     gm = 3.986005E14; % meters^3/sec^2
     flattening = 1.0/298.257223563; % unitless
     inverseFlattening = 298.257223563; % unitless
