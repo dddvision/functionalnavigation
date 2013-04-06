@@ -402,9 +402,21 @@ classdef Rotation
         c0 = shiftdim(reshape(cat(1, c0(:), c1(:), c2(:), c3(:)), numel(c0), 4), 1);
       end
     end
-    
+
     function c = mtimes(a, b)
       c = a*b;
+    end
+    
+    function c = cross(a, b)
+      c = cross(a, b);
+    end
+
+    function a = wrapToPI(a)
+      twopi = 2.0*pi;
+      a = mod(a, twopi);
+      a = mod(a+twopi, twopi);
+      b = a>pi;
+      a(b) = a(b)-twopi;
     end
   end
 end

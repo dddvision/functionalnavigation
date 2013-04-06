@@ -42,6 +42,9 @@ namespace tom
      * @param[out] gN    Gravity component in the north direction
      * @param[out] gE    Gravity component in the east direction
      * @param[out] gD    Gravity component in the down direction
+     *
+     * @note
+     * This gravity model does not include centrepetal acceleration or the Coreolis effect.
      */
     static void gravityNED(const double& N, const double& E, const double& D, const double& gamma, double& gN, 
       double& gE, double& gD)
@@ -97,6 +100,9 @@ namespace tom
      * @param[out] gX Gravity component in the first direction
      * @param[out] gY Gravity component in the second direction
      * @param[out] gZ Gravity component in the third direction
+     *
+     * @note
+     * This gravity model does not include centrepetal acceleration or the Coreolis effect.
      */
     static void gravityECEF(const double& X, const double& Y, const double& Z, double& gX, double& gY, double& gZ)
     {
