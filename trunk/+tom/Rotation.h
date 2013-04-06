@@ -2,8 +2,8 @@
 #define ROTATION_H
 
 #include <algorithm>
-#include <cmath>
-#include <limits>
+
+#include "+hidi/hidi.h"
 
 namespace tom
 {
@@ -58,7 +58,7 @@ namespace tom
       double c = cos(theta);
       double s = sin(theta);
       double a = 1.0-c;
-      if(theta>std::numeric_limits<double>::epsilon())
+      if(theta>EPS)
       {
         vNorm0 = vNorm0/theta;
         vNorm1 = vNorm1/theta;
@@ -109,7 +109,7 @@ namespace tom
       double c = cos(theta2);
       double s = sin(theta2);
       double qRaw0, qRaw1, qRaw2, qRaw3;
-      if(theta>std::numeric_limits<double>::epsilon())
+      if(theta>EPS)
       {
         vNorm0 = vNorm0/theta;
         vNorm1 = vNorm1/theta;
@@ -346,7 +346,7 @@ namespace tom
       double theta;
       tom::Rotation::quatNorm(q0, q1, q2, q3, qNorm0, qNorm1, qNorm2, qNorm3);
       n = sqrt(qNorm1*qNorm1+qNorm2*qNorm2+qNorm3*qNorm3);
-      if(n>std::numeric_limits<double>::epsilon())
+      if(n>EPS)
       {
         qNorm1 = qNorm1/n;
         qNorm2 = qNorm2/n;
@@ -524,7 +524,7 @@ namespace tom
       qNorm2 = q2;
       qNorm3 = q3;
       n = sqrt(q0*q0+q1*q1+q2*q2+q3*q3);
-      if(n<std::numeric_limits<double>::epsilon())
+      if(n<EPS)
       {
         qNorm0 = 1.0;
         qNorm1 = 0.0;
@@ -792,6 +792,24 @@ namespace tom
       c[1] = c1;
       c[2] = c2;
       return;
+    }
+    
+    /**
+     * Constrain an angle in radians to the range (-PI, PI].
+     *
+     * @param[in] a angle in radians
+     * @return      equivalent angle in the constrained range
+     */
+    static double wrapToPI(double a)
+    {
+      static const double twopi = 2.0*PI;
+      a = fmod(a, twopi);
+      a = fmod(a+twopi, twopi);  
+      if(a>PI)
+      {
+        a = a-twopi;
+      }
+      return (a);
     }
   };
 }
