@@ -33,8 +33,8 @@ classdef WGS84
       R2 = X.*X+Y.*Y+Z.*Z;
       XY = sqrt(X.*X+Y.*Y);
 
-      gmR2  = (tom.WGS84.gm./R2);
-      re2R2 = ((tom.WGS84.majorRadius*tom.WGS84.majorRadius)./R2);
+      gmR2  = tom.WGS84.gm./R2;
+      re2R2 = (tom.WGS84.majorRadius*tom.WGS84.majorRadius)./R2;
 
       gR = -gmR2.*(1.0+(9.0/2.0*sqrt(5.0)*tom.WGS84.c20)*re2R2.*(Z.*Z./R2-1.0/3.0));
       gT = (3.0*sqrt(5.0)*tom.WGS84.c20)*gmR2.*re2R2.*(XY.*Z./R2);
