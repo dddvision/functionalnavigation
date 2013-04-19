@@ -21,7 +21,9 @@ namespace tom
   class Rotation
   {
   public:
-    // Converts from axis angle to Euler angle.
+    /**
+     * Converts from axis angle to Euler angle.
+     */
     static void axisToEuler(const double& v0, const double& v1, const double& v2, double& y0, double& y1, double& y2)
     {
       double r00, r10, r20, r01, r11, r21, r02, r12, r22;
