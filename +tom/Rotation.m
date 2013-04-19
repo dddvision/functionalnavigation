@@ -394,10 +394,10 @@ classdef Rotation
         a1 = a0(2, :);
         a0 = a0(1, :);
       end
-      c0 = b0.*a0-b1.*a1-b2.*a2-b3.*a3;
-      c1 = b0.*a1+b1.*a0-b2.*a3+b3.*a2;
-      c2 = b0.*a2+b1.*a3+b2.*a0-b3.*a1;
-      c3 = b0.*a3-b1.*a2+b2.*a1+b3.*a0;
+      c0 = a0.*b0-a1.*b1-a2.*b2-a3.*b3;
+      c1 = a1.*b0+a0.*b1-a3.*b2+a2.*b3;
+      c2 = a2.*b0+a3.*b1+a0.*b2-a1.*b3;
+      c3 = a3.*b0-a2.*b1+a1.*b2+a0.*b3;
       if(nargout<=1)
         c0 = shiftdim(reshape(cat(1, c0(:), c1(:), c2(:), c3(:)), numel(c0), 4), 1);
       end
