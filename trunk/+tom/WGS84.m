@@ -84,11 +84,9 @@ classdef WGS84
       XY = sqrt(X.*X+Y.*Y);
       R = sqrt(X.*X+Y.*Y+Z.*Z);
 
-      % instantaneous latitude
+      % instantaneous latitude and height
       lam = atan2(Z, XY);
       gam = tom.WGS84.geocentricToGeodetic(lam);
-
-      % instantaneous height
       h = R-tom.WGS84.geocentricRadius(lam);
 
       % precalculations
