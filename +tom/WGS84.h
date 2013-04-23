@@ -18,6 +18,7 @@
  *   Axis 1 points North from the frame origin
  *   Axis 2 points East from the frame origin
  *   Axis 3 points Down from the frame origin
+ * All gravity models include centrepetal acceleration.
  */
 namespace tom
 {
@@ -42,9 +43,6 @@ namespace tom
      * @param[out] gN    Gravity component in the north direction
      * @param[out] gE    Gravity component in the east direction
      * @param[out] gD    Gravity component in the down direction
-     *
-     * @note
-     * This gravity model includes centrepetal acceleration.
      */
     static void gravityNED(const double& N, const double& E, const double& D, const double& gamma, double& gN, 
       double& gE, double& gD)
@@ -92,6 +90,68 @@ namespace tom
       return;
     }
     
+    static void gravityNEDNearEarth(const double& N, const double& E, const double& D, const double& gamma, double& gN, 
+      double& gE, double& gD)
+    {
+      // constant coefficients
+      static const double g0 = 9.78039; // meter/sec^2 adjusted value replaces 9.78049
+      static const double g1 = 2.66e-8; // 1/sec^2
+      static const double g2 = 5.2884e-3; // dimensionless
+      static const double g3 = -5.9e-6; // dimensionless
+      static const double g4 = -3.0877e-6; // 1/sec^2
+      static const double g5 = 4.5e-8; // 1/sec^2
+      static const double g6 = 7.2e-13; // 1/(meter*sec^2)  
+
+      // geological parameters
+      double lambda = tom::WGS84::geodeticToGeocentric(gamma);
+      double r = tom::WGS84::geocentricRadius(lambda);
+      double sgam = sin(gamma);
+      double cgam = cos(gamma);
+      double slam = sin(lambda);
+      double clam = cos(lambda);
+
+      // position relative to the 3-D ellipsoid in Earth-centered frame
+      double X = r*clam-sgam*N-cgam*D;
+      double Y = E;
+      double Z = r*slam+cgam*N-sgam*D;
+
+      // relative longitude
+      double theta = atan2(Y, X);
+      double sth = sin(theta);
+      double cth = cos(theta);
+
+      double XY = sqrt(X*X+Y*Y);
+      double R = sqrt(X*X+Y*Y+Z*Z);
+
+      // instantaneous latitude and height
+      double lam = atan2(Z, XY);
+      double gam = tom::WGS84::geocentricToGeodetic(lam);
+      double h = R-tom::WGS84::geocentricRadius(lam);
+
+      // precalculations
+      double clat = cos(gam);
+      double slat = sin(gam);
+      double slat2 = slat*slat;
+      double s2lat = sin(2.0*gam);
+      double s2lat2 = s2lat*s2lat;
+
+      // gravity model
+      double gNp = g1*h*slat*clat;
+      double gDp = g0*(1.0+g2*slat2+g3*s2lat2)+(g4+g5*slat2)*h+g6*h*h;
+
+      double gZ  = clat*gNp-slat*gDp;
+      double gXY = -slat*gNp-clat*gDp;
+
+      double gX = gXY*cth;
+      double gY = gXY*sth;
+
+      // gravity viewed in NED frame
+      gN = -slat*gX+clat*gZ;
+      gE = gY;
+      gD = -clat*gX-slat*gZ;
+      return;
+    }
+    
     /**
      * Ellipsoidal 1/r falloff gravity potential model in Earth-Centered-Earth-Fixed frame.
      * 
@@ -101,9 +161,6 @@ namespace tom
      * @param[out] gX Gravity component in the first direction
      * @param[out] gY Gravity component in the second direction
      * @param[out] gZ Gravity component in the third direction
-     *
-     * @note
-     * This gravity model includes centrepetal acceleration.
      */
     static void gravityECEF(const double& X, const double& Y, const double& Z, double& gX, double& gY, double& gZ)
     {
