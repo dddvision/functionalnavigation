@@ -41,8 +41,9 @@ classdef WGS84
 
       % gravity viewed in ECEF frame
       gZ  = gR*slam+gT*clam;
-      gXY = gR*clam-gT*slam;
+      gXY = gR*clam-gT*slam+tom.WGS84.rotationRate*tom.WGS84.rotationRate*XY;
 
+      % rotate by longitude
       gX = gXY.*cth;
       gY = gXY.*sth;
 
@@ -50,6 +51,67 @@ classdef WGS84
       gN = -sgam*gX+cgam*gZ;
       gE = gY;
       gD = -cgam*gX-sgam*gZ;
+    end
+    
+    function [gN, gE, gD] = gravityNEDNearEarth(N, E, D, gamma)
+      % constant coefficients
+      g0 = 9.78039; % meter/sec^2 adjusted value replaces 9.78049
+      g1 = 2.66e-8; % 1/sec^2
+      g2 = 5.2884e-3; % dimensionless
+      g3 = -5.9e-6; % dimensionless
+      g4 = -3.0877e-6; % 1/sec^2
+      g5 = 4.5e-8; % 1/sec^2
+      g6 = 7.2e-13; % 1/(meter*sec^2)  
+
+      % geological parameters
+      lambda = tom.WGS84.geodeticToGeocentric(gamma);
+      r = tom.WGS84.geocentricRadius(lambda);
+      sgam = sin(gamma);
+      cgam = cos(gamma);
+      slam = sin(lambda);
+      clam = cos(lambda);
+
+      % position relative to the 3-D ellipsoid in Earth-centered frame
+      X = r*clam-sgam*N-cgam*D;
+      Y = E;
+      Z = r*slam+cgam*N-sgam*D;
+
+      % relative longitude
+      theta = atan2(Y, X);
+      sth = sin(theta);
+      cth = cos(theta);
+
+      XY = sqrt(X.*X+Y.*Y);
+      R = sqrt(X.*X+Y.*Y+Z.*Z);
+
+      % instantaneous latitude
+      lam = atan2(Z, XY);
+      gam = tom.WGS84.geocentricToGeodetic(lam);
+
+      % instantaneous height
+      h = R-tom.WGS84.geocentricRadius(lam);
+
+      % precalculations
+      clat = cos(gam);
+      slat = sin(gam);
+      slat2 = slat.*slat;
+      s2lat = sin(2.0*gam);
+      s2lat2 = s2lat.*s2lat;
+
+      % gravity model
+      gNp = g1*h.*slat.*clat;
+      gDp = g0*(1.0+g2*slat2+g3*s2lat2)+(g4+g5*slat2).*h+g6*h.*h;
+
+      gZ  = clat.*gNp-slat.*gDp;
+      gXY = -slat.*gNp-clat.*gDp;
+
+      gX = gXY.*cth;
+      gY = gXY.*sth;
+
+      % gravity viewed in NED frame
+      gN = -slat.*gX+clat.*gZ;
+      gE = gY;
+      gD = -clat.*gX-slat.*gZ;
     end
 
     function [gX, gY, gZ] = gravityECEF(X, Y, Z)   
@@ -73,7 +135,7 @@ classdef WGS84
       gT = (3.0*sqrt(5.0)*tom.WGS84.c20)*gmR2.*re2R2.*(XY.*Z./R2);
 
       % gravity viewed in ECEF frame
-      gXY = gR*clam-gT*slam;
+      gXY = gR*clam-gT*slam+tom.WGS84.rotationRate*tom.WGS84.rotationRate*XY;
       gX = gXY.*cth;
       gY = gXY.*sth;
       gZ  = gR*slam+gT*clam;
