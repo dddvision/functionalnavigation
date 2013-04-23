@@ -44,7 +44,7 @@ namespace tom
      * @param[out] gD    Gravity component in the down direction
      *
      * @note
-     * This gravity model does not include centrepetal acceleration or the Coriolis effect.
+     * This gravity model includes centrepetal acceleration.
      */
     static void gravityNED(const double& N, const double& E, const double& D, const double& gamma, double& gN, 
       double& gE, double& gD)
@@ -79,8 +79,9 @@ namespace tom
 
       // gravity viewed in ECEF frame
       double gZ  = gR*slam+gT*clam;
-      double gXY = gR*clam-gT*slam;
+      double gXY = gR*clam-gT*slam+tom::WGS84::rotationRate*tom::WGS84::rotationRate*XY;
 
+      // rotate by longitude
       double gX = gXY*cth;
       double gY = gXY*sth;
 
@@ -102,7 +103,7 @@ namespace tom
      * @param[out] gZ Gravity component in the third direction
      *
      * @note
-     * This gravity model does not include centrepetal acceleration or the Coriolis effect.
+     * This gravity model includes centrepetal acceleration.
      */
     static void gravityECEF(const double& X, const double& Y, const double& Z, double& gX, double& gY, double& gZ)
     {
@@ -126,7 +127,7 @@ namespace tom
       double gT = (3.0*sqrt(5.0)*tom::WGS84::c20)*gmR2*re2R2*(XY*Z/R2);
 
       // gravity viewed in ECEF frame
-      double gXY = gR*clam-gT*slam;
+      double gXY = gR*clam-gT*slam+tom::WGS84::rotationRate*tom::WGS84::rotationRate*XY;
       gX = gXY*cth;
       gY = gXY*sth;
       gZ  = gR*slam+gT*clam;
