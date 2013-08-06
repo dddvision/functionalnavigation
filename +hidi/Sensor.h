@@ -68,12 +68,14 @@ namespace hidi
     virtual uint32_t last(void) = 0;
 
     /**
-     * Get time stamp at a node.
+     * Get GPS equivalent time stamp at a node.
      *
      * @param[in] n index of a node (MATLAB: M-by-N)
      * @return      time stamp at the node (MATLAB: M-by-N)
      *
      * @note
+     * GPS time is measured from the prime meridian in seconds since 1980 JAN 06 T00:00:00.
+     * GPS time may be a few seconds ahead of UTC.
      * Time stamps must not decrease with increasing indices.
      * Throws an exception if any index is out of range.
      */

@@ -34,7 +34,7 @@ classdef Pedometer < hidi.Sensor
         case 13
           stepLabel = 'Jog';
         case 14
-          stepLabel = 'Run Fast';
+          stepLabel = 'Run';
         case 15
           stepLabel = 'Walk Uphill';
         case 16
@@ -60,7 +60,7 @@ classdef Pedometer < hidi.Sensor
         case 26
           stepLabel = 'Turn CW 5ft';
         case 27
-          stepLabel = 'Belly Crawl';
+          stepLabel = 'Crawl';
         otherwise
           stepLabel = 'Undefined';
       end
@@ -78,6 +78,42 @@ classdef Pedometer < hidi.Sensor
         stepID = lookup(stepLabel);
       catch %#ok return zero on lookup error
         stepID = uint32(0);
+      end
+    end
+    
+    % Simplify a step identifier to fall within a limited set of classes.
+    %
+    % @param[in] stepID any step identifier
+    % @return           simplified step identifier
+    % 
+    % @note
+    % The return value identifies one of the following labels
+    %   "Still"    zero displacement and zero rotation
+    %   "Loiter"   zero displacement
+    %   "Forward"  positive sign along forward axis
+    %   "Right"    positive sign along right axis
+    %   "Backward" negative sign along forward axis
+    %   "Left"     negative sign along right axis
+    %   "Run"      positive sign along forward axis
+    %   "Crawl"    positive sign along forward axis
+    function simpleID = simplifyStepID(stepID)
+      switch(stepID)
+        case {1, 2, 4}
+          simpleID = 1; % Still
+        case {3, 5}
+          simpleID = 3; % Loiter
+        case {8, 18}
+          simpleID = 8; % Backward
+        case 9
+          simpleID = 9; % Right
+        case 10
+          simpleID = 10; % Left
+        case {13, 14}
+          simpleID = 14; % Run
+        case 27
+          simpleID = 27; % Crawl
+        otherwise
+          simpleID = 11; % Forward
       end
     end
   end

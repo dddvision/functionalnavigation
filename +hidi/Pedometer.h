@@ -89,7 +89,7 @@ namespace hidi
           stepLabel = "Jog";
           break;
         case 14:
-          stepLabel = "Run Fast";
+          stepLabel = "Run";
           break;
         case 15:
           stepLabel = "Walk Uphill";
@@ -128,7 +128,7 @@ namespace hidi
           stepLabel = "Turn CW 5ft";
           break;
         case 27:
-          stepLabel = "Belly Crawl";
+          stepLabel = "Crawl";
           break;
         default:
           stepLabel = "Undefined";
@@ -165,6 +165,61 @@ namespace hidi
         stepID = iterator->second;
       }
       return (stepID);
+    }
+    
+    /**
+     * Simplify a step identifier to fall within a limited set of classes.
+     *
+     * @param[in] stepID any step identifier
+     * @return           simplified step identifier
+     * 
+     * @note
+     * The return value identifies one of the following labels:
+     *   "Still"    zero displacement and zero rotation
+     *   "Loiter"   zero displacement
+     *   "Forward"  positive sign along forward axis
+     *   "Right"    positive sign along right axis
+     *   "Backward" negative sign along forward axis
+     *   "Left"     negative sign along right axis
+     *   "Run"      positive sign along forward axis
+     *   "Crawl"    positive sign along forward axis
+     */
+    static uint32_t simplifyStepID(const uint32_t& stepID)
+    {
+      uint32_t simpleID;
+      switch(stepID)
+      {
+      case 1:
+      case 2:
+      case 4:
+        simpleID = 1; // Still
+        break; 
+      case 3:
+      case 5:
+        simpleID = 3; // Loiter
+        break; 
+      case 8:
+      case 18:
+        simpleID = 8; // Backward
+        break;
+      case 9:
+        simpleID = 9; // Right
+        break;
+      case 10:
+        simpleID = 10; // Left
+        break;
+      case 13:
+      case 14:
+        simpleID = 14; // Run
+        break;
+      case 27:
+        simpleID = 27; // Crawl
+        break;
+      default:
+        simpleID = 11; // Forward
+        break;
+      }
+      return (simpleID);
     }
     
     /**

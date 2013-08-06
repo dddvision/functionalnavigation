@@ -73,7 +73,7 @@ namespace hidi
   /**
    * Get the current time of day from the operating system.
    *
-   * @return current system time
+   * @return time since 1980 JAN 06 T00:00:00
    */
   double getCurrentTime(void)
   {
