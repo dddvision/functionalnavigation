@@ -65,15 +65,7 @@ classdef SURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     
     % Prepare an image for processing
     function img = prepareImage(this, node)
-      img = this.camera.getImageUInt8(node);
-      switch(this.camera.interpretLayers())
-        case {'rgb', 'rgbi'}
-          img = double(rgb2gray(img(:, :, 1:3)))/255;
-        case {'hsv', 'hsvi'}
-          img = double(img(:, :, 3))/255;
-        otherwise
-          img = double(img)/255;
-      end
+      img = this.camera.getImageDouble(node, uint32(0), uint8(0)); % process red only for speed
     end
   end
 end

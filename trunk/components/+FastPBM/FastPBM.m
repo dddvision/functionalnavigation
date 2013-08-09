@@ -216,8 +216,8 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         figure(figureHandle);
       end
       cla;
-      imageA = rgb2gray(this.sensor.getImageUInt8(nodeA));
-      imageB = rgb2gray(this.sensor.getImageUInt8(nodeB));
+      imageA = this.sensor.getImageUInt8(nodeA, uint32(0), uint8(0)); % process red only for speed
+      imageB = this.sensor.getImageUInt8(nodeB, uint32(0), uint8(0)); % process red only for speed
       imshow(cat(3, zeros(size(imageA)), 0.5+(imageA-imageB)/2, 0.5+(imageB-imageA)));
       axis('image');
       hold('on');

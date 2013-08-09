@@ -113,10 +113,10 @@ function cost = objective(theta, kinect, n, displayFlag)
     z3 = rayLidar(3, :).*depth(ind)';
     
     % process visual image
-    rgb = kinect.getImageUInt8(n);
-    r = rgb(:, :, 1);
-    g = rgb(:, :, 2);
-    b = rgb(:, :, 3);
+    r = kinect.getImageUInt8(n, uint32(0), uint8(0));
+    g = kinect.getImageUInt8(n, uint32(1), uint8(0));
+    b = kinect.getImageUInt8(n, uint32(2), uint8(0));
+    rgb = cat(3, r, g, b);
     v = rgb2gray(rgb);
 
     % find all edges in rgb space using central differences
