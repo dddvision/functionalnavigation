@@ -30,18 +30,18 @@ namespace hidi
 
   public:
    /**
-    * Get number of pixels in the contiguous dimension of each depth image.
-    *
-    * @return number of steps
-    */
-    virtual uint32_t numSteps(void) = 0;
-    
-   /**
     * Get number of pixels in the non-contiguous dimension of each depth image.
     *
     * @return number of strides
     */
     virtual uint32_t numStrides(void) = 0;
+    
+   /**
+    * Get number of pixels in the contiguous dimension of each depth image.
+    *
+    * @return number of steps
+    */
+    virtual uint32_t numSteps(void) = 0;
     
    /**
     * Project unit magnitude ray vectors in the camera frame to points in the depth image.
@@ -72,22 +72,61 @@ namespace hidi
     virtual void inverseProjection(const double& stride, const double& step, double& f, double& r, double& d) = 0;
     
     /**
+     * Get index of first stride within the bounding box of the valid data region.
+     *
+     * @param[in] n node index
+     * @return      stride index
+     *
+     * @note
+     * Throws an exception if node index is out of range.
+     */
+    virtual uint32_t strideMin(const uint32_t& n) = 0;
+    
+    /**
+     * Get index of last stride within the bounding box of the valid data region.
+     *
+     * @param[in] n node index
+     * @return      stride index
+     *
+     * @note
+     * Throws an exception if node index is out of range.
+     */
+    virtual uint32_t strideMax(const uint32_t& n) = 0;
+    
+    /**
+     * Get index of first step within the bounding box of the valid data region.
+     *
+     * @param[in] n node index
+     * @return      step index
+     *
+     * @note
+     * Throws an exception if node index is out of range.
+     */
+    virtual uint32_t stepMin(const uint32_t& n) = 0;
+    
+    /**
+     * Get index of last step within the bounding box of the valid data region.
+     *
+     * @param[in] n node index
+     * @return      step index
+     *
+     * @note
+     * Throws an exception if node index is out of range.
+     */
+    virtual uint32_t stepMax(const uint32_t& n) = 0;
+    
+    /**
      * Get depth image over a bounded region.
      *
-     * @param[in]  node      data index
-     * @param[in]  strideMin index of first stride within bounded region
-     * @param[in]  strideMax index of last stride within bounded region
-     * @param[in]  stepMin   index of first step within bounded region
-     * @param[in]  stepMax   index of last step within bounded region
-     * @param[out] depth     distance from the sensor origin to the scene
+     * @param[in]  n     node index
+     * @param[out] depth distance from the sensor origin to the scene
      *
      * @note
      * The output will be resized to numStrides()*numSteps() and filled within the bounded region.
      * Invalid pixels within the bounded region are filled with NAN.
-     * Throws an exception if any index is out of range.
+     * Throws an exception if node index is out of range.
      */
-    virtual void getDepth(const uint32_t& node, const uint32_t& strideMin, const uint32_t& strideMax, 
-      const uint32_t& stepMin, const uint32_t& stepMax, std::vector<double>& data) = 0;
+    virtual void getDepth(const uint32_t& n, std::vector<double>& depth) = 0;
     
     /**
      * Virtual base class destructor.
