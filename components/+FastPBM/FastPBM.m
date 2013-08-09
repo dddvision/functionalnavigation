@@ -159,7 +159,7 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       strides = double(this.sensor.numStrides());
       center = round([strides/2; steps/2]);
       pix = [center+[1; 1], center-[1; 1]];
-      ray = this.sensor.inverseProjection(pix, this.sensor.first());
+      ray = this.sensor.inverseProjection(pix);
       theta = acos(ray(:, 1)'*ray(:, 2));
     end
     
@@ -216,13 +216,13 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
         figure(figureHandle);
       end
       cla;
-      imageA = rgb2gray(this.sensor.getImage(nodeA));
-      imageB = rgb2gray(this.sensor.getImage(nodeB));
+      imageA = rgb2gray(this.sensor.getImageUInt8(nodeA));
+      imageB = rgb2gray(this.sensor.getImageUInt8(nodeB));
       imshow(cat(3, zeros(size(imageA)), 0.5+(imageA-imageB)/2, 0.5+(imageB-imageA)));
       axis('image');
       hold('on');
-      pixA = this.sensor.projection(rayA, nodeA);
-      pixB = this.sensor.projection(rayB, nodeB);
+      pixA = this.sensor.projection(rayA);
+      pixB = this.sensor.projection(rayB);
       line([pixA(1, :); pixB(1, :)]+1, [pixA(2, :); pixB(2, :)]+1, 'Color', 'r');
       drawnow;
     end
@@ -244,7 +244,7 @@ function y = crossMatrix(x)
   y = [0, -x(3), x(2); x(3), 0, -x(1); -x(2), x(1), 0];
 end
 
-function cost=computeCost2(poseA, poseB, rayA, rayB, deviation)
+function cost = computeCost2(poseA, poseB, rayA, rayB, deviation)
   data = edgeCache(nodeA, nodeB, this);
   u = transpose(data.pixB(:, 1)-data.pixA(:, 1));
   v = transpose(data.pixB(:, 2)-data.pixA(:, 2));
@@ -256,7 +256,7 @@ function cost=computeCost2(poseA, poseB, rayA, rayB, deviation)
   rotation = [Eb(1)-Ea(1);
     Eb(2)-Ea(2);
     Eb(3)-Ea(3)];
-  [uvr, uvt] = generateFlowSparse(this, translation, rotation, transpose(data.pixA), nodeA);
+  [uvr, uvt] = generateFlowSparse(this, translation, rotation, transpose(data.pixA));
  
   % Seperate flow components
   Vxr=uvr(1,:);
@@ -313,9 +313,9 @@ end
 % For pixel coordinate interpretation, see hidi.Camera.projection()
 % Algorithm is based on:
 %   http://code.google.com/p/functionalnavigation/wiki/MotionInducedOpticalFlow
-function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix, nA)
+function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix)
   % Put the pixel coordinates through the inverse camera projection to get ray vectors
-  c = this.sensor.inverseProjection(pix, nA);
+  c = this.sensor.inverseProjection(pix);
 
   % Compute the rotation matrix R that represents the camera frame at time tb
   % relative to the camera frame at time ta.
@@ -331,7 +331,7 @@ function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix, nA)
   c_new = transpose(R)*c; 
 
   % Put the new rays through the forward camera projection to get new pixel coordinates
-  pix_new = this.sensor.projection(c_new, nA);
+  pix_new = this.sensor.projection(c_new);
 
   % The rotational flow field is the pixel coordinate difference
   uvr = pix_new-pix;
@@ -351,7 +351,7 @@ function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix, nA)
   c_new = c-repmat(T_norm, [1, size(c, 2)]);
 
   % Put the new rays through the forward camera projection to get new pixel coordinates
-  pix_new = this.sensor.projection(c_new, nA);
+  pix_new = this.sensor.projection(c_new);
 
   % The translational flow field is the pixel coordinate difference
   uvt = pix_new-pix;

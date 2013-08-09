@@ -5,8 +5,6 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
     steps = uint32(120);
     strides = uint32(160);
     layers = 'rgb';
-    frameDynamic = false;
-    projectionDynamic = false;
     clockBase = [1980, 1, 6, 0, 0, 0];
     defaultRate = 1/30;
     fileFormat = '%05d.png';
@@ -26,7 +24,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
   
   methods (Access = public)
     function this = MacCam(initialTime)
-      this = this@hidi.Camera(initialTime);
+      this = this@hidi.Camera();
       if(this.verbose)
         fprintf('\nInitializing %s', class(this));
       end
@@ -134,42 +132,48 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
       end
     end
     
-    function num = numSteps(this, varargin)
+    function num = numSteps(this)
       num = this.steps;
     end
     
-    function num = numStrides(this, varargin)
+    function num = numStrides(this)
       num = this.strides;
     end
     
-    function str = interpretLayers(this, varargin)
+    function str = interpretLayers(this)
       str = this.layers;
     end
     
-    function im = getImage(this, n, varargin)
+    function s = strideMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = strideMax(this)
+      s = this.numStrides()-uint32(1);
+    end
+    
+    function s = stepMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = stepMax(this)
+      s = this.numSteps()-uint32(1);
+    end
+    
+    function im = getImageUInt8(this, n)
       assert(n>=this.na);
       assert(n<=this.nb);
       num = this.na+this.cameraIncrement*n;
       im = imread(fullfile(this.localCache, sprintf(this.fileFormat, num)));
     end
     
-    function flag = isFrameDynamic(this, varargin)
-      flag = this.frameDynamic;
-    end
-    
-    function pose = getFrame(this, n, varargin)
-      assert(n>=this.na);
-      assert(n<=this.nb);
-      pose.p = this.cameraPositionOffset;
-      pose.q = this.cameraRotationOffset;
-      pose = tom.Pose(pose);
-    end
-        
-    function flag = isProjectionDynamic(this, varargin)
-      flag = this.projectionDynamic;
+    function im = getImageDouble(this, n)
+      im = double(this.getImageUInt8(n))/255.0;
     end
 
-    function pix = projection(this, ray, varargin)
+    function pix = projection(this, ray)
       c1 = ray(1, :);
       c2 = ray(2, :);
       c3 = ray(3, :);
@@ -188,7 +192,7 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
       pix = [pn; pm];
     end
     
-    function ray = inverseProjection(this, pix, varargin)
+    function ray = inverseProjection(this, pix)
       m = double(this.steps);
       n = double(this.strides);
       mc = (m-1)/2;

@@ -42,6 +42,24 @@ namespace hidi
      * @return number of steps
      */
     virtual uint32_t numSteps(void) = 0;
+    
+    /**
+     * Interpret image layers.
+     *
+     * @return character sequence describing the image layers
+     *   'r' red
+     *   'g' green
+     *   'b' blue
+     *   'h' hue
+     *   's' saturation
+     *   'v' grayscale value
+     *   'd' distance from the sensor origin to the scene (meters)
+     *
+     * @note
+     * The number of characters returned is equal to the number of image layers.
+     * Repeated characters may be used to indicate multiple views that share a projection model as in 'rgbrgb'.
+     */
+    virtual std::string interpretLayers(void) = 0;
 
     /**
      * Project unit magnitude ray vectors in the camera frame to points in the image.
@@ -114,24 +132,6 @@ namespace hidi
      * Throws an exception if node index is out of range.
      */
     virtual uint32_t stepMax(const uint32_t& n) = 0;
-    
-    /**
-     * Interpret image layers.
-     *
-     * @return character sequence describing the image layers
-     *   'r' red
-     *   'g' green
-     *   'b' blue
-     *   'h' hue
-     *   's' saturation
-     *   'v' grayscale value
-     *   'd' distance from the sensor origin to the scene (meters)
-     *
-     * @note
-     * The number of characters returned is equal to the number of image layers.
-     * Repeated characters may be used to indicate multiple views that share a projection model as in 'rgbrgb'.
-     */
-    virtual std::string interpretLayers(void) = 0;
     
     /**
      * Get an unsigned 8-bit image over a bounded region.

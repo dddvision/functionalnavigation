@@ -1,10 +1,6 @@
 classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
-  
   properties (Constant = true, GetAccess = private)
     layers = 'rgb';
-    frameDynamic = false;
-    projectionDynamic = false;
-    frame = [0; 0; 0; 1; 0; 0; 0];
   end
   
   properties (Access = private)
@@ -23,7 +19,7 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
   
   methods (Access = public, Static = true)
     function this = CameraSim(initialTime)
-      this = this@hidi.Camera(initialTime);
+      this = this@hidi.Camera();
       numImages = numel(this.poseList);
       this.tn = initialTime+double(1:numImages-1)/this.fps;
       this.im = cell(numImages, 1);
@@ -84,46 +80,49 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     
-    function num = numSteps(this, varargin)
+    function num = numSteps(this)
       num = this.M;
     end
     
-    function num = numStrides(this, varargin)
+    function num = numStrides(this)
       num = this.N;
     end
     
-    function str = interpretLayers(this, varargin)
+    function str = interpretLayers(this)
       str = this.layers;
     end
     
-    function im = getImage(this, n, varargin)
+    function s = strideMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = strideMax(this)
+      s = this.numStrides()-uint32(1);
+    end
+    
+    function s = stepMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = stepMax(this)
+      s = this.numSteps()-uint32(1);
+    end
+    
+    function im = getImageUInt8(this, n)
       assert(this.hasData());
       assert(n>=this.na);
       assert(n<=this.nb);
       im = this.im{n-this.na+uint32(1)};
     end
-
-    function flag = isFrameDynamic(this, varargin)
-      flag = this.frameDynamic;
+    
+    function im = getImageDouble(this, n)
+      im = double(this.getImageUInt8(n))/255.0;
     end
     
-    function pose = getFrame(this, n, varargin)
+    function pix = projection(this, ray)
       assert(this.hasData());
-      assert(n>=this.na);
-      assert(n<=this.nb);
-      pose.p = this.frame(1:3);
-      pose.q = this.frame(4:7);
-      pose = tom.Pose(pose);
-    end
-    
-    function flag = isProjectionDynamic(this, varargin)
-      flag = this.projectionDynamic;
-    end
-    
-    function pix = projection(this, ray, node, varargin)
-      assert(this.hasData());
-      assert(node>=this.na);
-      assert(node<=this.nb);
       ray(1, ray(1, :)<eps) = NaN; % behind the camera
       pix = [this.fHorizontal*ray(2, :)./ray(1, :)+this.cHorizontal;
         this.fVertical*ray(3, :)./ray(1, :)+this.cVertical];
@@ -132,10 +131,8 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
       pix(2, bad) = NaN;
     end
     
-    function ray = inverseProjection(this, pix, node, varargin)
+    function ray = inverseProjection(this, pix)
       assert(this.hasData());
-      assert(node>=this.na);
-      assert(node<=this.nb);
       bad = (pix(1, :)<-0.5)|(pix(1, :)>(double(this.N)-0.5))|(pix(2, :)<-0.5)|(pix(2, :)>(double(this.M)-0.5));
       pix(1, bad) = NaN;
       pix(2, bad) = NaN;
@@ -157,5 +154,4 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
       rgb = imread(fcache);
     end
   end
-  
 end
