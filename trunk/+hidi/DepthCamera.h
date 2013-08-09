@@ -34,14 +34,14 @@ namespace hidi
     *
     * @return number of strides
     */
-    virtual uint32_t numStrides(void) = 0;
+   virtual uint32_t numStrides(void) = 0;
     
    /**
     * Get number of pixels in the contiguous dimension of each depth image.
     *
     * @return number of steps
     */
-    virtual uint32_t numSteps(void) = 0;
+   virtual uint32_t numSteps(void) = 0;
     
    /**
     * Project unit magnitude ray vectors in the camera frame to points in the depth image.
@@ -55,7 +55,7 @@ namespace hidi
     * @note
     * Invalid regions are identified by NAN outputs.
     */
-    virtual void projection(const double& f, const double& r, const double& d, double& stride, double& step) = 0;
+   virtual void projection(const double& f, const double& r, const double& d, double& stride, double& step) = 0;
     
    /**
     * Project points in the depth image to unit magnitude ray vectors in the camera frame.
@@ -69,7 +69,7 @@ namespace hidi
     * @note
     * Invalid regions are identified by NAN outputs.
     */
-    virtual void inverseProjection(const double& stride, const double& step, double& f, double& r, double& d) = 0;
+   virtual void inverseProjection(const double& stride, const double& step, double& f, double& r, double& d) = 0;
     
     /**
      * Get index of first stride within the bounding box of the valid data region.
