@@ -121,16 +121,7 @@ classdef KLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         maxPix = this.maxSearch/angularSpacing;
         this.numLevels = uint32(1+ceil(log2(maxPix/this.halfwin)));
       end
-      img = this.camera.getImageUInt8(node);
-      switch(this.camera.interpretLayers())
-        case {'rgb', 'rgbi'}
-          img = double(rgb2gray(img(:, :, 1:3)));
-        case {'hsv', 'hsvi'}
-          img = double(img(:, :, 3));
-        otherwise
-          img = double(img);
-      end
-      img = img/255;
+      img = this.camera.getImageDouble(node, uint32(0), uint8(0)); % process red only for speed
       img(this.mask) = NaN;     
       multiple = 2^(this.numLevels-1);
       [M, N] = size(img);

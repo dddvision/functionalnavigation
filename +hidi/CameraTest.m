@@ -31,97 +31,98 @@ end
 function testCameraProjection(cam, nb)
   figure(hidi.CameraTest.figureHandle());
 
-  % get an image
-  gray = cam.getImageUInt8(nb);
+  layers = cam.interpretLayers();
+  assert(isa(layers, 'char'));
+  
+  for layer = uint32((1:numel(layers))-1)
+    % get an image
+    gray = cam.getImageDouble(nb, layer, uint8(0));
 
-  % convert to grayscale
-  switch( interpretLayers(cam) )
-  case {'rgb', 'rgbi'}
-    gray = double(rgb2gray(gray(:, :, 1:3)))/255;
-   case {'hsv', 'hsvi'}
-    gray = double(gray(:, :, 3))/255;
-   otherwise
-    gray = double(gray)/255;
-  end
+    % show original image
+    imshow(gray, 'Parent', subplot(3, 3, 1));
 
-  % show original image
-  imshow(gray, 'Parent', subplot(3, 3, 1));
+    % set parameters for your desired camera
+    HEIGHT = 200;
+    WIDTH = 300;
+    CENTER_VERT = (HEIGHT+1)/2;
+    CENTER_HORZ = (WIDTH+1)/2;
 
-  % set parameters for your desired camera
-  HEIGHT = 200;
-  WIDTH = 300;
-  CENTER_VERT = (HEIGHT+1)/2;
-  CENTER_HORZ = (WIDTH+1)/2;
+    for FOCAL = (WIDTH-1)/2*(1:-0.1:0.1)
+      % create rays corresponding to your desired camera
+      [c3, c2] = ndgrid((1:HEIGHT)-CENTER_VERT, (1:WIDTH)-CENTER_HORZ);
+      c1 = repmat(FOCAL, [HEIGHT, WIDTH]);
+      mag = sqrt(c1.*c1+c2.*c2+c3.*c3);
+      mag(abs(mag)<eps) = nan;
+      c1 = c1./mag;
+      c2 = c2./mag;
+      c3 = c3./mag;
+      rays = [c1(:)';c2(:)';c3(:)'];
 
-  for FOCAL = (WIDTH-1)/2*(1:-0.1:0.1)
-    % create rays corresponding to your desired camera
-    [c3, c2] = ndgrid((1:HEIGHT)-CENTER_VERT, (1:WIDTH)-CENTER_HORZ);
-    c1 = repmat(FOCAL, [HEIGHT, WIDTH]);
-    mag = sqrt(c1.*c1+c2.*c2+c3.*c3);
-    mag(abs(mag)<eps) = nan;
-    c1 = c1./mag;
-    c2 = c2./mag;
-    c3 = c3./mag;
-    rays = [c1(:)';c2(:)';c3(:)'];
+      % project these rays to the given camera
+      pix = cam.projection(rays);
 
-    % project these rays to the given camera
-    pix = cam.projection(rays);
+      % grab pixels using bilinear interpolation
+      bad = isnan(pix(1, :))|isnan(pix(2, :));
+      good = ~bad;
+      newImage = zeros(HEIGHT, WIDTH);
+      newImage(bad) = nan;
+      newImage(good) = interp2(gray, pix(1, good)+1, pix(2, good)+1, '*linear', nan);
 
-    % grab pixels using bilinear interpolation
-    bad = isnan(pix(1, :))|isnan(pix(2, :));
-    good = ~bad;
-    newImage = zeros(HEIGHT, WIDTH);
-    newImage(bad) = nan;
-    newImage(good) = interp2(gray, pix(1, good)+1, pix(2, good)+1, '*linear', nan);
-
-    % display the reprojected image
-    imshow(newImage, 'Parent', subplot(3, 3, 2));
-    title('Test Camera Array Projection');
-    drawnow;
-    pause(0.1);
+      % display the reprojected image
+      imshow(newImage, 'Parent', subplot(3, 3, 2));
+      title('Test Camera Array Projection');
+      drawnow;
+      pause(0.1);
+    end
   end
 end
 
 function testCameraProjectionRoundTrip(cam, nb)
   figure(hidi.CameraTest.figureHandle());
 
-  % get an image
-  img = cam.getImageUInt8(nb);
+  layers = cam.interpretLayers();
+  assert(isa(layers, 'char'));
+  
+  for layer = uint32((1:numel(layers))-1)
+  
+    % get an image
+    img = cam.getImageDouble(nb, layer, uint8(0));
 
-  % show image
-  imshow(img, 'Parent', subplot(3, 3, 3));
+    % show image
+    imshow(img, 'Parent', subplot(3, 3, 3));
 
-  % get image size
-  HEIGHT = size(img, 1);
-  WIDTH = size(img, 2);
+    % get image size
+    HEIGHT = size(img, 1);
+    WIDTH = size(img, 2);
 
-  % enumerate pixels
-  [ii, jj] = ndgrid((1:HEIGHT)-1, (1:WIDTH)-1);
-  pix = [jj(:)';ii(:)'];
+    % enumerate pixels
+    [ii, jj] = ndgrid((1:HEIGHT)-1, (1:WIDTH)-1);
+    pix = [jj(:)';ii(:)'];
 
-  % create ray vectors from pixels
-  ray = cam.inverseProjection(pix);
-  c1 = reshape(ray(1, :), [HEIGHT, WIDTH]);
-  c2 = reshape(ray(2, :), [HEIGHT, WIDTH]);
-  c3 = reshape(ray(3, :), [HEIGHT, WIDTH]);
+    % create ray vectors from pixels
+    ray = cam.inverseProjection(pix);
+    c1 = reshape(ray(1, :), [HEIGHT, WIDTH]);
+    c2 = reshape(ray(2, :), [HEIGHT, WIDTH]);
+    c3 = reshape(ray(3, :), [HEIGHT, WIDTH]);
 
-  % show the ray vector components
-  imshow(c1, [], 'Parent', subplot(3, 3, 4));
-  imshow(c2, [], 'Parent', subplot(3, 3, 5));
-  title('Test Camera Array Inverse Projection');
-  imshow(c3, [], 'Parent', subplot(3, 3, 6));
+    % show the ray vector components
+    imshow(c1, [], 'Parent', subplot(3, 3, 4));
+    imshow(c2, [], 'Parent', subplot(3, 3, 5));
+    title('Test Camera Array Inverse Projection');
+    imshow(c3, [], 'Parent', subplot(3, 3, 6));
 
-  % reproject the rays to pixel coordinates
-  pixout = cam.projection(ray);
-  iout = reshape(pixout(2, :), [HEIGHT, WIDTH]);
-  jout = reshape(pixout(1, :), [HEIGHT, WIDTH]);
+    % reproject the rays to pixel coordinates
+    pixout = cam.projection(ray);
+    iout = reshape(pixout(2, :), [HEIGHT, WIDTH]);
+    jout = reshape(pixout(1, :), [HEIGHT, WIDTH]);
 
-  % calculate pixel coordinate differences
-  idiff = abs(iout-ii);
-  jdiff = abs(jout-jj);
+    % calculate pixel coordinate differences
+    idiff = abs(iout-ii);
+    jdiff = abs(jout-jj);
 
-  % display differences
-  imshow(10000*idiff+0.5, 'Parent', subplot(3, 3, 7));
-  imshow(10000*jdiff+0.5, 'Parent', subplot(3, 3, 8));
-  title('Test Camera Array Projection Round Trip (image area should be gray)');
+    % display differences
+    imshow(10000*idiff+0.5, 'Parent', subplot(3, 3, 7));
+    imshow(10000*jdiff+0.5, 'Parent', subplot(3, 3, 8));
+    title('Test Camera Array Projection Round Trip (image area should be gray)');
+  end
 end

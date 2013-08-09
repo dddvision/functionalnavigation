@@ -131,16 +131,17 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
       s = this.numSteps()-uint32(1);
     end
     
-    function data = getImageUInt8(this, n)
+    function img = getImageUInt8(this, n, layer, img) %#ok input not used
       assert(this.ready)
       fid = fopen(fullfile(this.localCache, ['video', num2str(n, this.fileFormat), '.dat']));
-      data = fread(fid, this.steps*this.strides*3, '*uint8');
+      img = fread(fid, this.steps*this.strides*3, '*uint8');
       fclose(fid);
-      data = permute(reshape(data, [3, this.strides, this.steps]), [3, 2, 1]);
+      img = permute(reshape(img, [3, this.strides, this.steps]), [3, 2, 1]);
+      img = img(:, :, layer+1);
     end
     
-    function im = getImageDouble(this, n)
-      im = double(this.getImageUInt8(n))/255.0;
+    function img = getImageDouble(this, n, layer, img)
+      img = double(this.getImageUInt8(n, layer, uint8(img*255.0)))/255.0;
     end
     
     function data = getDepth(this, n)

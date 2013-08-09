@@ -162,15 +162,16 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
       s = this.numSteps()-uint32(1);
     end
     
-    function im = getImageUInt8(this, n)
+    function img = getImageUInt8(this, n, layer, img) %#ok input not used
       assert(n>=this.na);
       assert(n<=this.nb);
       num = this.na+this.cameraIncrement*n;
-      im = imread(fullfile(this.localCache, sprintf(this.fileFormat, num)));
+      img = imread(fullfile(this.localCache, sprintf(this.fileFormat, num)));
+      img = img(:, :, layer+1);
     end
     
-    function im = getImageDouble(this, n)
-      im = double(this.getImageUInt8(n))/255.0;
+    function img = getImageDouble(this, n, layer, img)
+      img = double(this.getImageUInt8(n, layer, uint8(img*255.0)))/255.0;
     end
 
     function pix = projection(this, ray)

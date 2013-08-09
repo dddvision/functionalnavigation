@@ -100,15 +100,16 @@ classdef CameraSim < hidi.Camera
       s = this.numSteps()-uint32(1);
     end
       
-    function im = getImageUInt8(this, n)
+    function img = getImageUInt8(this, n, layer, img) %#ok input not used
       assert(this.hasData());
       assert(n>=this.na);
       assert(n<=this.nb);
-      im = imread([this.localCache, '/color', sprintf('%06d',n), '.png']);
+      img = imread([this.localCache, '/color', sprintf('%06d',n), '.png']);
+      img = img(:, :, layer+1);
     end
 
-    function im = getImageDouble(this, n)
-      im = double(this.getImageUInt8(n))/255.0;
+    function img = getImageDouble(this, n, layer, img)
+      img = double(this.getImageUInt8(n, layer, uint8(img*255.0)))/255.0;
     end
     
     function pix = projection(this, ray)

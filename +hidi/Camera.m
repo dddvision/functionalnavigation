@@ -9,7 +9,7 @@ classdef Camera < hidi.Sensor
     s = strideMax(this);
     s = stepMin(this);
     s = stepMax(this);
-    img = getImageUInt8(this, n)
-    img = getImageDouble(this, n);
+    img = getImageUInt8(this, n, layer, img)
+    img = getImageDouble(this, n, layer, img);
   end
 end

@@ -136,9 +136,9 @@ namespace hidi
     /**
      * Get an unsigned 8-bit image over a bounded region.
      *
-     * @param[in]  n     node index
-     * @param[in]  layer layer index
-     * @param[out] image values
+     * @param[in]      n     node index
+     * @param[in]      layer layer index
+     * @param[in, out] image values
      *
      * @note
      * Output values are normalized and truncated to fit the bit depth.
@@ -151,9 +151,9 @@ namespace hidi
     /**
      * Get a real image over a bounded region.
      *
-     * @param[in]  n     node index
-     * @param[in]  layer layer index
-     * @param[out] image values
+     * @param[in]      n     node index
+     * @param[in]      layer layer index
+     * @param[in, out] image values
      *
      * @note
      * Output values are either normalized to the range [0, 1] or given in meters.
