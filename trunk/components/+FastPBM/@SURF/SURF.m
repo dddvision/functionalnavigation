@@ -38,15 +38,7 @@ classdef SURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     function time = getTime(this, n)
       time = this.camera.getTime(n);
     end
-    
-    function flag = isFrameDynamic(this)
-      flag = this.camera.isFrameDynamic();
-    end
-    
-    function pose = getFrame(this, node)
-      pose = this.camera.getFrame(node);
-    end
-    
+  
     function [rayA, rayB] = findMatches(this, nodeA, nodeB)
       dataA = FastPBM.nodeCache(nodeA, this);
       dataB = FastPBM.nodeCache(nodeB, this);
@@ -58,7 +50,7 @@ classdef SURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     function data = processNode(this, node)
       img = this.prepareImage(node);
       key = OpenSurf(img, this.openSurfOptions);
-      ray = this.camera.inverseProjection([[key.x];[key.y]]-1, node);
+      ray = this.camera.inverseProjection([[key.x];[key.y]]-1);
       data = struct('key', key, 'ray', ray);
     end
 
@@ -73,7 +65,7 @@ classdef SURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     
     % Prepare an image for processing
     function img = prepareImage(this, node)
-      img = this.camera.getImage(node);
+      img = this.camera.getImageUInt8(node);
       switch(this.camera.interpretLayers())
         case {'rgb', 'rgbi'}
           img = double(rgb2gray(img(:, :, 1:3)))/255;

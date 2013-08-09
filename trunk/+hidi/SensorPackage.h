@@ -28,7 +28,6 @@ namespace hidi
    *
    * The following sensor types are not included:
    *   Camera (will be added)
-   *   CameraArray (might be added)
    *   GenericSensor (will not be added)
    */
   class SensorPackage

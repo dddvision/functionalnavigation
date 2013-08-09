@@ -1,9 +1,6 @@
 classdef CameraSim < hidi.Camera
-  
   properties (Constant = true, GetAccess = private)
     layers = 'rgb';
-    frameDynamic = false;
-    projectionDynamic = false;
   end
   
   properties (SetAccess = private, GetAccess = private)
@@ -15,12 +12,11 @@ classdef CameraSim < hidi.Camera
     localCache
     imsize
     cameraType
-    frameOffset
   end
   
   methods (Access = public, Static = true)
     function this = CameraSim(initialTime, secondsPerRefresh, localCache)
-      this = this@hidi.Camera(initialTime);
+      this = this@hidi.Camera();
       this.secondsPerRefresh = secondsPerRefresh;
       this.localCache = localCache;
       info = dir(fullfile(localCache,'/color*'));
@@ -33,7 +29,7 @@ classdef CameraSim < hidi.Camera
       this.nb = this.na;
       this.tn = S.T_cam+initialTime; % same policy for all sensors
       this.cameraType = S.CAMERA_TYPE;
-      this.frameOffset = [S.CAMERA_OFFSET; 1; 0; 0; 0];
+      %frameOffset = [S.CAMERA_OFFSET; 1; 0; 0; 0];
       imageA = imread([this.localCache, '/color', sprintf('%06d',this.na), '.png']);
       this.imsize = size(imageA);
       this.refreshCount = uint32(0);
@@ -74,46 +70,49 @@ classdef CameraSim < hidi.Camera
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     
-    function num = numSteps(this,varargin)
+    function num = numSteps(this)
       num = uint32(this.imsize(1));
     end
 
-    function num = numStrides(this,varargin)
+    function num = numStrides(this)
       num = uint32(this.imsize(2));
     end
     
-    function str = interpretLayers(this, varargin)
+    function str = interpretLayers(this)
       str = this.layers;
     end
     
-    function im = getImage(this, n, varargin)
+    function s = strideMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = strideMax(this)
+      s = this.numStrides()-uint32(1);
+    end
+    
+    function s = stepMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = stepMax(this)
+      s = this.numSteps()-uint32(1);
+    end
+      
+    function im = getImageUInt8(this, n)
       assert(this.hasData());
       assert(n>=this.na);
       assert(n<=this.nb);
       im = imread([this.localCache, '/color', sprintf('%06d',n), '.png']);
     end
-    
-    function flag = isFrameDynamic(this, varargin)
-      flag = this.frameDynamic;
-    end
-    
-    function pose = getFrame(this, n, varargin)
-      assert(this.hasData());
-      assert(n>=this.na);
-      assert(n<=this.nb);
-      pose.p = this.frameOffset(1:3);
-      pose.q = this.frameOffset(4:7);
-      pose = tom.Pose(pose);
-    end
-        
-    function flag = isProjectionDynamic(this, varargin)
-      flag = this.projectionDynamic;
-    end
 
-    function pix = projection(this, ray, node, varargin)
+    function im = getImageDouble(this, n)
+      im = double(this.getImageUInt8(n))/255.0;
+    end
+    
+    function pix = projection(this, ray)
       assert(this.hasData());
-      assert(node>=this.na);
-      assert(node<=this.nb);
       switch(this.cameraType)
         case 2
           m = this.imsize(1);
@@ -155,10 +154,8 @@ classdef CameraSim < hidi.Camera
       
     end
     
-    function ray = inverseProjection(this, pix, node, varargin)
+    function ray = inverseProjection(this, pix)
       assert(this.hasData());
-      assert(node>=this.na);
-      assert(node<=this.nb);
       switch(this.cameraType)
         case 2
           m = this.imsize(1);
@@ -211,5 +208,4 @@ classdef CameraSim < hidi.Camera
       end      
     end
   end
-  
 end

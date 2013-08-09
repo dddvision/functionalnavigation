@@ -87,10 +87,10 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       
       for k = 1:numel(n)
         % Convert pose to longitude
-        lo = tom.WGS84.ecefToLLA(pose(k).p(1), pose(k).p(2), pose(k).p(3));
+        lla = tom.WGS84.ecefToLLA(pose(k).p(1), pose(k).p(2), pose(k).p(3));
       
         % Add error based on real Global Sat gps data
-        lon(k) = lo+this.noise(2, n(k));
+        lon(k) = lla(1)+this.noise(2, n(k));
       end
     end
     
@@ -106,10 +106,10 @@ classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
       
       for k = 1:numel(n)
         % Convert pose to longitude
-        [lo, la] = tom.WGS84.ecefToLLA(pose(k).p(1), pose(k).p(2), pose(k).p(3)); %#ok unused output
+        lla = tom.WGS84.ecefToLLA(pose(k).p(1), pose(k).p(2), pose(k).p(3));
       
         % Add error based on real Global Sat gps data
-        lat(k) = la+this.noise(3, n(k));
+        lat(k) = lla(2)+this.noise(3, n(k));
       end
     end
     

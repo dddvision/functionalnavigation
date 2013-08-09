@@ -113,12 +113,34 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
       num = this.steps;
     end
     
-    function data = getImage(this, n)
+    function s = strideMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = strideMax(this)
+      s = this.numStrides()-uint32(1);
+    end
+    
+    function s = stepMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = stepMax(this)
+      s = this.numSteps()-uint32(1);
+    end
+    
+    function data = getImageUInt8(this, n)
       assert(this.ready)
       fid = fopen(fullfile(this.localCache, ['video', num2str(n, this.fileFormat), '.dat']));
       data = fread(fid, this.steps*this.strides*3, '*uint8');
       fclose(fid);
       data = permute(reshape(data, [3, this.strides, this.steps]), [3, 2, 1]);
+    end
+    
+    function im = getImageDouble(this, n)
+      im = double(this.getImageUInt8(n))/255.0;
     end
     
     function data = getDepth(this, n)
@@ -139,7 +161,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
       data(bad) = NaN;
     end
     
-    function pix = imageProjection(this, ray, varargin)
+    function pix = imageProjection(this, ray)
       c1 = ray(1, :);
       c2 = ray(2, :);
       c3 = ray(3, :);
@@ -158,7 +180,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
       pix = [pn; pm];
     end
     
-    function ray = imageInverseProjection(this, pix, varargin)
+    function ray = imageInverseProjection(this, pix)
       m = double(this.steps);
       n = double(this.strides);
       mc = (m-1)/2;
@@ -179,7 +201,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
       ray = [c1; c2; c3];
     end
     
-    function pix = depthProjection(this, ray, varargin)
+    function pix = depthProjection(this, ray)
       c1 = ray(1, :);
       c2 = ray(2, :);
       c3 = ray(3, :);
@@ -198,7 +220,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
       pix = [pn; pm];
     end
     
-    function ray = depthInverseProjection(this, pix, varargin)
+    function ray = depthInverseProjection(this, pix)
       m = double(this.steps);
       n = double(this.strides);
       mc = (m-1)/2;

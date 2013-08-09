@@ -92,15 +92,7 @@ classdef KLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     function time = getTime(this, n)
       time = this.camera.getTime(n);
     end
-    
-    function flag = isFrameDynamic(this)
-      flag = this.camera.isFrameDynamic();
-    end
-    
-    function pose = getFrame(this, node)
-      pose = this.camera.getFrame(node);
-    end
-    
+
     function [rayA, rayB] = findMatches(this, nodeA, nodeB)
       data = FastPBM.edgeCache(nodeA, nodeB, this);
       rayA = data.rayA;
@@ -125,8 +117,8 @@ classdef KLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       xA = xA(good);
       yA = yA(good);
 
-      rayA = this.camera.inverseProjection([yA; xA], nodeA);
-      rayB = this.camera.inverseProjection([yB; xB], nodeA);
+      rayA = this.camera.inverseProjection([yA; xA]);
+      rayB = this.camera.inverseProjection([yB; xB]);
       data = struct('rayA', rayA, 'rayB', rayB);
     end
     
@@ -141,12 +133,12 @@ classdef KLTOpenCV < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         strides = this.camera.numStrides();
         pix = [double(strides)-2; double(steps)-1]/2;
         pix = [pix, pix+[1; 0]];
-        ray = this.camera.inverseProjection(pix, node);
+        ray = this.camera.inverseProjection(pix);
         angularSpacing = acos(dot(ray(:, 1), ray(:, 2)));
         maxPix = this.maxSearch/angularSpacing;
         this.numLevels = uint32(1+ceil(log2(maxPix/this.halfwin)));
       end
-      img = this.camera.getImage(node);
+      img = this.camera.getImageUInt8(node);
       switch(this.camera.interpretLayers())
         case {'rgb', 'rgbi'}
           img = double(rgb2gray(img(:, :, 1:3)));

@@ -113,7 +113,7 @@ function cost = objective(theta, kinect, n, displayFlag)
     z3 = rayLidar(3, :).*depth(ind)';
     
     % process visual image
-    rgb = kinect.getImage(n);
+    rgb = kinect.getImageUInt8(n);
     r = rgb(:, :, 1);
     g = rgb(:, :, 2);
     b = rgb(:, :, 3);

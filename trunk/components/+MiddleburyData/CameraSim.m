@@ -3,9 +3,6 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
   properties (Constant = true, GetAccess = private)
     rho = 3740/(1390/2); % Reference: http://vision.middlebury.edu/stereo/data/scenes2005/
     layers = 'rgb';
-    frameDynamic = false;
-    projectionDynamic = false;
-    frame = [0; 0; 0; 1; 0; 0; 0];
   end
   
   properties (Access = private)
@@ -20,7 +17,7 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
   
   methods (Access = public, Static = true)
     function this = CameraSim(initialTime)
-      this = this@hidi.Camera(initialTime);
+      this = this@hidi.Camera();
       this.tn = initialTime+double(1:this.numImages-1)/this.fps;
       this.im = cell(this.numImages, 1);
       for n = 1:this.numImages
@@ -68,46 +65,49 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     
-    function num = numSteps(this, varargin)
+    function num = numSteps(this)
       num = this.M;
     end
     
-    function num = numStrides(this, varargin)
+    function num = numStrides(this)
       num = this.N;
     end
     
-    function str = interpretLayers(this, varargin)
+    function str = interpretLayers(this)
       str = this.layers;
     end
     
-    function im = getImage(this, n, varargin)
+    function s = strideMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = strideMax(this)
+      s = this.numStrides()-uint32(1);
+    end
+    
+    function s = stepMin(this)
+      assert(isa(this, 'hidi.Camera'));
+      s = uint32(0);
+    end
+    
+    function s = stepMax(this)
+      s = this.numSteps()-uint32(1);
+    end
+    
+    function im = getImageUInt8(this, n)
       assert(this.hasData());
       assert(n>=this.na);
       assert(n<=this.nb);
       im = this.im{n-this.na+uint32(1)};
     end
-
-    function flag = isFrameDynamic(this, varargin)
-      flag = this.frameDynamic;
+    
+    function im = getImageDouble(this, n)
+      im = double(this.getImageUInt8(n))/255.0;
     end
     
-    function pose = getFrame(this, n, varargin)
+    function pix = projection(this, ray)
       assert(this.hasData());
-      assert(n>=this.na);
-      assert(n<=this.nb);
-      pose.p = this.frame(1:3);
-      pose.q = this.frame(4:7);
-      pose = tom.Pose(pose);
-    end
-    
-    function flag = isProjectionDynamic(this, varargin)
-      flag = this.projectionDynamic;
-    end
-    
-    function pix = projection(this, ray, node, varargin)
-      assert(this.hasData());
-      assert(node>=this.na);
-      assert(node<=this.nb);
       m = double(this.M);
       n = double(this.N);
       coef = this.rho./ray(1,:);
@@ -116,10 +116,8 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
       pix = [(u2+1)*((n-1)/2); (u1+1)*((m-1)/2)];
     end
     
-    function ray = inverseProjection(this, pix, node, varargin)
+    function ray = inverseProjection(this, pix)
       assert(this.hasData());
-      assert(node>=this.na);
-      assert(node<=this.nb);
       m = double(this.M);
       n = double(this.N);
       u1 = ((m-1)/(n-1))*(pix(2,:)*(2/(m-1))-1);
