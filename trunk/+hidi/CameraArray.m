@@ -54,7 +54,7 @@ classdef CameraArray < hidi.Sensor
     %  'rgb'  red-green-blue
     %  'hsv'  hue-saturation-value
     %  'v'    grayscale
-    %  'i'    infrared
+    %  'd'    depth
     %
     % NOTES
     % The number of characters in the returned string is equal to the number of image layers
