@@ -80,6 +80,10 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     
+    function str = interpretLayers(this)
+      str = this.layers;
+    end
+    
     function num = numSteps(this)
       num = this.M;
     end
@@ -88,26 +92,50 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
       num = this.N;
     end
     
-    function str = interpretLayers(this)
-      str = this.layers;
-    end
-    
-    function s = strideMin(this)
+    function s = strideMin(this, node)
       assert(isa(this, 'hidi.Camera'));
+      assert(isa(node, 'uint32'));
       s = uint32(0);
     end
     
-    function s = strideMax(this)
+    function s = strideMax(this, node)
+      assert(isa(node, 'uint32'));
       s = this.numStrides()-uint32(1);
     end
     
-    function s = stepMin(this)
+    function s = stepMin(this, node)
       assert(isa(this, 'hidi.Camera'));
+      assert(isa(node, 'uint32'));
       s = uint32(0);
     end
     
-    function s = stepMax(this)
+    function s = stepMax(this, node)
+      assert(isa(node, 'uint32'));
       s = this.numSteps()-uint32(1);
+    end
+    
+    function [strides, steps] = projection(this, c1, c2, c3)
+      assert(this.hasData());
+      c1(c1<eps) = nan; % behind the camera
+      strides = this.fHorizontal*c2./c1+this.cHorizontal;
+      steps = this.fVertical*c3./c1+this.cVertical;
+      bad = (strides(:)<-0.5)|(strides(:)>(double(this.N)-0.5))|(steps(:)<-0.5)|(steps(:)>(double(this.M)-0.5));
+      strides(bad) = nan;
+      steps(bad) = nan;
+    end
+    
+    function [c1, c2, c3] = inverseProjection(this, strides, steps)
+      assert(this.hasData());
+      bad = (strides(:)<-0.5)|(strides(:)>(double(this.N)-0.5))|(steps(:)<-0.5)|(steps(:)>(double(this.M)-0.5));
+      strides(bad) = nan;
+      steps(bad) = nan;
+      c1 = ones(size(strides));
+      c2 = (strides-this.cHorizontal)./this.fHorizontal;
+      c3 = (steps-this.cVertical)./this.fVertical;
+      den = sqrt(1+c2.*c2+c3.*c3);
+      c1 = c1./den;
+      c2 = c2./den;
+      c3 = c3./den;
     end
     
     function img = getImageUInt8(this, n, layer, img) %#ok input not used
@@ -120,30 +148,6 @@ classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
     
     function img = getImageDouble(this, n, layer, img)
       img = double(this.getImageUInt8(n, layer, uint8(img*255.0)))/255.0;
-    end
-    
-    function pix = projection(this, ray)
-      assert(this.hasData());
-      ray(1, ray(1, :)<eps) = NaN; % behind the camera
-      pix = [this.fHorizontal*ray(2, :)./ray(1, :)+this.cHorizontal;
-        this.fVertical*ray(3, :)./ray(1, :)+this.cVertical];
-      bad = (pix(1, :)<-0.5)|(pix(1, :)>(double(this.N)-0.5))|(pix(2, :)<-0.5)|(pix(2, :)>(double(this.M)-0.5));
-      pix(1, bad) = NaN;
-      pix(2, bad) = NaN;
-    end
-    
-    function ray = inverseProjection(this, pix)
-      assert(this.hasData());
-      bad = (pix(1, :)<-0.5)|(pix(1, :)>(double(this.N)-0.5))|(pix(2, :)<-0.5)|(pix(2, :)>(double(this.M)-0.5));
-      pix(1, bad) = NaN;
-      pix(2, bad) = NaN;
-      ray = [ones(1, size(pix, 2));
-        (pix(1, :)-this.cHorizontal)/this.fHorizontal;
-        (pix(2, :)-this.cVertical)/this.fVertical];
-      den = sqrt(1+ray(2, :).*ray(2, :)+ray(3, :).*ray(3, :));
-      ray(1, :) = ray(1, :)./den;
-      ray(2, :) = ray(2, :)./den;
-      ray(3, :) = ray(3, :)./den;
     end
   end
   

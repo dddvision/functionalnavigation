@@ -159,8 +159,8 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       strides = double(this.sensor.numStrides());
       center = round([strides/2; steps/2]);
       pix = [center+[1; 1], center-[1; 1]];
-      ray = this.sensor.inverseProjection(pix);
-      theta = acos(ray(:, 1)'*ray(:, 2));
+      [f, r] = this.sensor.inverseProjection(pix(1, :), pix(2, :));
+      theta = acos(dot(f, r));
     end
     
     % Compute the residual error for each pair of rays
@@ -221,9 +221,9 @@ classdef FastPBM < FastPBM.FastPBMConfig & tom.Measure
       imshow(cat(3, zeros(size(imageA)), 0.5+(imageA-imageB)/2, 0.5+(imageB-imageA)));
       axis('image');
       hold('on');
-      pixA = this.sensor.projection(rayA);
-      pixB = this.sensor.projection(rayB);
-      line([pixA(1, :); pixB(1, :)]+1, [pixA(2, :); pixB(2, :)]+1, 'Color', 'r');
+      [strideA, stepA] = this.sensor.projection(rayA(1, :), rayA(2, :), rayA(3, :));
+      [strideB, stepB] = this.sensor.projection(rayB(1, :), rayB(2, :), rayB(3, :));
+      line([strideA; strideB]+1, [stepA; stepB]+1, 'Color', 'r');
       drawnow;
     end
   end
@@ -315,8 +315,9 @@ end
 %   http://code.google.com/p/functionalnavigation/wiki/MotionInducedOpticalFlow
 function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix)
   % Put the pixel coordinates through the inverse camera projection to get ray vectors
-  c = this.sensor.inverseProjection(pix);
-
+  [f, r, d] = this.sensor.inverseProjection(pix(1, :), pix(2, :));
+  c = [f; r; d];
+  
   % Compute the rotation matrix R that represents the camera frame at time tb
   % relative to the camera frame at time ta.
   s1 = sin(deltaEuler(1));
@@ -331,8 +332,9 @@ function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix)
   c_new = transpose(R)*c; 
 
   % Put the new rays through the forward camera projection to get new pixel coordinates
-  pix_new = this.sensor.projection(c_new);
-
+  [strides, steps] = this.sensor.projection(c_new(1, :), c_new(2, :), c_new(3, :));
+  pix_new = [strides; steps];
+  
   % The rotational flow field is the pixel coordinate difference
   uvr = pix_new-pix;
   
@@ -351,8 +353,9 @@ function [uvr, uvt] = generateFlowSparse(this, deltap, deltaEuler, pix)
   c_new = c-repmat(T_norm, [1, size(c, 2)]);
 
   % Put the new rays through the forward camera projection to get new pixel coordinates
-  pix_new = this.sensor.projection(c_new);
-
+  [strides, steps] = this.sensor.projection(c_new(1, :), c_new(2, :), c_new(3, :));
+  pix_new = [strides; steps];
+  
   % The translational flow field is the pixel coordinate difference
   uvt = pix_new-pix;
   

@@ -94,9 +94,9 @@ classdef KLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
       xA = xA(good);
       yA = yA(good);
 
-      rayA = this.camera.inverseProjection([yA; xA]);
-      rayB = this.camera.inverseProjection([yB; xB]);
-      data = struct('rayA', rayA, 'rayB', rayB);
+      [fA, rA, dA] = this.camera.inverseProjection(yA, xA);
+      [fB, rB, dB] = this.camera.inverseProjection(yB, xB);
+      data = struct('rayA', [fA; rA; dA], 'rayB', [fB; rB; dB]);
     end
     
     % Prepare an image for processing
@@ -111,13 +111,12 @@ classdef KLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
         steps = this.camera.numSteps();
         strides = this.camera.numStrides();
         [stepGrid, strideGrid] = ndgrid(0:(double(steps)-1), 0:(double(strides)-1));
-        pix = [strideGrid(:)'; stepGrid(:)'];
-        ray = this.camera.inverseProjection(pix);
-        this.mask = find(isnan(ray(1, :)));
+        f = this.camera.inverseProjection(strideGrid, stepGrid);
+        this.mask = find(isnan(f));
         pix = [double(strides)-2; double(steps)-1]/2;
         pix = [pix, pix+[1; 0]];
-        ray = this.camera.inverseProjection(pix);
-        angularSpacing = acos(dot(ray(:, 1), ray(:, 2)));
+        [f, r] = this.camera.inverseProjection(pix(1, :), pix(2, :));
+        angularSpacing = acos(f(1)*f(2)+r(1)*r(2));
         maxPix = this.maxSearch/angularSpacing;
         this.numLevels = uint32(1+ceil(log2(maxPix/this.halfwin)));
       end

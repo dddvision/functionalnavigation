@@ -132,6 +132,10 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
       end
     end
     
+    function str = interpretLayers(this)
+      str = this.layers;
+    end
+    
     function num = numSteps(this)
       num = this.steps;
     end
@@ -140,26 +144,59 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
       num = this.strides;
     end
     
-    function str = interpretLayers(this)
-      str = this.layers;
-    end
-    
-    function s = strideMin(this)
+    function s = strideMin(this, node)
       assert(isa(this, 'hidi.Camera'));
+      assert(isa(node, 'uint32'));
       s = uint32(0);
     end
     
-    function s = strideMax(this)
+    function s = strideMax(this, node)
+      assert(isa(node, 'uint32'));
       s = this.numStrides()-uint32(1);
     end
     
-    function s = stepMin(this)
+    function s = stepMin(this, node)
       assert(isa(this, 'hidi.Camera'));
+      assert(isa(node, 'uint32'));
       s = uint32(0);
     end
     
-    function s = stepMax(this)
+    function s = stepMax(this, node)
+      assert(isa(node, 'uint32'));
       s = this.numSteps()-uint32(1);
+    end
+    
+    function [strides, steps] = projection(this, c1, c2, c3)
+      m = double(this.steps);
+      n = double(this.strides);
+      c1((c1<=0.0)|(c1>1.0)) = NaN;
+      r = this.focal.*sqrt(1.0-c1.*c1)./c1; % r = f*tan(acos(c1))
+      theta = atan2(c3, c2);
+      mc = (m-1.0)/2.0;
+      nc = (n-1.0)/2.0;
+      steps = r.*sin(theta)+mc;
+      strides = r.*cos(theta)+nc;
+      outside = ((-0.5>steps(:))|(-0.5>strides(:))|(strides(:)>(n-0.5))|(steps(:)>(m-0.5)));
+      steps(outside) = NaN;
+      strides(outside) = NaN;
+    end
+    
+    function [c1, c2, c3] = inverseProjection(this, strides, steps)
+      m = double(this.steps);
+      n = double(this.strides);
+      outside = ((-0.5>steps(:))|(-0.5>strides(:))|(strides(:)>(n-0.5))|(steps(:)>(m-0.5)));
+      steps(outside) = NaN;
+      strides(outside) = NaN;
+      mc = (m-1)/2.0;
+      nc = (n-1)/2.0;
+      steps = steps-mc;
+      strides = strides-nc;
+      r = sqrt(steps.*steps+strides.*strides);
+      alpha = atan(r./this.focal);
+      theta = atan2(steps, strides);
+      c1 = cos(alpha);
+      c2 = sin(alpha).*cos(theta);
+      c3 = sin(alpha).*sin(theta);
     end
     
     function img = getImageUInt8(this, n, layer, img) %#ok input not used
@@ -172,46 +209,6 @@ classdef MacCam < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.Camer
     
     function img = getImageDouble(this, n, layer, img)
       img = double(this.getImageUInt8(n, layer, uint8(img*255.0)))/255.0;
-    end
-
-    function pix = projection(this, ray)
-      c1 = ray(1, :);
-      c2 = ray(2, :);
-      c3 = ray(3, :);
-      m = double(this.steps);
-      n = double(this.strides);
-      mc = (m-1)/2;
-      nc = (n-1)/2;
-      c1((c1<=0)|(c1>1)) = NaN;
-      r = this.focal*sqrt(1-c1.*c1)./c1; % r = f*tan(acos(c1))
-      theta = atan2(c3, c2);
-      pm = r.*sin(theta)+mc;
-      pn = r.*cos(theta)+nc;
-      outside = ((-0.5>pm)|(-0.5>pn)|(pn>(n-0.5))|(pm>(m-0.5)));
-      pm(outside) = NaN;
-      pn(outside) = NaN;
-      pix = [pn; pm];
-    end
-    
-    function ray = inverseProjection(this, pix)
-      m = double(this.steps);
-      n = double(this.strides);
-      mc = (m-1)/2;
-      nc = (n-1)/2;
-      pm = pix(2, :);
-      pn = pix(1, :);
-      outside = ((-0.5>pm)|(-0.5>pn)|(pn>(n-0.5))|(pm>(m-0.5)));
-      pm(outside) = NaN;
-      pn(outside) = NaN;
-      pm = pm-mc;
-      pn = pn-nc;
-      r = sqrt(pm.*pm+pn.*pn);
-      alpha = atan(r/this.focal);
-      theta = atan2(pm, pn);
-      c1 = cos(alpha);
-      c2 = sin(alpha).*cos(theta);
-      c3 = sin(alpha).*sin(theta);
-      ray = [c1; c2; c3];
     end
     
     % Stops the image capture process
