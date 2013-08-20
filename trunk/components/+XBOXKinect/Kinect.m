@@ -1,4 +1,4 @@
-classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
+classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Camera
   properties (Constant = true)
     steps = uint32(480);
     strides = uint32(640);
@@ -12,9 +12,7 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
   end
   
   properties
-    imageFocal
     depthFocal
-    initialTime
     na
     nb
     ready
@@ -41,14 +39,11 @@ classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Sensor
   
   methods (Access = public)
     function this = Kinect(initialTime)
-      this = this@hidi.Sensor();
-      assert(isa(initialTime, 'double'));
+      this = this@hidi.Camera();
       if(this.verbose)
         fprintf('\nInitializing %s', class(this));
       end
       
-      this.initialTime = initialTime;
-      this.imageFocal = double(this.strides)*cot(this.imageFieldOfView/2);
       this.depthFocal = double(this.strides)*cot(this.depthFieldOfView/2);      
       
       if(this.overwrite)
