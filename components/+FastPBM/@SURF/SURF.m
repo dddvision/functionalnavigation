@@ -50,8 +50,8 @@ classdef SURF < FastPBM.FastPBMConfig & FastPBM.SparseTracker
     function data = processNode(this, node)
       img = this.prepareImage(node);
       key = OpenSurf(img, this.openSurfOptions);
-      ray = this.camera.inverseProjection([[key.x];[key.y]]-1);
-      data = struct('key', key, 'ray', ray);
+      [c1, c2, c3] = this.camera.inverseProjection(key.x-1, key.y-1);
+      data = struct('key', key, 'ray', [c1; c2; c3]);
     end
 
     function data = processEdge(this, nodeA, nodeB)

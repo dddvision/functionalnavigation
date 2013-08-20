@@ -56,17 +56,19 @@ function testCameraProjection(cam, nb)
       c1 = c1./mag;
       c2 = c2./mag;
       c3 = c3./mag;
-      rays = [c1(:)';c2(:)';c3(:)'];
 
       % project these rays to the given camera
-      pix = cam.projection(rays);
+      [strides, steps] = cam.projection(c1, c2, c3);
+      if((size(strides, 1)~=HEIGHT)||(size(strides, 2)~=WIDTH)||(size(steps, 1)~=HEIGHT)||(size(steps, 2)~=WIDTH))
+        error('CameraTest: projection function output dimensions do not match input dimensions');
+      end
 
       % grab pixels using bilinear interpolation
-      bad = isnan(pix(1, :))|isnan(pix(2, :));
+      bad = isnan(strides)|isnan(steps);
       good = ~bad;
       newImage = zeros(HEIGHT, WIDTH);
       newImage(bad) = nan;
-      newImage(good) = interp2(gray, pix(1, good)+1, pix(2, good)+1, '*linear', nan);
+      newImage(good) = interp2(gray, strides(good)+1, steps(good)+1, '*linear', nan);
 
       % display the reprojected image
       imshow(newImage, 'Parent', subplot(3, 3, 2));
@@ -96,14 +98,14 @@ function testCameraProjectionRoundTrip(cam, nb)
     WIDTH = size(img, 2);
 
     % enumerate pixels
-    [ii, jj] = ndgrid((1:HEIGHT)-1, (1:WIDTH)-1);
-    pix = [jj(:)';ii(:)'];
+    [strides, steps] = ndgrid((1:HEIGHT)-1, (1:WIDTH)-1);
 
     % create ray vectors from pixels
-    ray = cam.inverseProjection(pix);
-    c1 = reshape(ray(1, :), [HEIGHT, WIDTH]);
-    c2 = reshape(ray(2, :), [HEIGHT, WIDTH]);
-    c3 = reshape(ray(3, :), [HEIGHT, WIDTH]);
+    [c1, c2, c3] = cam.inverseProjection(strides, steps);
+    if((size(c1, 1)~=HEIGHT)||(size(c1, 2)~=WIDTH)||(size(c2, 1)~=HEIGHT)||(size(c2, 2)~=WIDTH)||...
+      (size(c3, 1)~=HEIGHT)||(size(c3, 2)~=WIDTH))
+      error('CameraTest: inverse projection function output dimensions do not match input dimensions');
+    end
 
     % show the ray vector components
     imshow(c1, [], 'Parent', subplot(3, 3, 4));
@@ -112,13 +114,14 @@ function testCameraProjectionRoundTrip(cam, nb)
     imshow(c3, [], 'Parent', subplot(3, 3, 6));
 
     % reproject the rays to pixel coordinates
-    pixout = cam.projection(ray);
-    iout = reshape(pixout(2, :), [HEIGHT, WIDTH]);
-    jout = reshape(pixout(1, :), [HEIGHT, WIDTH]);
+    [jout, iout] = cam.projection(c1, c2, c3);
+    if((size(jout, 1)~=HEIGHT)||(size(jout, 2)~=WIDTH)||(size(iout, 1)~=HEIGHT)||(size(iout, 2)~=WIDTH))
+      error('CameraTest: projection function output dimensions do not match input dimensions');
+    end
 
     % calculate pixel coordinate differences
-    idiff = abs(iout-ii);
-    jdiff = abs(jout-jj);
+    idiff = abs(iout-strides);
+    jdiff = abs(jout-steps);
 
     % display differences
     imshow(10000*idiff+0.5, 'Parent', subplot(3, 3, 7));

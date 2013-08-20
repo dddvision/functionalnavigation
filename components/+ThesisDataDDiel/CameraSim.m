@@ -70,6 +70,10 @@ classdef CameraSim < hidi.Camera
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     
+    function str = interpretLayers(this)
+      str = this.layers;
+    end
+    
     function num = numSteps(this)
       num = uint32(this.imsize(1));
     end
@@ -78,26 +82,120 @@ classdef CameraSim < hidi.Camera
       num = uint32(this.imsize(2));
     end
     
-    function str = interpretLayers(this)
-      str = this.layers;
-    end
-    
-    function s = strideMin(this)
+    function s = strideMin(this, node)
       assert(isa(this, 'hidi.Camera'));
+      assert(isa(node, 'uint32'));
       s = uint32(0);
     end
     
-    function s = strideMax(this)
+    function s = strideMax(this, node)
+      assert(isa(node, 'uint32'));
       s = this.numStrides()-uint32(1);
     end
     
-    function s = stepMin(this)
+    function s = stepMin(this, node)
       assert(isa(this, 'hidi.Camera'));
+      assert(isa(node, 'uint32'));
       s = uint32(0);
     end
     
-    function s = stepMax(this)
+    function s = stepMax(this, node)
+      assert(isa(node, 'uint32'));
       s = this.numSteps()-uint32(1);
+    end
+    
+    function [strides, steps] = projection(this, forward, right, down)
+      assert(this.hasData());
+      switch(this.cameraType)
+        case 2
+          m = this.imsize(1);
+          n = this.imsize(2);
+          center = find(abs(1.0-forward)<eps);
+          forward(center) = eps;
+          scale = (2.0/pi)*acos(forward)./sqrt(1.0-forward.*forward);
+          scale(center) = 0.0;
+          behind = find(forward<=0.0);
+          u1 = scale.*down;
+          u2 = scale.*right;
+          u1(behind) = nan;
+          u2(behind) = nan;
+          strides = (u2+1.0)*((n-1.0)/2.0);
+          steps = (u1+1.0)*((m-1)/2.0);
+        case 4
+          thmax = 1.570796;
+          ic = 254.5;
+          jc = 317.0;
+          a1 = 153.170245942;
+          a2 = -0.083878888;
+          b1 = 0.149954284;
+          b2 = -0.06062850;
+          c1 = -down;
+          c2 = forward;
+          c3 = -right;
+          c1(c1<cos(thmax)) = nan;
+          th = acos(c1);
+          th2 = th.*th;
+          r = (a1*th+a2*th2)./(1.0+b1*th+b2*th2);
+          mag = sqrt(c2.*c2+c3.*c3);
+          mag(abs(mag)<eps) = eps;
+          strides = jc+r.*c2./mag-1.0;
+          steps = ic+r.*c3./mag-1.0;
+        otherwise
+          error('unrecognized camera type');
+      end   
+      
+    end
+    
+    function [c1, c2, c3] = inverseProjection(this, strides, steps)
+      assert(this.hasData());
+      switch(this.cameraType)
+        case 2
+          m = this.imsize(1);
+          n = this.imsize(2);
+          down = (steps+1.0)*2.0/(n-1.0)+(m+1.0)/(1.0-n);
+          right = (strides+1.0)*(2.0/(n-1.0))+(1.0+n)/(1.0-n);
+          r = sqrt(down.*down+right.*right);
+          a = (r>1.0);
+          b = (r==0.0);
+          ca = ((r~=0.0)&(right<0.0));
+          cb = ((r~=0.0)&(right>=0.0));
+          phi = zeros(size(b));
+          phi(ca) = pi-asin(down(ca)./r(ca));
+          phi(cb) = asin(down(cb)./r(cb));
+          theta = r*(pi/2.0);
+          cp = cos(phi);
+          ct = cos(theta);
+          sp = sin(phi);
+          st = sin(theta);
+          c1 = ct;
+          c2 = cp.*st;
+          c3 = sp.*st;
+          c1(a) = nan;
+          c2(a) = nan;
+          c3(a) = nan;
+        case 4
+          thmax = 1.570796;
+          ic = 254.5;
+          jc = 317.0;
+          a1 = 153.170245942;
+          a2 = -0.083878888;
+          b1 = 0.149954284;
+          b2 = -0.06062850;
+          i = steps+1.0;
+          j = strides+1.0;
+          j = j-jc;
+          i = i-ic;
+          r = sqrt(i.*i+j.*j);
+          rmax = (a1*thmax+a2*thmax.*thmax)./(1.0+b1*thmax+b2*thmax.*thmax);
+          r(r>rmax) = nan;
+          th = (sqrt(a1*a1-2.0*a1*b1*r+(4.0*a2+(b1*b1-4.0*b2)*r).*r)-a1+b1*r)./(2.0*(a2-b2*r));
+          c1 = -cos(th);
+          r(r<eps) = 1.0;
+          c2 = sin(th).*j./r;
+          c3 = -sin(th).*i./r;
+        otherwise
+          error('unrecognized camera type');
+      end
     end
       
     function img = getImageUInt8(this, n, layer, img) %#ok input not used
@@ -110,103 +208,6 @@ classdef CameraSim < hidi.Camera
 
     function img = getImageDouble(this, n, layer, img)
       img = double(this.getImageUInt8(n, layer, uint8(img*255.0)))/255.0;
-    end
-    
-    function pix = projection(this, ray)
-      assert(this.hasData());
-      switch(this.cameraType)
-        case 2
-          m = this.imsize(1);
-          n = this.imsize(2);
-          c1 = ray(1, :);
-          c2 = ray(2, :);
-          c3 = ray(3, :);
-          center = find(abs(1-c1)<eps);
-          c1(center) = eps;
-          scale = (2/pi)*acos(c1)./sqrt(1-c1.*c1);
-          scale(center) = 0;
-          behind = find(c1(:)<=0);
-          u1 = scale.*c3;
-          u2 = scale.*c2;
-          u1(behind) = NaN;
-          u2(behind) = NaN;
-          pix = [(u2+1)*((n-1)/2); (u1+1)*((m-1)/2)];
-        case 4
-          thmax = 1.570796;
-          ic = 254.5;
-          jc = 317.0;
-          a1 = 153.170245942;
-          a2 = -0.083878888;
-          b1 = 0.149954284;
-          b2 = -0.06062850;
-          c1 = -ray(3, :);
-          c2 = ray(1, :);
-          c3 = -ray(2, :);
-          c1(c1<cos(thmax)) = NaN;
-          th = acos(c1);
-          th2 = th.*th;
-          r = (a1*th+a2*th2)./(1+b1*th+b2*th2);
-          mag = sqrt(c2.*c2+c3.*c3);
-          mag(abs(mag)<eps) = eps;
-          pix = [jc+r.*c2./mag-1; ic+r.*c3./mag-1];
-        otherwise
-          error('unrecognized camera type');
-      end   
-      
-    end
-    
-    function ray = inverseProjection(this, pix)
-      assert(this.hasData());
-      switch(this.cameraType)
-        case 2
-          m = this.imsize(1);
-          n = this.imsize(2);
-          down = (pix(2, :)+1)*2/(n-1)+(m+1)/(1-n);
-          right = (pix(1, :)+1)*(2/(n-1))+(1+n)/(1-n);
-          r = sqrt(down.*down+right.*right);
-          a = (r>1);
-          b = (r==0);
-          ca = ((r~=0)&(right<0));
-          cb = ((r~=0)&(right>=0));
-          phi = zeros(size(b));
-          phi(ca) = pi-asin(down(ca)./r(ca));
-          phi(cb) = asin(down(cb)./r(cb));
-          theta = r*(pi/2);
-          cp = cos(phi);
-          ct = cos(theta);
-          sp = sin(phi);
-          st = sin(theta);
-          c1 = ct;
-          c2 = cp.*st;
-          c3 = sp.*st;
-          c1(a) = NaN;
-          c2(a) = NaN;
-          c3(a) = NaN;
-          ray = cat(1, c1, c2, c3);
-        case 4
-          thmax = 1.570796;
-          ic = 254.5;
-          jc = 317.0;
-          a1 = 153.170245942;
-          a2 = -0.083878888;
-          b1 = 0.149954284;
-          b2 = -0.06062850;
-          i = pix(2, :)+1;
-          j = pix(1, :)+1;
-          j = j-jc;
-          i = i-ic;
-          r = sqrt(i.*i+j.*j);
-          rmax = (a1*thmax+a2*thmax^2)./(1+b1*thmax+b2*thmax^2);
-          r(r>rmax) = NaN;
-          th = (sqrt(a1^2-2*a1*b1*r+(4*a2+(b1^2-4*b2)*r).*r)-a1+b1*r)./(2*(a2-b2*r));
-          c1 = cos(th);
-          r(r<eps) = 1;
-          c2 = sin(th).*j./r;
-          c3 = sin(th).*i./r;
-          ray = cat(1, c2, -c3, -c1);
-        otherwise
-          error('unrecognized camera type');
-      end      
     end
   end
 end

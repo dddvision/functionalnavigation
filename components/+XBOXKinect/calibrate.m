@@ -92,7 +92,7 @@ function cost = objective(theta, kinect, n, displayFlag)
     
     steps = kinect.numSteps();
     strides = kinect.numStrides();
-    depth = kinect.getDepth(n);
+    depth = kinect.getImageDouble(n, uint32(3), []);
    
     % find all depth edge pixels
     depthInv = 1./depth;
@@ -106,11 +106,10 @@ function cost = objective(theta, kinect, n, displayFlag)
     % place depth edges in the world using p1, p2, p3
     [pix2, pix1] = find(depthEdge);
     ind = sub2ind([steps, strides], pix2, pix1);
-    pix = [pix1'; pix2'];
-    rayLidar = kinect.depthInverseProjection(pix, uint32(1));
-    z1 = rayLidar(1, :).*depth(ind)';
-    z2 = rayLidar(2, :).*depth(ind)';
-    z3 = rayLidar(3, :).*depth(ind)';
+    [c1, c2, c3] = kinect.depthInverseProjection(pix1', pix2');
+    z1 = c1.*depth(ind)';
+    z2 = c2.*depth(ind)';
+    z3 = c3.*depth(ind)';
     
     % process visual image
     r = kinect.getImageUInt8(n, uint32(0), uint8(0));
@@ -138,7 +137,8 @@ function cost = objective(theta, kinect, n, displayFlag)
   rayCamera = zz./([1; 1; 1]*max(depthCamera, eps));
 
   % reproject depth edges to the image space
-  pixCamera = kinect.imageProjection(rayCamera, uint32(1));
+  [pix1, pix2] = kinect.projection(rayCamera(1, :), rayCamera(2, :), rayCamera(3, :));
+  pixCamera = [pix1; pix2];
   outside = isnan(pixCamera(1, :));
   pixCamera = pixCamera(:, ~outside);
   pixCamera = round(pixCamera+1);

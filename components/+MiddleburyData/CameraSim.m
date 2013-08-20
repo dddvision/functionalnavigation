@@ -65,6 +65,10 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
       time(:) = this.tn(n(:)-this.na+uint32(1));
     end
     
+    function str = interpretLayers(this)
+      str = this.layers;
+    end
+    
     function num = numSteps(this)
       num = this.M;
     end
@@ -73,26 +77,49 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
       num = this.N;
     end
     
-    function str = interpretLayers(this)
-      str = this.layers;
-    end
-    
-    function s = strideMin(this)
+    function s = strideMin(this, node)
       assert(isa(this, 'hidi.Camera'));
+      assert(isa(node, 'uint32'));
       s = uint32(0);
     end
     
-    function s = strideMax(this)
+    function s = strideMax(this, node)
+      assert(isa(node, 'uint32'));
       s = this.numStrides()-uint32(1);
     end
     
-    function s = stepMin(this)
+    function s = stepMin(this, node)
       assert(isa(this, 'hidi.Camera'));
+      assert(isa(node, 'uint32'));
       s = uint32(0);
     end
     
-    function s = stepMax(this)
+    function s = stepMax(this, node)
+      assert(isa(node, 'uint32'));
       s = this.numSteps()-uint32(1);
+    end
+    
+    function [strides, steps] = projection(this, c1, c2, c3)
+      assert(this.hasData());
+      m = double(this.M);
+      n = double(this.N);
+      coef = this.rho./c1;
+      u1 = ((n-1.0)/(m-1.0))*coef.*c3;
+      u2 = coef.*c2;
+      strides = (u2+1.0)*((n-1.0)/2.0);
+      steps = (u1+1.0)*((m-1.0)/2.0);
+    end
+    
+    function [c1, c2, c3] = inverseProjection(this, strides, steps)
+      assert(this.hasData());
+      m = double(this.M);
+      n = double(this.N);
+      u1 = ((m-1.0)/(n-1.0))*(steps*(2.0/(m-1.0))-1.0);
+      u2 = strides*(2.0/(n-1.0))-1.0;
+      den = sqrt(u1.*u1+u2.*u2+this.rho*this.rho);
+      c1 = this.rho./den;
+      c2 = u2./den;
+      c3 = u1./den;
     end
     
     function img = getImageUInt8(this, n, layer, img) %#ok input not used
@@ -105,26 +132,6 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
     
     function img = getImageDouble(this, n, layer, img)
       img = double(this.getImageUInt8(n, layer, uint8(img*255.0)))/255.0;
-    end
-    
-    function pix = projection(this, ray)
-      assert(this.hasData());
-      m = double(this.M);
-      n = double(this.N);
-      coef = this.rho./ray(1,:);
-      u1 = ((n-1)/(m-1))*coef.*ray(3, :);
-      u2 = coef.*ray(2, :);
-      pix = [(u2+1)*((n-1)/2); (u1+1)*((m-1)/2)];
-    end
-    
-    function ray = inverseProjection(this, pix)
-      assert(this.hasData());
-      m = double(this.M);
-      n = double(this.N);
-      u1 = ((m-1)/(n-1))*(pix(2,:)*(2/(m-1))-1);
-      u2 = pix(1, :)*(2/(n-1))-1;
-      den = sqrt(u1.*u1+u2.*u2+this.rho*this.rho);
-      ray = [this.rho./den; u2./den; u1./den];
     end
   end
   
