@@ -36,10 +36,6 @@ classdef GenericSensor < hidi.Sensor
       switch(this.sensorType)
         case hidi.SensorType.ACCELEROMETER_ARRAY
           data = this.sensor.getSpecificForce(node, this.axisIndex);
-        case hidi.SensorType.GYROSCOPE_ARRAY
-          data = this.sensor.getAngularRate(node, this.axisIndex);
-        case hidi.SensorType.MAGNETOMETER_ARRAY
-          data = this.sensor.getMagneticField(node, this.axisIndex);
         case hidi.SensorType.ALTIMETER
           data = this.sensor.getAltitude(node);
         case hidi.SensorType.GPS_RECEIVER
@@ -53,6 +49,10 @@ classdef GenericSensor < hidi.Sensor
             otherwise
               error('ExtractNorms: Sensor axis index out of range.');
           end
+        case hidi.SensorType.GYROSCOPE_ARRAY
+          data = this.sensor.getAngularRate(node, this.axisIndex);
+        case hidi.SensorType.MAGNETOMETER_ARRAY
+          data = this.sensor.getMagneticField(node, this.axisIndex);
         otherwise
           error('ExtractNorms: Invalid sensor type.');
       end

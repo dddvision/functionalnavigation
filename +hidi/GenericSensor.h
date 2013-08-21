@@ -70,12 +70,6 @@ namespace hidi
         case ACCELEROMETER_ARRAY:
           data = dynamic_cast<hidi::AccelerometerArray*>(sensor)->getSpecificForce(node, axisIndex);
           break;
-        case GYROSCOPE_ARRAY:
-          data = dynamic_cast<hidi::GyroscopeArray*>(sensor)->getAngularRate(node, axisIndex);
-          break;
-        case MAGNETOMETER_ARRAY:
-          data = dynamic_cast<hidi::MagnetometerArray*>(sensor)->getMagneticField(node, axisIndex);
-          break;
         case ALTIMETER:
           data = dynamic_cast<hidi::Altimeter*>(sensor)->getAltitude(node);
           break;
@@ -95,6 +89,12 @@ namespace hidi
             default:
               throw("GenericSensor: Sensor axis index out of range.");
           }
+          break;
+        case GYROSCOPE_ARRAY:
+          data = dynamic_cast<hidi::GyroscopeArray*>(sensor)->getAngularRate(node, axisIndex);
+          break;
+        case MAGNETOMETER_ARRAY:
+          data = dynamic_cast<hidi::MagnetometerArray*>(sensor)->getMagneticField(node, axisIndex);
           break;
         default:
           throw("GenericSensor: Invalid sensor type.");
