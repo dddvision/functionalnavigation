@@ -6,10 +6,11 @@
 #include <string>
 #include <vector>
 #include "AccelerometerArray.h"
+#include "Altimeter.h"
+#include "Camera.h"
+#include "GPSReceiver.h"
 #include "GyroscopeArray.h"
 #include "MagnetometerArray.h"
-#include "Altimeter.h"
-#include "GPSReceiver.h"
 #include "Pedometer.h"
 
 namespace hidi
@@ -20,15 +21,15 @@ namespace hidi
    * @note
    * The following sensor types are included:
    *   AccelerometerArray
+   *   Altimeter
+   *   Camera
+   *   GPSReceiver
    *   GyroscopeArray
    *   MagnetometerArray
-   *   Altimeter
-   *   GPSReceiver
    *   Pedometer
    *
    * The following sensor types are not included:
-   *   Camera (will be added)
-   *   GenericSensor (will not be added)
+   *   GenericSensor
    */
   class SensorPackage
   {
@@ -265,15 +266,28 @@ namespace hidi
     void refresh(void)
     {
       std::vector<AccelerometerArray*> accelerometerArray = getAccelerometerArray();
+      std::vector<Altimeter*> altimeter = getAltimeter();
+      std::vector<Camera*> camera = getCamera();
+      std::vector<GPSReceiver*> gpsReceiver = getGPSReceiver();
       std::vector<GyroscopeArray*> gyroscopeArray = getGyroscopeArray();
       std::vector<MagnetometerArray*> magnetometerArray = getMagnetometerArray();
-      std::vector<Altimeter*> altimeter = getAltimeter();
-      std::vector<GPSReceiver*> gpsReceiver = getGPSReceiver();
       std::vector<Pedometer*> pedometer = getPedometer();
       size_t n;
       for(n = 0; n<accelerometerArray.size(); ++n)
       {
         accelerometerArray[n]->refresh();
+      }
+      for(n = 0; n<altimeter.size(); ++n)
+      {
+        altimeter[n]->refresh();
+      }
+      for(n = 0; n<camera.size(); ++n)
+      {
+        camera[n]->refresh();
+      }
+      for(n = 0; n<gpsReceiver.size(); ++n)
+      {
+        gpsReceiver[n]->refresh();
       }
       for(n = 0; n<gyroscopeArray.size(); ++n)
       {
@@ -282,14 +296,6 @@ namespace hidi
       for(n = 0; n<magnetometerArray.size(); ++n)
       {
         magnetometerArray[n]->refresh();
-      }
-      for(n = 0; n<altimeter.size(); ++n)
-      {
-        altimeter[n]->refresh();
-      }
-      for(n = 0; n<gpsReceiver.size(); ++n)
-      {
-        gpsReceiver[n]->refresh();
       }
       for(n = 0; n<pedometer.size(); ++n)
       {
@@ -310,6 +316,39 @@ namespace hidi
     }
 
     /**
+     * Get altimeter.
+     *
+     * @return vector of pointers to shared resources (do not delete)
+     */
+    virtual std::vector<Altimeter*> getAltimeter(void)
+    {
+      std::vector<Altimeter*> sensor(0);
+      return (sensor);
+    }
+    
+    /**
+     * Get camera.
+     *
+     * @return vector of pointers to shared resources (do not delete)
+     */
+    virtual std::vector<Camera*> getCamera(void)
+    {
+      std::vector<Camera*> sensor(0);
+      return (sensor);
+    }
+    
+    /**
+     * Get GPS receiver.
+     *
+     * @return vector of pointers to shared resources (do not delete)
+     */
+    virtual std::vector<GPSReceiver*> getGPSReceiver(void)
+    {
+      std::vector<GPSReceiver*> sensor(0);
+      return (sensor);
+    }
+    
+    /**
      * Get gyroscope array.
      *
      * @return vector of pointers to shared resources (do not delete)
@@ -328,28 +367,6 @@ namespace hidi
     virtual std::vector<MagnetometerArray*> getMagnetometerArray(void)
     {
       std::vector<MagnetometerArray*> sensor(0);
-      return (sensor);
-    }
-
-    /**
-     * Get altimeter.
-     *
-     * @return vector of pointers to shared resources (do not delete)
-     */
-    virtual std::vector<Altimeter*> getAltimeter(void)
-    {
-      std::vector<Altimeter*> sensor(0);
-      return (sensor);
-    }
-
-    /**
-     * Get GPS receiver.
-     *
-     * @return vector of pointers to shared resources (do not delete)
-     */
-    virtual std::vector<GPSReceiver*> getGPSReceiver(void)
-    {
-      std::vector<GPSReceiver*> sensor(0);
       return (sensor);
     }
     
