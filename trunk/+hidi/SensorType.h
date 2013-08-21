@@ -11,11 +11,12 @@ namespace hidi
   typedef enum
   {
     ACCELEROMETER_ARRAY = static_cast<uint32_t>(0),
-    GYROSCOPE_ARRAY = static_cast<uint32_t>(1),
-    MAGNETOMETER_ARRAY = static_cast<uint32_t>(2),
-    ALTIMETER = static_cast<uint32_t>(3),
-    GPS_RECEIVER = static_cast<uint32_t>(4),
-    PEDOMETER = static_cast<uint32_t>(5)
+    ALTIMETER = static_cast<uint32_t>(1),
+    CAMERA = static_cast<uint32_t>(2),
+    GPS_RECEIVER = static_cast<uint32_t>(3),
+    GYROSCOPE_ARRAY = static_cast<uint32_t>(4),
+    MAGNETOMETER_ARRAY = static_cast<uint32_t>(5),
+    PEDOMETER = static_cast<uint32_t>(6)
   } SensorType;
 }
   

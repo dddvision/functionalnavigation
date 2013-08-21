@@ -124,30 +124,34 @@ classdef SensorPackage < handle
     
   methods (Access = public)
     function refresh(this)
-      persistent init accelerometerArray gyroscopeArray magnetometerArray altimeter gpsReceiver pedometer
+      persistent init accelerometerArray altimeter camera gpsReceiver gyroscopeArray magnetometerArray pedometer
       if(isempty(init))
         accelerometerArray = this.getAccelerometerArray();
+        altimeter = this.getAltimeter();
+        camera = this.getCamera();
+        gpsReceiver = this.getGPSReceiver();
         gyroscopeArray = this.getGyroscopeArray();
         magnetometerArray = this.getMagnetometerArray();
-        altimeter = this.getAltimeter();
-        gpsReceiver = this.getGPSReceiver();
         pedometer = this.getPedometer();
         init = true;
       end
       for n = 1:numel(accelerometerArray)
         accelerometerArray{n}.refresh();
       end
+      for n = 1:numel(altimeter)
+        altimeter{n}.refresh();
+      end
+      for n = 1:numel(camera)
+        camera{n}.refresh();
+      end
+      for n = 1:numel(gpsReceiver)
+        gpsReceiver{n}.refresh();
+      end
       for n = 1:numel(gyroscopeArray)
         gyroscopeArray{n}.refresh();
       end
       for n = 1:numel(magnetometerArray)
         magnetometerArray{n}.refresh();
-      end
-      for n = 1:numel(altimeter)
-        altimeter{n}.refresh();
-      end
-      for n = 1:numel(gpsReceiver)
-        gpsReceiver{n}.refresh();
       end
       for n = 1:numel(pedometer)
         pedometer{n}.refresh();
@@ -157,10 +161,11 @@ classdef SensorPackage < handle
   
   methods (Access = public, Abstract = true)
     sensor = getAccelerometerArray(this);
+    sensor = getAltimeter(this);
+    sensor = getCamera(this);
+    sensor = getGPSReceiver(this);
     sensor = getGyroscopeArray(this);
     sensor = getMagnetometerArray(this);
-    sensor = getAltimeter(this);
-    sensor = getGPSReceiver(this);
     sensor = getPedometer(this);
   end
 end

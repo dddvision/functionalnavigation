@@ -10,15 +10,25 @@ classdef SensorComposite
       this.sensorLabel = {};
     
       accelerometer = package.getAccelerometerArray();
-      gyroscope = package.getGyroscopeArray();
-      magnetometer = package.getMagnetometerArray();
       altimeter = package.getAltimeter();
       gpsReceiver = package.getGPSReceiver();
+      gyroscope = package.getGyroscopeArray();
+      magnetometer = package.getMagnetometerArray();
 
       for s = uint32((1:numel(accelerometer))-1)
         for a = uint32(0:2)
           this.sensor{end+1} = hidi.GenericSensor(hidi.SensorType.ACCELEROMETER_ARRAY, accelerometer{s+1}, a);
           this.sensorLabel{end+1} = ['Accelerometer[', num2str(s), '][', num2str(a), ']'];
+        end
+      end
+      for s = uint32((1:numel(altimeter))-1)
+        this.sensor{end+1} = hidi.GenericSensor(hidi.SensorType.ALTIMETER, altimeter{s+1}, uint32(0));
+        this.sensorLabel{end+1} = ['Altimeter[', num2str(s), ']'];
+      end
+      for s = uint32((1:numel(gpsReceiver))-1)
+        for a = uint32(0:2)
+          this.sensor{end+1} = hidi.GenericSensor(hidi.SensorType.GPS_RECEIVER, gpsReceiver{s+1}, a);
+          this.sensorLabel{end+1} = ['GPSReceiver[', num2str(s), '][', num2str(a), ']'];
         end
       end
       for s = uint32((1:numel(gyroscope))-1)
@@ -31,16 +41,6 @@ classdef SensorComposite
         for a = uint32(0:2)
           this.sensor{end+1} = hidi.GenericSensor(hidi.SensorType.MAGNETOMETER_ARRAY, magnetometer{s+1}, a);
           this.sensorLabel{end+1} = ['Magnetometer[', num2str(s), '][', num2str(a), ']'];
-        end
-      end
-      for s = uint32((1:numel(altimeter))-1)
-        this.sensor{end+1} = hidi.GenericSensor(hidi.SensorType.ALTIMETER, altimeter{s+1}, uint32(0));
-        this.sensorLabel{end+1} = ['Altimeter[', num2str(s), ']'];
-      end
-      for s = uint32((1:numel(gpsReceiver))-1)
-        for a = uint32(0:2)
-          this.sensor{end+1} = hidi.GenericSensor(hidi.SensorType.GPS_RECEIVER, gpsReceiver{s+1}, a);
-          this.sensorLabel{end+1} = ['GPSReceiver[', num2str(s), '][', num2str(a), ']'];
         end
       end
     end

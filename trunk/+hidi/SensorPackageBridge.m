@@ -37,6 +37,30 @@ classdef SensorPackageBridge < hidi.SensorPackage
       end
     end
     
+    function sensor = getAltimeter(this)
+      h = feval(this.m, uint32(0), 'getAltimeter');
+      sensor = {};
+      for s = 1:numel(h)
+        sensor{s} = hidi.AltimeterBridge(this.m, h(s)); %#ok grows in loop
+      end
+    end
+    
+    function sensor = getCamera(this)
+      h = feval(this.m, uint32(0), 'getCamera');
+      sensor = {};
+      for s = 1:numel(h)
+        sensor{s} = hidi.CameraBridge(this.m, h(s)); %#ok grows in loop
+      end
+    end
+    
+    function sensor = getGPSReceiver(this)
+      h = feval(this.m, uint32(0), 'getGPSReceiver');
+      sensor = {};
+      for s = 1:numel(h)
+        sensor{s} = hidi.GPSReceiverBridge(this.m, h(s)); %#ok grows in loop
+      end
+    end
+    
     function sensor = getGyroscopeArray(this)
       h = feval(this.m, uint32(0), 'getGyroscopeArray');
       sensor = {};
@@ -50,22 +74,6 @@ classdef SensorPackageBridge < hidi.SensorPackage
       sensor = {};
       for s = 1:numel(h)
         sensor{s} = hidi.MagnetometerArrayBridge(this.m, h(s)); %#ok grows in loop
-      end
-    end
-    
-    function sensor = getAltimeter(this)
-      h = feval(this.m, uint32(0), 'getAltimeter');
-      sensor = {};
-      for s = 1:numel(h)
-        sensor{s} = hidi.AltimeterBridge(this.m, h(s)); %#ok grows in loop
-      end
-    end
-    
-    function sensor = getGPSReceiver(this)
-      h = feval(this.m, uint32(0), 'getGPSReceiver');
-      sensor = {};
-      for s = 1:numel(h)
-        sensor{s} = hidi.GPSReceiverBridge(this.m, h(s)); %#ok grows in loop
       end
     end
     
