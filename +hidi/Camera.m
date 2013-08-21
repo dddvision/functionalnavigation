@@ -9,7 +9,7 @@ classdef Camera < hidi.Sensor
     step = stepMax(this, node);
     [stride, step] = projection(this, forward, right, down);
     [forward, right, down] = inverseProjection(this, stride, step);
-    img = getImageUInt8(this, node, layer, img)
+    img = getImageUInt8(this, node, layer, img);
     img = getImageDouble(this, node, layer, img);
   end
 end

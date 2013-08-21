@@ -3,10 +3,11 @@
 
 #include "SensorPackage.h"
 #include "AccelerometerArrayAdapter.h"
+#include "AltimeterAdapter.h"
+#include "CameraAdapter.h"
+#include "GPSReceiverAdapter.h"
 #include "GyroscopeArrayAdapter.h"
 #include "MagnetometerArrayAdapter.h"
-#include "AltimeterAdapter.h"
-#include "GPSReceiverAdapter.h"
 #include "PedometerAdapter.h"
 
 namespace hidi
@@ -26,7 +27,22 @@ namespace hidi
     {
       return (source->getAccelerometerArray());
     }
+    
+    virtual std::vector<Altimeter*> getAltimeter(void)
+    {
+      return (source->getAltimeter());
+    }
+    
+    virtual std::vector<Camera*> getCamera(void)
+    {
+      return (source->getCamera());
+    }
 
+    virtual std::vector<GPSReceiver*> getGPSReceiver(void)
+    {
+      return (source->getGPSReceiver());
+    }
+    
     virtual std::vector<GyroscopeArray*> getGyroscopeArray(void)
     {
       return (source->getGyroscopeArray());
@@ -35,16 +51,6 @@ namespace hidi
     virtual std::vector<MagnetometerArray*> getMagnetometerArray(void)
     {
       return (source->getMagnetometerArray());
-    }
-
-    virtual std::vector<Altimeter*> getAltimeter(void)
-    {
-      return (source->getAltimeter());
-    }
-
-    virtual std::vector<GPSReceiver*> getGPSReceiver(void)
-    {
-      return (source->getGPSReceiver());
     }
     
     virtual std::vector<Pedometer*> getPedometer(void)
