@@ -34,6 +34,24 @@ namespace hidi
       getAccelerometerTurnOnScaleSigma,
       getAccelerometerInRunScaleSigma,
       getAccelerometerInRunScaleStability,
+      altimeterRefresh,
+      altimeterHasData,
+      altimeterFirst,
+      altimeterLast,
+      altimeterGetTime,
+      getAltitude,
+      gpsReceiverRefresh,
+      gpsReceiverHasData,
+      gpsReceiverFirst,
+      gpsReceiverLast,
+      gpsReceiverGetTime,
+      getLongitude,
+      getLatitude,
+      getHeight,
+      hasPrecision,
+      getHDOP,
+      getVDOP,
+      getPDOP,
       gyroscopeArrayRefresh,
       gyroscopeArrayHasData,
       gyroscopeArrayFirst,
@@ -53,24 +71,6 @@ namespace hidi
       magnetometerArrayLast,
       magnetometerArrayGetTime,
       getMagneticField,
-      altimeterRefresh,
-      altimeterHasData,
-      altimeterFirst,
-      altimeterLast,
-      altimeterGetTime,
-      getAltitude,
-      gpsReceiverRefresh,
-      gpsReceiverHasData,
-      gpsReceiverFirst,
-      gpsReceiverLast,
-      gpsReceiverGetTime,
-      getLongitude,
-      getLatitude,
-      getHeight,
-      hasPrecision,
-      getHDOP,
-      getVDOP,
-      getPDOP,
       pedometerRefresh,
       pedometerHasData,
       pedometerFirst,
@@ -112,6 +112,24 @@ namespace hidi
         mm["getAccelerometerTurnOnScaleSigma"] = getAccelerometerTurnOnScaleSigma;
         mm["getAccelerometerInRunScaleSigma"] = getAccelerometerInRunScaleSigma;
         mm["getAccelerometerInRunScaleStability"] = getAccelerometerInRunScaleStability;
+        mm["altimeterRefresh"] = altimeterRefresh;
+        mm["altimeterHasData"] = altimeterHasData;
+        mm["altimeterFirst"] = altimeterFirst;
+        mm["altimeterLast"] = altimeterLast;
+        mm["altimeterGetTime"] = altimeterGetTime;
+        mm["getAltitude"] = getAltitude;
+        mm["gpsReceiverRefresh"] = gpsReceiverRefresh;
+        mm["gpsReceiverHasData"] = gpsReceiverHasData;
+        mm["gpsReceiverFirst"] = gpsReceiverFirst;
+        mm["gpsReceiverLast"] = gpsReceiverLast;
+        mm["gpsReceiverGetTime"] = gpsReceiverGetTime;
+        mm["getLongitude"] = getLongitude;
+        mm["getLatitude"] = getLatitude;
+        mm["getHeight"] = getHeight;
+        mm["hasPrecision"] = hasPrecision;
+        mm["getHDOP"] = getHDOP;
+        mm["getVDOP"] = getVDOP;
+        mm["getPDOP"] = getPDOP;
         mm["gyroscopeArrayRefresh"] = gyroscopeArrayRefresh;
         mm["gyroscopeArrayHasData"] = gyroscopeArrayHasData;
         mm["gyroscopeArrayFirst"] = gyroscopeArrayFirst;
@@ -131,24 +149,6 @@ namespace hidi
         mm["magnetometerArrayLast"] = magnetometerArrayLast;
         mm["magnetometerArrayGetTime"] = magnetometerArrayGetTime;
         mm["getMagneticField"] = getMagneticField;
-        mm["altimeterRefresh"] = altimeterRefresh;
-        mm["altimeterHasData"] = altimeterHasData;
-        mm["altimeterFirst"] = altimeterFirst;
-        mm["altimeterLast"] = altimeterLast;
-        mm["altimeterGetTime"] = altimeterGetTime;
-        mm["getAltitude"] = getAltitude;
-        mm["gpsReceiverRefresh"] = gpsReceiverRefresh;
-        mm["gpsReceiverHasData"] = gpsReceiverHasData;
-        mm["gpsReceiverFirst"] = gpsReceiverFirst;
-        mm["gpsReceiverLast"] = gpsReceiverLast;
-        mm["gpsReceiverGetTime"] = gpsReceiverGetTime;
-        mm["getLongitude"] = getLongitude;
-        mm["getLatitude"] = getLatitude;
-        mm["getHeight"] = getHeight;
-        mm["hasPrecision"] = hasPrecision;
-        mm["getHDOP"] = getHDOP;
-        mm["getVDOP"] = getVDOP;
-        mm["getPDOP"] = getPDOP;
         mm["pedometerRefresh"] = pedometerRefresh;
         mm["pedometerHasData"] = pedometerHasData;
         mm["pedometerFirst"] = pedometerFirst;
@@ -408,188 +408,7 @@ namespace hidi
           convert(sensor->getAccelerometerInRunScaleStability(), plhs[0]);
           break;
         }
-
-        case gyroscopeArrayRefresh:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          sensor->refresh();
-          break;
-        }
-
-        case gyroscopeArrayHasData:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->hasData(), plhs[0]);
-          break;
-        }
-
-        case gyroscopeArrayFirst:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->first(), plhs[0]);
-          break;
-        }
-
-        case gyroscopeArrayLast:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->last(), plhs[0]);
-          break;
-        }
-
-        case gyroscopeArrayGetTime:
-        {
-          checkNumArgs(nrhs, 3);
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
-          break;
-        }
-
-        case getAngularRate:
-        {
-          checkNumArgs(nrhs, 4);
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          const mxArray* n = prhs[2];
-          const mxArray* ax = prhs[3];
-          uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
-          uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
-          size_t N = mxGetNumberOfElements(n);
-          size_t A = mxGetNumberOfElements(ax);
-          double* data;
-          size_t i;
-          size_t j;
-          size_t k;
-          checkUInt32(n);
-          checkUInt32(ax);
-          plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
-          data = mxGetPr(plhs[0]);
-          k = 0;
-          for(j = 0; j<A; ++j)
-          {
-            for(i = 0; i<N; ++i)
-            {
-              data[k] = sensor->getAngularRate(node[i], axis[j]);
-              ++k;
-            }
-          }
-          break;
-        }
-
-        case getGyroscopeRandomWalk:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->getGyroscopeRandomWalk(), plhs[0]);
-          break;
-        }
-
-        case getGyroscopeTurnOnBiasSigma:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->getGyroscopeTurnOnBiasSigma(), plhs[0]);
-          break;
-        }
-
-        case getGyroscopeInRunBiasSigma:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->getGyroscopeInRunBiasSigma(), plhs[0]);
-          break;
-        }
-
-        case getGyroscopeInRunBiasStability:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->getGyroscopeInRunBiasStability(), plhs[0]);
-          break;
-        }
-
-        case getGyroscopeTurnOnScaleSigma:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->getGyroscopeTurnOnScaleSigma(), plhs[0]);
-          break;
-        }
-
-        case getGyroscopeInRunScaleSigma:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->getGyroscopeInRunScaleSigma(), plhs[0]);
-          break;
-        }
-
-        case getGyroscopeInRunScaleStability:
-        {
-          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
-          convert(sensor->getGyroscopeInRunScaleStability(), plhs[0]);
-          break;
-        }
-
-        case magnetometerArrayRefresh:
-        {
-          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-          sensor->refresh();
-          break;
-        }
-
-        case magnetometerArrayHasData:
-        {
-          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-          convert(sensor->hasData(), plhs[0]);
-          break;
-        }
-
-        case magnetometerArrayFirst:
-        {
-          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-          convert(sensor->first(), plhs[0]);
-          break;
-        }
-
-        case magnetometerArrayLast:
-        {
-          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-          convert(sensor->last(), plhs[0]);
-          break;
-        }
-
-        case magnetometerArrayGetTime:
-        {
-          checkNumArgs(nrhs, 3);
-          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-          getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
-          break;
-        }
-
-        case getMagneticField:
-        {
-          checkNumArgs(nrhs, 4);
-          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
-          const mxArray* n = prhs[2];
-          const mxArray* ax = prhs[3];
-          uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
-          uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
-          size_t N = mxGetNumberOfElements(n);
-          size_t A = mxGetNumberOfElements(ax);
-          double* data;
-          size_t i;
-          size_t j;
-          size_t k;
-          checkUInt32(n);
-          checkUInt32(ax);
-          plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
-          data = mxGetPr(plhs[0]);
-          k = 0;
-          for(j = 0; j<A; ++j)
-          {
-            for(i = 0; i<N; ++i)
-            {
-              data[k] = sensor->getMagneticField(node[i], axis[j]);
-              ++k;
-            }
-          }
-          break;
-        }
-
+        
         case altimeterRefresh:
         {
           hidi::Altimeter* sensor = package->getAltimeter()[index];
@@ -798,6 +617,187 @@ namespace hidi
           for(k = 0; k<N; ++k)
           {
             data[k] = sensor->getPDOP(node[k]);
+          }
+          break;
+        }
+
+        case gyroscopeArrayRefresh:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          sensor->refresh();
+          break;
+        }
+
+        case gyroscopeArrayHasData:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->hasData(), plhs[0]);
+          break;
+        }
+
+        case gyroscopeArrayFirst:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->first(), plhs[0]);
+          break;
+        }
+
+        case gyroscopeArrayLast:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->last(), plhs[0]);
+          break;
+        }
+
+        case gyroscopeArrayGetTime:
+        {
+          checkNumArgs(nrhs, 3);
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
+          break;
+        }
+
+        case getAngularRate:
+        {
+          checkNumArgs(nrhs, 4);
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          const mxArray* n = prhs[2];
+          const mxArray* ax = prhs[3];
+          uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+          uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
+          size_t N = mxGetNumberOfElements(n);
+          size_t A = mxGetNumberOfElements(ax);
+          double* data;
+          size_t i;
+          size_t j;
+          size_t k;
+          checkUInt32(n);
+          checkUInt32(ax);
+          plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
+          data = mxGetPr(plhs[0]);
+          k = 0;
+          for(j = 0; j<A; ++j)
+          {
+            for(i = 0; i<N; ++i)
+            {
+              data[k] = sensor->getAngularRate(node[i], axis[j]);
+              ++k;
+            }
+          }
+          break;
+        }
+
+        case getGyroscopeRandomWalk:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->getGyroscopeRandomWalk(), plhs[0]);
+          break;
+        }
+
+        case getGyroscopeTurnOnBiasSigma:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->getGyroscopeTurnOnBiasSigma(), plhs[0]);
+          break;
+        }
+
+        case getGyroscopeInRunBiasSigma:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->getGyroscopeInRunBiasSigma(), plhs[0]);
+          break;
+        }
+
+        case getGyroscopeInRunBiasStability:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->getGyroscopeInRunBiasStability(), plhs[0]);
+          break;
+        }
+
+        case getGyroscopeTurnOnScaleSigma:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->getGyroscopeTurnOnScaleSigma(), plhs[0]);
+          break;
+        }
+
+        case getGyroscopeInRunScaleSigma:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->getGyroscopeInRunScaleSigma(), plhs[0]);
+          break;
+        }
+
+        case getGyroscopeInRunScaleStability:
+        {
+          hidi::GyroscopeArray* sensor = package->getGyroscopeArray()[index];
+          convert(sensor->getGyroscopeInRunScaleStability(), plhs[0]);
+          break;
+        }
+
+        case magnetometerArrayRefresh:
+        {
+          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
+          sensor->refresh();
+          break;
+        }
+
+        case magnetometerArrayHasData:
+        {
+          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
+          convert(sensor->hasData(), plhs[0]);
+          break;
+        }
+
+        case magnetometerArrayFirst:
+        {
+          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
+          convert(sensor->first(), plhs[0]);
+          break;
+        }
+
+        case magnetometerArrayLast:
+        {
+          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
+          convert(sensor->last(), plhs[0]);
+          break;
+        }
+
+        case magnetometerArrayGetTime:
+        {
+          checkNumArgs(nrhs, 3);
+          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
+          getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
+          break;
+        }
+
+        case getMagneticField:
+        {
+          checkNumArgs(nrhs, 4);
+          hidi::MagnetometerArray* sensor = package->getMagnetometerArray()[index];
+          const mxArray* n = prhs[2];
+          const mxArray* ax = prhs[3];
+          uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+          uint32_t* axis = static_cast<uint32_t*>(mxGetData(ax));
+          size_t N = mxGetNumberOfElements(n);
+          size_t A = mxGetNumberOfElements(ax);
+          double* data;
+          size_t i;
+          size_t j;
+          size_t k;
+          checkUInt32(n);
+          checkUInt32(ax);
+          plhs[0] = mxCreateDoubleMatrix(N, A, mxREAL);
+          data = mxGetPr(plhs[0]);
+          k = 0;
+          for(j = 0; j<A; ++j)
+          {
+            for(i = 0; i<N; ++i)
+            {
+              data[k] = sensor->getMagneticField(node[i], axis[j]);
+              ++k;
+            }
           }
           break;
         }
