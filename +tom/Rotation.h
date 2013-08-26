@@ -2,8 +2,7 @@
 #define ROTATION_H
 
 #include <algorithm>
-
-#include "+hidi/hidi.h"
+#include "tom.h"
 
 namespace tom
 {

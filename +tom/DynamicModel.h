@@ -2,8 +2,6 @@
 #define TOMDYNAMICMODEL_H
 
 #include <map>
-#include <string>
-#include <vector>
 #include "Trajectory.h"
 
 namespace tom

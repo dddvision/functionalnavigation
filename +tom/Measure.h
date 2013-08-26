@@ -2,9 +2,6 @@
 #define TOMMEASURE_H
 
 #include <map>
-#include <string>
-#include <vector>
-
 #include "GraphEdge.h"
 #include "Trajectory.h"
 #include "+hidi/Sensor.h"

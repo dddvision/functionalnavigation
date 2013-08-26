@@ -1,7 +1,7 @@
 #ifndef TOMGRAPHEDGE_H
 #define TOMGRAPHEDGE_H
 
-#include "+hidi/hidi.h"
+#include "tom.h"
 
 namespace tom
 {
