@@ -16,7 +16,7 @@ namespace hidi
     return;
   }
   
-  void checkNumElements(const mxArray* array, const size_t* n)
+  void checkNumElements(const mxArray* array, const size_t& n)
   {
     if(mxGetNumberOfElements(array)!=n)
     {
@@ -25,7 +25,7 @@ namespace hidi
     return;
   }
   
-  void checkNumRows(const mxArray* array, const size_t* m)
+  void checkNumRows(const mxArray* array, const size_t& m)
   {
     if(mxGetM(array)!=m)
     {
@@ -34,7 +34,7 @@ namespace hidi
     return;
   }
   
-  void checkNumCols(const mxArray* array, const size_t* n)
+  void checkNumCols(const mxArray* array, const size_t& n)
   {
     if(mxGetN(array)!=n)
     {
