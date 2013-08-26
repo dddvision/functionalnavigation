@@ -2,9 +2,6 @@
 #define TOMOPTIMIZER_H
 
 #include <map>
-#include <string>
-#include <vector>
-
 #include "Trajectory.h"
 #include "DynamicModel.h"
 #include "Measure.h"

@@ -2,7 +2,6 @@
 #define TOMTRAJECTORY_H
 
 #include <utility>
-#include "Pose.h"
 #include "TangentPose.h"
 
 namespace tom

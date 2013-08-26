@@ -1,7 +1,7 @@
 #ifndef TOMPOSE_H
 #define TOMPOSE_H
 
-#include "+hidi/hidi.h"
+#include "tom.h"
 
 namespace tom
 {
