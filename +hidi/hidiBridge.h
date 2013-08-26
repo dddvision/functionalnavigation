@@ -15,6 +15,33 @@ namespace hidi
     }
     return;
   }
+  
+  void checkNumElements(const mxArray* array, const size_t* n)
+  {
+    if(mxGetNumberOfElements(array)!=n)
+    {
+      throw("Incorrect number of elements.");
+    }
+    return;
+  }
+  
+  void checkNumRows(const mxArray* array, const size_t* m)
+  {
+    if(mxGetM(array)!=m)
+    {
+      throw("Incorrect number of rows.");
+    }
+    return;
+  }
+  
+  void checkNumCols(const mxArray* array, const size_t* n)
+  {
+    if(mxGetN(array)!=n)
+    {
+      throw("Incorrect number of columns.");
+    }
+    return;
+  }
 
   void checkDouble(const mxArray* array)
   {

@@ -16,10 +16,11 @@ namespace hidi
       description,
       create,
       getAccelerometerArray,
+      getAltimeter,
+      getCamera,
+      getGPSReceiver,
       getGyroscopeArray,
       getMagnetometerArray,
-      getAltimeter,
-      getGPSReceiver,
       getPedometer,
       accelerometerArrayRefresh,
       accelerometerArrayHasData,
@@ -40,6 +41,17 @@ namespace hidi
       altimeterLast,
       altimeterGetTime,
       getAltitude,
+      interpretLayers,
+      numStrides,
+      numSteps,
+      strideMin,
+      strideMax,
+      stepMin,
+      stepMax,
+      projection,
+      inverseProjection,
+      getImageUInt8,
+      getImageDouble,
       gpsReceiverRefresh,
       gpsReceiverHasData,
       gpsReceiverFirst,
@@ -94,10 +106,11 @@ namespace hidi
         mm["description"] = description;
         mm["create"] = create;
         mm["getAccelerometerArray"] = getAccelerometerArray;
+        mm["getAltimeter"] = getAltimeter;
+        mm["getCamera"] = getCamera;
+        mm["getGPSReceiver"] = getGPSReceiver;
         mm["getGyroscopeArray"] = getGyroscopeArray;
         mm["getMagnetometerArray"] = getMagnetometerArray;
-        mm["getAltimeter"] = getAltimeter;
-        mm["getGPSReceiver"] = getGPSReceiver;
         mm["getPedometer"] = getPedometer;
         mm["accelerometerArrayRefresh"] = accelerometerArrayRefresh;
         mm["accelerometerArrayHasData"] = accelerometerArrayHasData;
@@ -118,6 +131,17 @@ namespace hidi
         mm["altimeterLast"] = altimeterLast;
         mm["altimeterGetTime"] = altimeterGetTime;
         mm["getAltitude"] = getAltitude;
+        mm["interpretLayers"] = interpretLayers;
+        mm["numStrides"] = numStrides;
+        mm["numSteps"] = numSteps;
+        mm["strideMin"] = strideMin;
+        mm["strideMax"] = strideMax;
+        mm["stepMin"] = stepMin;
+        mm["stepMax"] = stepMax;
+        mm["projection"] = projection;
+        mm["inverseProjection"] = inverseProjection;
+        mm["getImageUInt8"] = getImageUInt8;
+        mm["getImageDouble"] = getImageDouble;
         mm["gpsReceiverRefresh"] = gpsReceiverRefresh;
         mm["gpsReceiverHasData"] = gpsReceiverHasData;
         mm["gpsReceiverFirst"] = gpsReceiverFirst;
@@ -279,6 +303,12 @@ namespace hidi
         case getAltimeter:
         {
           getSensor(package->getAltimeter(), plhs[0]);
+          break;
+        }
+        
+        case getCamera:
+        {
+          getSensor(package->getCamera(), plhs[0]);
           break;
         }
 
@@ -461,6 +491,177 @@ namespace hidi
           {
             data[k] = sensor->getAltitude(node[k]);
           }
+          break;
+        }
+        
+        case interpretLayers:
+        {
+          hidi::Camera* sensor = package->getCamera()[index];
+          convert(sensor->interpretLayers(), plhs[0]);
+          break;
+        }
+        
+        case numStrides:
+        {
+          hidi::Camera* sensor = package->getCamera()[index];
+          convert(sensor->numStrides(), plhs[0]);
+          break;
+        }
+        
+        case numSteps:
+        {
+          hidi::Camera* sensor = package->getCamera()[index];
+          convert(sensor->numSteps(), plhs[0])
+          break;
+        }
+        
+        case strideMin:
+        {
+          checkNumArgs(nrhs, 3);
+          hidi::Camera* sensor = package->getCamera()[index];
+          const mxArray* n = prhs[2];
+          uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+          size_t N = mxGetNumberOfElements(n);
+          uint32_t* data;
+          size_t k;
+          checkUInt32(n);
+          plhs[0] = mxCreateNumericMatrix(mxGetM(n), mxGetN(n), mxUINT32_CLASS, mxREAL);
+          data = static_cast<uint32_t*>(mxGetData(plhs[0]));
+          for(k = 0; k<N; ++k)
+          {
+            data[k] = sensor->strideMin(node[k]);
+          }
+          break;
+        }
+        
+        case strideMax:
+        {
+          checkNumArgs(nrhs, 3);
+          hidi::Camera* sensor = package->getCamera()[index];
+          const mxArray* n = prhs[2];
+          uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+          size_t N = mxGetNumberOfElements(n);
+          uint32_t* data;
+          size_t k;
+          checkUInt32(n);
+          plhs[0] = mxCreateNumericMatrix(mxGetM(n), mxGetN(n), mxUINT32_CLASS, mxREAL);
+          data = static_cast<uint32_t*>(mxGetData(plhs[0]));
+          for(k = 0; k<N; ++k)
+          {
+            data[k] = sensor->strideMax(node[k]);
+          }
+          break;
+        }
+        
+        case stepMin:
+        {
+          checkNumArgs(nrhs, 3);
+          hidi::Camera* sensor = package->getCamera()[index];
+          const mxArray* n = prhs[2];
+          uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+          size_t N = mxGetNumberOfElements(n);
+          uint32_t* data;
+          size_t k;
+          checkUInt32(n);
+          plhs[0] = mxCreateNumericMatrix(mxGetM(n), mxGetN(n), mxUINT32_CLASS, mxREAL);
+          data = static_cast<uint32_t*>(mxGetData(plhs[0]));
+          for(k = 0; k<N; ++k)
+          {
+            data[k] = sensor->stepMin(node[k]);
+          }
+          break;
+        }
+        
+        case stepMax:
+        {
+          checkNumArgs(nrhs, 3);
+          hidi::Camera* sensor = package->getCamera()[index];
+          const mxArray* n = prhs[2];
+          uint32_t* node = static_cast<uint32_t*>(mxGetData(n));
+          size_t N = mxGetNumberOfElements(n);
+          uint32_t* data;
+          size_t k;
+          checkUInt32(n);
+          plhs[0] = mxCreateNumericMatrix(mxGetM(n), mxGetN(n), mxUINT32_CLASS, mxREAL);
+          data = static_cast<uint32_t*>(mxGetData(plhs[0]));
+          for(k = 0; k<N; ++k)
+          {
+            data[k] = sensor->stepMax(node[k]);
+          }
+          break;
+        }
+        
+        case projection:
+        {
+          checkNumArgs(nrhs, 5);
+          const mxArray* f = prhs[2];
+          const mxArray* r = prhs[3];
+          const mxArray* d = prhs[4];
+          double* forward = mxGetPr(f);
+          double* right = mxGetPr(r);
+          double* down = mxGetPr(d);
+          size_t M = mxGetM(f);
+          size_t N = mxGetN(f);
+          size_t K = mxGetNumberOfElements(f);
+          double* stride;
+          double* step;
+          size_t k;
+          checkDouble(f);
+          checkDouble(r);
+          checkDouble(d);
+          checkNumRows(r, M);
+          checkNumRows(d, M);
+          checkNumCols(r, N);
+          checkNumCols(d, N);
+          plhs[0] = mxCreateDoubleMatrix(M, N, mxREAL);
+          plhs[1] = mxCreateDoubleMatrix(M, N, mxREAL);
+          stride = mxGetPr(plhs[0]);
+          step = mxGetPr(plhs[1]);
+          for(k = 0; k<K; ++k)
+          {
+            sensor->projection(forward[k], right[k], down[k], stride[k], step[k]);
+          }
+          break;
+        }
+        
+        case inverseProjection:
+        {
+          checkNumArgs(nrhs, 4);
+          const mxArray* strideArray = prhs[2];
+          const mxArray* stepArray = prhs[3];
+          double* stride = mxGetPr(strideArray);
+          double* step = mxGetPr(stepArray);
+          size_t M = mxGetM(strideArray);
+          size_t N = mxGetN(strideArray);
+          size_t K = mxGetNumberOfElements(strideArray);
+          double* forward;
+          double* right;
+          double* down;
+          size_t k;
+          checkDouble(strideArray);
+          checkDouble(stepArray);
+          checkNumRows(stepArray, M);
+          checkNumCols(stepArray, N);
+          plhs[0] = mxCreateDoubleMatrix(M, N, mxREAL);
+          plhs[1] = mxCreateDoubleMatrix(M, N, mxREAL);
+          plhs[2] = mxCreateDoubleMatrix(M, N, mxREAL);
+          forward = mxGetPr(plhs[0]);
+          right = mxGetPr(plhs[1]);
+          down = mxGetPr(plhs[2]);
+          for(k = 0; k<K; ++k)
+          {
+            sensor->inverseProjection(stride[k], step[k], forward[k], right[k], down[k]);
+          }
+          break;
+        }
+        
+        case getImageUInt8:
+        {
+          break;
+        }
+        
+        case getImageDouble:
+        {
           break;
         }
 
