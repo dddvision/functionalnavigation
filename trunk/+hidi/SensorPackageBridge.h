@@ -657,11 +657,47 @@ namespace hidi
         
         case getImageUInt8:
         {
+          checkNumArgs(nrhs, 5);
+          const mxArray* nodeArray = prhs[2];
+          const mxArray* layerArray = prhs[3];
+          const mxArray* imgArray = prhs[4];
+          uint32_t node = (*static_cast<uint32_t*>(mxGetData(nodeArray)));
+          uint32_t layer = (*static_cast<uint32_t*>(mxGetData(layerArray)));
+          uint8_t* img = static_cast<uint8_t*>(mxGetData(imgArray));
+          size_t K = mxGetNumberOfElements(imgArray);
+          std::vector<uint8_t> imgIO(K);
+          size_t k;
+          checkNumElements(nodeArray, 1);
+          checkNumElements(layerArray, 1);
+          for(k = 0; k<K; ++k)
+          {
+            imgIO[k] = img[k];
+          }
+          sensor->getImageUInt8(node, layer, imgIO);
+          convert(imgIO, plhs[0]);
           break;
         }
         
         case getImageDouble:
         {
+          checkNumArgs(nrhs, 5);
+          const mxArray* nodeArray = prhs[2];
+          const mxArray* layerArray = prhs[3];
+          const mxArray* imgArray = prhs[4];
+          uint32_t node = (*static_cast<uint32_t*>(mxGetData(nodeArray)));
+          uint32_t layer = (*static_cast<uint32_t*>(mxGetData(layerArray)));
+          double* img = mxGetPr(imgArray);
+          size_t K = mxGetNumberOfElements(imgArray);
+          std::vector<double> imgIO(K);
+          size_t k;
+          checkNumElements(nodeArray, 1);
+          checkNumElements(layerArray, 1);
+          for(k = 0; k<K; ++k)
+          {
+            imgIO[k] = img[k];
+          }
+          sensor->getImageUInt8(node, layer, imgIO);
+          convert(imgIO, plhs[0]);
           break;
         }
 
