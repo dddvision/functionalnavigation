@@ -25,7 +25,7 @@ classdef TangentPose < tom.Pose
         fprintf('\n%s.q = [%+9.6f; %+9.6f; %+9.6f; %+9.6f]', name, this(n).q(1), this(n).q(2), this(n).q(3), ...
           this(n).q(4));
         fprintf('\n%s.r = [%+9.6f; %+9.6f; %+9.6f]', name, this(n).r(1), this(n).r(2), this(n).r(3));
-        fprintf('\n%s.s = [%+9.6f; %+9.6f; %+9.6f; %+9.6f]\n', name, this(n).s(1), this(n).s(2), this(n).s(3));
+        fprintf('\n%s.s = [%+9.6f; %+9.6f; %+9.6f]\n', name, this(n).s(1), this(n).s(2), this(n).s(3));
       end
     end
   end
