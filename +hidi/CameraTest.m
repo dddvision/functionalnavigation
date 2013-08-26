@@ -36,10 +36,11 @@ function testCameraProjection(cam, nb)
   
   for layer = uint32((1:numel(layers))-1)
     % get an image
-    gray = cam.getImageDouble(nb, layer, uint8(0));
+    img = cam.getImageDouble(nb, layer, uint8(0));
+    img = reshape(img, cam.numStrides(), cam.numSteps())';
 
     % show original image
-    imshow(gray, 'Parent', subplot(3, 3, 1));
+    imshow(img, 'Parent', subplot(3, 3, 1));
 
     % set parameters for your desired camera
     HEIGHT = 200;
@@ -68,7 +69,7 @@ function testCameraProjection(cam, nb)
       good = ~bad;
       newImage = zeros(HEIGHT, WIDTH);
       newImage(bad) = nan;
-      newImage(good) = interp2(gray, strides(good)+1, steps(good)+1, '*linear', nan);
+      newImage(good) = interp2(img, strides(good)+1, steps(good)+1, '*linear', nan);
 
       % display the reprojected image
       imshow(newImage, 'Parent', subplot(3, 3, 2));
@@ -89,6 +90,7 @@ function testCameraProjectionRoundTrip(cam, nb)
   
     % get an image
     img = cam.getImageDouble(nb, layer, uint8(0));
+    img = reshape(img, cam.numStrides(), cam.numSteps())';
 
     % show image
     imshow(img, 'Parent', subplot(3, 3, 3));
