@@ -157,15 +157,40 @@ classdef SensorPackage < handle
         pedometer{n}.refresh();
       end
     end
-  end
-  
-  methods (Access = public, Abstract = true)
-    sensor = getAccelerometerArray(this);
-    sensor = getAltimeter(this);
-    sensor = getCamera(this);
-    sensor = getGPSReceiver(this);
-    sensor = getGyroscopeArray(this);
-    sensor = getMagnetometerArray(this);
-    sensor = getPedometer(this);
+
+    function sensor = getAccelerometerArray(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = {};
+    end
+    
+    function sensor = getAltimeter(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = {};
+    end
+    
+    function sensor = getCamera(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = {};
+    end
+    
+    function sensor = getGPSReceiver(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = {};
+    end
+    
+    function sensor = getGyroscopeArray(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = {};
+    end
+    
+    function sensor = getMagnetometerArray(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = {};
+    end
+    
+    function sensor = getPedometer(this)
+      assert(isa(this, 'hidi.SensorPackage'));
+      sensor = {};
+    end 
   end
 end
