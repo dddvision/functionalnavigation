@@ -38,25 +38,25 @@ function testCameraProjection(cam, nb)
     % get an image
     img = cam.getImageDouble(nb, layer, zeros(0, 1));
 
-    % show original image
-    imshow(img, 'Parent', subplot(3, 3, 1));
-    
     % get image size
     numStrides = cam.numStrides();
     numSteps = cam.numSteps();
     
     % reshape image
     img = reshape(img, numSteps, numStrides);
+    
+    % show original image
+    imshow(img, 'Parent', subplot(3, 3, 1));
 
     % set parameters for your desired camera
-    HEIGHT = 200;
-    WIDTH = 300;
-    CENTER_VERT = (HEIGHT+1)/2;
-    CENTER_HORZ = (WIDTH+1)/2;
+    HEIGHT = 200.0;
+    WIDTH = 300.0;
+    CENTER_VERT = (HEIGHT+1.0)/2.0;
+    CENTER_HORZ = (WIDTH+1.0)/2.0;
 
-    for FOCAL = (WIDTH-1)/2*(1:-0.1:0.1)
+    for FOCAL = (WIDTH-1.0)/2.0*(1.0:-0.1:0.1)
       % create rays corresponding to your desired camera
-      [c3, c2] = ndgrid((1:HEIGHT)-CENTER_VERT, (1:WIDTH)-CENTER_HORZ);
+      [c3, c2] = ndgrid((1.0:HEIGHT)-CENTER_VERT, (1.0:WIDTH)-CENTER_HORZ);
       c1 = repmat(FOCAL, [HEIGHT, WIDTH]);
       mag = sqrt(c1.*c1+c2.*c2+c3.*c3);
       mag(abs(mag)<eps) = nan;
@@ -108,7 +108,7 @@ function testCameraProjectionRoundTrip(cam, nb)
     imshow(img, 'Parent', subplot(3, 3, 3));
 
     % enumerate pixels
-    [strides, steps] = ndgrid((1:numSteps)-1, (1:numStrides)-1);
+    [strides, steps] = ndgrid((1:double(numSteps))-1, (1:double(numStrides))-1);
 
     % create ray vectors from pixels
     [c1, c2, c3] = cam.inverseProjection(strides, steps);
