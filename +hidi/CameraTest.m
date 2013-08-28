@@ -6,7 +6,7 @@ classdef CameraTest
       persistent h
       if(isempty(h))
         h = figure;
-        set(h, 'Name', 'Camera projection tests');
+        set(h, 'Name', 'Camera Projection Tests');
       end
       handle = h;
     end        
@@ -36,11 +36,17 @@ function testCameraProjection(cam, nb)
   
   for layer = uint32((1:numel(layers))-1)
     % get an image
-    img = cam.getImageDouble(nb, layer, uint8(0));
-    img = reshape(img, cam.numStrides(), cam.numSteps())';
+    img = cam.getImageDouble(nb, layer, zeros(0, 1));
 
     % show original image
     imshow(img, 'Parent', subplot(3, 3, 1));
+    
+    % get image size
+    numStrides = cam.numStrides();
+    numSteps = cam.numSteps();
+    
+    % reshape image
+    img = reshape(img, numSteps, numStrides);
 
     % set parameters for your desired camera
     HEIGHT = 200;
@@ -89,23 +95,25 @@ function testCameraProjectionRoundTrip(cam, nb)
   for layer = uint32((1:numel(layers))-1)
   
     % get an image
-    img = cam.getImageDouble(nb, layer, uint8(0));
-    img = reshape(img, cam.numStrides(), cam.numSteps())';
+    img = cam.getImageDouble(nb, layer, zeros(0, 1));
 
+    % get image size
+    numStrides = cam.numStrides();
+    numSteps = cam.numSteps();
+    
+    % reshape image
+    img = reshape(img, numSteps, numStrides);
+    
     % show image
     imshow(img, 'Parent', subplot(3, 3, 3));
 
-    % get image size
-    HEIGHT = size(img, 1);
-    WIDTH = size(img, 2);
-
     % enumerate pixels
-    [strides, steps] = ndgrid((1:HEIGHT)-1, (1:WIDTH)-1);
+    [strides, steps] = ndgrid((1:numSteps)-1, (1:numStrides)-1);
 
     % create ray vectors from pixels
     [c1, c2, c3] = cam.inverseProjection(strides, steps);
-    if((size(c1, 1)~=HEIGHT)||(size(c1, 2)~=WIDTH)||(size(c2, 1)~=HEIGHT)||(size(c2, 2)~=WIDTH)||...
-      (size(c3, 1)~=HEIGHT)||(size(c3, 2)~=WIDTH))
+    if((size(c1, 1)~=numSteps)||(size(c1, 2)~=numStrides)||(size(c2, 1)~=numSteps)||(size(c2, 2)~=numStrides)||...
+      (size(c3, 1)~=numSteps)||(size(c3, 2)~=numStrides))
       error('CameraTest: inverse projection function output dimensions do not match input dimensions');
     end
 
@@ -117,7 +125,7 @@ function testCameraProjectionRoundTrip(cam, nb)
 
     % reproject the rays to pixel coordinates
     [jout, iout] = cam.projection(c1, c2, c3);
-    if((size(jout, 1)~=HEIGHT)||(size(jout, 2)~=WIDTH)||(size(iout, 1)~=HEIGHT)||(size(iout, 2)~=WIDTH))
+    if((size(jout, 1)~=numSteps)||(size(jout, 2)~=numStrides)||(size(iout, 1)~=numSteps)||(size(iout, 2)~=numStrides))
       error('CameraTest: projection function output dimensions do not match input dimensions');
     end
 
