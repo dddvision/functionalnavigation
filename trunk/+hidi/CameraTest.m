@@ -108,7 +108,7 @@ function testCameraProjectionRoundTrip(cam, nb)
     imshow(img, 'Parent', subplot(3, 3, 3));
 
     % enumerate pixels
-    [strides, steps] = ndgrid((1:double(numSteps))-1, (1:double(numStrides))-1);
+    [steps, strides] = ndgrid((1:double(numSteps))-1, (1:double(numStrides))-1);
 
     % create ray vectors from pixels
     [c1, c2, c3] = cam.inverseProjection(strides, steps);
@@ -130,8 +130,8 @@ function testCameraProjectionRoundTrip(cam, nb)
     end
 
     % calculate pixel coordinate differences
-    idiff = abs(iout-strides);
-    jdiff = abs(jout-steps);
+    idiff = abs(iout-steps);
+    jdiff = abs(jout-strides);
 
     % display differences
     imshow(10000*idiff+0.5, 'Parent', subplot(3, 3, 7));
