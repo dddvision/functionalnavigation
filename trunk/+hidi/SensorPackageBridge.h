@@ -41,6 +41,11 @@ namespace hidi
       altimeterLast,
       altimeterGetTime,
       getAltitude,
+      cameraRefresh,
+      cameraHasData,
+      cameraFirst,
+      cameraLast,
+      cameraGetTime,
       interpretLayers,
       numStrides,
       numSteps,
@@ -131,6 +136,11 @@ namespace hidi
         mm["altimeterLast"] = altimeterLast;
         mm["altimeterGetTime"] = altimeterGetTime;
         mm["getAltitude"] = getAltitude;
+        mm["cameraRefresh"] = cameraRefresh;
+        mm["cameraHasData"] = cameraHasData;
+        mm["cameraFirst"] = cameraFirst;
+        mm["cameraLast"] = cameraLast;
+        mm["cameraGetTime"] = cameraGetTime;
         mm["interpretLayers"] = interpretLayers;
         mm["numStrides"] = numStrides;
         mm["numSteps"] = numSteps;
@@ -494,6 +504,42 @@ namespace hidi
           break;
         }
         
+        case cameraRefresh:
+        {
+          hidi::Camera* sensor = package->getCamera()[index];
+          sensor->refresh();
+          break;
+        }
+
+        case cameraHasData:
+        {
+          hidi::Camera* sensor = package->getCamera()[index];
+          convert(sensor->hasData(), plhs[0]);
+          break;
+        }
+
+        case cameraFirst:
+        {
+          hidi::Camera* sensor = package->getCamera()[index];
+          convert(sensor->first(), plhs[0]);
+          break;
+        }
+
+        case cameraLast:
+        {
+          hidi::Camera* sensor = package->getCamera()[index];
+          convert(sensor->last(), plhs[0]);
+          break;
+        }
+
+        case cameraGetTime:
+        {
+          checkNumArgs(nrhs, 3);
+          hidi::Camera* sensor = package->getCamera()[index];
+          getTime(static_cast<hidi::Sensor*>(sensor), prhs[2], plhs[0]);
+          break;
+        }
+        
         case interpretLayers:
         {
           hidi::Camera* sensor = package->getCamera()[index];
@@ -511,7 +557,7 @@ namespace hidi
         case numSteps:
         {
           hidi::Camera* sensor = package->getCamera()[index];
-          convert(sensor->numSteps(), plhs[0])
+          convert(sensor->numSteps(), plhs[0]);
           break;
         }
         
@@ -594,6 +640,7 @@ namespace hidi
         case projection:
         {
           checkNumArgs(nrhs, 5);
+          hidi::Camera* sensor = package->getCamera()[index];
           const mxArray* f = prhs[2];
           const mxArray* r = prhs[3];
           const mxArray* d = prhs[4];
@@ -627,6 +674,7 @@ namespace hidi
         case inverseProjection:
         {
           checkNumArgs(nrhs, 4);
+          hidi::Camera* sensor = package->getCamera()[index];
           const mxArray* strideArray = prhs[2];
           const mxArray* stepArray = prhs[3];
           double* stride = mxGetPr(strideArray);
@@ -658,6 +706,7 @@ namespace hidi
         case getImageUInt8:
         {
           checkNumArgs(nrhs, 5);
+          hidi::Camera* sensor = package->getCamera()[index];
           const mxArray* nodeArray = prhs[2];
           const mxArray* layerArray = prhs[3];
           const mxArray* imgArray = prhs[4];
@@ -681,6 +730,7 @@ namespace hidi
         case getImageDouble:
         {
           checkNumArgs(nrhs, 5);
+          hidi::Camera* sensor = package->getCamera()[index];
           const mxArray* nodeArray = prhs[2];
           const mxArray* layerArray = prhs[3];
           const mxArray* imgArray = prhs[4];
@@ -696,7 +746,7 @@ namespace hidi
           {
             imgIO[k] = img[k];
           }
-          sensor->getImageUInt8(node, layer, imgIO);
+          sensor->getImageDouble(node, layer, imgIO);
           convert(imgIO, plhs[0]);
           break;
         }
