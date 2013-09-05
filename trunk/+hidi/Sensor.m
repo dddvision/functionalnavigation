@@ -7,8 +7,8 @@ classdef Sensor < handle
   methods (Access = public, Abstract = true)
     refresh(this, varargin);
     flag = hasData(this);
-    n = first(this);
-    n = last(this);
-    time = getTime(this, n);
+    node = first(this);
+    node = last(this);
+    time = getTime(this, node);
   end
 end
