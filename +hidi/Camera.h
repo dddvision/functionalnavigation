@@ -145,7 +145,7 @@ namespace hidi
      * @note
      * Output values are normalized and truncated to fit the bit depth.
      * The output will be resized to numStrides()*numSteps() and filled within the bounded region.
-     * Invalid pixels within the bounded region are filled with NAN.
+     * Invalid pixels within the bounded region are filled with 0.
      * Throws an exception if any index is out of range.
      */
     virtual void getImageUInt8(const uint32_t& node, const uint32_t& layer, std::vector<uint8_t>& img) = 0;
