@@ -68,10 +68,12 @@ classdef Pedometer < hidi.Sensor
     
     function stepID = labelToID(stepLabel)
       persistent lookup
-      lookup = containers.Map;
-      if(lookup.length()==0)
-        for stepID = uint32(0:27)
-          lookup(hidi.Pedometer.idToLabel(stepID)) = stepID;
+      if(isempty(lookup))
+        lookup = containers.Map;
+        if(lookup.length()==0)
+          for stepID = uint32(0:27)
+            lookup(hidi.Pedometer.idToLabel(stepID)) = stepID;
+          end
         end
       end
       try
@@ -97,23 +99,26 @@ classdef Pedometer < hidi.Sensor
     %   "Run"      positive sign along forward axis
     %   "Crawl"    positive sign along forward axis
     function simpleID = simplifyStepID(stepID)
-      switch(stepID)
-        case {1, 2, 4}
-          simpleID = 1; % Still
-        case {3, 5}
-          simpleID = 3; % Loiter
-        case {8, 18}
-          simpleID = 8; % Backward
-        case 9
-          simpleID = 9; % Right
-        case 10
-          simpleID = 10; % Left
-        case {13, 14}
-          simpleID = 14; % Run
-        case 27
-          simpleID = 27; % Crawl
-        otherwise
-          simpleID = 11; % Forward
+      simpleID = zeros(size(stepID), 'uint32');
+      for k = 1:numel(stepID)
+        switch(stepID(k))
+          case {1, 2, 4}
+            simpleID(k) = 1; % Still
+          case {3, 5}
+            simpleID(k) = 3; % Loiter
+          case {8, 18}
+            simpleID(k) = 8; % Backward
+          case 9
+            simpleID(k) = 9; % Right
+          case 10
+            simpleID(k) = 10; % Left
+          case {13, 14}
+            simpleID(k) = 14; % Run
+          case 27
+            simpleID(k) = 27; % Crawl
+          otherwise
+            simpleID(k) = 11; % Forward
+        end
       end
     end
   end
