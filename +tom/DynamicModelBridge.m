@@ -133,16 +133,15 @@ function mName = compileOnDemand(name)
     base = fullfile(['+', name], name);
     basecpp = [base, '.cpp'];
     cpp = which(basecpp);
-    arg{2} = cpp;
-    arg{3} = '-output';
-    arg{4} = [cpp(1:(end-4)), 'Bridge'];
-    if(exist(arg{4}, 'file'))
-      delete([arg{4}, '.', mexext]);
+    arg{2} = '-output';
+    arg{3} = ['''', cpp(1:(end-4)), 'Bridge'''];
+    arg{4} = ['''', cpp, ''''];
+    if(exist(arg{3}, 'file'))
+      delete([arg{3}, '.', mexext]);
     end
-    fprintf('\nmex');
-    fprintf(' %s', arg{:});
-    fprintf('\n');
-    mex(arg{:});
+    cmd = ['mex' sprintf(' %s', arg{:})];
+    fprintf('\n%s\n', cmd);
+    eval(cmd);
   end
   mName = mNameCache;
 end
