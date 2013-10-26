@@ -36,13 +36,12 @@ function mName = compileOnDemand(name)
     mNameCache = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];
     bridge = mfilename('fullpath');
     arg{1} = ['-I"', fileparts(fileparts(bridge)), '"'];
-    arg{2} = ['-I"', fileparts(bridge), '"'];
-    arg{3} = '-output';
+    arg{2} = '-output';
     cpp = which([fullfile(['+', name], name), '.cpp']);
-    arg{4} = ['''', cpp(1:(end-4)), 'Bridge'''];
-    arg{5} = ['''', bridge, '.cpp'''];
-    if(exist(arg{4}, 'file'))
-      delete([arg{4}, '.', mexext]);
+    arg{3} = ['''', cpp(1:(end-4)), 'Bridge'''];
+    arg{4} = ['''', bridge, '.cpp'''];
+    if(exist(arg{3}, 'file'))
+      delete([arg{3}, '.', mexext]);
     end
     cmd = ['mex' sprintf(' %s', arg{:})];
     fprintf('\n%s\n', cmd);
