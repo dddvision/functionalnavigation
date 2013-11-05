@@ -100,7 +100,6 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
     end
     
     function [strides, steps] = projection(this, c1, c2, c3)
-      assert(this.hasData());
       m = double(this.M);
       n = double(this.N);
       coef = this.rho./c1;
@@ -111,7 +110,6 @@ classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
     end
     
     function [c1, c2, c3] = inverseProjection(this, strides, steps)
-      assert(this.hasData());
       m = double(this.M);
       n = double(this.N);
       u1 = ((m-1.0)/(n-1.0))*(steps*(2.0/(m-1.0))-1.0);
