@@ -2,7 +2,7 @@ classdef DemoConfig < handle
   properties (Constant = true, GetAccess = public)
     % trajectory optimization parameters
     uri = 'hidi:TrajectorySim'; % ('hidi:MiddleburyTemple') select hardware resource or data container
-    dynamicModelName = 'InertialTDMSim'; % ('tom') name of a single DynamicModel component
+    dynamicModelName = 'BrownianPlanar'; % ('tom') name of a single DynamicModel component
     measureNames = {'GlobalSatData'}; % ({'tom'}) cell array of zero or more names of Measure components
     optimizerName = 'MatlabGA'; % ('tom') name of a single Optimizer component
     

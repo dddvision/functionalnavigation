@@ -7,7 +7,7 @@ classdef FeatureExtractorBridge < hidi.FeatureExtractor
   methods (Access = public, Static = true)
     function this = FeatureExtractorBridge(name, varargin)
       if(nargin>0)
-        this.m = compileOnDemand(name);
+        this.m = hidi.mexPackage(name);
         this.args = varargin;
         feval(this.m, this.args, 'FeatureExtractorCreate');
       end
@@ -27,25 +27,4 @@ classdef FeatureExtractorBridge < hidi.FeatureExtractor
       feature = feval(this.m, this.args, 'getFeatureValue', index);
     end
   end
-end
-
-% Attempt once to compile on demand.
-function mName = compileOnDemand(name)
-  persistent mNameCache
-  if(isempty(mNameCache))
-    mNameCache = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];
-    bridge = mfilename('fullpath');
-    arg{1} = ['-I"', fileparts(fileparts(bridge)), '"'];
-    arg{2} = '-output';
-    cpp = which([fullfile(['+', name], name), '.cpp']);
-    arg{3} = ['''', cpp(1:(end-4)), 'Bridge'''];
-    arg{4} = ['''', bridge, '.cpp'''];
-    if(exist(arg{3}, 'file'))
-      delete([arg{3}, '.', mexext]);
-    end
-    cmd = ['mex' sprintf(' %s', arg{:})];
-    fprintf('\n%s\n', cmd);
-    eval(cmd);
-  end
-  mName = mNameCache;
 end

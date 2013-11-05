@@ -11,7 +11,7 @@ classdef MeasureBridge < tom.Measure
   methods (Access = public, Static = true)
     function initialize(name)
       assert(isa(name, 'char'));
-      mName = compileOnDemand(name);
+      mName = mexPackage(name);
       function text = componentDescription
         text = feval(mName, 'MeasureDescription', name);
       end
@@ -33,7 +33,7 @@ classdef MeasureBridge < tom.Measure
         assert(isa(name, 'char'));
         assert(isa(initialTime, 'double'));
         assert(isa(uri, 'char'));
-        this.m = compileOnDemand(name);
+        this.m = mexPackage(name);
         this.name = name;
         this.initialTime = initialTime;
         this.uri = uri;
@@ -79,7 +79,7 @@ classdef MeasureBridge < tom.Measure
   
 end
 
-function mName = compileOnDemand(name)
+function mName = mexPackage(name)
   persistent mNameCache
   if(isempty(mNameCache))
     mNameCache = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];

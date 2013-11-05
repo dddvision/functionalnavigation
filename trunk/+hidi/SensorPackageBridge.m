@@ -6,7 +6,7 @@ classdef SensorPackageBridge < hidi.SensorPackage
   methods (Access = public, Static = true)
     function initialize(name)
       assert(isa(name, 'char'));   
-      mName = compileOnDemand(name);
+      mName = hidi.mexPackage(name);
       function text = componentDescription
         text = feval(mName, uint32(0), 'description', name);
       end
@@ -22,7 +22,7 @@ classdef SensorPackageBridge < hidi.SensorPackage
       if(nargin>0)
         assert(isa(name, 'char'));
         assert(isa(parameters, 'char'));
-        this.m = compileOnDemand(name);
+        this.m = hidi.mexPackage(name);
         feval(this.m, uint32(0), 'create', name, parameters);
       end
     end
@@ -85,25 +85,4 @@ classdef SensorPackageBridge < hidi.SensorPackage
       end
     end
   end
-end
-
-% Attempt once to compile on demand.
-function mName = compileOnDemand(name)
-  persistent mNameCache
-  if(isempty(mNameCache))
-    mNameCache = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];
-    bridge = mfilename('fullpath');
-    arg{1} = ['-I"', fileparts(fileparts(bridge)), '"'];
-    arg{2} = '-output';
-    cpp = which([fullfile(['+', name], name), '.cpp']);
-    arg{3} = ['''', cpp(1:(end-4)), 'Bridge'''];
-    arg{4} = ['''', bridge, '.cpp'''];
-    if(exist(arg{3}, 'file'))
-      delete([arg{3}, '.', mexext]);
-    end
-    cmd = ['mex' sprintf(' %s', arg{:})];
-    fprintf('\n%s\n', cmd);
-    eval(cmd);
-  end
-  mName = mNameCache;
 end
