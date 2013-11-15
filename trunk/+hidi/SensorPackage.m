@@ -75,10 +75,11 @@ classdef SensorPackage < handle
     function [packageName, parameters] = splitCompoundURI(uri)
       packageName = uri;
       parameters = '';
-      if(~strncmp(packageName, 'hidi:', 5))
-        error('Expected URI format: hidi:<packageName>[?<key0>=<value0>[;<key1>=<value1>]]');
+      delimeter = strfind(packageName, ':');
+      if(isempty(delimeter))
+        error('Expected URI format: scheme:<packageName>[?<key0>=<value0>[;<key1>=<value1>]]');
       end
-      packageName = packageName(6:end);
+      packageName = packageName((delimeter+1):end);
       delimeter = strfind(packageName, '?');
       if(isempty(delimeter))
         return;

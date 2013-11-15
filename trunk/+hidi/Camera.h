@@ -39,6 +39,8 @@ namespace hidi
      *   'h' hue
      *   's' saturation
      *   'v' grayscale value
+     *   'i' short wave infrared
+     *   't' thermal infrared
      *   'd' distance from the sensor origin to the scene (meters)
      *
      * @note

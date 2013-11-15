@@ -4,9 +4,34 @@ classdef SensorPackageBridge < hidi.SensorPackage
   end
   
   methods (Access = public, Static = true)
-    function initialize(name)
+    function mName = compile(name, varargin)
+      persistent mNameMap
+      if(isempty(mNameMap))
+        mNameMap = containers.Map;
+      end
+      if(~isKey(mNameMap, name))
+        mNameMap(name) = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];
+        bridge = mfilename('fullpath');
+        arg{1} = ['-I"', fileparts(fileparts(bridge)), '"'];
+        arg{2} = [bridge, '.cpp'];
+        arg{3} = '-output';
+        cpp = which([fullfile(['+', name], name), '.cpp']);
+        arg{4} = [cpp(1:(end-4)), 'Bridge'];
+        if(exist(arg{4}, 'file'))
+          delete([arg{4}, '.', mexext]);
+        end
+        arg = cat(2, arg, varargin);
+        fprintf('mex');
+        fprintf(' %s', arg{:});
+        fprintf('\n');
+        mex(arg{:});
+      end
+      mName = mNameMap(name);
+    end
+    
+    function initialize(name, varargin)
       assert(isa(name, 'char'));   
-      mName = hidi.mexPackage(name);
+      mName = hidi.SensorPackageBridge.compile(name, varargin{:});
       function text = componentDescription
         text = feval(mName, uint32(0), 'description', name);
       end
@@ -22,7 +47,7 @@ classdef SensorPackageBridge < hidi.SensorPackage
       if(nargin>0)
         assert(isa(name, 'char'));
         assert(isa(parameters, 'char'));
-        this.m = hidi.mexPackage(name);
+        this.m = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];
         feval(this.m, uint32(0), 'create', name, parameters);
       end
     end

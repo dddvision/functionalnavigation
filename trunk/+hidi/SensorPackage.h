@@ -178,11 +178,12 @@ namespace hidi
       size_t delimeter;
       packageName = uri;
       parameters = "";
-      if(packageName.compare(0, 5, "hidi:"))
+      delimeter = packageName.find(':');
+      if(delimeter==std::string::npos)
       {
-        throw("SensorPackage: Expected URI format: hidi:<packageName>[?<key0>=<value0>[;<key1>=<value1>]]");
+        throw("SensorPackage: Expected URI format: scheme:<packageName>[?<key0>=<value0>[;<key1>=<value1>]]");
       }
-      packageName = packageName.substr(5);
+      packageName = packageName.substr(delimeter+1);
       delimeter = packageName.find('?');
       if(delimeter==std::string::npos)
       {

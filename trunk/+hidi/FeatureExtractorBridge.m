@@ -5,9 +5,34 @@ classdef FeatureExtractorBridge < hidi.FeatureExtractor
   end
   
   methods (Access = public, Static = true)
+    function mName = compile(name, varargin)
+      persistent mNameMap
+      if(isempty(mNameMap))
+        mNameMap = containers.Map;
+      end
+      if(~isKey(mNameMap, name))
+        mNameMap(name) = [name, '.', name(find(['.', name]=='.', 1, 'last'):end), 'Bridge'];
+        bridge = mfilename('fullpath');
+        arg{1} = ['-I"', fileparts(fileparts(bridge)), '"'];
+        arg{2} = [bridge, '.cpp'];
+        arg{3} = '-output';
+        cpp = which([fullfile(['+', name], name), '.cpp']);
+        arg{4} = [cpp(1:(end-4)), 'Bridge'];
+        if(exist(arg{4}, 'file'))
+          delete([arg{4}, '.', mexext]);
+        end
+        arg = cat(2, arg, varargin);
+        fprintf('mex');
+        fprintf(' %s', arg{:});
+        fprintf('\n');
+        mex(arg{:});
+      end
+      mName = mNameMap(name);
+    end
+    
     function this = FeatureExtractorBridge(name, varargin)
       if(nargin>0)
-        this.m = hidi.mexPackage(name);
+        this.m = hidi.FeatureExtractorBridge.compile(name, varargin{:});
         this.args = varargin;
         feval(this.m, this.args, 'FeatureExtractorCreate');
       end
