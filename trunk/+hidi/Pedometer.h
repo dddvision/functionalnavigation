@@ -175,14 +175,15 @@ namespace hidi
      * 
      * @note
      * The return value identifies one of the following labels:
-     *   "Still"    zero displacement and zero rotation
-     *   "Loiter"   zero displacement
-     *   "Forward"  positive sign along forward axis
-     *   "Right"    positive sign along right axis
-     *   "Backward" negative sign along forward axis
-     *   "Left"     negative sign along right axis
-     *   "Run"      positive sign along forward axis
-     *   "Crawl"    positive sign along forward axis
+     *   "Still"     zero displacement and zero rotation
+     *   "Loiter"    zero displacement
+     *   "Backward"  negative sign along forward axis
+     *   "Right"     positive sign along right axis
+     *   "Left"      negative sign along right axis
+     *   "Forward"   positive sign along forward axis
+     *   "Run"       positive sign along forward axis
+     *   "Crawl"     positive sign along forward axis
+     *   "Undefined" undefined
      */
     static uint32_t simplifyStepID(const uint32_t& stepID)
     {
@@ -208,6 +209,23 @@ namespace hidi
       case 10:
         simpleID = 10; // Left
         break;
+      case 6:
+      case 7:
+      case 11:
+      case 12:
+      case 15:
+      case 16:
+      case 17:
+      case 19:
+      case 20:
+      case 21:
+      case 22:
+      case 23:
+      case 24:
+      case 25:
+      case 26:
+        simpleID = 11; // Forward
+        break;
       case 13:
       case 14:
         simpleID = 14; // Run
@@ -216,22 +234,22 @@ namespace hidi
         simpleID = 27; // Crawl
         break;
       default:
-        simpleID = 11; // Forward
+        simpleID = 0; // Undefined
         break;
       }
       return (simpleID);
     }
     
     /**
-     * Check for the successful completion of a step measurement.
+     * Check for successful labeling of a step measurement.
      *
      * @param[in] node data index (MATLAB: M-by-N)
      * @return         flag (MATLAB: M-by-N)
      *
      * @note
      * Each node refers to a time period that begins the instant after the previous node and ends at the node.
-     * The flag will be true only if the motion was successfully characterized.
-     * A false flag indicates either the initial time or the end of an unsuccessful measurement period.
+     * The flag will be true only if the motion was successfully labeled.
+     * A false flag indicates either the first node or the end of an unlabeled measurement period.
      * Throws an exception if any index is out of range.
      */
     virtual bool isStepComplete(const uint32_t& n) = 0;

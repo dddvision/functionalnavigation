@@ -15,6 +15,7 @@ namespace hidi
       isConnected,
       description,
       create,
+      destroy,
       getAccelerometerArray,
       getAltimeter,
       getCamera,
@@ -110,6 +111,7 @@ namespace hidi
         mm["isConnected"] = isConnected;
         mm["description"] = description;
         mm["create"] = create;
+        mm["destroy"] = destroy;
         mm["getAccelerometerArray"] = getAccelerometerArray;
         mm["getAltimeter"] = getAltimeter;
         mm["getCamera"] = getCamera;
@@ -286,9 +288,15 @@ namespace hidi
           static std::string parameters;
           convert(prhs[2], name);
           convert(prhs[3], parameters);
-          deleteSensorPackage();
+          deleteSensorPackage(); // treat package as a singleton
           package = hidi::SensorPackage::create(name, parameters);
           mexAtExit(deleteSensorPackage);
+          break;
+        }
+        
+        case destroy:
+        {
+          deleteSensorPackage();
           break;
         }
 

@@ -90,14 +90,15 @@ classdef Pedometer < hidi.Sensor
     % 
     % @note
     % The return value identifies one of the following labels
-    %   "Still"    zero displacement and zero rotation
-    %   "Loiter"   zero displacement
-    %   "Forward"  positive sign along forward axis
-    %   "Right"    positive sign along right axis
-    %   "Backward" negative sign along forward axis
-    %   "Left"     negative sign along right axis
-    %   "Run"      positive sign along forward axis
-    %   "Crawl"    positive sign along forward axis
+    %   "Still"     zero displacement and zero rotation
+    %   "Loiter"    zero displacement
+    %   "Backward"  negative sign along forward axis
+    %   "Right"     positive sign along right axis
+    %   "Left"      negative sign along right axis
+    %   "Forward"   positive sign along forward axis
+    %   "Run"       positive sign along forward axis
+    %   "Crawl"     positive sign along forward axis
+    %   "Undefined" undefined
     function simpleID = simplifyStepID(stepID)
       simpleID = zeros(size(stepID), 'uint32');
       for k = 1:numel(stepID)
@@ -112,12 +113,14 @@ classdef Pedometer < hidi.Sensor
             simpleID(k) = 9; % Right
           case 10
             simpleID(k) = 10; % Left
+          case {6, 7, 11, 12, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26}
+            simpleID(k) = 11; % Forward
           case {13, 14}
             simpleID(k) = 14; % Run
           case 27
             simpleID(k) = 27; % Crawl
           otherwise
-            simpleID(k) = 11; % Forward
+            simpleID(k) = 0; % Undefined
         end
       end
     end

@@ -109,5 +109,9 @@ classdef SensorPackageBridge < hidi.SensorPackage
         sensor{s} = hidi.PedometerBridge(this.m, h(s)); %#ok grows in loop
       end
     end
+    
+    function delete(this)
+      feval(this.m, uint32(0), 'destroy');
+    end
   end
 end
