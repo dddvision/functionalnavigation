@@ -10,7 +10,7 @@ namespace hidi
   /**
    * This class is a FeatureExtractor composed of multiple FeatureExtractors.
    */
-  class FeatureExtractorComposite : FeatureExtractor
+  class FeatureExtractorComposite : public virtual FeatureExtractor
   {
   public:
     uint32_t numFeatures(void)
