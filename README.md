@@ -7,7 +7,7 @@ License:
 https://github.com/dddvision/functionalnavigation/blob/master/LICENSE.txt
 
 Wiki documentation:
-https://github.com/dddvision/functionalnavigation/tree/master/wiki
+https://github.com/dddvision/functionalnavigation/tree/master/wiki/ProjectHome.md
 
 Publications:
 https://github.com/dddvision/functionalnavigation/tree/master/docs
