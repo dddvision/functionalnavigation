@@ -9,16 +9,16 @@ The framework comes with a few default examples of components that can be select
 
 ### Layer Diagram for Embedded Systems ###
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/LayerDiagramForEmbeddedSystems.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/LayerDiagramForEmbeddedSystems.png'>
 
 <h3>Layer Diagram for Developers</h3>
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/LayerDiagramForDevelopers.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/LayerDiagramForDevelopers.png'>
 
 <h3>Class Diagram</h3>
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/SimpleClassDiagram.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/SimpleClassDiagram.png'>
 
 <h3>Class Diagram Notation (from Design Patterns)</h3>
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/classDiagramNotation.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/classDiagramNotation.png'>
