@@ -1,0 +1,1 @@
+For questions regarding the functionalnavigation project that are not addressed under the Issues tab, please feel free to contact the project owner, David Diel <dddvision@gmail.com>.
