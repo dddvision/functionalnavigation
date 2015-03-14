@@ -13,7 +13,7 @@ https://github.com/dddvision/functionalnavigation/tree/master/docs
 
 ## Participation ##
 
-We greatly appreciate feedback from all users. If you have downloaded our code and found it useful, please let us know, and we will add a link to your organization (logos will be resized to 200x150). Organizations listed below have expressed interest in the TOMMAS framework, but this does not necessarily imply an endorsement or recommendation:
+We greatly appreciate feedback from all users. If you have downloaded our code and found it useful, please let us know, and we will add a link to your organization (logos will be resized to 200x150). Organizations listed below have expressed interest in the TOMMAS framework, but this does not imply an endorsement or recommendation:
 
 | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/SSCI.png)](http://www.ssci.com) | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/AFRL.png)](http://www.eglin.af.mil) | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/UCF-CVL.png)](http://server.cs.ucf.edu/~vision) |
 |:-----------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------|
