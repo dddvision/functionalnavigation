@@ -4,7 +4,7 @@ As a camera moves, light rays from the environment slice through a theoretical u
 
 ### Algorithm: Compute Camera Rays ###
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/StandardPerspectiveRays.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/StandardPerspectiveRays.png'>
 
 <ul><li>Get an image from the camera.<br>
 </li><li>Query the image size.<br>
@@ -16,7 +16,7 @@ As a camera moves, light rays from the environment slice through a theoretical u
 
 <h3>Algorithm: Compute Rotation Field</h3>
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/StandardPerspectiveRotation.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/StandardPerspectiveRotation.png'>
 
 <ul><li>Get hypothetical body poses at two time instants <code>ta</code> and <code>tb</code>.<br>
 </li><li>Compute the rotation matrix <code>R</code> that represents the camera frame at time <code>tb</code> relative to the camera frame at time <code>ta</code>.<br>
@@ -26,7 +26,7 @@ As a camera moves, light rays from the environment slice through a theoretical u
 
 <h3>Algorithm: Compute Translation Field</h3>
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/StandardPerspectiveTranslationNormalized.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/StandardPerspectiveTranslationNormalized.png'>
 
 <ul><li>Get hypothetical body poses at two time instants <code>ta</code> and <code>tb</code>.<br>
 </li><li>Compute the translation vector <code>T</code> that represents the position of the camera frame origin at time <code>tb</code> relative to the camera frame origin at time <code>ta</code>.<br>
