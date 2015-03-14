@@ -93,8 +93,8 @@ Information on how to wrap code written in different languages:
 
 ### Class Diagram ###
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/SimpleClassDiagram.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/SimpleClassDiagram.png'>
 
 <h3>Class Diagram Notation (from Design Patterns)</h3>
 
-<img src='http://functionalnavigation.googlecode.com/svn/wiki/classDiagramNotation.png'>
+<img src='https://github.com/dddvision/functionalnavigation/blob/master/wiki/classDiagramNotation.png'>
