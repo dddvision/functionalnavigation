@@ -15,10 +15,10 @@ https://github.com/dddvision/functionalnavigation/tree/master/docs
 
 We greatly appreciate feedback from all users. If you have downloaded our code and found it useful, please let us know, and we will add a link to your organization (logos will be resized to 200x150). Organizations listed below have expressed interest in the TOMMAS framework, but this does not necessarily imply an endorsement or recommendation:
 
-| [![](http://functionalnavigation.googlecode.com/svn/wiki/SSCI.png)](http://www.ssci.com) | [![](http://functionalnavigation.googlecode.com/svn/wiki/AFRL.png)](http://www.eglin.af.mil) | [![](http://functionalnavigation.googlecode.com/svn/wiki/UCF-CVL.png)](http://server.cs.ucf.edu/~vision) |
+| [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/SSCI.png)](http://www.ssci.com) | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/AFRL.png)](http://www.eglin.af.mil) | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/UCF-CVL.png)](http://server.cs.ucf.edu/~vision) |
 |:-----------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------|
-| [![](http://functionalnavigation.googlecode.com/svn/wiki/MIT-CSAIL.png)](http://www.csail.mit.edu) | [![](http://functionalnavigation.googlecode.com/svn/wiki/DARPA-DSO.png)](http://www.darpa.mil/dso) | [![](http://functionalnavigation.googlecode.com/svn/wiki/Draper.png)](http://www.draper.com) |
-| [![](http://functionalnavigation.googlecode.com/svn/wiki/BYU.png)](http://home.byu.edu) | [![](http://functionalnavigation.googlecode.com/svn/wiki/Sapienza.png)](http://labrococo.dis.uniroma1.it/dokuwiki/doku.php) | [![](http://functionalnavigation.googlecode.com/svn/wiki/PhysicalSciences.png)](http://www.psicorp.com) |
+| [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/MIT-CSAIL.png)](http://www.csail.mit.edu) | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/DARPA-DSO.png)](http://www.darpa.mil/dso) | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/Draper.png)](http://www.draper.com) |
+| [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/BYU.png)](http://home.byu.edu) | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/Sapienza.png)](http://labrococo.dis.uniroma1.it/dokuwiki/doku.php) | [![](https://github.com/dddvision/functionalnavigation/blob/master/wiki/PhysicalSciences.png)](http://www.psicorp.com) |
 
 
 ## Notice ##
