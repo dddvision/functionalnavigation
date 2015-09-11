@@ -1,15 +1,15 @@
-#ifndef HIDI_H
-#define HIDI_H
+#ifndef HIDIHIDI_H
+#define HIDIHIDI_H
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 
 #include <cmath>
-#include <cstdio>
 #include <limits>
 #include <string>
 #include <vector>
 
-#ifndef PI
-static const double PI = 4.0*atan(1.0);
-#endif
 #ifndef EPS
 static const double EPS = std::numeric_limits<double>::epsilon();
 #endif
@@ -28,12 +28,6 @@ static bool isnan(const double& x)
 }
 #endif
 
-namespace hidi
-{
-  static const double RADTODEG = 180.0/PI;
-  static const double DEGTORAD = PI/180.0;
-}
-
 #ifndef _MSC_VER
 #include <stdint.h>
 #else
@@ -46,5 +40,42 @@ typedef __int16 int16_t;
 typedef __int32 int32_t;
 typedef __int64 int64_t;
 #endif
+
+#ifdef _MSC_VER
+#include <fcntl.h>
+#include <io.h>
+class _SetOutputModeBinary
+{
+public:
+  _SetOutputModeBinary(void)
+  {
+    _setmode(_fileno(stdout), _O_BINARY);
+  }
+};
+_SetOutputModeBinary _setOutputModeBinary;
+#endif
+
+namespace hidi
+{
+  // Prints a platform-independent newline.
+  //
+  // @param[in] stream output file stream (default = stdout)
+  void newline(FILE* stream = stdout)
+  {
+#ifdef MATLAB_MEX_FILE
+    if(stream==stdout)
+    {
+      printf("\n");
+    }
+    else
+    {
+      fprintf(stream, "\x0d\x0a");
+    }
+#else
+    fprintf(stream, "\x0d\x0a");
+#endif
+    return;
+  }
+}
 
 #endif

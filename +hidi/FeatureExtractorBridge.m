@@ -24,7 +24,7 @@ classdef FeatureExtractorBridge < hidi.FeatureExtractor
         arg = cat(2, arg, varargin);
         fprintf('mex');
         fprintf(' %s', arg{:});
-        fprintf('\n');
+        hidi.newline();
         mex(arg{:});
       end
       mName = mNameMap(name);

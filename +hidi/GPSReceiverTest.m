@@ -25,7 +25,7 @@ classdef GPSReceiverTest
       trueX = trueECEF(1, :);
       trueY = trueECEF(2, :);
       trueZ = trueECEF(3, :);
-      [trueLon, trueLat, trueAlt] = tom.WGS84.ecefToLLA(trueX, trueY, trueZ);
+      [trueLon, trueLat, trueAlt] = earth.WGS84.ecefToLLA(trueX, trueY, trueZ);
       trueLonLatAlt = [trueLon; trueLat; trueAlt];
       errLonLatAlt = gpsLonLatAlt-trueLonLatAlt;
 
@@ -45,7 +45,7 @@ classdef GPSReceiverTest
       gpsLon = gpsLonLatAlt(1, :);
       gpsLat = gpsLonLatAlt(2, :);
       gpsAlt = gpsLonLatAlt(3, :);
-      [gpsX, gpsY, gpsZ] = tom.WGS84.llaToECEF(gpsLon, gpsLat, gpsAlt);
+      [gpsX, gpsY, gpsZ] = earth.WGS84.llaToECEF(gpsLon, gpsLat, gpsAlt);
       gpsECEF = [gpsX; gpsY; gpsZ];
       errECEF = gpsECEF-trueECEF;
       Raxes = [0, 0, -1;0, 1, 0;1, 0, 0];

@@ -2,11 +2,53 @@
 #define HIDIBRIDGE_H
 
 #include <cstdio>
+#include <string>
+#include <vector>
 #include "mex.h" // must follow cstdio and precede custom headers for printf to work
 #include "hidi.h"
 
 namespace hidi
 {
+  void callMATLAB(int nlhs, mxArray *plhs[], int nrhs, mxArray *prhs[], const char *functionName)
+  {
+    mxArray* exception;
+    exception = mexCallMATLABWithTrap(nlhs, plhs, nrhs, prhs, functionName);
+    if(exception!=NULL)
+    {
+      mexCallMATLAB(0, NULL, 1, &exception, "throw");
+    }
+    return;
+  }
+
+  typedef void (*MEXFunctionWithCatchCallback)(int, mxArray**, int, const mxArray**);
+  void mexFunctionWithCatch(MEXFunctionWithCatchCallback mexFunctionWithCatchCallback, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+  {
+    std::string message;
+    try
+    {
+      mexFunctionWithCatchCallback(nlhs, plhs, nrhs, prhs);
+    }
+    catch(std::exception& e)
+    {
+      message = "ERROR: ";
+      message = message+e.what();
+      mexErrMsgTxt(message.c_str());
+    }
+    catch(const char* str)
+    {
+      message = "ERROR: ";
+      message = message+str;
+      mexErrMsgTxt(message.c_str());
+    }
+    catch(...)
+    {
+      message = "ERROR: ";
+      message = message+"Unhandled exception.";
+      mexErrMsgTxt(message.c_str());
+    }
+    return;
+  }
+  
   void checkNumArgs(const int& narg, const int& n)
   {
     if(n>narg)
@@ -61,6 +103,15 @@ namespace hidi
     return;
   }
 
+  void checkUInt64(const mxArray* array)
+  {
+    if((mxGetClassID(array)!=mxUINT64_CLASS))
+    {
+      throw("Must be type uint64.");
+    }
+    return;
+  }
+  
   void checkUInt32(const mxArray* array)
   {
     if((mxGetClassID(array)!=mxUINT32_CLASS))
@@ -132,6 +183,18 @@ namespace hidi
     }
     return;
   }
+  
+  void checkClass(const mxArray* array, const std::string& className)
+  {
+    static std::string err;
+    if(!mxIsClass(array, className.c_str()))
+    {
+      err = "Must be type "+className;
+      err = err+".";
+      throw(err.c_str());
+    }
+    return;
+  }
 
   void convert(const mxArray* array, double& value)
   {
@@ -144,6 +207,13 @@ namespace hidi
   {
     checkFloat(array);
     value = (*static_cast<float*>(mxGetData(array)));
+    return;
+  }
+
+  void convert(const mxArray* array, uint64_t& value)
+  {
+    checkUInt64(array);
+    value = (*static_cast<uint64_t*>(mxGetData(array)));
     return;
   }
 
@@ -377,6 +447,13 @@ namespace hidi
     return;
   }
 
+  void convert(const uint64_t& value, mxArray*& array)
+  {
+    array = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+    (*static_cast<uint64_t*>(mxGetData(array))) = value;
+    return;
+  }
+  
   void convert(const uint32_t& value, mxArray*& array)
   {
     array = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
@@ -569,35 +646,6 @@ namespace hidi
     array = mxCreateStructArray(2, dims, 2, fieldnames);
     mxSetField(array, 0, "first", first);
     mxSetField(array, 0, "second", second);
-    return;
-  }
-
-  typedef void (*MEXFunctionWithCatchCallback)(int, mxArray**, int, const mxArray**);
-  void mexFunctionWithCatch(MEXFunctionWithCatchCallback mexFunctionWithCatchCallback, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
-  {
-    std::string message;
-    try
-    {
-      mexFunctionWithCatchCallback(nlhs, plhs, nrhs, prhs);
-    }
-    catch(std::exception& e)
-    {
-      message = "ERROR: ";
-      message = message+e.what();
-      mexErrMsgTxt(message.c_str());
-    }
-    catch(const char* str)
-    {
-      message = "ERROR: ";
-      message = message+str;
-      mexErrMsgTxt(message.c_str());
-    }
-    catch(...)
-    {
-      message = "ERROR: ";
-      message = message+"Unhandled exception.";
-      mexErrMsgTxt(message.c_str());
-    }
     return;
   }
 }

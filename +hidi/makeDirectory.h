@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <string>
-#include "hidi.h"
 
 #ifdef _MSC_VER
 #include <direct.h>
@@ -13,14 +12,14 @@
 #include <sys/types.h>
 #endif
 
+#include "+hidi/hidi.h"
+
 namespace hidi
 {
-  /**
-   * Create a directory given a path name.
-   *
-   * @param[in] pathName path of the directory to be created
-   * @return             true if the directory exists after the operation and false otherwise
-   */
+  // Create a directory given a path name.
+  //
+  // @param[in] pathName path of the directory to be created
+  // @return             true if the directory exists after the operation and false otherwise
   bool makeDirectory(const std::string& pathName)
   {
 #ifdef _MSC_VER
