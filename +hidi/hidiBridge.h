@@ -2,8 +2,6 @@
 #define HIDIBRIDGE_H
 
 #include <cstdio>
-#include <string>
-#include <vector>
 #include "mex.h" // must follow cstdio and precede custom headers for printf to work
 #include "hidi.h"
 
