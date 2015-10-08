@@ -32,13 +32,18 @@ static bool isnan(const double& x)
 #include <stdint.h>
 #else
 typedef unsigned __int8 uint8_t;
-typedef unsigned __int16 uint16_t;
-typedef unsigned __int32 uint32_t;
-typedef unsigned __int64 uint64_t;
 typedef __int8 int8_t;
+typedef unsigned __int16 uint16_t;
 typedef __int16 int16_t;
+typedef unsigned __int32 uint32_t;
 typedef __int32 int32_t;
+#if defined(__LP64__) || defined(_LP64)
+typedef unsigned __int64 uint64_t;
 typedef __int64 int64_t;
+typedef uint64_t uintptr_t;
+#else
+typedef uint32_t uintptr_t;
+#endif
 #endif
 
 #ifdef _MSC_VER

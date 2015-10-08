@@ -100,16 +100,7 @@ namespace hidi
     }
     return;
   }
-
-  void checkUInt64(const mxArray* array)
-  {
-    if((mxGetClassID(array)!=mxUINT64_CLASS))
-    {
-      throw("Must be type uint64.");
-    }
-    return;
-  }
-  
+ 
   void checkUInt32(const mxArray* array)
   {
     if((mxGetClassID(array)!=mxUINT32_CLASS))
@@ -205,13 +196,6 @@ namespace hidi
   {
     checkFloat(array);
     value = (*static_cast<float*>(mxGetData(array)));
-    return;
-  }
-
-  void convert(const mxArray* array, uint64_t& value)
-  {
-    checkUInt64(array);
-    value = (*static_cast<uint64_t*>(mxGetData(array)));
     return;
   }
 
@@ -444,13 +428,6 @@ namespace hidi
     (*static_cast<float*>(mxGetData(array))) = value;
     return;
   }
-
-  void convert(const uint64_t& value, mxArray*& array)
-  {
-    array = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
-    (*static_cast<uint64_t*>(mxGetData(array))) = value;
-    return;
-  }
   
   void convert(const uint32_t& value, mxArray*& array)
   {
@@ -528,7 +505,7 @@ namespace hidi
     }
     return;
   }
-
+  
   void convert(const std::vector<uint32_t>& value, mxArray*& array)
   {
     uint32_t* pValue;
@@ -542,7 +519,7 @@ namespace hidi
     }
     return;
   }
-
+ 
   void convert(const std::vector<uint16_t>& value, mxArray*& array)
   {
     uint16_t* pValue;
@@ -570,7 +547,7 @@ namespace hidi
     }
     return;
   }
-
+  
   void convert(const std::vector<int32_t>& value, mxArray*& array)
   {
     int32_t* pValue;
@@ -646,6 +623,59 @@ namespace hidi
     mxSetField(array, 0, "second", second);
     return;
   }
+  
+#if defined(__LP64__) || defined(_LP64)
+  void checkUInt64(const mxArray* array)
+  {
+    if((mxGetClassID(array)!=mxUINT64_CLASS))
+    {
+      throw("Must be type uint64.");
+    }
+    return;
+  }
+  
+  void convert(const mxArray* array, uint64_t& value)
+  {
+    checkUInt64(array);
+    value = (*static_cast<uint64_t*>(mxGetData(array)));
+    return;
+  }
+  
+  void convert(const uint64_t& value, mxArray*& array)
+  {
+    array = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
+    (*static_cast<uint64_t*>(mxGetData(array))) = value;
+    return;
+  }
+  
+  void convert(const std::vector<uint64_t>& value, mxArray*& array)
+  {
+    uint64_t* pValue;
+    size_t n;
+    size_t N = value.size();
+    array = mxCreateNumericMatrix(N, 1, mxUINT64_CLASS, mxREAL);
+    pValue = static_cast<uint64_t*>(mxGetData(array));
+    for(n = 0; n<N; ++n)
+    {
+      pValue[n] = value[n];
+    }
+    return;
+  }
+  
+  void convert(const std::vector<int64_t>& value, mxArray*& array)
+  {
+    int64_t* pValue;
+    size_t n;
+    size_t N = value.size();
+    array = mxCreateNumericMatrix(N, 1, mxINT64_CLASS, mxREAL);
+    pValue = static_cast<int64_t*>(mxGetData(array));
+    for(n = 0; n<N; ++n)
+    {
+      pValue[n] = value[n];
+    }
+    return;
+  }
+#endif
 }
   
 #endif
