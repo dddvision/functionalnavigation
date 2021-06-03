@@ -33,7 +33,6 @@ This project is open source and employs the following permissive license that al
 ---
 
 Copyright (c) 2011, Scientific Systems Company, Inc.
-All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
