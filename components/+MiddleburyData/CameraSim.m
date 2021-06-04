@@ -1,4 +1,5 @@
 classdef CameraSim < MiddleburyData.MiddleburyDataConfig & hidi.Camera
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties (Constant = true, GetAccess = private)
     rho = 3740/(1390/2); % Reference: http://vision.middlebury.edu/stereo/data/scenes2005/

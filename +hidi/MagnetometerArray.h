@@ -1,3 +1,4 @@
+// Copyright 2011 Scientific Systems Company Inc., New BSD License
 #ifndef HIDIMAGNETOMETERARRAY_H
 #define HIDIMAGNETOMETERARRAY_H
 

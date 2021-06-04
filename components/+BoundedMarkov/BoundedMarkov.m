@@ -1,4 +1,5 @@
 classdef BoundedMarkov < BoundedMarkov.BoundedMarkovConfig & tom.DynamicModel
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties (Constant = true, GetAccess = private)
     initialNumLogical = uint32(0);

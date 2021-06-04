@@ -1,4 +1,5 @@
 classdef CameraSim < MiddleburyTemple.MiddleburyTempleConfig & hidi.Camera
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true, GetAccess = private)
     layers = 'rgb';
   end

@@ -7,6 +7,7 @@
 %
 % RETURN
 %   stats = structure containing model parameters
+% Public Domain
 function stats = IMUModel(model)
 
 switch model

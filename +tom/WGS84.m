@@ -1,4 +1,5 @@
 classdef WGS84
+% Copyright 2006 David D. Diel, MIT License
   properties (Constant = true, GetAccess = public)
     majorRadius = 6378137.0; % meters
     rotationRate = 7.2921151467e-5; % rad/sec

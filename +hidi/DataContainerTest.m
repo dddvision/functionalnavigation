@@ -1,4 +1,5 @@
 classdef DataContainerTest < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   methods (Access = public, Static = true)
     function this = DataContainerTest(name, initialTime)
       fprintf('\n\n*** Begin DataContainer Test ***\n');

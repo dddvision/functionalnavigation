@@ -1,3 +1,4 @@
+// Copyright 2006 David D. Diel, MIT License
 #ifndef TOMWGS84_H
 #define TOMWGS84_H
 

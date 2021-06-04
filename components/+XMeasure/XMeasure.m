@@ -1,4 +1,5 @@
 classdef XMeasure < XMeasure.XMeasureConfig & tom.Measure
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 
   properties (SetAccess = private, GetAccess = private)
     xRef

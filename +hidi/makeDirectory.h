@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDIMAKEDIRECTORY_H
 #define HIDIMAKEDIRECTORY_H
 

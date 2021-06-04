@@ -1,4 +1,5 @@
 classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray
+% Copyright 2011 David D. Diel, New BSD License
   properties (Constant = true, GetAccess = private)
     pFrame=[0; 0; 0];
     qFrame=[1; 0; 0; 0];

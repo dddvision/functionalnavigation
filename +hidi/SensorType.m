@@ -1,4 +1,5 @@
 classdef SensorType
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true, GetAccess = public)
     ACCELEROMETER_ARRAY = uint32(0);
     ALTIMETER = uint32(1);

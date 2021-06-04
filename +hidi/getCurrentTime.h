@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDIGETCURRENTTIME_H
 #define HIDIGETCURRENTTIME_H
 

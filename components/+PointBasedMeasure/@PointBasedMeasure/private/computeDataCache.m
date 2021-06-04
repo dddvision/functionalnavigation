@@ -1,5 +1,6 @@
 % Builds a tree of cache data indexed by pairs of indices
 % This creates a single cache store shared among all instances
+% Copyright 2011 University of Central Florida, New BSD License
 function data = computeDataCache(this,ka,kb)
 
     persistent cacheData

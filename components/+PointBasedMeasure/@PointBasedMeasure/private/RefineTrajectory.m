@@ -2,6 +2,7 @@ function [ data,intermediateData ] = RefineTrajectory( intermediateData )
 %REFINETRAJECTORY excludes outliers and runs sparse bundle adjustment(SBA)
 %   Once image pair has been determined to be a vailed pair to use this
 %   algorithm with, the rest of the computation is preformed from a cache
+% Copyright 2011 University of Central Florida, New BSD License
 
 % Exclude way-off points
 [points,nonNormalizedMatches]=RefinePoints(intermediateData.points,intermediateData.nonNormalizedMatches);

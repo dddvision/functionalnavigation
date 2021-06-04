@@ -1,3 +1,4 @@
+// Copyright 2011 Scientific Systems Company Inc., New BSD License
 #ifndef TOMOPTIMIZER_H
 #define TOMOPTIMIZER_H
 

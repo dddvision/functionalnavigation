@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef MATHVECTORBRIDGE_H
 #define MATHVECTORBRIDGE_H
 

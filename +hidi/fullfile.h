@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDIFULLFILE_H
 #define HIDIFULLFILE_H
 

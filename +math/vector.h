@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef MATHVECTOR_H
 #define MATHVECTOR_H
 

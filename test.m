@@ -1,4 +1,5 @@
 function test(name)
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 
   % display info
   fprintf('\n\nThis is the testbed script for components of the Trajectory Optimization Manager ');

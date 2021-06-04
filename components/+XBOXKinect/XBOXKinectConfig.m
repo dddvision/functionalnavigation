@@ -46,6 +46,7 @@
 %
 % 5) Copy the executable to this directory and call it kinectapp
 % > cp MyProject/bin/cppview [functionalnavigation]/components/+XBOXKinect/kinectapp
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 
 classdef XBOXKinectConfig < handle
   properties (Constant = true)   

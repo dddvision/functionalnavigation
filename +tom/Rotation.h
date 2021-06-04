@@ -1,3 +1,4 @@
+// Copyright 2006 David D. Diel, MIT License
 #ifndef ROTATION_H
 #define ROTATION_H
 

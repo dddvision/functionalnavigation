@@ -251,6 +251,7 @@ function hn=arrow3(p1,p2,s,w,h,ip,alpha,beta)
 %                                %        IP same size
 %
 %     See also (arrow3_examples.html), (arrow3_messes_up_my_plots.html).
+% Copyright 2011 University of Central Florida, New BSD License
 
 %   Copyright(c)2002-2008 Version 5.13
 %     Tom Davis  (tdavis@metzgerwillard.com)

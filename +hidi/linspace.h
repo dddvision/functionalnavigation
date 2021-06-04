@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDILINSPACE_H
 #define HIDILINSPACE_H
 

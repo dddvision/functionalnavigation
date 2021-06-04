@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDIANY_H
 #define HIDIANY_H
 

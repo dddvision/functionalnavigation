@@ -1,4 +1,5 @@
 classdef MacBookBuiltInSensors < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.DataContainer
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant=true,GetAccess=private)
     hasRef=false;
     bodyRef=[];

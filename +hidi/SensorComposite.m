@@ -1,4 +1,5 @@
 classdef SensorComposite
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (GetAccess = private, SetAccess = private)
     sensor
     sensorLabel

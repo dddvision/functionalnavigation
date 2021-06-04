@@ -1,4 +1,5 @@
 function PlotMatches_omar(im1,im2,match)
+% Copyright 2011 University of Central Florida, New BSD License
         figure(1);
         figure('Name','Image Pair','NumberTitle','off');
         clf;

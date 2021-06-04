@@ -1,4 +1,5 @@
 classdef FastPBMConfig < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true, GetAccess = public)
     % parameters that affect the measure
     trackerName = 'KLT'; % ('KLT'), 'KLTOpenCV', 'SURF' tracker implementation to use

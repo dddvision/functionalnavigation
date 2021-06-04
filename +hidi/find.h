@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDIFIND_H
 #define HIDIFIND_H
 

@@ -1,4 +1,5 @@
 classdef TangentPose < tom.Pose
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (SetAccess = public, GetAccess = public)
     r = nan(3, 1);
     s = nan(3, 1);

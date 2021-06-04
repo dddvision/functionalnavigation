@@ -1,4 +1,5 @@
 classdef Rotation 
+% Copyright 2006 David D. Diel, MIT License
   methods (Access = public, Static = true)
     function [y0, y1, y2] = axisToEuler(v0, v1, v2)
       if(nargin==1)

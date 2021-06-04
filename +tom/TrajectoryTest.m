@@ -1,4 +1,5 @@
 classdef TrajectoryTest
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties (Constant = true, GetAccess = private)
     tau = 0.5+0.5*sin(pi/2*(-1:1/100:1)); % irregular time steps normalized in the range [0,1]

@@ -2,6 +2,7 @@
 % Omar Oreifej, UCF, 12/16/2009
 % Last Modified, 6/29/2010
 %-------------------------------------------------------------
+% Copyright 2011 University of Central Florida, New BSD License
 function [intermediateData] = EvaluateTrajectory_SFM(im1,im2)
 
 % Todo: remove intrinsic parameters' calculation once received by the interface ...

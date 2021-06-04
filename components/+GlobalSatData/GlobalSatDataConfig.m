@@ -1,4 +1,5 @@
 classdef GlobalSatDataConfig < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true, GetAccess = protected)   
     % Raw GPS data file recorded from a stationary sensor
     %   Used to generate a realistic simulation of errors

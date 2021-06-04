@@ -1,4 +1,5 @@
 classdef GpsSim < GlobalSatData.GlobalSatDataConfig & hidi.GPSReceiver
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties
     na

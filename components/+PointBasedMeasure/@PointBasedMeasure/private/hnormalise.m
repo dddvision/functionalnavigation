@@ -11,6 +11,7 @@
 %
 % Note that any homogeneous coordinates at infinity (having a scale value of
 % 0) are left unchanged.
+% Copyright 2011 University of Central Florida, New BSD License
 
 % Peter Kovesi  
 % School of Computer Science & Software Engineering

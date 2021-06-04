@@ -1,4 +1,5 @@
 classdef DemoDisplay < DemoConfig & handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties (Constant = true, GetAccess = private)
     gamma = 2; % (2) nonlinearity of trajectory transparency

@@ -1,4 +1,5 @@
 classdef DynamicModelBridge < tom.DynamicModel
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 
   properties (SetAccess = protected, GetAccess = protected)
     name

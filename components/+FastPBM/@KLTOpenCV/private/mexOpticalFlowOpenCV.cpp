@@ -1,3 +1,4 @@
+// Copyright 2006 David D. Diel, MIT License
 #include "mex.h"
 #include "cv.h"
 #include "cxcore.h"

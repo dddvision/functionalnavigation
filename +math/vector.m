@@ -7,6 +7,7 @@
 %
 % @note
 % Only classes and numeric types are supported.
+% Public Domain
 function v = vector(varargin)
 switch(nargin)
   case 0

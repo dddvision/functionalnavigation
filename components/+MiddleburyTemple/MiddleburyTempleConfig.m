@@ -1,4 +1,5 @@
 classdef MiddleburyTempleConfig  < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true, GetAccess = protected)
     % repository URL including ending '/' ('http://vision.middlebury.edu/mview/data/data/')
     repository = 'http://vision.middlebury.edu/mview/data/data/';

@@ -1,3 +1,4 @@
+// Copyright 2011 University of Central Florida, New BSD License
 #include <stdio.h>
 #include <tchar.h>
 #include "mex.h"

@@ -1,4 +1,5 @@
 % Trajectory that can be perturbed over a time interval
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 classdef MeasureTestPerturbation < tom.Trajectory
 
   properties (GetAccess = private, SetAccess = private)

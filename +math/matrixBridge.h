@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef MATHMATRIXBRIDGE_H
 #define MATHMATRIXBRIDGE_H
 

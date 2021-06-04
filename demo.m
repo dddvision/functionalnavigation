@@ -2,6 +2,7 @@
 %   Multiple Algorithms and Sensors (TOMMAS). It instantiates an optimizer
 %   and a graphical display, and then alternately optimizes and displays 
 %   trajectories in an infinite loop. See DemoConfig for options.
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 help(mfilename);
 
 % check MATLAB version

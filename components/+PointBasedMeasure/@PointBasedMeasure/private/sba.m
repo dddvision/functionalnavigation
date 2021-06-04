@@ -99,5 +99,6 @@ function [ret, popt, info]=sba(n, ncon, m, mcon, vmask, p0, cnp, pnp, x, mnp, pr
 % - info: optional array of doubles, which upon return provides information regarding the minimization.
 %      See sba_levmar.c for more details.
 %
+% Copyright 2011 University of Central Florida, New BSD License
  
 error('sba.m is used only for providing documentation to sba; make sure that sba.c has been compiled using mex');

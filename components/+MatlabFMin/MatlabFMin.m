@@ -1,4 +1,5 @@
 classdef MatlabFMin < MatlabFMin.MatlabFMinConfig & tom.Optimizer
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties (Constant = true, GetAccess = private)
     popSize = uint32(1);

@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDIUNIQUE_H
 #define HIDIUNIQUE_H
 

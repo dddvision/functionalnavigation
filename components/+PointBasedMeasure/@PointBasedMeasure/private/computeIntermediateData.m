@@ -1,4 +1,5 @@
 function IntermediateData=computeIntermediateData(this,ia,ib)
+% Copyright 2011 University of Central Florida, New BSD License
   
   switch( interpretLayers(this.sensor) )
     case {'rgb','rgbi'}

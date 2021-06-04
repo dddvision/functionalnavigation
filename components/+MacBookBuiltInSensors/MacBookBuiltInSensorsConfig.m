@@ -1,4 +1,5 @@
 classdef MacBookBuiltInSensorsConfig < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true)
     % Camera frame offset relative to the accelerometer frame
     %   Camera frame is forward-right-down

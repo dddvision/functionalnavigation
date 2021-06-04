@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDIGETLINE_H
 #define HIDIGETLINE_H
 

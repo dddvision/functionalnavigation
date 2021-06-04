@@ -1,4 +1,5 @@
 classdef Pose
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (GetAccess = public, SetAccess = public)
     p = nan(3, 1);
     q = nan(4, 1);

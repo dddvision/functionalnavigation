@@ -2,6 +2,7 @@
 %
 % NOTES
 % A component can connect to multiple framework classes
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 classdef DataContainer < handle
   methods (Access = private, Static = true)
     % Storage for component descriptions

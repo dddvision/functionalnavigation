@@ -1,3 +1,4 @@
+// Copyright 2011 Scientific Systems Company Inc., New BSD License
 #ifndef HIDISENSORADAPTER_H
 #define HIDISENSORADAPTER_H
 

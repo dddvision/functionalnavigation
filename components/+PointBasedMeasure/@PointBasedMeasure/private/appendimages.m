@@ -1,6 +1,7 @@
 % im = appendimages(image1, image2)
 %
 % Return a new image that appends the two images side-by-side.
+% Copyright 2011 University of Central Florida, New BSD License
 
 function im = appendimages(image1, image2)
 

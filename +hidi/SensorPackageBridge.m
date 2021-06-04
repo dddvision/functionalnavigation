@@ -1,4 +1,5 @@
 classdef SensorPackageBridge < hidi.SensorPackage
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (SetAccess = private, GetAccess = private)
     m % mex name without extension
   end

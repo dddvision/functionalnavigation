@@ -1,4 +1,5 @@
 % computes rotation matrix using Rodriguez formula 
+% Copyright 2011 University of Central Florida, New BSD License
 
 function [rot_matrix] = rot_matrix(omega,theta)
 

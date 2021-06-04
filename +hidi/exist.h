@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef HIDIEXIST_H
 #define HIDIEXIST_H
 

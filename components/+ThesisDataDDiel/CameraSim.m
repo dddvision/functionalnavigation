@@ -1,4 +1,5 @@
 classdef CameraSim < hidi.Camera
+% Copyright 2011 David D. Diel, New BSD License
   properties (Constant = true, GetAccess = private)
     layers = 'rgb';
   end

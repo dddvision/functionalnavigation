@@ -1,4 +1,5 @@
 classdef DynamicModel < tom.Trajectory
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
     
   methods (Access = private, Static = true)
     function dL = pDescriptionList(name, cD)

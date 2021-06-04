@@ -1,4 +1,5 @@
 classdef BodyReference < tom.Trajectory
+% Copyright 2011 David D. Diel, New BSD License
   
   properties (SetAccess = private, GetAccess = private)
     T_imu

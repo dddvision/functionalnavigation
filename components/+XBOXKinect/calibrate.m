@@ -1,4 +1,5 @@
 function calibrate
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   % check MATLAB version
   try
     matlabVersionString = version('-release');

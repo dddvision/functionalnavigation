@@ -1,4 +1,5 @@
 classdef PointBasedMeasureConfig < handle
+% Copyright 2011 University of Central Florida, New BSD License
   properties (Constant=true,GetAccess=public)
       ZThreshold = 3; % threshold in standard deviations of Z axis that will cause framework to throw out edge as having too small of a baseline (default=4)
       HFThreshold = .6; % Maximum accepted  ratio between the inliers homography and fundamental matrix

@@ -1,3 +1,4 @@
+// Public Domain
 #include "libfreenect.hpp"
 #include <pthread.h>
 #include <stdio.h>

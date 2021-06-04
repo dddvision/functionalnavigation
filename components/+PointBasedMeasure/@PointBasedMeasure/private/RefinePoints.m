@@ -1,5 +1,6 @@
 function [points,nonNormalizedMatches]=RefinePoints(points,nonNormalizedMatches)
 % reject points with -ve z
+% Copyright 2011 University of Central Florida, New BSD License
 [v,i]=find(points(3,:)>0);
 points = points(:,i);
 nonNormalizedMatches = nonNormalizedMatches(i,:);

@@ -1,4 +1,5 @@
 classdef Pedometer < hidi.Sensor
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   methods (Access = protected, Static = true)
     function this = Pedometer()
     end

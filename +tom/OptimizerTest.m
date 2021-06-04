@@ -1,4 +1,5 @@
 classdef OptimizerTest < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   methods (Access = public)
     function this = OptimizerTest(name, dynamicModelName, measureName, initialTime, uri)

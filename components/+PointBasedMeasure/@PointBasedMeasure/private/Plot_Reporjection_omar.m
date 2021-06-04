@@ -1,5 +1,6 @@
 function Plot_Reporjection_omar(match,points3D,P,K,R,T,im1,im2,ka,kb,DisplayReprojection,DisplayReprojectionOnPictures,PauseBetweenImages)
 %nonNormalizedMatches,corrS,corrP,corrK,corrR,corrT,im1,im2
+% Copyright 2011 University of Central Florida, New BSD License
 
 %% plot structure
 if(DisplayReprojection)

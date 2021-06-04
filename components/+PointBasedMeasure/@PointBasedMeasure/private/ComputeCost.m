@@ -1,4 +1,5 @@
 function [ cost ] = ComputeCost( data, testTrajectory, ErrorType, DisplayTestTrajectory )
+% Copyright 2011 University of Central Florida, New BSD License
 
     % Constants
     MAX_ROTATION = 9.4248; %(3.*pi)

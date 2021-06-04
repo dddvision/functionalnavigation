@@ -1,3 +1,4 @@
+// Copyright 2011 Scientific Systems Company Inc., New BSD License
 #ifndef HIDISENSORPACKAGE_H
 #define HIDISENSORPACKAGE_H
 

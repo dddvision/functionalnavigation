@@ -1,4 +1,5 @@
 classdef KLT < FastPBM.FastPBMConfig & FastPBM.SparseTracker
+% Copyright 2006 David D. Diel, MIT License
   
   properties (Constant = true, GetAccess = private)
     halfwin = 5;

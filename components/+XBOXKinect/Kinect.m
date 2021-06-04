@@ -1,4 +1,5 @@
 classdef Kinect < XBOXKinect.XBOXKinectConfig & hidi.Camera
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true)
     steps = uint32(480);
     strides = uint32(640);

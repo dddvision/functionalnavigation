@@ -20,6 +20,7 @@
 % If there are some points at infinity the normalisation transform
 % is calculated using just the finite points.  Being a scaling and
 % translating transform this will not affect the points at infinity.
+% Copyright 2011 University of Central Florida, New BSD License
 
 % Peter Kovesi
 % School of Computer Science & Software Engineering

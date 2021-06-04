@@ -1,4 +1,5 @@
 classdef PointBasedMeasure < PointBasedMeasure.PointBasedMeasureConfig & tom.Measure
+% Copyright 2011 University of Central Florida, New BSD License
   
   properties (SetAccess=private,GetAccess=public)
     sensor

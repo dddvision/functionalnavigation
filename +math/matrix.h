@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef MATHMATRIX_H
 #define MATHMATRIX_H
 

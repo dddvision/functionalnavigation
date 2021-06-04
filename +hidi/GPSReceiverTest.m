@@ -1,5 +1,6 @@
 % For each valid index in the GPS data domain, evaluate the reference
 %   trajectory and compare with the reported GPS position
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 classdef GPSReceiverTest
   methods (Access = public, Static = true)
     function this = GPSReceiverTest(gpsHandle, trajectory)

@@ -1,4 +1,5 @@
 classdef GraphEdge
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (SetAccess = public, GetAccess = public)
     first = uint32(0);
     second = uint32(0);

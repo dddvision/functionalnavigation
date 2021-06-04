@@ -16,6 +16,7 @@
 % algorithm given by Hartley and Zisserman "Multiple View Geometry in
 % Computer Vision" p92.
 %
+% Copyright 2011 University of Central Florida, New BSD License
 
 % Peter Kovesi
 % School of Computer Science & Software Engineering

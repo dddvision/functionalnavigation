@@ -1,4 +1,5 @@
 % takes rotation matrix returns angle-axis
+% Copyright 2011 University of Central Florida, New BSD License
 function[omega, theta] = exp_rotation(R)
 theta = 0;
 theta = acos((R(1,1) + R(2,2) + R(3,3)-1)/2);

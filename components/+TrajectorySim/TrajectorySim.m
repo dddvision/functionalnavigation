@@ -1,4 +1,5 @@
 classdef TrajectorySim < hidi.DataContainer & TrajectorySim.TrajectorySimConfig
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 
   properties (Constant = true, GetAccess = private)
     list = hidi.SensorIndex(zeros(0, 1));

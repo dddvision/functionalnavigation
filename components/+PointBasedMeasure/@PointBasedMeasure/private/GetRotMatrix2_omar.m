@@ -1,5 +1,6 @@
 function R=GetRotMatrix2_omar(angles)
 % just a different convension without - in Ry1(1,3)
+% Copyright 2011 University of Central Florida, New BSD License
 
 Rax1 = angles(1)*pi/180;
 Ray1 = angles(2)*pi/180;

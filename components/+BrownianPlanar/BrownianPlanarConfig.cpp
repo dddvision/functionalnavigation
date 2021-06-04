@@ -1,3 +1,4 @@
+// Copyright 2011 Scientific Systems Company Inc., New BSD License
 namespace BrownianPlanar
 {
   const double BrownianPlanar::rate = 5.0; // strictly positive

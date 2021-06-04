@@ -1,4 +1,5 @@
 classdef CameraBridge < hidi.Camera
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (SetAccess = private, GetAccess = private)
     m % mex name without extension
     h % handle to C++ object

@@ -6,6 +6,7 @@
 % stdZ: standard deviation in Z values 
 % IntermediateData: all data calculated from Point Matching and
 % decomposition (used in RefineTrajectory)
+% Copyright 2011 University of Central Florida, New BSD License
 function [use, IntermediateData] = computeIntermediateDataCache(this,ka,kb)
 
     persistent cacheIntermediate

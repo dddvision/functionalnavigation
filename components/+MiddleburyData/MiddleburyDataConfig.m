@@ -1,4 +1,5 @@
 classdef MiddleburyDataConfig  < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true, GetAccess = protected)
     % scene selection parameters
     sceneYear = 'scenes2005'; % 'scenes2005', 'scenes2006'

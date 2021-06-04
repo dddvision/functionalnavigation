@@ -1,4 +1,5 @@
 classdef BodyReference < MiddleburyData.MiddleburyDataConfig & tom.Trajectory
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 
   properties (Constant = true,GetAccess = private)
     speed = 0.160; % Reference: http://vision.middlebury.edu/stereo/data/scenes2005/

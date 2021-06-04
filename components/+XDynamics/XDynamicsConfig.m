@@ -1,4 +1,5 @@
 classdef XDynamicsConfig < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties (Constant = true, GetAccess = public)
     % dynamic model parameters

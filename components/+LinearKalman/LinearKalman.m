@@ -1,4 +1,5 @@
 classdef LinearKalman < tom.Optimizer & LinearKalman.LinearKalmanConfig
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties (GetAccess = private, SetAccess = private)
     isDefined

@@ -1,4 +1,5 @@
 classdef GlobalSatData < GlobalSatData.GlobalSatDataConfig & tom.Measure
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 
   properties (GetAccess = private, SetAccess = private)
     sensor

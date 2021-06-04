@@ -1,4 +1,5 @@
 classdef DynamicModelTest
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   methods (Access = public)
     function this = DynamicModelTest(name, initialTime, uri)
       fprintf('\n\n*** Begin DynamicModel Test ***\n');

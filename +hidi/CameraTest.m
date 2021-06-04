@@ -1,4 +1,5 @@
 % Assumes that the general Sensor interface has already been tested
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 classdef CameraTest
   
   methods (Access = private, Static = true)

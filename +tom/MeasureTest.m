@@ -1,4 +1,5 @@
 classdef MeasureTest < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant=true, GetAccess=private)
     numRefresh = 20;
   end

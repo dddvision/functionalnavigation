@@ -1,4 +1,5 @@
 classdef MacAcc < MacBookBuiltInSensors.MacBookBuiltInSensorsConfig & hidi.AccelerometerArray
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   
   properties (Constant = true, GetAccess = private)
     na = uint32(0);

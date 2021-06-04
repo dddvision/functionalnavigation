@@ -1,6 +1,7 @@
 function m=projRTS(j, i, rt, xyz, r0, a)
 % symbolic projection function
 % code automatically generated with maple
+% Copyright 2011 University of Central Florida, New BSD License
 
   qr0=r0(j*4+1:(j+1)*4);
 

@@ -1,4 +1,5 @@
 classdef DemoConfig < handle
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (Constant = true, GetAccess = public)
     % trajectory optimization parameters
     uri = 'hidi:TrajectorySim'; % ('hidi:MiddleburyTemple') select hardware resource or data container

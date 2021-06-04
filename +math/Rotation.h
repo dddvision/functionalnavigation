@@ -1,3 +1,4 @@
+// Copyright 2006 David D. Diel, MIT License
 #ifndef MATHROTATION_H
 #define MATHROTATION_H
 

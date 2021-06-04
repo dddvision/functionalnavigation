@@ -1,4 +1,5 @@
 classdef InertialTDMSim < tom.DynamicModel & InertialTDMSim.InertialTDMSimConfig
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
 
   properties (Constant = true, GetAccess = private)
     nIU = uint32(0);

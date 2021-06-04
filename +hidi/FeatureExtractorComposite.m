@@ -1,4 +1,5 @@
 classdef FeatureExtractorComposite < hidi.FeatureExtractor
+% Copyright 2011 Scientific Systems Company Inc., New BSD License
   properties (GetAccess = private, SetAccess = private)
     lookup = repmat(struct('first', uint32(0), 'second', uint32(0)), 0, 1);
     extractors = cell(0, 1);

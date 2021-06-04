@@ -1,3 +1,4 @@
+// Public Domain
 #ifndef MATHROUND_H
 #define MATHROUND_H
 
