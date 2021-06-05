@@ -1,5 +1,5 @@
 classdef ThesisDataDDiel < ThesisDataDDiel.ThesisDataDDielConfig & hidi.DataContainer
-% Copyright 2011 David D. Diel, New BSD License
+% Copyright 2006 David D. Diel, MIT License
 
   properties (GetAccess = private, SetAccess = private)
     hasRef

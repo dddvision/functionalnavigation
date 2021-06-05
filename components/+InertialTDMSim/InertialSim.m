@@ -1,7 +1,7 @@
 % TODO: include gravity
 % TODO: include bias and scale errors
 % TODO: include sensor offset
-% Copyright 2011 Scientific Systems Company Inc., New BSD License
+% Copyright 2006 David D. Diel, MIT License
 classdef InertialSim < hidi.AccelerometerArray & hidi.GyroscopeArray & InertialTDMSim.InertialTDMSimConfig
   
   properties (Constant = true)

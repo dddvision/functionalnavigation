@@ -1,5 +1,5 @@
 classdef ThesisDataDDielConfig  < handle
-% Copyright 2011 David D. Diel, New BSD License
+% Copyright 2006 David D. Diel, MIT License
   properties (Constant=true, GetAccess=protected)
     % dataset name ('Factory7', 'GantryB', 'GantryC', or 'GantryF')
     dataSetName = 'GantryB';

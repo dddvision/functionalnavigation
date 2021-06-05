@@ -1,5 +1,5 @@
 classdef InertialTDMSimConfig < handle
-% Copyright 2011 Scientific Systems Company Inc., New BSD License
+% Copyright 2006 David D. Diel, MIT License
   
   properties (Constant = true, GetAccess = public)
     model = 'RandomWalkOnly'; % type of IMU model
