@@ -1,5 +1,5 @@
 % This class represents an index of a Sensor object in a DataContainer
-% Copyright 2011 Scientific Systems Company Inc., New BSD License
+% Public Domain
 classdef SensorIndex < uint32
   
   methods (Access = public)
