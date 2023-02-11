@@ -30,7 +30,7 @@ class WGS84:
         if (gamma < -halfpi) or (gamma > halfpi):
             lam = float("nan")
         else:
-            ratio = WGS84.minorRadius, WGS84.majorRadius
+            ratio = WGS84.minorRadius / WGS84.majorRadius
             lam = math.atan2(ratio * ratio * math.sin(gamma), math.cos(gamma))
         return lam
 
