@@ -60,3 +60,18 @@ class WGS84:
         lam = WGS84.geodeticToGeocentric(gamma)
         radius = WGS84.geocentricRadius(lam)
         return radius
+
+    @staticmethod
+    def radiusOfCurvature(gamma):
+        # Radius of curvature associated with the given geodetic angle from the major axis
+        #
+        # Input
+        # gamma :  geodetic latitude in radians
+        #
+        # Output
+        # radius :  radius in meters
+        ab = WGS84.majorRadius * WGS84.minorRadius
+        acg = WGS84.majorRadius * math.cos(gamma)
+        bsg = WGS84.minorRadius * math.sin(gamma)
+        radius = ab * ab * (acg * acg + bsg * bsg) ** -1.5
+        return radius
